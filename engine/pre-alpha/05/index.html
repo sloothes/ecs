@@ -1,0 +1,2364 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+
+		<title>ECS Engine (pre-alpha 0.5)</title>
+
+		<meta charset="utf-8">
+		<meta name="generator" content="Three.js Editor">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+		<link rel="stylesheet" href="/css/joystick.css">
+		<link rel="stylesheet" href="/css/bootstrap.min.css">
+		<link rel="stylesheet" href="/css/bootbox-dialoges.css">
+		<link rel="stylesheet" href="/css/jcrop.css">
+
+		<script src="/js/watch.js"></script>
+		<script src="/js/jquery.min.js"></script> 
+		<script src="/js/system.min.js"></script>
+		<script src="/js/signals.min.js"></script>
+		<script src="/js/inflate.min.js"></script>
+		<script src="/js/zangodb.min.js"></script>
+		<script src="/js/bootstrap.min.js"></script>
+		<script src="/js/hold-event.min.js"></script>
+		<script src="/js/jcrop.js"></script>
+
+		<style>
+
+			body {
+				margin: 0px;
+				font-size: 13px;
+				font-family: sans-serif;
+				background-repeat: repeat;
+				background-image: url("https://i.imgur.com/rnZZU0i.png") !important;
+				overflow: hidden;
+			}
+
+			#loading-bar {
+				width:100%;
+				height:100%;
+				top:0; left:0;
+				position:fixed;
+				display:flex;
+				align-items:center;
+				justify-content:center;
+			}
+
+			.middle > * {
+				top:0; 
+				left:0;
+				right:0;
+				bottom:0;
+				margin:auto;
+				position:absolute;
+			}
+
+			#joystick1 {
+				right: calc(40px + 370px);
+			}
+			
+			#jumpButton {
+				right: calc(105px + 370px);
+			}
+
+			.btn-matcap,
+			.btn-terrain {
+				padding:0;
+				float:left;
+				width:55px;
+				height:55px;
+				border:1px solid;
+				border-radius:4px;
+				margin-right:4px;
+				margin-bottom:4px;
+				display:inline-block;
+			}
+
+			.btn-matcap + .btn-matcap,
+			.btn-terrain + .btn-terrain {
+				margin-right:4px;
+			}
+
+		</style>
+	</head>
+
+	<body ontouchstart="">
+
+		<script src="/rlc/js/three.js"></script>
+		<script src="/rlc/js/TabUI.js"></script>
+		<script src="/rlc/js/MeshWalk.js"></script>
+		<script src="/rlc/js/UVsDebug.js"></script>
+		<script src="/rlc/js/FBXLoader.js"></script>
+		<script src="/rlc/js/VirtualInput.js"></script>
+		<script src="/rlc/js/EditorControls.js"></script>
+		<script src="/rlc/js/SubdivisionModifier.js"></script>
+		<script src="/rlc/js/three-pathfinding.umd.js"></script>
+		<script src="/threejs/r96/examples/js/loaders/GLTFLoader.js"></script>
+		<script src="/threejs/r96/examples/js/exporters/GLTFExporter.js"></script>
+		<script src="/threejs/r96/examples/js/exporters/STLExporter.js"></script>
+		<script src="/threejs/r96/examples/js/exporters/OBJExporter.js"></script>
+		<script src="/threejs/r96/examples/js/exporters/ColladaExporter.js"></script>
+
+		<script>
+
+			MW.install( THREE ); // important!
+
+		//	Global helpers.
+
+			Number.prototype.format = function (){
+				return this.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
+			};
+
+		//	round.js
+			function round(number, precision) {
+				var shift = function (number, precision, reverseShift) {
+					if (reverseShift) {
+						precision = -precision;
+					}  
+					numArray = ("" + number).split("e");
+					return +(numArray[0] + "e" + (numArray[1] ? (+numArray[1] + precision) : precision));
+				};
+				return shift(Math.round(shift(number, precision, false)), precision, true);
+			}
+
+		//	array_move.js
+			function array_move( arr, old_index, new_index ){
+
+				if (new_index >= arr.length) {
+					var k = new_index - arr.length + 1;
+					while (k--) {
+						arr.push(undefined);
+					}
+				}
+
+				arr.splice(new_index, 0, arr.splice(old_index, 1)[0]);
+			}
+
+		//	deepCopy.js
+			function deepCopy(obj) {
+				if (Object.prototype.toString.call(obj) === "[object Array]") {
+					var out = [], i = 0, len = obj.length;
+					for ( ; i < len; i++ ) {
+						out[i] = arguments.callee(obj[i]);
+					}
+				//	console.log("out:", out);
+					return out;
+				}
+				if (typeof obj === "object") {
+					var out = {}, i;
+					for ( i in obj ) {
+						out[i] = arguments.callee(obj[i]);
+					}
+				//	console.log("out:", out);
+					return out;
+				}
+				return obj;
+			}
+
+		//	## Copying an Object
+		//	source: "http://speakingjs.com/es5/ch17.html#private_data_for_objects"
+		//	To create an identical copy of an object, you need to get two things right:
+		//	The copy must have the same prototype as the original.
+		//	The copy must have the same properties, with the same attributes as the original.
+		//	The following function performs such a copy:
+		//
+		//	These are the steps involved:
+		//	Get an array with the keys of all own properties of source.
+		//	Iterate over those keys.
+		//	Retrieve a property descriptor.
+		//	Use that property descriptor to create an own property in target.
+		//	Note that this function is very similar to the function _.extend() in the Underscore.js library.
+
+			function copyObject(obj) {
+
+			// 1. copy has same prototype as orig
+				var copy = Object.create(Object.getPrototypeOf(obj));
+
+			// 2. copy has all of orig’s properties
+				copyOwnPropertiesFrom(copy, obj);
+
+				return copy; // shallow copy.
+
+			//	The properties are copied from orig to copy via this function:
+
+				function copyOwnPropertiesFrom(target, source) {
+					Object.getOwnPropertyNames(source).forEach(function(propKey) {  // [1][2]
+						var desc = Object.getOwnPropertyDescriptor(source, propKey); // [3]
+						Object.defineProperty(target, propKey, desc);  // [4]
+					});
+					return target;
+				};
+
+			}
+
+
+		</script>
+
+		<script>
+/*
+		//	Enity Component System Engine.
+
+		//	## Entities.
+		//	(A unique ID that tags each object as a separate item. 
+		//	Implementations typically use a plain integer for this).
+		//
+		//	Entities are objects with an id. 
+		//	Entities contains components. They are component containers.
+		//	We add/remove components in an entity to define the "kind" of this entity.
+		//	All values of all components of an entity defines the "state" of this entity.
+		//	An entity can be at least one or more entity "kinds".
+		//	Entity "kinds" can modified from systems by adding/removing components.
+		//	Entities are parsed to systems.
+		//	(entity) kind:  Entities do not know what "kind" they are.
+		//	(entity) state: Entities do not know what "state" they are.
+		//	System: Entities do not know which systems use them. 
+		//	Component: Entities do not know what components they contain.
+		//	Speaking with mongodb terms, entity is a document: the id of the document 
+		//	is the entity id and the fields of the document are the components.
+		//	All entities are members of the Entity class.
+
+		//	Entity class.
+
+			function Entity(){
+
+				this.id = Entity.prototype._count++;
+				
+				return this;
+			}
+			
+			Entity.prototype._count = 0;
+			Entity.prototype.length = 0;
+			Entity.prototype.isEntity = true;
+
+			Entity.prototype.add = function( component ){
+				if ( component === undefined ) return;
+				if ( component.name === undefined ) return;
+				if ( component.isComponent === undefined ) return;
+				var key = component.name.toLowerCase();
+				if ( this[ key ] === undefined ){
+					this[ key ] = component;
+					++this.length;
+				}
+				return this;
+			};
+
+			Entity.prototype.get = function( name ){
+				if ( !name ) return;
+				var key = name.toLowerCase();
+				return this[ key ];
+			};
+
+			Entity.prototype.remove = function( name ) {
+				if ( !name ) return;
+				var key = name.toLowerCase();
+				if ( this[ key ] !== undefined ) {
+					--this.length;
+					delete this[ key ];
+				}
+				return this;
+			};
+
+		//	## Components.
+		//	(Implementations typically use structs[1], classes[2], or associative arrays[3]).
+		//
+		//	"Component" is used to mean both the template/OOP class that holds the data, 
+		//	and the individual instances of that template/class. When this is unclear, 
+		//	we usually say "Component-Type" to mean the class, and "Component Instance" 
+		//	to mean a single instance attached to a specific Entity.
+		//
+		//	Components are objects with data. They are data containers. 
+		//	Components are a piece of data. All data exists inside components (component intialition).
+		//	Components are added/removed to entities to define the "kind" of an entity (entity initialition).
+		//	The values (data) of this component define the "state" of this component in this entity.
+		//	The values (data) of each component of an entity defines a part of the "state" of this entity.
+		//	The population of all components in an entity defines the "kinds" of this entity.
+		//	The constructors of all components in an entity defines the "kind" of this entity.
+		//	Components values (data) are modified by systems. 
+		//	There are none or more systems that modify this component values (data).
+		//	Components can be shared by many entities.
+		//	Components do not know which entity contains them.
+		//	Components do not know what system modify them.
+		//	Components do not know what "state" they are.
+		//	Components do not know each other in an entity.
+		//	All components are members of the Component super class.
+
+		//	Component super class.
+
+			function Component ( name, data ){
+
+			//	if ( !name ) throw "ConstructorError: name is required.";
+			//	if ( !data ) throw "ConstructorError: data object is required";
+
+				Object.assign( this, data ); // shallow copy.
+
+				if ( name ) this.name = name; // after assign.
+				
+				return this;
+			}
+
+			Component.prototype.isComponent = true;
+
+			Component.prototype.set = function( key, value ){
+				this[ key ] = value;
+			};
+
+			Component.prototype.get = function( key ){
+				return this[ key ];
+			};
+						
+		//	Extend Component super class with Object3D child class (traditional js).
+		//	source: "https://medium.com/beginners-guide-to-mobile-web-development/super-and-extends-in-javascript-es6-understanding-the-tough-parts-6120372d3420"
+
+			function Object3D(name, data) {
+				Component.call(this, name, data);
+			}
+
+			Object3D.prototype = Object.create(Component.prototype);
+			Object3D.prototype.constructor = Object3D;
+			Object3D.prototype.isComponent = Component.prototype.isComponent;
+			Object3D.prototype.set = function( key, value ){
+				Component.prototype.set.call(this, key, value);
+			};
+			Object3D.prototype.get = function( key ){
+				Component.prototype.get.call(this, key);
+			};
+
+		//	## Systems.
+		//
+		//	(All the code for the one aspect of the gameobjects, with each System running continuously as 
+		//	if it has a private internal thread, performing global actions on every Entity that possesses 
+		//	a Component of the same aspect as that System).
+		//
+		//	Originally, is recommended developers to start with "1 component-type per 1 System", 
+		//	but real-world projects rarely stick to this, often having multiple Component-types 
+		//	for a single System — and multiple Systems sharing individual Component-types.
+		//
+		//	System are functions that execute a piece of logic. All logic included in system's code (processors).
+		//	System accept [arrays of entities] and modify some values (data) of some components of each entity.
+		//	A system proccess only specific "kind" of entities (that contain specific components).
+		//	System modify the values (data) of components (changes the "state" of components).
+		//	System modify the values (data) of components (changes the "state" of the entity).
+		//	System can add/remove components from an entity (change the "kind" of the entity).
+		//	Systems are triggered by events, by signals, by observers, or runs continuously.
+		//	All systems are members of the System super class.
+
+		//	System super class.
+
+			function System ( entities ){}
+
+			System.prototype.isSystem = true;
+
+		//	Example: Extend System super class with ChildSystem child class (traditional js).
+		//	source: "https://medium.com/beginners-guide-to-mobile-web-development/super-and-extends-in-javascript-es6-understanding-the-tough-parts-6120372d3420"
+
+			function ChildSystem ( entities ){
+				System.call(this, entities);
+			}
+
+			ChildSystem.prototype = Object.create(System.prototype);
+			ChildSystem.prototype.constructor = ChildSystem;
+			ChildSystem.prototype.isSystem = System.prototype.isSystem;
+
+		//	Notes:
+		//
+		//	[1] Using structs in JavaScript (example, syntax):  I like the idea of using something like a C-like “struct” 
+		//	in my JavaScript code, so I used the following approach on a recent project. I define my JavaScript struct:
+		//
+		//		function BookStruct(title, href, imageUri, description) {
+		//			this.title = title;
+		//			this.href = href;
+		//			this.imageUri = imageUri;
+		//			this.description = description;
+		//		}
+		//
+		//	[2] Classes in JavaScript are a special syntax for its prototypical inheritance model that is a comparable 
+		//	inheritance in class-based object oriented languages. Classes are just special functions added to ES6 that 
+		//	are meant to mimic the class keyword from these other languages. In JavaScript, we can have class declarations 
+		//	and class expressions, because they are just functions. So like all other functions, there are function 
+		//	declarations and function expressions. Classes serve as templates to create new objects.
+		//	Classes always use strict. All code inside the class construct is automatically in strict mode.
+		//
+		//		class Person{
+		//			constructor(firstName, lastName) {
+		//				this.firstName= firstName;
+		//				this.lastName = lastName;
+		//			}
+		//		}
+		//
+		//	JavaScript classes initialize instances with constructors, define fields and methods. You can attach fields 
+		//	and methods even on the class itself using the "static" keyword. Inheritance is achieved using "extends" keyword: 
+		//	you can easily create a child class from a parent. "super" keyword is used to access the parent class from a 
+		//	child class. To take advantage of encapsulation, make the fields and methods private to hide the internal 
+		//	details of your classes. The private fields and methods names must begin with #.
+		//			
+		//	[3] Associative Array in JavaScript: Associative arrays are dynamic objects that the user redefines as needed. 
+		//  When you assign values to keys in a variable of type Array, the array is transformed into an object, and it 
+		//	loses the attributes and methods of Array. The length attribute has no effect because the variable is not longer 
+		//	of Array type.
+*/
+		</script>
+
+		<script>
+
+		//	# A Python ECS Implementation.
+		//	source: "https://github.com/seanfisk/ecs"
+		//	An MIT-licensed Python entity/component system library for games. http://ecs.rtfd.org
+		//
+		//	There are many articles on the Internet advocating a switch to entity-based systems for game logic. 
+		//	However, many authors seem to burn themselves out telling why the old inheritance-based approach is 
+		//	problematic and how an entity system will solve your problems — without ever really explaining what 
+		//	it is or how to do it. This project attempts to provide an actual implementation for use in real games.
+		//	The library is called an "entity/component system" library rather than an "entity system," 
+		//	as the entity portion is just one building block of the total concept.
+		//	Inspiration is taken from the Ash framework for ActionScript 3.0 and Artemis framework for Java.
+		//
+		//	## Concepts
+		//
+		//	ECS stands for Entity, Component, and System. Each of these parts is important. So what are these?
+		//	Entity: Simply a unique identifier, used to label components as belonging to a logical grouping.
+		//	Component: A collection of data. Has no behavior associated with it.
+		//	System: Piece of code to operate on data in components for a single frame.
+		//
+		//	## Details
+		//
+		//	ECS defines a few core core classes:
+		//	Entity, Component, System, EntityManager, SystemManager.
+		//
+		//	The Entity class is simply a representation of a unique identifier, and is not to be subclassed. 
+		//	The Component class is intended to be subclassed for your custom components. 
+		//	System is also intended to be subclassed for your custom systems.
+		//
+		//	The EntityManager is a database that stores Component subclasses, referenced by their type and entity ID. 
+		//	The SystemManager maintains a set of System instances and allows them to perform their operations.
+		//
+		//	The real action happens in the update() method of your subclassed System classes. 
+		//	A System instance queries the EntityManager database for a set of Component subclasses 
+		//	and operates on the data contained in them.
+		//
+		//	## Description
+		//
+		//	A system that maintains the state of the game as a database like structure.
+		//	The data stored is encapsulated in "Components", which have only data-members.
+		//	The interface of the various parts is defined below.
+		//
+		//	EntityManager {
+		//
+		//		addComponent(entity_id, component_instance)
+		//			Adds a component object to the database, associated with the entity_id
+		//
+		//		removeComponent(entity_id, component_type)
+		//			Removes a component object from the database if the entity_id has such a component.
+		//			Does not do any kind of data tear-down. This method simply makes that component
+		//			unavailable from the database.
+		//
+		//		getPairs(component_type)
+		//			Returns a list of pairs of entity_id's and components for a given component type.
+		//			Alleviates the need of doing a reverse look-up to get the id of an entity with
+		//			a certain kind of component.
+		//
+		//		getComponentForEntity(entity_id, component_type)
+		//			Returns the component_type component for the given entity_id. Returns None if there
+		//			is no component of that type associated with that id.
+		//
+		//	}
+		//
+		//
+		//	Entity {
+		//
+		//		guid
+		//
+		//	}
+		//
+		//	A unique number that identifies this identity.
+		//	The entity class is simply a way to logically encapsulate an identifier.
+		//
+		//
+		//	Component {
+		//
+		//		data1
+		//		data2
+		//		data3
+		//
+		//	}
+		//
+		//	Arbitrary data members. May contain a custom initializer but should not
+		//	have any other methods, especially any that modify state beyond simple getters/setters
+		//	with validation. Might be good to define factory methods at the class level 
+		//	for each component type.
+		//
+		//
+		//	All of these types are used by a separate set of classes called "Systems".  
+		//	Systems are bits of code that operate on items from the EntityManager database.
+		//
+		//	System {
+		//
+		//		update(dt, entity_manager)
+		//			Called every frame by the SystemManager.
+		//			The system can query the database for components and operate on them.
+		//			This is where the logic of the game is implemented.
+		//
+		//	}
+		//
+		//	Each System subclass is responsible for a narrow set of operations. 
+		//	Should only do the minimum necessary to make a certain feature work.
+		//	No persistent references should be made to things from the database 
+		//	unless you have	a really, really good reason. 
+		//	Things are likely to come and go from the database.
+		//
+		//
+		//	SystemManager {
+		//
+		//		initializer(entity_manager)
+		//			Creates a new SystemManager.  Requires a reference to an EntityManager so that the systems 
+		//			can get the required components.
+		//
+		//		addSystem(system_instance, priority)
+		//			Adds a system instance to the manager.  It will be updated according the priority passed in.
+		//			Will throw an Error if a system of that type is already present.
+		//
+		//		removeSystem(system_type)
+		//			Removes a given system type from the manager.
+		//
+		//		update(dt)
+		//			The SystemManager goes through its list of Systems and calls their update methods.
+		//			The list is sorted so systems get updated in their intended priority.
+		//			This method is called externally by the game-loop machinery.
+		//
+		//	}
+		//
+		//
+		//	## Database format:
+		//
+		//	Indexable by comp_type:
+		//
+		//	d = {
+		//		comp_type_1 : {
+		//			id_1 : comp_instance_1,
+		//			id_2 : comp_instance_2
+		//		},
+		//		comp_type_2 : {
+		//			id_1 : comp_instance_3,
+		//			id_2 : comp_instance_4
+		//		},
+		//	}
+		//
+		//	So to get all components of a certain type, it's simply:
+		//
+		//	all_comps = d[comp_type].values()
+		//
+		//	To get the comp for an entity,
+		//
+		//		comp_1 = d[comp_type][entity_id]
+		//
+		//	Both types of access are pretty fast and shouldn't cause any speed problems.
+		//
+		//
+		//	## Further Reading
+		//
+		//	Entity/component systems are a relatively new concept. The canonical source for all entity system-related 
+		//	topics is the Entity Systems wiki, created by Adam Martin. Adam Martin has also written abundantly in his 
+		//	series of posts about Entity Systems, which are a great read for those just getting familiar with the concept.
+
+		</script>
+
+		<script>
+
+		//	Components class.
+
+			const debugMode = true; // primitive type, locked.
+			const isComponent = true; // primitive type, locked.
+
+		//	We can define threejs component classes that inherits
+		//	mixed from threejs constructors and the Component class.
+
+			const Component = function( data ){
+
+				Object.assign(this, data);
+
+			}
+
+			Component.prototype.isComponent = true; // primitive type. How to lock it?
+
+		//	## DEVELOPING - DEBUGING.
+
+		//	Object.getPrototypeOf( debugMode ).constructor = Component;
+		//	Object.getPrototypeOf( debugMode ).isComponent = isComponent;
+
+		//	DebugMode.prototype = Object.create(Component.prototype);
+		//	DebugMode.prototype.isComponent = isComponent;
+
+		//
+		//	[1] JavaScript provides six primitive types as "undefined", "null", 
+		//	"boolean", "number", "string", and "symbol", and a reference type "object".
+		//
+		//	[2] The "new" keyword performs following tasks:
+		//	source: "https://www.tutorialsteacher.com/javascript/new-keyword-in-javascript"
+		//
+		//	1. It creates new empty object e.g. obj = { };
+		//	2. It sets new empty object's invisible 'prototype' property to be the constructor function's 
+		//	visible and accessible 'prototype' property. (Every function has visible 'prototype' property 
+		//	whereas every object includes invisible 'prototype' property)
+		//	3. It binds property or function which is declared with this keyword to the new object.
+		//	4. It returns newly created object unless the constructor function returns a non-primitive value 
+		//	(custom JavaScript object). If constructor function does not include return statement then compiler 
+		//	will insert 'return this;' implicitly at the end of the function. If the constructor function returns 
+		//	a primitive value then it will be ignored.
+		//
+		//	The "new" keyword ignores return statement that returns primitive value.
+		//	If function returns non-primitive value (custom object) then new keyword does not perform above 4 tasks.
+		//	Thus, new keyword builds an object of a function in JavaScript.
+
+		//	When comparing two objects, you need to be more careful. They are compared by their identity. 
+		//	That means it does not matter if the two objects have the same properties with the same values. 
+		//	They are equal only if they are the same instance. That is - if comparing two variables, 
+		//	they are equal only if they point to the very same object.
+
+
+		</script>
+
+		<script>
+
+		//	## THREEJS - ASSETS.
+
+		//	Object3D Component.
+
+			function Object3D() {
+
+				var object3d = new THREE.Object3D();
+				Object.getPrototypeOf(object3d).isComponent = true; // primitive type.
+				return object3d;
+				
+			}
+
+		//	Group Component.
+
+			function Group() {
+
+				var group = new THREE.Group();
+				Object.getPrototypeOf(group).isComponent = true; // primitive type.
+				return group;
+
+			}
+
+		//	Scene Component.
+
+			function Scene() {
+
+				var scene = new THREE.Scene();
+				Object.getPrototypeOf(scene).isComponent = true; // primitive type.
+				scene.name = "scene";
+				return scene;
+
+			}
+
+		//	Camera Component.
+
+			function Camera() {
+
+				var aspect = (window.innerWidth - 370) / window.innerHeight;
+				var camera = new THREE.PerspectiveCamera( 50, aspect, 0.1, 10000 );
+				camera.position.set( 0, 10, 20);
+				Object.getPrototypeOf(camera).isComponent = true; // primitive type.
+				camera.name = "camera";
+				return camera;
+
+			}
+
+		//	EditorControls Component.
+
+			function EditorControls(camera, domElement) {
+
+				var name = "EditorControls";
+				var controls = new THREE.EditorControls(camera, domElement);
+				Object.getPrototypeOf(controls).isComponent = true; // primitive type.
+				return controls;
+
+			}
+		
+		//	Light Component.
+
+			function Light() {
+				
+				var light = new THREE.DirectionalLight( 0xdfebff, 0.75 );
+				Object.getPrototypeOf(light).isComponent = true; // primitive type.
+				light.name = "camera light";
+				light.shadow.camera.name = "shadow camera";
+				return light;
+
+			}
+
+		//	Mouse Component.
+
+			function Mouse() {
+
+				var vector = new THREE.Vector2();
+				Object.getPrototypeOf(vector).isComponent = true; // primitive type.
+				return vector;
+
+			}
+
+		//	Renderer Component.
+
+			function WebGLRenderer(){
+
+				var renderer = new THREE.WebGLRenderer({
+					alpha: true,  // for transparent rendering set alpha:true, important!
+					antialias: true,
+					preserveDrawingBuffer: true,
+				});
+
+				Object.getPrototypeOf(renderer).isComponent = true; // primitive type.
+
+				renderer.gammaInput = true;
+				renderer.gammaOutput = true;
+				renderer.shadowMap.enabled = true;
+				renderer.setClearAlpha( 1 ); // for transparent rendering set clear alpha: 0.
+				renderer.setClearColor( 0x000000, 1 ); // for transparent rendering set clear alpha: 0.
+				renderer.setPixelRatio( window.devicePixelRatio );
+				renderer.setSize( (window.innerWidth - 370), window.innerHeight );
+			//	renderer.domElement.style.background = "none";  // transparent rendering. important!
+				return renderer;
+
+			}
+
+		//	MW World.
+
+		//	Threejs units in meters: x = 1 => 1 meter (m).
+		//	x = 1, y = 1 => x * y = 1 square meter (m2).
+		//	x = 1, y = 1, z = 1 => x * y * z = 1 cubic meter (m3).
+
+			function World(){
+
+				var world = new MW.World();
+				Object.getPrototypeOf(world).isComponent = true;
+				return world;
+
+			}
+
+		//	MeshWalk Octree.
+
+		//	Threejs units in meters: x = 150, y = 150, z = 150 
+		//	=> octree = 2 * x * 2 * y * 2 * z = 27000000 cubic meters (m3).
+
+			function Octree(){
+
+				var x = 150, y = 150, z = 150;
+				var min = new THREE.Vector3( -x, -y, -z );
+				var max = new THREE.Vector3(  x,  y,  z );
+				var partition = 5; // nodes: Math.pow( 8, partition )
+
+				var octree = new MW.Octree( min, max, partition );
+				Object.getPrototypeOf(octree).isComponent = true;
+				return octree;
+
+			}
+
+		//	Ground Component.
+		//	Threejs units in meters: x = 300, y = 300 
+		//	=> ground = x * y = 90000 square meters (m2);
+
+			function Ground(){
+
+				var geometry = new THREE.PlaneGeometry( 300, 300, 1, 1 ).rotateX(-Math.PI/2);
+				var material = new THREE.MeshLambertMaterial({ opacity:1, color:0x829ec4 });
+
+				var ground = new THREE.Mesh(geometry, material);
+				Object.getPrototypeOf(ground).isComponent = true;
+				ground.name = "ground";
+				return ground;
+
+			}
+
+		//	GroundHelper Component.
+		//	Threejs units in meters: x = 300, y = 300 
+		//	=> groundHelper = x * y = 90000 square meters (m2);
+
+			function GroundHelper(){
+
+				var helper = new THREE.GridHelper( 300, 300, 0x444444, 0x444444 );
+				Object.getPrototypeOf(helper).isComponent = true;
+				helper.name = "ground helper";
+				return helper;
+
+			}
+
+		//	PlayerHelper Component.
+		//	Threejs units in meters: radius = 1.7 meters (m) 
+
+			function PlayerHelper(radius){
+
+			//	var radius = 1.7; // (m)
+				var geometry = new THREE.SphereGeometry( radius, 8, 6 );
+				var material = new THREE.MeshBasicMaterial( { color: 0xff0000,  wireframe: true} );
+				var helper = new THREE.Mesh( geometry, material );
+				Object.getPrototypeOf(helper).isComponent = true;
+				return helper;
+
+			}
+
+		</script>
+
+		<script>
+
+		//	Parent Component.
+			function Parent(){}
+			Parent.prototype = Object.create(Component.prototype);
+			Parent.prototype.constructor = Parent;
+		//	Parent.prototype.isComponent = true;
+		//	How to "lock" a primitive type value in prototype?
+
+		//	AddToParent Component.
+		//	function AddToParent(){}
+		//	AddParent.prototype = Object.create(Component.prototype);
+		//	AddParent.prototype.constructor = AddParent;
+		//
+		//	RemoveFromParent Component.
+		//	function RemoveParent(){}
+		//	RemoveParent.prototype = Object.create(Component.prototype);
+		//	RemoveParent.prototype.constructor = RemoveParent;
+		//
+		//	Dispose Component (used in compination 
+		//	with Geometry, Material, Texture Component).
+			function Dispose(){}
+			Dispose.prototype = Object.create(Component.prototype);
+			Dispose.prototype.constructor = Dispose;
+
+		</script>
+
+		<script>
+
+		//	LocalPlayer Entity.
+
+		//	localPlayer is an entity with:
+		//	an object3d component, 
+		//	a sphere helper (mesh) component,
+		//	a MW controller component,
+		//	a MW world component,
+		//	a position component,
+		//	a rotation component,
+
+		//	We add sphere helper to object3d so
+		//	we need a parent component for the
+		//	sphere helper.
+
+		//	We add controller to world so we need
+		//	a world component.
+
+		//	We set localPlayer object3d as camera 
+		//	light target so we need to add in camera 
+		//	light entity a target component and 
+		//	the local player object3d component.
+
+		//	We need a localPlayerControllerUpdate system
+		//	that updates the rotation and possition of 
+		//	localPlayer object3d component. We need a rotation 
+		//	and a possition component in LocalPlayer entity.
+
+		//	Radius Component.
+		//	Threejs units in meters: radius = 1.7 meters (m) 
+
+			function Radius(radius){
+
+				this.radius = radius || 1.7; // (m)
+
+			}
+
+			Radius.prototype = Object.create(Component.prototype);
+			Radius.prototype.constructor = Radius;
+
+			function SphereHelper(radius){
+				
+				var geometry = new THREE.SphereGeometry( radius, 8, 6 );
+				var material = new THREE.MeshBasicMaterial( { color: 0xff0000,  wireframe: true} );
+				var helper = new THREE.Mesh(geometry, material);
+				Object.getPrototypeOf(helper).isComponent = true;
+				helper.name = "sphere helper";
+				return helper;
+
+			}
+
+			function PlayerController(){
+
+				var controller = new MW.CharacterController( localPlayer, playerRadius );
+				Object.getPrototypeOf(controller).isComponent = true;
+				controller.movementSpeed = 10;
+				controller.maxSlopeGradient = 0.5
+				return controller;
+
+			}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+				localPlayer = new THREE.Object3D();
+				localPlayer.position.set( 0, 10, 0 );
+				localPlayer.name = "localPlayer";
+				scene.add( localPlayer );
+
+			//	Player helper (component).
+				localPlayerHelper = new THREE.Mesh(
+					new THREE.SphereGeometry( playerRadius, 8, 6 ),
+					new THREE.MeshBasicMaterial( { color: 0xff0000,  wireframe: true} )
+				);
+
+				localPlayerHelper.name = "playerhelper";
+				localPlayer.add( localPlayerHelper );
+
+			//	Player controller (component).
+				localPlayerController = new MW.CharacterController( localPlayer, playerRadius );
+				localPlayerController.movementSpeed = 10;
+				localPlayerController.maxSlopeGradient = 0.5
+				world.add( localPlayerController ); // important!
+
+			//	CameraLight target.
+				cameraLight.target = localPlayer;
+
+			//	Update rotation.
+				(function update(){
+					requestAnimationFrame( update );
+					localPlayer.rotation.y = localPlayerController.direction + Math.PI; // important!
+				})();
+
+*/
+
+		</script>
+
+		<script>
+
+		//	Entity Manager.
+
+			const entities = [];
+			const removedEntities = [];
+
+			function EntityManager(){};
+
+			EntityManager.prototype._count = 0;
+
+			EntityManager.prototype.create = function(){
+				return new Entity();
+			};
+
+			EntityManager.prototype.clear = function(){
+				removedEntities.length = 0;
+			};
+
+			EntityManager.prototype.push = function( entity ){
+				entities.push( entity );
+			};
+
+			EntityManager.prototype.unshift = function( entity ){
+				entities.unshift( entity );
+			};
+
+			EntityManager.prototype.addComponents = function( entity, components ){
+
+				if ( !components ) return;
+				if ( !components.length ) return;
+
+				for (var i = 0; i < components.length; i++){
+					entity.add( components[i] );
+				}
+			};
+
+			EntityManager.prototype.removeComponents = function( entity, components ){
+
+				if ( !components ) return;
+				if ( !entity.length() ) return;
+				if ( !components.length ) return;
+
+				for (var i = 0; i < components.length; i++){
+					entity.remove( components[i] );
+				}
+			};
+
+			EntityManager.prototype.move = function( entity, new_index ){
+
+				var old_index = entities.findIndex(function( item ){
+					return item.id === entity.id;
+				});
+
+				if ( old_index < 0 ) return; // important!
+				if ( old_index == new_index ) return;
+
+				(function( entities, old_index, new_index ){
+
+					if (new_index >= arr.length) {
+						var k = new_index - arr.length + 1;
+						while (k--) {
+							arr.push(undefined);
+						}
+					}
+
+					arr.splice(new_index, 0, arr.splice(old_index, 1)[0]);
+				})();
+
+			};
+
+			EntityManager.prototype.remove = function( _id ){
+
+				var index = entities.findIndex(function( item ){
+					return item._id === _id;
+				});
+
+				if ( index < 0 ) return; // important!
+
+				var removedItems = entities.splice(index, 1);
+			//	debugMode && console.log( removedItems );
+
+				while ( removedItems.length ){
+					var removed = removedItems.shift();
+				//	debugMode && console.log( removed );
+					removedEntities.push( removed );
+				}
+
+			};
+
+
+		</script>
+
+		<script>
+
+		//	Entity class.
+
+			function isEntity(){ return true; }
+
+			function Entity(){
+
+				this._id = EntityManager.prototype._count++;
+				
+			}
+
+			Entity.prototype.isEntity = true; // primative type.
+			
+			Entity.prototype.length = function(){
+				return Object.keys(this).length - 1;
+			};
+			
+			Entity.prototype.add = function(component, name){
+				var err = "EntityAddComponentError: component name is not defined!";
+
+				if ( !name ) name = component.constructor.name;
+				if ( !name ) {
+					console.error(err);
+					return this;
+				}
+				this[ name ] = component;
+				return this;
+			};
+
+			Entity.prototype.remove = function(component){
+				var err = "EntityRemoveComponentError: component name is not defined!";
+
+				var name;
+				switch( typeof component ){
+
+					case "string":
+						name = component;
+					break;
+					
+					case "object":
+						name = component.constructor.name;
+					break;
+
+					case "function":
+						name = component.prototype.constructor.name;
+					break;
+
+					case "number":
+					break;
+				}
+
+				if (!name) throw err;
+			//	debugMode && console.log("remove:", name);
+
+				delete this[ name ];
+				return this;
+			};
+
+			(function(){
+
+			//	## Primitive Components.
+
+				window.isComponent = isComponent;
+				document.isComponent = isComponent;
+				document.body.isComponent = isComponent;
+
+				var renderer = new WebGLRenderer();
+				var canvas = renderer.domElement;
+				canvas.isComponent = isComponent;
+
+				var scene = new Scene();
+				var camera = new Camera();
+				var light = new Light();
+				var mouse = new Mouse();
+				var world = new World();
+				var octree = new Octree();
+				var ground = new Ground();
+				var groundHelper = new GroundHelper();
+				var controls = new EditorControls(camera, canvas);
+
+				light.shadow.isComponent = isComponent;
+				light.shadow.camera.isComponent = isComponent;
+
+				var parent = new Parent(); // if present has parent.
+
+			//	## Indexed Entities.
+
+				//	0.Scene Entity.
+
+				(function(){
+					var entity = new Entity(); 
+					entity.add( scene );
+					entities.push(entity);
+				})();
+
+				//	1.Camera Entity.
+
+				(function(){
+					var entity = new Entity(); 
+					entity.add( camera );
+					entities.push(entity);
+				})();
+
+				//	2.RendererDomElement Entity.
+
+				(function(){
+					var entity = new Entity(); 
+					entity.add( canvas );
+					entity.add( camera );
+					entity.add( renderer );
+					entity.add( document.body );
+					entities.push(entity);
+				})();
+
+				//	3.Scene Rendering Entity.
+				//	(should go to Scene Entity?)
+
+				(function(){
+					var entity = new Entity(); 
+					entity.add( scene );
+					entity.add( camera );
+					entity.add( renderer );
+					entities.push(entity);
+				})();
+
+				//	4.Editor Controls Entity.
+			
+				(function(){
+					var entity = new Entity(); 
+					entity.add( camera );
+					entity.add( controls, "EditorControls" );
+					entities.push(entity);
+				})();
+			
+				//	5.Camera Light Entity.
+
+				(function(){
+					var entity = new Entity(); 
+					entity.add( scene );
+					entity.add( light );
+					entity.add( camera );
+					entity.add( light.shadow );
+					entity.add( light.shadow.camera );
+					entities.push(entity);
+				})();
+
+				//	6.Window entity.
+
+				(function(){
+					var entity = new Entity(); 
+					entity.add( window );
+					entity.add( canvas );
+					entity.add( camera )
+					entity.add( renderer );
+					entities.push(entity);
+				})();
+
+				//	7.Mouse Entity.
+
+				(function(){
+					var entity = new Entity(); 
+					entity.add( mouse )
+					entity.add( canvas );
+					entity.add( window );
+					entities.push(entity);
+				})();
+
+				//	8.World Entity.
+
+				(function(){
+					var entity = new Entity(); 
+					entity.add( world )
+					entity.add( octree );
+					entities.push(entity);
+				})();
+
+				//	9.Ground Entity.
+
+				(function(){
+					var entity = new Entity(); 
+					entity.add( ground )
+					entities.push(entity);
+				})();
+
+				//	10.GroundHelper Entity.
+
+				(function(){
+					var entity = new Entity(); 
+					entity.add( scene )
+					entity.add( groundHelper ); 
+					entities.push(entity);
+				})();
+
+			})();
+
+		</script>
+
+		<script>
+
+		//	System constructor.
+
+			function System(components, update){
+
+				if ( typeof components === "string" ) {
+					components = components.split(",");
+				}
+
+			//	debugMode && console.log( components );
+
+				var err = "SystemConstructorError:components is not an array!"
+				if ( !Array.isArray( components ) ) throw err;
+
+				for (var i = 0; i < components.length; i++){
+					components[i] = "\n\t\t\t\t\t\t" + "entity." + components[i];
+				}
+
+			//	debugMode && console.log( components );
+
+				var code = "var system = arguments.callee.name;\n\t\t\t\tvar entity, components, passed;\n\t\t\t\tvar collected = [], "
+				+"collectId = [];\n\n\t\t\t//\tCollect entities.\n\t\t\t\tfor (var i = 0; i < entities.length; i++){\n\n\t\t\t\t\t"
+				+"entity = entities[i];\n\n\t\t\t\t\tvar components = [" + components.join() + "\n\t\t\t\t\t];\n\n\t\t\t\t\tif ( systemValidator(components) ) "
+				+"{\n\t\t\t\t\t\tcollected.push(entity);\n\t\t\t\t\t\tcollectId.push(entity._id);\n\t\t\t\t\t}\n\t\t\t\t}\n\n\t\t\t\tif "
+				+"( !collected.length ) return;\n\t\t\t\tconsole.log( syslogcid( system, collectId ) );\n\n\t\t\t\twhile ( collected.length )"
+				+"{\n\t\t\t\t\tupdate( collected.shift() );\n\t\t\t\t}\n" + update.toString();
+
+			//	debugMode && console.log( code );
+
+				return new Function("entities", code);
+				
+			}
+			
+			System.prototype.isSystem = true;
+
+		</script>
+
+		<script>
+
+		//	## AddParent Systems (add_parent functions).
+
+			function DirectionalLightAddToScene(entities){
+
+				var system = arguments.callee.name;
+				var entity, components, passed;
+				var collected = [], collectId = [];
+
+			//	Collect entities.
+				for (var i = 0; i < entities.length; i++){
+
+					entity = entities[i];
+
+					var components = [
+						entity.Scene,
+						entity.DirectionalLight, 
+					];
+				
+					if ( systemValidator(components) ) {
+						collected.push(entity);
+						collectId.push(entity._id);
+					}
+				}
+
+				if ( !collected.length ) return;
+				debugMode && console.log( syslogcid( system, collectId ) );
+
+				while ( collected.length ){
+					init( collected.shift() );
+				}
+
+				function init(entity){
+				//	Add light to scene.
+					entity.Scene.add( entity.DirectionalLight );
+				}
+			}
+
+			function GridHelperAddToScene(entities){
+
+				var system = arguments.callee.name;
+				var entity, components, passed;
+				var collected = [], collectId = [];
+
+			//	Collect entities.
+				for (var i = 0; i < entities.length; i++){
+
+					entity = entities[i];
+
+					var components = [
+						entity.Scene,
+						entity.GridHelper, 
+					];
+				
+					if ( systemValidator(components) ) {
+						collected.push(entity);
+						collectId.push(entity._id);
+					}
+				}
+
+				if ( !collected.length ) return;
+				debugMode && console.log( syslogcid( system, collectId ) );
+
+				while ( collected.length ){
+					init( collected.shift() );
+				}
+
+				function init(entity){
+				//	Add helper to scene.
+					entity.Scene.add( entity.GridHelper );
+				}
+			}
+
+		//	## RemoveParent Systems (remove parent functions).
+
+			//	Uncompeted Systems (TODO).
+
+			function AddParentSystem(entities){ 
+				console.warn(arguments.callee.name, "TODO"); 
+			}
+
+			function RemoveParentSystem(entities){
+				console.warn(arguments.callee.name, "TODO"); 
+			}
+
+		</script>
+
+		<script>
+
+		//	Initializing Systems (init functions).
+
+			function CanvasRendererInitSystem(entities){
+
+				var system = arguments.callee.name;
+				var entity, components, passed;
+				var collected = [], collectId = [];
+
+			//	Collect entities.
+				for (var i = 0; i < entities.length; i++){
+
+					entity = entities[i];
+
+					var components = [
+						entity.WebGLRenderer, 
+						entity.HTMLBodyElement, 
+						entity.HTMLCanvasElement,
+					];
+				
+					if ( systemValidator(components) ) {
+						collected.push(entity);
+						collectId.push(entity._id);
+					}
+				}
+
+				if ( !collected.length ) return;
+				debugMode && console.log( syslogcid( system, collectId ) );
+
+				while ( collected.length ){
+					init( collected.shift() );
+				}
+
+				function init(entity){
+
+				//	Append dom element to the document.
+					entity.HTMLBodyElement.appendChild( entity.HTMLCanvasElement );
+
+				//	Add drag event listener.
+					entity.HTMLCanvasElement.addEventListener("drag", SystemManager.prototype.drag);
+
+				//	Add mouse move event listener.
+					entity.HTMLCanvasElement.addEventListener("mousemove", SystemManager.prototype.mousemove);
+				}
+
+			};
+
+			function CameraLightInitSystem(entities){
+
+				var system = arguments.callee.name;
+				var entity, components, passed;
+				var collected = [], collectId = [];
+
+			//	Collect entities.
+				for (var i = 0; i < entities.length; i++){
+
+					entity = entities[i];
+
+					var components = [
+						entity.DirectionalLight,
+						entity.OrthographicCamera,
+						entity.DirectionalLightShadow,
+					];
+
+					if ( systemValidator(components) ) {
+						collected.push(entity);
+						collectId.push(entity._id);
+					}
+				}
+
+				if ( !collected.length ) return;
+				debugMode && console.log( syslogcid( system, collectId ) );
+
+				while ( collected.length ){
+					init( collected.shift() );
+				}
+
+			//	Init camera light.
+				function init(entity){
+				//	camera light.
+					entity.DirectionalLight.castShadow = true;
+					entity.DirectionalLightShadow.mapSize.width  = Math.pow(2, 10); // 2048;
+					entity.DirectionalLightShadow.mapSize.height = Math.pow(2, 10); // 2048;
+				//	shadow camera.
+					var d = 30;
+					entity.OrthographicCamera.left = - d;
+					entity.OrthographicCamera.right = d;
+					entity.OrthographicCamera.top = d;
+					entity.OrthographicCamera.bottom = - d;
+					entity.OrthographicCamera.far = 10000;
+				}
+
+			}
+
+			function WindowResizeInitSystem(entities){
+
+				var system = arguments.callee.name;
+				var entity, components, passed;
+				var collected = [], collectId = [];
+
+				for (var i = 0; i < entities.length; i++){
+
+					entity = entities[i];
+
+					var components = [
+						entity.Window,
+						entity.WebGLRenderer, 
+						entity.HTMLCanvasElement, 
+						entity.PerspectiveCamera, 
+					];
+
+					if ( systemValidator(components) ) {
+						collected.push(entity);
+						collectId.push(entity._id);
+					}
+				}
+
+				if ( !collected.length ) return;
+				debugMode && console.log( syslogcid( system, collectId ) );
+
+				while ( collected.length ){
+					init( collected.shift() );
+				}
+
+				function init(entity){
+				//	Add resize event listener.
+					entity.Window.addEventListener("resize", SystemManager.prototype.resize);
+				}
+
+			}
+
+		</script>
+
+		<script>
+
+		//	Updating Systems (update functions).
+			
+			function WorldUpdatingSystem(dt, entities){
+
+				var system = arguments.callee.name;
+				var entity, components, passed;
+				var collected = [], collectId = [];
+
+			//	Collect entities.
+				for (var i = 0; i < entities.length; i++){
+
+					entity = entities[i];
+
+					var components = [
+						entity.World,
+						entity.Octree,
+					];
+
+					if ( systemValidator(components) ) {
+						collected.push(entity);
+						collectId.push(entity._id);
+					}
+				}
+
+				if ( !collected.length ) return;
+			//	debugMode && console.log( syslogcid( system, collectId ) );
+
+				while ( collected.length ){
+					update( collected.shift() );
+				}
+
+				function update(entity){
+					entity.World.step( Math.min( dt, 0.02 ) );
+				}
+			}
+
+		</script>
+
+		<script>
+
+		//	Rendering Systems (render functions).
+
+			function SceneRenderingSystem(dt, entities){
+
+				var system = arguments.callee.name;
+				var entity, components, passed;
+				var collected = [], collectId = [];
+
+				for (var i = 0; i < entities.length; i++){
+
+					entity = entities[i];
+
+					var components = [
+						entity.Scene, 
+						entity.WebGLRenderer, 
+						entity.PerspectiveCamera,
+					];
+				
+					if ( systemValidator(components) ) {
+						collected.push(entity);
+						collectId.push(entity._id);
+					}
+				}
+
+				if ( !collected.length ) return;
+			//	console.log( syslogcid( system, collectId ) );
+
+				while ( collected.length ){
+					render( collected.shift() ); // scene render.
+				}
+				
+				function render(entity){
+					entity.WebGLRenderer.render( entity.Scene, entity.PerspectiveCamera );
+				}
+			}
+
+		</script>
+
+		<script>
+
+		//	Event Handler Systems (event handlers).
+
+			function WindowResizeSystemEventHandler(entities){
+
+				var system = arguments.callee.name;
+				var entity, components, passed;
+				var collected = [], collectId = [];
+
+				for (var i = 0; i < entities.length; i++){
+
+					entity = entities[i];
+
+					components = [
+						entity.Window,
+						entity.WebGLRenderer, 
+						entity.HTMLCanvasElement, 
+						entity.PerspectiveCamera, 
+					];
+
+					if ( systemValidator(components) ) {
+						collected.push(entity);
+						collectId.push(entity._id);
+					}
+				}
+
+				if ( !collected.length ) return;
+				debugMode && console.log( syslogcid( system, collectId ) );
+
+				while ( collected.length ){
+					update( collected.shift() );
+				}
+				
+				function update(entity){
+				//	Update canvas size.
+					entity.WebGLRenderer.setSize( (entity.Window.innerWidth - 370), entity.Window.innerHeight );
+					entity.PerspectiveCamera.aspect = entity.HTMLCanvasElement.clientWidth / entity.HTMLCanvasElement.clientHeight;
+					entity.PerspectiveCamera.updateProjectionMatrix();
+				}
+			}
+
+			function MouseMoveSystemEventHandler(e, entities){
+
+				var system = arguments.callee.name;
+				var entity, components, passed;
+				var collected = [], collectId = [];
+
+				for (var i = 0; i < entities.length; i++){
+
+					entity = entities[i];
+
+					var components = [
+						entity.Vector2,
+						entity.HTMLCanvasElement, 
+					];
+
+					if ( systemValidator(components) ) {
+						collected.push(entity);
+						collectId.push(entity._id);
+					}
+				}
+
+				if ( !collected.length ) return;
+				debugMode && console.log( syslogcid( system, collectId ) );
+
+				while ( collected.length ){
+					update( collected.shift() );
+				}
+
+				function update(entity){
+				//	Update mouse coordinates.
+					entity.Vector2.x = ( e.clientX / entity.HTMLCanvasElement.clientWidth ) * 2 - 1;
+					entity.Vector2.y = - ( e.clientY / entity.HTMLCanvasElement.clientHeight ) * 2 + 1;
+				}
+
+			}
+
+			function CameraLightUpdateSystem(entities){
+
+				var system = arguments.callee.name;
+				var entity, components, passed;
+				var collected = [], collectId = [];
+
+				for (var i = 0; i < entities.length; i++){
+
+					entity = entities[i];
+
+					var components = [
+						entity.Scene,
+						entity.DirectionalLight, 
+						entity.PerspectiveCamera,
+					];
+				
+					if ( systemValidator(components) ) {
+						collected.push(entity);
+						collectId.push(entity._id);
+					}
+				}
+
+				if ( !collected.length ) return;
+				debugMode && console.log( syslogcid( system, collectId ) );
+
+				while ( collected.length ){
+					update( collected.shift() );
+				}
+
+				function update(entity){
+				//	Update light posiiton.
+					entity.DirectionalLight.position.copy( entity.PerspectiveCamera.position );
+				}
+			}
+
+
+		</script>
+
+		<script>
+
+		//	System helpers.
+
+			function systemValidator(components){
+				while( components.length ){
+					if ( components.shift() == undefined ) return false;
+				}
+				return true;
+			}
+			
+			function systemCheckLog(_id, system, passed, components){
+				debugMode && console.log("Check:", {
+					"_id": _id,
+					"system": system, 
+					"passed": passed,
+					"components": components
+				});
+			}
+
+		//	System debug helpers.
+			
+			function syslogcid( name, array ){ 
+				if (array.length) return name+":["+array.join()+"]"; 
+			}
+
+
+		</script>
+
+		<script>
+
+		//	System Manager Class (under construction).
+
+			function SystemManager(){};
+
+			SystemManager.prototype.init = function(entities){
+
+			//	Define init systems order.
+				CanvasRendererInitSystem(entities);
+				CameraLightInitSystem(entities);
+				DirectionalLightAddToScene(entities);
+				GridHelperAddToScene(entities);
+				WindowResizeInitSystem(entities);
+			};
+
+			SystemManager.prototype.update = function(dt, entities){
+
+			//	Define update systems order.
+				WorldUpdatingSystem(dt, entities);
+			};
+
+			SystemManager.prototype.render = function(dt, entities){
+
+			//	Define render systems order.
+				SceneRenderingSystem(dt, entities);
+			};
+
+		//	Start/Play/Pause/Stop events.
+
+			SystemManager.prototype.start = function(e, entities){
+				//	Define start systems order.
+			};
+			SystemManager.prototype.play = function(e, entities){
+				//	Define play systems order.
+			};
+			SystemManager.prototype.pause = function(e, entities){
+				//	Define pause systems order.
+			};
+			SystemManager.prototype.stop = function(e, entities){
+				//	Define stop systems order.
+			};
+
+		//	Keyboard events.
+
+			SystemManager.prototype.keydown = function(e, entities){};
+			SystemManager.prototype.keyup = function(e, entities){};
+
+		//	Mouse events.
+
+			SystemManager.prototype.click = function(e, entities){};
+			SystemManager.prototype.contextmenu = function(e, entities){};
+			SystemManager.prototype.dbclick = function(e, entities){};
+			SystemManager.prototype.mousedown = function(e, entities){};
+			SystemManager.prototype.mouseenter = function(e, entities){};
+			SystemManager.prototype.mouseleave = function(e, entities){};
+
+			SystemManager.prototype.mousemove = function(e){
+			//	debugMode && console.log( e );
+
+				if ( e.type != "mousemove" ) return;
+
+			//	Define mousemove event systems order.
+				MouseMoveSystemEventHandler(e, entities);
+			};
+
+			SystemManager.prototype.mouseout = function(e, entities){};
+			SystemManager.prototype.mouseover = function(e, entities){};
+			SystemManager.prototype.mouseup = function(e, entities){};
+
+		//	Drag events.
+
+			SystemManager.prototype.drag = function(e){
+			//	debugMode && console.log( e );
+
+				if ( e.type != "drag" ) return;
+
+			//	Define drag event systems order.
+				CameraLightUpdateSystem(entities);
+			};
+
+			SystemManager.prototype.dragenter = function(e, entities){};
+			SystemManager.prototype.dragover = function(e, entities){};
+			SystemManager.prototype.dragstart = function(e, entities){};
+			SystemManager.prototype.dragend = function(e, entities){};
+			SystemManager.prototype.dragleave = function(e, entities){};
+			SystemManager.prototype.drop = function(e, entities){};
+
+		//	Touch events.
+
+			SystemManager.prototype.touchstart = function(e, entities){};
+			SystemManager.prototype.touchmove = function(e, entities){};
+			SystemManager.prototype.touchend = function(e, entities){};
+			SystemManager.prototype.touchcancel = function(e, entities){};
+
+		//	EventObject events.
+
+			SystemManager.prototype.abort = function(e, entities){};
+			SystemManager.prototype.load = function(e, entities){};
+			SystemManager.prototype.change = function(e, entities){};
+			SystemManager.prototype.error = function(e, entities){};
+			SystemManager.prototype.input = function(e, entities){};
+			SystemManager.prototype.message = function(e, entities){};
+			SystemManager.prototype.online = function(e, entities){};
+			SystemManager.prototype.offline = function(e, entities){};
+			SystemManager.prototype.open = function(e, entities){};
+			SystemManager.prototype.pause = function(e, entities){};
+			SystemManager.prototype.play = function(e, entities){};
+			SystemManager.prototype.scroll = function(e, entities){};
+			SystemManager.prototype.select = function(e, entities){};
+			SystemManager.prototype.submit = function(e, entities){};
+			SystemManager.prototype.beforeunload = function(e, entities){};
+			SystemManager.prototype.unload = function(e, entities){};
+			SystemManager.prototype.progress = function(e, entities){};
+
+			SystemManager.prototype.resize = function(e){
+			//	debugMode && console.log( e );
+
+				if ( e.type != "resize" ) return;
+
+			//	Define resize event systems order.
+				WindowResizeSystemEventHandler(entities);
+			};
+
+		</script>
+
+		<script>
+
+		//	Inititialize.
+
+			(function(){
+
+				SystemManager.prototype.init( entities );
+
+			})();
+
+		//	Main Loop.
+
+			(function(){
+
+				const clock = new THREE.Clock();
+
+				(function runtime(){
+
+					var dt = clock.getDelta();
+					var elapsed = clock.getElapsedTime();
+
+					SystemManager.prototype.update(dt, entities);
+					SystemManager.prototype.render(dt, entities);
+
+					RuntimeFrameID = requestAnimationFrame( runtime );
+
+				})();
+
+			})();
+			
+		//	Events (init systems adding event handlers).
+		//	window.addEventListener("resize", SystemManager.prototype.resize);
+		//	window.addEventListener("mousemove", SystemManager.prototype.mousemove);
+
+		//	Interval/Timeout.
+
+			//	Add here SystemManager.prototype.interval systems.
+
+		//
+
+		</script>
+
+		<script>
+/*
+		//	System Class (under construction).
+
+			function isSystem(){ return true; }
+
+			function System(){}
+
+			System.prototype.isSystem = isSystem;
+
+			System.prototype.init = function(entities){};
+			System.prototype.start = function(entities){};
+			System.prototype.stop = function(entities){};
+			System.prototype.keydown = function(entities){};
+			System.prototype.keyup = function(entities){};
+			System.prototype.mousedown = function(entities){};
+			System.prototype.mouseup = function(entities){};
+			System.prototype.mousemove = function(entities){};
+			System.prototype.touchstart = function(entities){};
+			System.prototype.touchend = function(entities){};
+			System.prototype.touchmove = function(entities){};
+			System.prototype.update = function(dt, entities){};
+*/
+
+		</script>
+
+		<script>
+/*
+		//	Scene.
+			scene = new THREE.Scene();
+
+		//	Camera.
+			(function(){
+
+				var aspect = (window.innerWidth - 370) / window.innerHeight;
+				camera = new THREE.PerspectiveCamera( 50, aspect, 1, 10000 );
+				camera.position.set(0, 20, 50);
+
+			})();
+
+		//	Editor Controls.
+		//	(function(){
+		//		controls = new THREE.EditorControls(camera);
+		//		if ( controls && controls instanceof THREE.EditorControls ) {
+		//			camera.lookAt(controls.center); // important!
+		//		}
+		//	})();
+
+		//  Camera Light. (entity)
+			(function(){
+
+				cameraLight = new THREE.DirectionalLight( 0xdfebff, 0.75 );
+				cameraLight.position.set( 0, 500, 300 );
+				cameraLight.castShadow = true;
+				cameraLight.shadow.mapSize.width  = Math.pow(2, 10); // 2048;
+				cameraLight.shadow.mapSize.height = Math.pow(2, 10); // 2048;
+
+				var d = 30;
+				cameraLight.shadow.camera.left = - d;
+				cameraLight.shadow.camera.right = d;
+				cameraLight.shadow.camera.top = d;
+				cameraLight.shadow.camera.bottom = - d;
+				cameraLight.shadow.camera.far = 10000;
+
+				shadowHelper = new THREE.CameraHelper(cameraLight.shadow.camera);
+				shadowHelper.visible = false;
+
+				scene.add( cameraLight, shadowHelper  );
+
+				(function update(){
+					requestAnimationFrame( update );
+					cameraLight.position.copy( camera.position );
+				})();
+
+			})();
+
+
+		//  Renderer.
+			(function(){
+
+				renderer = new THREE.WebGLRenderer({
+					alpha: true,  // for transparent rendering set alpha:true, important!
+					antialias: true,
+					preserveDrawingBuffer: true,
+				});
+
+				renderer.gammaInput = true;
+				renderer.gammaOutput = true;
+				renderer.shadowMap.enabled = true;
+				renderer.setClearAlpha( 1 ); // for transparent rendering set clear alpha: 0.
+				renderer.setClearColor( 0x000000, 1 ); // for transparent rendering set clear alpha: 0.
+				renderer.setPixelRatio( window.devicePixelRatio );
+				renderer.setSize( (window.innerWidth - 370), window.innerHeight );
+				renderer.domElement.style.background = "none";  // transparent rendering. important!
+				document.body.appendChild( renderer.domElement );
+
+				window.addEventListener("resize", function onWindowResize() {
+					renderer.setSize( (window.innerWidth - 370), window.innerHeight );
+				});
+
+				window.addEventListener("resize", function onWindowResize() {
+					camera.aspect = renderer.domElement.clientWidth / renderer.domElement.clientHeight;
+					camera.updateProjectionMatrix();
+				});
+
+			//	Mouse (component).
+				mouse = new THREE.Vector2();
+
+				renderer.domElement.addEventListener("mousemove", function(e) {
+					mouse.x = ( e.clientX / this.clientWidth ) * 2 - 1;
+					mouse.y = - ( e.clientY / this.clientHeight ) * 2 + 1;
+				});
+
+				(function render(){
+					requestAnimationFrame( render );
+					renderer.render( scene, camera );
+				})();
+
+			})();
+
+
+		//	World - Octree.
+			(function(){
+
+				world = new MW.World();
+
+				var x = 150, y = 150, z = 150;
+				var min = new THREE.Vector3( -x, -y, -z );
+				var max = new THREE.Vector3(  x,  y,  z );
+				var partition = 7; // nodes: Math.pow( 8, partition )
+
+				octree = new MW.Octree( min, max, partition );
+				world.add( octree );
+
+				var clock = new THREE.Clock();
+
+				(function update(){
+					requestAnimationFrame( update );
+					var delta = clock.getDelta();
+					var elapsed = clock.getElapsedTime();
+					world.step( Math.min( delta, 0.02 ) );
+				})();
+
+			})();
+
+		//	ground.js
+
+			(function(){
+
+			//	Ground (component).
+				var ground = new THREE.Mesh(
+					new THREE.PlaneGeometry( 300, 300, 1, 1 ).rotateX(-Math.PI/2),
+					new THREE.MeshLambertMaterial({ 
+						opacity:1, 
+						color:0x829ec4,
+					})
+				);
+				
+				ground.position.y = 0;
+
+			//	We need only the geometry of the ground
+			//	so there is not need to add to the scene.
+			//	ground.rotation.x = -Math.PI / 2; // THREE.Math.degToRad( -90 );
+				octree.importThreeMesh( ground ); // important!
+			//	scene.add( ground ); // optional!
+
+			//	Ground Helper (component).
+				groundHelper = new THREE.GridHelper( 300, 300, 0x444444, 0x444444 );
+				scene.add( groundHelper );
+
+			//	Raycaster helper (Raycaster Entity).
+				setTimeout(function(){
+					var raycaster = new THREE.Raycaster();
+					var rayhelper = new THREE.Mesh(
+						new THREE.CircleBufferGeometry( 2, 32 ).rotateX(-Math.PI/2),
+						new THREE.MeshBasicMaterial( { color:0xffff00, wireframe:false} )
+					);
+					renderer.domElement.addEventListener("mousemove", function(e) {
+						camera.updateMatrixWorld();
+						raycaster.setFromCamera( mouse, camera );
+						var intersects = raycaster.intersectObject( ground );
+						if ( !intersects.length ) return;
+						rayhelper.position.copy( intersects[0].point );
+					});
+				//	scene.add( rayhelper );
+				});
+
+			})();
+
+		//	localPlayer Controller.
+
+			(function(){
+
+				var playerRadius = 1.7; // (m)
+
+			//	Local Player (entity).
+				localPlayer = new THREE.Object3D();
+				localPlayer.position.set( 0, 10, 0 );
+				localPlayer.name = "localPlayer";
+				scene.add( localPlayer );
+
+			//	Player helper (component).
+				localPlayerHelper = new THREE.Mesh(
+					new THREE.SphereGeometry( playerRadius, 8, 6 ),
+					new THREE.MeshBasicMaterial( { color: 0xff0000,  wireframe: true} )
+				);
+
+				localPlayerHelper.name = "playerhelper";
+				localPlayer.add( localPlayerHelper );
+
+			//	Player controller (component).
+				localPlayerController = new MW.CharacterController( localPlayer, playerRadius );
+				localPlayerController.movementSpeed = 10;
+				localPlayerController.maxSlopeGradient = 0.5
+				world.add( localPlayerController ); // important!
+
+			//	CameraLight target.
+				cameraLight.target = localPlayer;
+
+			//	Update rotation.
+				(function update(){
+					requestAnimationFrame( update );
+					localPlayer.rotation.y = localPlayerController.direction + Math.PI; // important!
+				})();
+
+			})();
+
+			(function(){
+
+			//	Camera controls.
+
+				cameraControls = new MW.TPSCameraControl(
+					camera, 			// three.js camera.
+					localPlayer,		// tracking object.
+					{	
+						el: renderer.domElement,
+						offset: new THREE.Vector3( 0, 0.9, 0 ), // eye height.
+						radius: 2, // default distance of the character to the camera.
+						minRadius: 2,
+						maxRadius: 10,
+						rigidObjects: [],
+					}
+				);
+
+			//	keyInputControls.
+
+				keyInputControls = new MW.KeyInputControl();
+
+				keyInputControls.addEventListener( "movekeyon", function () { 
+					localPlayerController.isRunning = true; 
+				});
+
+				keyInputControls.addEventListener( "movekeyoff", function () { 
+					localPlayerController.isRunning = false; 
+				});
+
+				keyInputControls.addEventListener( "jumpkeypress", function () { 
+					localPlayerController.jump(); 
+				});
+
+			// synch with keybord input and camera control input.
+				keyInputControls.addEventListener( "movekeychange",  function () {
+					var cameraFrontAngle = cameraControls.getFrontAngle();
+					var characterFrontAngle = keyInputControls.frontAngle;
+					localPlayerController.direction = THREE.Math.degToRad( 360 ) - cameraFrontAngle + characterFrontAngle;
+				});
+
+			//	"updated" event is fired by "cameraControls.update()"
+			//	cameraControls.addEventListener( "updated", function () {
+				//	it updates character front angle with the camera view.
+				//  We want camera independed from character front angle,
+				//	so we keep it disactivated. Maybe used somewhere later.
+			//		var cameraFrontAngle = cameraControls.getFrontAngle();
+			//		var characterFrontAngle = keyInputControls.frontAngle;
+			//		localPlayerController.direction = THREE.Math.degToRad( 360 ) - cameraFrontAngle + characterFrontAngle;
+			//	});
+
+				(function update(){
+					requestAnimationFrame( update );
+					cameraControls.update();
+				})();
+
+			})();
+
+		//	joystickControls.
+
+			(function(){
+
+				var joystick1, joystick2;
+
+				var joysticControls1 = document.createElement( "div" );
+				joysticControls1.id = "joystick-controls-1";
+				joysticControls1.classList.add("joystick-controls");
+				document.body.appendChild( joysticControls1 );
+
+				var joysticControls2 = document.createElement( "div" );
+				joysticControls2.id = "joystick-controls-2";
+				joysticControls2.classList.add("joystick-controls");
+				document.body.appendChild( joysticControls2 );
+
+				var joystick1Selector  = "#joystick1";
+				var joystick2Selector  = "#joystick2";
+				var jumpButtonSelector = "#jumpButton";
+
+				var joystickControlsSelector  = ".joystick-controls";
+				var joystickControls1Selector = "#joystick-controls-1";
+				var joystickControls2Selector = "#joystick-controls-2";
+
+				joystick1  = new virtualInput.Joystick( $( joystickControls1Selector ), 94, { id: "joystick1" } );
+				joystick2  = new virtualInput.Joystick( $( joystickControls2Selector ), 94, { id: "joystick2" } );
+				jumpButton = new virtualInput.Button(   $( joystickControls1Selector ), 58, { id: "jumpButton", label: "<b>JUMP</b>" } ); // buttonSvgSrc
+
+				joystick1.addEventListener( "active", function onActive() { 
+
+					if (  localPlayerController.isJumping 
+						|| !localPlayerController.isGrounded 
+						|| localPlayerController.isOnSlope ) {
+						return;
+					}
+
+					localPlayerController.isRunning = true;
+
+				});
+
+				joystick1.addEventListener( "disactive", function onDisactive() { 
+
+					if (  localPlayerController.isJumping 
+						|| !localPlayerController.isGrounded 
+						||  localPlayerController.isOnSlope ) {
+						return;
+					}
+
+					localPlayerController.isRunning = false;
+
+				});
+
+				jumpButton.addEventListener( "press", function onPress() { 
+
+					if (  localPlayerController.isJumping 
+						|| !localPlayerController.isGrounded 
+						|| localPlayerController.isOnSlope ) {
+						return;
+					}
+
+					localPlayerController.jump();
+
+				});
+
+				joystick1.update = function(){
+
+					if ( this.isActive ) {
+
+						localPlayerController.direction = (3 * Math.PI/2) - cameraControls.getFrontAngle() + this.angle;
+
+					}
+				};
+
+				joystick2.update = function(){
+
+					if ( this.isActive ) {
+
+						cameraControls.setLatLon(
+							cameraControls.lat + this.position.y * 0.5, // deg.
+							cameraControls.lon - this.position.x        // deg.
+						);
+
+					}
+				};
+
+
+				(function update(){
+					requestAnimationFrame( update );
+					joystick1.update();
+					joystick2.update();
+				})();
+				
+			})();
+*/
+		</script>
+
+		<script>
+/*
+			Component = function(obj){
+				if ( !obj ) return this;
+
+			//	Shallow copy.
+				Object.assign(this, obj);
+
+				return this;
+			};
+
+			Entity = function(){
+				Entity.prototype._count++;
+				this.id = Date.now().toString(36);
+				this.components = {};
+				return this;
+			};
+
+			Entity.prototype._count = 0; // keep track of entities.
+
+			Entity.prototype.add = function(component){
+				if ( !component ) return this;
+				if ( !component.name ) return this;
+				if ( component == {} ) return this;
+				this.components[component.name.toLowerCase()] = component;
+				return this;
+			};
+
+			Entity.prototype.get = function(component) {
+				if ( !component ) return null;
+				if ( !component.name ) return null;
+				if ( component == {} ) return null;
+				return this.components[component.name.toLowerCase()];
+			};
+
+			Entity.prototype.remove = function(name) {
+				if ( !component ) return this;
+				if ( !component.name ) return this;
+				if ( component == {} ) return this;
+				delete this.components[name.toLowerCase()];
+				return this;
+			};
+*/
+		</script>
+
+		<script>
+
+			//	Rdbms With Code In Systems Implementation.
+			//	source: "http://entity-systems.wikidot.com/rdbms-with-code-in-systems"
+			//
+			//	## Concepts.
+			//		(integer) Entity
+			//		(enum) ComponentType
+			//		(interface OR empty base-class) Component
+			//		(interface OR empty base-class) System
+			//		(class with implementation) EntityManager
+			//
+			//	## Data Classes.
+			//
+			//	Entity: This is a non-negative integer, and uniquely identifies an entity 
+			//	within the ES. If you serialize your ES, this SHOULD be the same after serialization. 
+			//	New entities have to be assigned a new, unique, integer value when they are created. 
+			//	When an entity is destroyed, its integer value is freed, available for re-use.
+			//
+			//	ComponentType: This is needed because this ES is so simplistic it has no other way 
+			//	of identifying which Component you're talking about when you're looking at a single 
+			//	Entity. (richer EntitySystems MAY not need this type).
+			//
+			//	Component: This exists purely to make method-signatures type-safe. 
+			//	We need to know that certain objects are valid instances of a "component" 
+			//	(so we use this superclass to indicate that), but we also need a method that's 
+			//	guaranteed to work on all those objects. (richer EntitySystems make more use of this, 
+			//	and require it to be a class).
+			//
+			//	System: This exists purely to contain a known method-signature that your game-loop 
+			//	can call once per game-tick.
+			//
+			//	## EntitySystem Implementation Classes.
+			//
+			//	Each subclass of Component: Internally, the class has the following functions:
+			//	(ComponentType) getComponentType();
+			//
+			//	System: Just one method, that gives you a common interface to trigger each of 
+			//	the systems: processOneGameTick( long previousFrameTime );
+			//
+			//	EntityManager: This contains:
+			//	The master collections (arrays, hashmaps, whatever) that contain all the data for all the entities.
+			//	Logic for creating, modifying, fetching, and deleting entities.
+			//	Logic for fetching and modifying components-from-entities.
+			//	Internally, the class has the following variables:
+			//	LIST: all entities in existence (so it never duplicates entity-IDs!).
+			//	MAP: from "Entity + ComponentType" to "concrete Component subclass".
+			//	Internally, the class has the following functions:
+			//	(Component) getComponent( Entity, ComponentType );
+			//	(List) getAllComponentsOfType( ComponentType );
+			//	(List) getAllEntitiesPossessingComponent( ComponentType );
+			//	(void) addComponent( Entity, Component );
+			//	(int) createEntity;
+			//	void) killEntity( Entity );
+
+		</script>
+
+	</body>
+</html>
