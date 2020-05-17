@@ -1065,226 +1065,6 @@
 
 		<script>
 
-		//	System constructor.
-
-			function System(components, update){
-
-				if ( typeof components === "string" ) {
-					components = components.split(",");
-				}
-
-			//	debugMode && console.log( components );
-
-				var err = "SystemConstructorError:components is not an array!"
-				if ( !Array.isArray( components ) ) throw err;
-
-				for (var i = 0; i < components.length; i++){
-					components[i] = "\n\t\t\t\t\t\t" + "entity." + components[i];
-				}
-
-			//	debugMode && console.log( components );
-
-				var code = "var system = arguments.callee.name;\n\t\t\t\tvar entity, components, passed;\n\t\t\t\tvar collected = [], "
-				+"collectId = [];\n\n\t\t\t//\tCollect entities.\n\t\t\t\tfor (var i = 0; i < entities.length; i++){\n\n\t\t\t\t\t"
-				+"entity = entities[i];\n\n\t\t\t\t\tvar components = [" + components.join() + "\n\t\t\t\t\t];\n\n\t\t\t\t\tif ( systemValidator(components) ) "
-				+"{\n\t\t\t\t\t\tcollected.push(entity);\n\t\t\t\t\t\tcollectId.push(entity._id);\n\t\t\t\t\t}\n\t\t\t\t}\n\n\t\t\t\tif "
-				+"( !collected.length ) return;\n\t\t\t\tconsole.log( syslogcid( system, collectId ) );\n\n\t\t\t\twhile ( collected.length )"
-				+"{\n\t\t\t\t\tupdate( collected.shift() );\n\t\t\t\t}\n" + update.toString();
-
-			//	debugMode && console.log( code );
-
-				return new Function("entities", code);
-				
-			}
-			
-			System.prototype.isSystem = true;
-
-		</script>
-
-		<script>
-
-		//	System Manager Class (under construction).
-
-		//	System manager fires the systems on runtime.
-		//	System manager define the order that systems will fired.
-		//	System manager fires the systems for "init", "update"
-		//	and "render" state. It also fires the systems of every
-		//	"event", "signal" or watched observers.
-
-			function SystemManager(){};
-
-			SystemManager.prototype.frameId = 0;
-			SystemManager.prototype.isSystemManager = true;
-
-			SystemManager.prototype.init = function(entities){
-
-			//	Define initializing systems order.
-			//	CanvasRendererInitSystem(entities);
-			//	CameraLightInitSystem(entities);
-			//	DirectionalLightAddToScene(entities);
-			//	GridHelperAddToScene(entities);
-			//	GroundOctreeInitSystem(entities);
-			//	WindowResizeInitSystem(entities);
-			//	LocalPlayerInitSystem(entities);
-
-			};
-
-			SystemManager.prototype.update = function(dt, entities){
-
-			//	Define updating systems order.
-				LocalPlayerRotationUpdateSystem(entities);
-			//	WorldUpdatingSystem(dt, entities);
-			//	CameraControlsUpdateSystem(dt, entities);
-			//	PlayerRotationUpdateSystem(dt, entities);
-			};
-
-			SystemManager.prototype.render = function(dt, entities){
-
-			//	Define rendering systems order.
-			//	SceneRenderingSystem(dt, entities);
-
-			};
-
-		//	Start/Play/Pause/Stop events.
-
-			SystemManager.prototype.start = function(e, entities){
-				//	Define start systems order.
-			};
-			SystemManager.prototype.play = function(e, entities){
-				//	Define play systems order.
-			};
-			SystemManager.prototype.pause = function(e, entities){
-				//	Define pause systems order.
-			};
-			SystemManager.prototype.stop = function(e, entities){
-				//	Define stop systems order.
-			};
-
-		//	Keyboard events.
-
-			SystemManager.prototype.keyup = function(e, entities){};
-			SystemManager.prototype.keydown = function(e, entities){};
-
-		//	KeyInputControl events.
-
-			SystemManager.prototype.movekeyon = function(e, entities){
-				debugMode && console.log( e );
-				if ( e.type != "movekeyon" ) return;
-			//	Define jumpkeypress event systems order.
-				ModifyControllerStateSystem(e, entities);
-			};
-			SystemManager.prototype.movekeyoff = function(e, entities){
-				debugMode && console.log( e );
-				if ( e.type != "movekeyoff" ) return;
-			//	Define jumpkeypress event systems order.
-				ModifyControllerStateSystem(e, entities);
-			};
-			SystemManager.prototype.movekeychange = function(e, entities){
-				debugMode && console.log( e );
-				if ( e.type != "movekeychange" ) return;
-			//	Define jumpkeypress event systems order.
-				ModifyControllerStateSystem(e, entities);
-			};
-			SystemManager.prototype.jumpkeypress = function(e, entities){
-				debugMode && console.log( e );
-				if ( e.type != "jumpkeypress" ) return;
-			//	Define jumpkeypress event systems order.
-				ModifyControllerStateSystem(e, entities);
-			};
-
-		//	Mouse events.
-
-			SystemManager.prototype.click = function(e, entities){};
-			SystemManager.prototype.contextmenu = function(e, entities){};
-			SystemManager.prototype.dbclick = function(e, entities){};
-			SystemManager.prototype.mousedown = function(e, entities){};
-			SystemManager.prototype.mouseenter = function(e, entities){};
-			SystemManager.prototype.mouseleave = function(e, entities){};
-
-			SystemManager.prototype.mousemove = function(e){
-			//	debugMode && console.log( e );
-
-				if ( e.type != "mousemove" ) return;
-
-			//	Define mousemove event systems order.
-			//	MouseMoveSystemEventHandler(e, entities);
-
-			};
-
-			SystemManager.prototype.mouseout = function(e, entities){};
-			SystemManager.prototype.mouseover = function(e, entities){};
-			SystemManager.prototype.mouseup = function(e, entities){};
-
-		//	Drag events.
-
-			SystemManager.prototype.drag = function(e){
-			//	debugMode && console.log( e );
-
-				if ( e.type != "drag" ) return;
-
-			//	Define drag event systems order.
-			//	CameraLightUpdateSystem(entities);
-
-			};
-
-			SystemManager.prototype.dragenter = function(e, entities){};
-			SystemManager.prototype.dragover = function(e, entities){};
-			SystemManager.prototype.dragstart = function(e, entities){};
-			SystemManager.prototype.dragend = function(e, entities){};
-			SystemManager.prototype.dragleave = function(e, entities){};
-			SystemManager.prototype.drop = function(e, entities){};
-
-		//	Touch events.
-
-			SystemManager.prototype.touchstart = function(e, entities){};
-			SystemManager.prototype.touchmove = function(e, entities){};
-			SystemManager.prototype.touchend = function(e, entities){};
-			SystemManager.prototype.touchcancel = function(e, entities){};
-
-		//	EventObject events.
-
-			SystemManager.prototype.abort = function(e, entities){};
-			SystemManager.prototype.load = function(e, entities){};
-			SystemManager.prototype.change = function(e, entities){};
-			SystemManager.prototype.error = function(e, entities){};
-			SystemManager.prototype.input = function(e, entities){};
-			SystemManager.prototype.message = function(e, entities){};
-			SystemManager.prototype.online = function(e, entities){};
-			SystemManager.prototype.offline = function(e, entities){};
-			SystemManager.prototype.open = function(e, entities){};
-			SystemManager.prototype.pause = function(e, entities){};
-			SystemManager.prototype.play = function(e, entities){};
-			SystemManager.prototype.scroll = function(e, entities){};
-			SystemManager.prototype.select = function(e, entities){};
-			SystemManager.prototype.submit = function(e, entities){};
-			SystemManager.prototype.beforeunload = function(e, entities){};
-			SystemManager.prototype.unload = function(e, entities){};
-			SystemManager.prototype.progress = function(e, entities){};
-
-			SystemManager.prototype.resize = function(e){
-			//	debugMode && console.log( e );
-
-				if ( e.type != "resize" ) return;
-
-			//	Define resize event systems order.
-			//	WindowResizeSystemEventHandler(entities);
-
-			};
-
-		//	Timeout - Intervals
-
-			SystemManager.prototype.timeout = function(entities){
-				//	Define timeout systems order.
-			}
-
-			SystemManager.prototype.intervals = function(entities){
-				//	Define interval systems order.
-			}
-
-		</script>
-
-		<script>
-
 		//	## Local Player entity.
 
 		//	localPlayer is an entity instance.
@@ -1353,7 +1133,6 @@
 			})( localPlayer );
 
 		//	localPlayer has a system that updates object3d rotation.
-		//	Object3D + Rotation + Direction + Controller => LocalPlayerRotationUpdateSystem()
 
 		//	(function update(){
 		//		SystemManager.prototype.frameId = requestAnimationFrame( update );
@@ -1385,7 +1164,7 @@
 				}
 
 				if ( !collected.length ) return;
-			//	debugMode && console.log( syslogcid( system, collectId ) );
+				debugMode && console.log( syslogcid( system, collectId ) );
 
 				while ( collected.length ){
 					update( collected.shift() );
@@ -1396,115 +1175,12 @@
 				}
 			}
 
-		//	TODO: a system to change controller object (when click something?).
-
 		//	Debuging.
 		//	(function update(){
 		//		requestAnimationFrame( update );
 		//		LocalPlayerRotationUpdateSystem([localPlayer]); // important!
 		//	})();
 
-		//	Push localPlayer entity.
-			entities.push( localPlayer );
-
-		</script>
-
-
-		<script>
-
-		//	## KeyInputControl System.
-
-		//	KeyInputControl systems are event drived. They fire in a keyInputControl event.
-		//	KeyInputControl modifies the state of Character Controller component.
-		//	KeyInputControl + Controller + (event) => ModifyControllerStateSystem.
-
-			const keyInputControls = new MW.KeyInputControl(); // component instance.
-
-		//	localPlayer entity may have a KeyInputControl component.
-			localPlayer.KeyInputControl = keyInputControls; // bypass add() method.
-
-			keyInputControls.addEventListener( "movekeyon", function (e) { 
-				SystemManager.prototype.movekeyon(e, entities);
-				//	localPlayerController.isRunning = true;
-			});
-
-			keyInputControls.addEventListener( "movekeyoff", function (e) { 
-				SystemManager.prototype.movekeyoff(e, entities);
-				//	localPlayerController.isRunning = false; 
-			});
-
-			keyInputControls.addEventListener( "jumpkeypress", function (e) { 
-				SystemManager.prototype.jumpkeypress(e, entities);
-				//	localPlayerController.jump(); 
-			});
-
-		// synch with keybord input and camera control input.
-			keyInputControls.addEventListener( "movekeychange",  function (e) {
-
-				//	var cameraFrontAngle = cameraControls.getFrontAngle();
-				//	var characterFrontAngle = keyInputControls.frontAngle;
-				//	localPlayerController.direction = THREE.Math.degToRad( 360 ) - cameraFrontAngle + characterFrontAngle;
-
-				SystemManager.prototype.movekeychange(e, entities);
-			});
-
-
-			function ModifyControllerStateSystem(e, entities){
-
-				var system = arguments.callee.name;
-				var entity, components, passed;
-				var collected = [], collectId = [];
-
-			//	Collect entities.
-				for (var i = 0; i < entities.length; i++){
-
-					entity = entities[i];
-
-					var components = [
-						entity.Controller,
-						entity.KeyInputControl,
-					];
-
-					if ( systemValidator(components) ) {
-						collected.push(entity);
-						collectId.push(entity._id);
-					}
-				}
-
-				if ( !collected.length ) return;
-			//	debugMode && console.log( syslogcid( system, collectId ) );
-
-				while ( collected.length ){
-					update( collected.shift() );
-				}
-
-				function update(){
-
-					switch ( e.type ){
-
-						case "movekeyon":
-							entity.Controller.isRunning = true;
-						break;
-
-						case "movekeyoff":
-							entity.Controller.isRunning = false;
-						break;
-
-						case "jumpkeypress":
-							entity.Controller.jump();
-						break;
-
-						case "movekeychange": {
-							var cameraFrontAngle = cameraControls.getFrontAngle();
-							var characterFrontAngle = entity.KeyInputControl.frontAngle;
-							entity.Controller.direction = THREE.Math.degToRad( 360 ) - cameraFrontAngle + characterFrontAngle;
-						} break;
-
-					}
-
-				}
-
-			}
 
 		</script>
 
@@ -1515,47 +1191,12 @@
 			//	Define component types.
 			//	Create component instances.
 			//	Create entities instances.
-			//	Define entities systems.
-			//	Define systems order in SystemManager methods.
-			//	Define SystemManager methods order in runtime.
+			//	Define systems for entitiies states.
+			//	Define systems order in SystemManager.
+			//	Define SystemManager states order in runtime.
 
 		</script>
 
-
-		<script>
-
-		//	## Runtime.
-
-		//	Init.
-
-			SystemManager.prototype.init( entities );
-
-		//	Main Loop.
-
-		//	const clock = new THREE.Clock();
-
-			(function runtime(){
-
-				var dt = clock.getDelta();
-				var elapsed = clock.getElapsedTime();
-
-				SystemManager.prototype.frameId = requestAnimationFrame( runtime );
-
-				SystemManager.prototype.update(dt, entities);
-
-			})();
-			
-		//	Events (init systems adding event handlers).
-		//	window.addEventListener("resize", SystemManager.prototype.resize);
-		//	window.addEventListener("mousemove", SystemManager.prototype.mousemove);
-
-		//	Interval/Timeout.
-
-			//	Add here SystemManager.prototype.interval systems.
-
-		//
-
-		</script>
 
 		<script>
 /*
@@ -1928,6 +1569,44 @@
 
 			})();
 */
+		</script>
+
+		<script>
+
+		//	System constructor.
+
+			function System(components, update){
+
+				if ( typeof components === "string" ) {
+					components = components.split(",");
+				}
+
+			//	debugMode && console.log( components );
+
+				var err = "SystemConstructorError:components is not an array!"
+				if ( !Array.isArray( components ) ) throw err;
+
+				for (var i = 0; i < components.length; i++){
+					components[i] = "\n\t\t\t\t\t\t" + "entity." + components[i];
+				}
+
+			//	debugMode && console.log( components );
+
+				var code = "var system = arguments.callee.name;\n\t\t\t\tvar entity, components, passed;\n\t\t\t\tvar collected = [], "
+				+"collectId = [];\n\n\t\t\t//\tCollect entities.\n\t\t\t\tfor (var i = 0; i < entities.length; i++){\n\n\t\t\t\t\t"
+				+"entity = entities[i];\n\n\t\t\t\t\tvar components = [" + components.join() + "\n\t\t\t\t\t];\n\n\t\t\t\t\tif ( systemValidator(components) ) "
+				+"{\n\t\t\t\t\t\tcollected.push(entity);\n\t\t\t\t\t\tcollectId.push(entity._id);\n\t\t\t\t\t}\n\t\t\t\t}\n\n\t\t\t\tif "
+				+"( !collected.length ) return;\n\t\t\t\tconsole.log( syslogcid( system, collectId ) );\n\n\t\t\t\twhile ( collected.length )"
+				+"{\n\t\t\t\t\tupdate( collected.shift() );\n\t\t\t\t}\n" + update.toString();
+
+			//	debugMode && console.log( code );
+
+				return new Function("entities", code);
+				
+			}
+			
+			System.prototype.isSystem = true;
+
 		</script>
 
 		<script>
@@ -2759,6 +2438,196 @@
 				})();
 			})();
 */
+		</script>
+
+		<script>
+
+		//	System Manager Class (under construction).
+
+		//	System manager fires the systems on runtime.
+		//	System manager define the order that systems will fired.
+		//	System manager fires the systems for "init", "update"
+		//	and "render" state. It also fires the systems of every
+		//	"event", "signal" or watched observers.
+
+			function SystemManager(){};
+
+			SystemManager.prototype.frameId = 0;
+			SystemManager.prototype.isSystemManager = true;
+
+			SystemManager.prototype.init = function(entities){
+
+			//	Define initializing systems order.
+			//	CanvasRendererInitSystem(entities);
+			//	CameraLightInitSystem(entities);
+			//	DirectionalLightAddToScene(entities);
+			//	GridHelperAddToScene(entities);
+			//	GroundOctreeInitSystem(entities);
+			//	WindowResizeInitSystem(entities);
+			//	LocalPlayerInitSystem(entities);
+
+			};
+
+			SystemManager.prototype.update = function(dt, entities){
+
+			//	Define updating systems order.
+				LocalPlayerRotationUpdateSystem(entities);
+			//	WorldUpdatingSystem(dt, entities);
+			//	CameraControlsUpdateSystem(dt, entities);
+			//	PlayerRotationUpdateSystem(dt, entities);
+			};
+
+			SystemManager.prototype.render = function(dt, entities){
+
+			//	Define rendering systems order.
+			//	SceneRenderingSystem(dt, entities);
+
+			};
+
+		//	Start/Play/Pause/Stop events.
+
+			SystemManager.prototype.start = function(e, entities){
+				//	Define start systems order.
+			};
+			SystemManager.prototype.play = function(e, entities){
+				//	Define play systems order.
+			};
+			SystemManager.prototype.pause = function(e, entities){
+				//	Define pause systems order.
+			};
+			SystemManager.prototype.stop = function(e, entities){
+				//	Define stop systems order.
+			};
+
+		//	Keyboard events.
+
+			SystemManager.prototype.keydown = function(e, entities){};
+			SystemManager.prototype.keyup = function(e, entities){};
+
+		//	Mouse events.
+
+			SystemManager.prototype.click = function(e, entities){};
+			SystemManager.prototype.contextmenu = function(e, entities){};
+			SystemManager.prototype.dbclick = function(e, entities){};
+			SystemManager.prototype.mousedown = function(e, entities){};
+			SystemManager.prototype.mouseenter = function(e, entities){};
+			SystemManager.prototype.mouseleave = function(e, entities){};
+
+			SystemManager.prototype.mousemove = function(e){
+			//	debugMode && console.log( e );
+
+				if ( e.type != "mousemove" ) return;
+
+			//	Define mousemove event systems order.
+			//	MouseMoveSystemEventHandler(e, entities);
+
+			};
+
+			SystemManager.prototype.mouseout = function(e, entities){};
+			SystemManager.prototype.mouseover = function(e, entities){};
+			SystemManager.prototype.mouseup = function(e, entities){};
+
+		//	Drag events.
+
+			SystemManager.prototype.drag = function(e){
+			//	debugMode && console.log( e );
+
+				if ( e.type != "drag" ) return;
+
+			//	Define drag event systems order.
+			//	CameraLightUpdateSystem(entities);
+
+			};
+
+			SystemManager.prototype.dragenter = function(e, entities){};
+			SystemManager.prototype.dragover = function(e, entities){};
+			SystemManager.prototype.dragstart = function(e, entities){};
+			SystemManager.prototype.dragend = function(e, entities){};
+			SystemManager.prototype.dragleave = function(e, entities){};
+			SystemManager.prototype.drop = function(e, entities){};
+
+		//	Touch events.
+
+			SystemManager.prototype.touchstart = function(e, entities){};
+			SystemManager.prototype.touchmove = function(e, entities){};
+			SystemManager.prototype.touchend = function(e, entities){};
+			SystemManager.prototype.touchcancel = function(e, entities){};
+
+		//	EventObject events.
+
+			SystemManager.prototype.abort = function(e, entities){};
+			SystemManager.prototype.load = function(e, entities){};
+			SystemManager.prototype.change = function(e, entities){};
+			SystemManager.prototype.error = function(e, entities){};
+			SystemManager.prototype.input = function(e, entities){};
+			SystemManager.prototype.message = function(e, entities){};
+			SystemManager.prototype.online = function(e, entities){};
+			SystemManager.prototype.offline = function(e, entities){};
+			SystemManager.prototype.open = function(e, entities){};
+			SystemManager.prototype.pause = function(e, entities){};
+			SystemManager.prototype.play = function(e, entities){};
+			SystemManager.prototype.scroll = function(e, entities){};
+			SystemManager.prototype.select = function(e, entities){};
+			SystemManager.prototype.submit = function(e, entities){};
+			SystemManager.prototype.beforeunload = function(e, entities){};
+			SystemManager.prototype.unload = function(e, entities){};
+			SystemManager.prototype.progress = function(e, entities){};
+
+			SystemManager.prototype.resize = function(e){
+			//	debugMode && console.log( e );
+
+				if ( e.type != "resize" ) return;
+
+			//	Define resize event systems order.
+			//	WindowResizeSystemEventHandler(entities);
+
+			};
+
+		//	Timeout - Intervals
+
+			SystemManager.prototype.timeout = function(entities){
+				//	Define timeout systems order.
+			}
+
+			SystemManager.prototype.intervals = function(entities){
+				//	Define interval systems order.
+			}
+
+		</script>
+
+		<script>
+
+		//	## Runtime.
+
+		//	Init.
+
+			SystemManager.prototype.init( entities );
+
+		//	Main Loop.
+
+		//	const clock = new THREE.Clock();
+
+			(function runtime(){
+
+				var dt = clock.getDelta();
+				var elapsed = clock.getElapsedTime();
+
+				SystemManager.prototype.frameId = requestAnimationFrame( runtime );
+
+				SystemManager.prototype.update(dt, entities);
+
+			})();
+			
+		//	Events (init systems adding event handlers).
+		//	window.addEventListener("resize", SystemManager.prototype.resize);
+		//	window.addEventListener("mousemove", SystemManager.prototype.mousemove);
+
+		//	Interval/Timeout.
+
+			//	Add here SystemManager.prototype.interval systems.
+
+		//
+
 		</script>
 
 		<script>
