@@ -1,5 +1,7 @@
 //	## Enviroment
 
+	MW.install( THREE ); // important!
+
 //	Scene.
 	const scene = new THREE.Scene();
 
