@@ -103,3 +103,21 @@
 		world.step( Math.min( delta, 0.02 ) );
 	})();
 
+//	Ground (component).
+
+	const ground = new THREE.Mesh(
+		new THREE.PlaneGeometry( 300, 300, 1, 1 ).rotateX(-Math.PI/2),
+		new THREE.MeshLambertMaterial({ 
+			opacity:1, 
+			color:0x829ec4,
+		})
+	);
+
+	ground.position.y = 0;
+	octree.importThreeMesh( ground ); // important!
+
+//	Ground Helper (component).
+	const groundHelper = new THREE.GridHelper( 300, 300, 0x444444, 0x444444 );
+	scene.add( groundHelper );
+
+
