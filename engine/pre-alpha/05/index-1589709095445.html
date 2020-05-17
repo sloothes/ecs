@@ -99,11 +99,9 @@
 		<script src="/threejs/r96/examples/js/exporters/OBJExporter.js"></script>
 		<script src="/threejs/r96/examples/js/exporters/ColladaExporter.js"></script>
 
-		<script src="/ecs/engine/Enviroment.js"></script>
-		<script src="/ecs/engine/pre-alpha/Entity.js"></script>
-		<script src="/ecs/engine/pre-alpha/EntityManager.js"></script>
-
 		<script>
+
+			MW.install( THREE ); // important!
 
 		//	Global helpers.
 
@@ -158,34 +156,35 @@
 			}
 
 		//	## Copying an Object
-		//	source: "http://speakingjs.com/es5/ch17.html#private_data_for_objects".
+		//	source: "http://speakingjs.com/es5/ch17.html#private_data_for_objects"
 		//	To create an identical copy of an object, you need to get two things right:
 		//	The copy must have the same prototype as the original.
 		//	The copy must have the same properties, with the same attributes as the original.
 		//	The following function performs such a copy:
 		//
 		//	These are the steps involved:
-		//	[1] Get an array with the keys of all own properties of source.
-		//	[2] Iterate over those keys.
-		//	[3] Retrieve a property descriptor.
-		//	[4] Use that property descriptor to create an own property in target.
+		//	Get an array with the keys of all own properties of source.
+		//	Iterate over those keys.
+		//	Retrieve a property descriptor.
+		//	Use that property descriptor to create an own property in target.
+		//	Note that this function is very similar to the function _.extend() in the Underscore.js library.
 
 			function copyObject(obj) {
 
-			//	1. copy has same prototype as orig
+			// 1. copy has same prototype as orig
 				var copy = Object.create(Object.getPrototypeOf(obj));
 
-			//	2. copy has all of orig’s properties
+			// 2. copy has all of orig’s properties
 				copyOwnPropertiesFrom(copy, obj);
 
-				return copy; // warning: shallow copy!
+				return copy; // shallow copy.
 
 			//	The properties are copied from orig to copy via this function:
 
 				function copyOwnPropertiesFrom(target, source) {
-					Object.getOwnPropertyNames(source).forEach(function(propKey) { // [1][2]
+					Object.getOwnPropertyNames(source).forEach(function(propKey) {  // [1][2]
 						var desc = Object.getOwnPropertyDescriptor(source, propKey); // [3]
-						Object.defineProperty(target, propKey, desc); // [4]
+						Object.defineProperty(target, propKey, desc);  // [4]
 					});
 					return target;
 				};
@@ -573,7 +572,7 @@
 		//	We can define threejs component classes that inherits
 		//	mixed from threejs constructors and the Component class.
 
-			function Component( data ){
+			const Component = function( data ){
 
 				Object.assign(this, data);
 
@@ -581,10 +580,15 @@
 
 			Component.prototype.isComponent = true; // primitive type. How to lock it?
 
-		</script>
+		//	## DEVELOPING - DEBUGING.
 
-		<script>
+		//	Object.getPrototypeOf( debugMode ).constructor = Component;
+		//	Object.getPrototypeOf( debugMode ).isComponent = isComponent;
 
+		//	DebugMode.prototype = Object.create(Component.prototype);
+		//	DebugMode.prototype.isComponent = isComponent;
+
+		//
 		//	[1] JavaScript provides six primitive types as "undefined", "null", 
 		//	"boolean", "number", "string", and "symbol", and a reference type "object".
 		//
@@ -602,89 +606,20 @@
 		//	a primitive value then it will be ignored.
 		//
 		//	The "new" keyword ignores return statement that returns primitive value.
-		//	If function returns non-primitive value (custom object) then "new" keyword 
-		//	does not perform the above 4 tasks.
-		//	Thus, "new" keyword builds an object of a function in JavaScript.
-		//
+		//	If function returns non-primitive value (custom object) then new keyword does not perform above 4 tasks.
+		//	Thus, new keyword builds an object of a function in JavaScript.
+
 		//	When comparing two objects, you need to be more careful. They are compared by their identity. 
 		//	That means it does not matter if the two objects have the same properties with the same values. 
 		//	They are equal only if they are the same instance. That is - if comparing two variables, 
 		//	they are equal only if they point to the very same object.
 
-		</script>
-
-		<script>
-
-		//	## ECS and THREEJS
-
-		//	All objects of threejs are components.
-
-		//	Which threejs objects must defined as entities?
-		//	Which threejs objects must defined as components?
-		//	Can a object be Component-Type and Entity-Type at the same time?
-
-			//	A THREE.Vector is Component-Type.
-			//	A THREE.Geometry is Component-Type.
-			//	A THREE.Material is Component-Type.
-
-			//	A THREE.Scene is Entity-Type?
-			//	A THREE.Mesh is Entity-Type?
-			//	A THREE.SkinnedMesh is Entity-Type?
-
-		//	## Scene.
-		//	Components:
-			//	THREE.Scene is a Component-Type.
-			//	scene = new THREE.Scene(); is a component instance.
-		//	Entities:
-			//	SCENE = new Entity(); is an entity instance.
-			//	SCENE must have at least a scene component.
-			//	SCENE.add( scene ).add( renderer ).add( camera );
-		//	Systems:
-			//	SceneRenderingSystem: scene always be rendered.
-			//	renderer.render function need a scene and a camera components.
-			//	scene + renderer + camera => renderer.render( scene, camera );
-			//	SCENE.add( scene ).add( renderer ).add( camera );
-
-
-		//	THREE.Camera is a Component-Type.
-		//	camera = new THREE.PerspectiveCamera() is a component instance.
-		//	CAMERA = new Entity(); is an entity instance.
-		//	CAMERA must have at least a camera component.
-		//	CAMERA.add( camera );
 
 		</script>
 
 		<script>
 
-		//	THREE.Object3D is a Component-Type.
-		//	object3d = new THREE.Object3D(); is a component instance.
-
-		//	MW.CharacterController is a Component-Type.
-		//	controller = new MW.CharacterController() is a component instance.
-
-		//	localPlayer = new Entity(); is an entity instance.
-		//	localPlayer must have at least a object3d component.
-		//	localPlayer must have at least a contorller component.
-		//	localPlayer.add( object3d ).add( controller );
-
-		</script>
-
-		<script>
-
-		//	## Synopsis.
-			
-			//	Define component types.
-			//	Create component instances.
-			//	Create entities instances.
-			//	Define systems for entitiies states.
-			//	Define systems order in SystemManager.
-			//	Define SystemManager states order in runtime.
-
-		</script>
-
-		<script>
-
-		//	## THREEJS.
+		//	## THREEJS - ASSETS.
 
 		//	Object3D Component.
 
@@ -827,6 +762,7 @@
 
 				var geometry = new THREE.PlaneGeometry( 300, 300, 1, 1 ).rotateX(-Math.PI/2);
 				var material = new THREE.MeshLambertMaterial({ opacity:1, color:0x829ec4 });
+
 				var ground = new THREE.Mesh(geometry, material);
 				Object.getPrototypeOf(ground).isComponent = true;
 				ground.name = "ground";
@@ -852,9 +788,9 @@
 		<script>
 
 		//	Parent Component.
-		//	function Parent(){}
-		//	Parent.prototype = Object.create(Component.prototype);
-		//	Parent.prototype.constructor = Parent;
+			function Parent(){}
+			Parent.prototype = Object.create(Component.prototype);
+			Parent.prototype.constructor = Parent;
 		//	Parent.prototype.isComponent = true;
 		//	How to "lock" a primitive type value in prototype?
 
@@ -870,14 +806,164 @@
 		//
 		//	Dispose Component (used in compination 
 		//	with Geometry, Material, Texture Component).
-		//	function Dispose(){}
-		//	Dispose.prototype = Object.create(Component.prototype);
-		//	Dispose.prototype.constructor = Dispose;
+			function Dispose(){}
+			Dispose.prototype = Object.create(Component.prototype);
+			Dispose.prototype.constructor = Dispose;
 
 		</script>
 
 		<script>
-/*
+
+		//	Entity Manager.
+
+			const entities = [];
+			const removedEntities = [];
+
+			function EntityManager(){};
+
+			EntityManager.prototype._count = 0;
+
+			EntityManager.prototype.create = function(){
+				return new Entity();
+			};
+
+			EntityManager.prototype.clear = function(){
+				removedEntities.length = 0;
+			};
+
+			EntityManager.prototype.push = function( entity ){
+				entities.push( entity );
+			};
+
+			EntityManager.prototype.unshift = function( entity ){
+				entities.unshift( entity );
+			};
+
+			EntityManager.prototype.addComponents = function( entity, components ){
+
+				if ( !components ) return;
+				if ( !components.length ) return;
+
+				for (var i = 0; i < components.length; i++){
+					entity.add( components[i] );
+				}
+			};
+
+			EntityManager.prototype.removeComponents = function( entity, components ){
+
+				if ( !components ) return;
+				if ( !entity.length() ) return;
+				if ( !components.length ) return;
+
+				for (var i = 0; i < components.length; i++){
+					entity.remove( components[i] );
+				}
+			};
+
+			EntityManager.prototype.move = function( entity, new_index ){
+
+				var old_index = entities.findIndex(function( item ){
+					return item.id === entity.id;
+				});
+
+				if ( old_index < 0 ) return; // important!
+				if ( old_index == new_index ) return;
+
+				(function( entities, old_index, new_index ){
+
+					if (new_index >= arr.length) {
+						var k = new_index - arr.length + 1;
+						while (k--) {
+							arr.push(undefined);
+						}
+					}
+
+					arr.splice(new_index, 0, arr.splice(old_index, 1)[0]);
+				})();
+
+			};
+
+			EntityManager.prototype.remove = function( _id ){
+
+				var index = entities.findIndex(function( item ){
+					return item._id === _id;
+				});
+
+				if ( index < 0 ) return; // important!
+
+				var removedItems = entities.splice(index, 1);
+			//	debugMode && console.log( removedItems );
+
+				while ( removedItems.length ){
+					var removed = removedItems.shift();
+				//	debugMode && console.log( removed );
+					removedEntities.push( removed );
+				}
+
+			};
+
+
+		</script>
+
+		<script>
+
+		//	Entity class.
+
+			function isEntity(){ return true; }
+
+			function Entity(){
+
+				this._id = EntityManager.prototype._count++;
+				
+			}
+
+			Entity.prototype.isEntity = true; // primative type.
+			
+			Entity.prototype.length = function(){
+				return Object.keys(this).length - 1;
+			};
+			
+			Entity.prototype.add = function(component, name){
+				var err = "EntityAddComponentError: component name is not defined!";
+
+				if ( !name ) name = component.constructor.name;
+				if ( !name ) {
+					console.error(err);
+					return this;
+				}
+				this[ name ] = component;
+				return this;
+			};
+
+			Entity.prototype.remove = function(component){
+				var err = "EntityRemoveComponentError: component name is not defined!";
+
+				var name;
+				switch( typeof component ){
+
+					case "string":
+						name = component;
+					break;
+					
+					case "object":
+						name = component.constructor.name;
+					break;
+
+					case "function":
+						name = component.prototype.constructor.name;
+					break;
+
+					case "number":
+					break;
+				}
+
+				if (!name) throw err;
+			//	debugMode && console.log("remove:", name);
+
+				delete this[ name ];
+				return this;
+			};
+
 			(function(){
 
 			//	## Primitive Entities.
@@ -1052,7 +1138,7 @@
 				})();
 
 			})();
-*/
+
 		</script>
 
 		<script>
@@ -1650,7 +1736,6 @@
 		//	localPlayer object3d component. We need a rotation 
 		//	and a possition component in LocalPlayer entity.
 
-/*
 			(function(){
 
 			//	LocalPlayer is an THREE.Object3D
@@ -1672,34 +1757,36 @@
 
 				cameraControls = new CameraControls( CAMERA.PerspectiveCamera, object3d, RENDERER.WebGLRenderer.domElement );
 
-			//	localPlayer = new THREE.Object3D();
-			//	localPlayer.position.set( 0, 10, 0 );
-			//	localPlayer.name = "localPlayer";
-			//	scene.add( localPlayer );
+			/*
+				localPlayer = new THREE.Object3D();
+				localPlayer.position.set( 0, 10, 0 );
+				localPlayer.name = "localPlayer";
+				scene.add( localPlayer );
 
 			//	Player helper (component).
-			//	localPlayerHelper = new THREE.Mesh(
-			//		new THREE.SphereGeometry( playerRadius, 8, 6 ),
-			//		new THREE.MeshBasicMaterial( { color: 0xff0000,  wireframe: true} )
-			//	);
+				localPlayerHelper = new THREE.Mesh(
+					new THREE.SphereGeometry( playerRadius, 8, 6 ),
+					new THREE.MeshBasicMaterial( { color: 0xff0000,  wireframe: true} )
+				);
 
-			//	localPlayerHelper.name = "playerhelper";
-			//	localPlayer.add( localPlayerHelper );
+				localPlayerHelper.name = "playerhelper";
+				localPlayer.add( localPlayerHelper );
 
 			//	Player controller (component).
-			//	localPlayerController = new MW.CharacterController( localPlayer, playerRadius );
-			//	localPlayerController.movementSpeed = 10;
-			//	localPlayerController.maxSlopeGradient = 0.5
-			//	world.add( localPlayerController ); // important!
+				localPlayerController = new MW.CharacterController( localPlayer, playerRadius );
+				localPlayerController.movementSpeed = 10;
+				localPlayerController.maxSlopeGradient = 0.5
+				world.add( localPlayerController ); // important!
 
 			//	CameraLight target.
-			//	cameraLight.target = localPlayer;
+				cameraLight.target = localPlayer;
 
 			//	Update rotation.
-			//	(function update(){
-			//		requestAnimationFrame( update );
-			//		localPlayer.rotation.y = localPlayerController.direction + Math.PI; // important!
-			//	})();
+				(function update(){
+					requestAnimationFrame( update );
+					localPlayer.rotation.y = localPlayerController.direction + Math.PI; // important!
+				})();
+			*/
 
 			//	LocalPlayer entity.
 
@@ -1733,7 +1820,6 @@
 				})();
 
 			})();
-*/
 
 		//	One system that updates the position of controller object is the controller.
 		//	(We will need systems to control the controllers)
@@ -1958,12 +2044,6 @@
 
 		//	System Manager Class (under construction).
 
-		//	System manager fires the systems on runtime.
-		//	System manager define the order that systems will fired.
-		//	System manager fires the systems for "init", "update"
-		//	and "render" state. It also fires the systems of every
-		//	"event", "signal" or watched observers.
-
 			function SystemManager(){};
 
 			SystemManager.prototype.frameId = 0;
@@ -1971,31 +2051,29 @@
 
 			SystemManager.prototype.init = function(entities){
 
-			//	Define initializing systems order.
-			//	CanvasRendererInitSystem(entities);
-			//	CameraLightInitSystem(entities);
-			//	DirectionalLightAddToScene(entities);
-			//	GridHelperAddToScene(entities);
-			//	GroundOctreeInitSystem(entities);
-			//	WindowResizeInitSystem(entities);
-			//	LocalPlayerInitSystem(entities);
+			//	Define init systems order.
+				CanvasRendererInitSystem(entities);
+				CameraLightInitSystem(entities);
+				DirectionalLightAddToScene(entities);
+				GridHelperAddToScene(entities);
+				GroundOctreeInitSystem(entities);
+				WindowResizeInitSystem(entities);
+				LocalPlayerInitSystem(entities);
 
 			};
 
 			SystemManager.prototype.update = function(dt, entities){
 
-			//	Define updating systems order.
-			//	WorldUpdatingSystem(dt, entities);
-			//	CameraControlsUpdateSystem(dt, entities);
-			//	PlayerRotationUpdateSystem(dt, entities);
-
+			//	Define update systems order.
+				WorldUpdatingSystem(dt, entities);
+				CameraControlsUpdateSystem(dt, entities);
+				PlayerRotationUpdateSystem(dt, entities);
 			};
 
 			SystemManager.prototype.render = function(dt, entities){
 
-			//	Define rendering systems order.
-			//	SceneRenderingSystem(dt, entities);
-
+			//	Define render systems order.
+				SceneRenderingSystem(dt, entities);
 			};
 
 		//	Start/Play/Pause/Stop events.
@@ -2033,8 +2111,7 @@
 				if ( e.type != "mousemove" ) return;
 
 			//	Define mousemove event systems order.
-			//	MouseMoveSystemEventHandler(e, entities);
-
+				MouseMoveSystemEventHandler(e, entities);
 			};
 
 			SystemManager.prototype.mouseout = function(e, entities){};
@@ -2049,8 +2126,7 @@
 				if ( e.type != "drag" ) return;
 
 			//	Define drag event systems order.
-			//	CameraLightUpdateSystem(entities);
-
+				CameraLightUpdateSystem(entities);
 			};
 
 			SystemManager.prototype.dragenter = function(e, entities){};
@@ -2093,42 +2169,38 @@
 				if ( e.type != "resize" ) return;
 
 			//	Define resize event systems order.
-			//	WindowResizeSystemEventHandler(entities);
-
+				WindowResizeSystemEventHandler(entities);
 			};
-
-		//	Timeout - Intervals
-
-			SystemManager.prototype.timeout = function(entities){
-				//	Define timeout systems order.
-			}
-
-			SystemManager.prototype.intervals = function(entities){
-				//	Define interval systems order.
-			}
 
 		</script>
 
 		<script>
 
-		//	## Runtime.
+		//	Inititialize.
 
-		//	Init.
+			(function(){
 
-			SystemManager.prototype.init( entities );
+				SystemManager.prototype.init( entities );
+
+			})();
 
 		//	Main Loop.
 
-		//	const clock = new THREE.Clock();
+			(function(){
 
-			(function runtime(){
+				const clock = new THREE.Clock();
 
-				var dt = clock.getDelta();
-				var elapsed = clock.getElapsedTime();
+				(function runtime(){
 
-				SystemManager.prototype.update(dt, entities);
-				
-				SystemManager.prototype.frameId = requestAnimationFrame( runtime );
+					var dt = clock.getDelta();
+					var elapsed = clock.getElapsedTime();
+
+					SystemManager.prototype.frameId = requestAnimationFrame( runtime );
+
+					SystemManager.prototype.update(dt, entities);
+					SystemManager.prototype.render(dt, entities);
+
+				})();
 
 			})();
 			
@@ -2496,6 +2568,77 @@
 				
 			})();
 */
+		</script>
+
+		<script>
+/*
+			Component = function(obj){
+				if ( !obj ) return this;
+
+			//	Shallow copy.
+				Object.assign(this, obj);
+
+				return this;
+			};
+
+			Entity = function(){
+				Entity.prototype._count++;
+				this.id = Date.now().toString(36);
+				this.components = {};
+				return this;
+			};
+
+			Entity.prototype._count = 0; // keep track of entities.
+
+			Entity.prototype.add = function(component){
+				if ( !component ) return this;
+				if ( !component.name ) return this;
+				if ( component == {} ) return this;
+				this.components[component.name.toLowerCase()] = component;
+				return this;
+			};
+
+			Entity.prototype.get = function(component) {
+				if ( !component ) return null;
+				if ( !component.name ) return null;
+				if ( component == {} ) return null;
+				return this.components[component.name.toLowerCase()];
+			};
+
+			Entity.prototype.remove = function(name) {
+				if ( !component ) return this;
+				if ( !component.name ) return this;
+				if ( component == {} ) return this;
+				delete this.components[name.toLowerCase()];
+				return this;
+			};
+*/
+		</script>
+
+		<script>
+/*
+		//	System Class (under construction).
+
+			function isSystem(){ return true; }
+
+			function System(){}
+
+			System.prototype.isSystem = isSystem;
+
+			System.prototype.init = function(entities){};
+			System.prototype.start = function(entities){};
+			System.prototype.stop = function(entities){};
+			System.prototype.keydown = function(entities){};
+			System.prototype.keyup = function(entities){};
+			System.prototype.mousedown = function(entities){};
+			System.prototype.mouseup = function(entities){};
+			System.prototype.mousemove = function(entities){};
+			System.prototype.touchstart = function(entities){};
+			System.prototype.touchend = function(entities){};
+			System.prototype.touchmove = function(entities){};
+			System.prototype.update = function(dt, entities){};
+*/
+
 		</script>
 
 		<script>

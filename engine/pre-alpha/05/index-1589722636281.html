@@ -99,11 +99,12 @@
 		<script src="/threejs/r96/examples/js/exporters/OBJExporter.js"></script>
 		<script src="/threejs/r96/examples/js/exporters/ColladaExporter.js"></script>
 
-		<script src="/ecs/engine/Enviroment.js"></script>
 		<script src="/ecs/engine/pre-alpha/Entity.js"></script>
 		<script src="/ecs/engine/pre-alpha/EntityManager.js"></script>
 
 		<script>
+
+			MW.install( THREE ); // important!
 
 		//	Global helpers.
 
@@ -651,6 +652,118 @@
 		//	CAMERA = new Entity(); is an entity instance.
 		//	CAMERA must have at least a camera component.
 		//	CAMERA.add( camera );
+
+		</script>
+
+		<script>
+
+		//	Scene.
+			scene = new THREE.Scene();
+
+		//	Camera.
+			(function(){
+
+				var aspect = (window.innerWidth - 370) / window.innerHeight;
+				camera = new THREE.PerspectiveCamera( 50, aspect, 1, 10000 );
+				camera.position.set(0, 20, 50);
+
+			})();
+
+		//  Camera Light.
+			(function(){
+
+				cameraLight = new THREE.DirectionalLight( 0xdfebff, 0.75 );
+				cameraLight.position.set( 0, 500, 300 );
+				cameraLight.castShadow = true;
+				cameraLight.shadow.mapSize.width  = Math.pow(2, 10); // 2048;
+				cameraLight.shadow.mapSize.height = Math.pow(2, 10); // 2048;
+
+				var d = 30;
+				cameraLight.shadow.camera.left = - d;
+				cameraLight.shadow.camera.right = d;
+				cameraLight.shadow.camera.top = d;
+				cameraLight.shadow.camera.bottom = - d;
+				cameraLight.shadow.camera.far = 10000;
+
+				shadowHelper = new THREE.CameraHelper(cameraLight.shadow.camera);
+				shadowHelper.visible = false;
+
+				scene.add( cameraLight, shadowHelper  );
+
+				(function update(){
+					requestAnimationFrame( update );
+					cameraLight.position.copy( camera.position );
+				})();
+
+			})();
+
+		//  Renderer.
+			(function(){
+
+				renderer = new THREE.WebGLRenderer({
+					alpha: true,  // for transparent rendering set alpha:true, important!
+					antialias: true,
+					preserveDrawingBuffer: true,
+				});
+
+				renderer.gammaInput = true;
+				renderer.gammaOutput = true;
+				renderer.shadowMap.enabled = true;
+				renderer.setClearAlpha( 1 ); // for transparent rendering set clear alpha: 0.
+				renderer.setClearColor( 0x000000, 1 ); // for transparent rendering set clear alpha: 0.
+				renderer.setPixelRatio( window.devicePixelRatio );
+				renderer.setSize( (window.innerWidth - 370), window.innerHeight );
+				renderer.domElement.style.background = "none";  // transparent rendering. important!
+				document.body.appendChild( renderer.domElement );
+
+				window.addEventListener("resize", function onWindowResize() {
+					renderer.setSize( (window.innerWidth - 370), window.innerHeight );
+				});
+
+				window.addEventListener("resize", function onWindowResize() {
+					camera.aspect = renderer.domElement.clientWidth / renderer.domElement.clientHeight;
+					camera.updateProjectionMatrix();
+				});
+
+			//	Mouse (component).
+				mouse = new THREE.Vector2();
+
+				renderer.domElement.addEventListener("mousemove", function(e) {
+					mouse.x = ( e.clientX / this.clientWidth ) * 2 - 1;
+					mouse.y = - ( e.clientY / this.clientHeight ) * 2 + 1;
+				});
+
+				(function render(){
+					requestAnimationFrame( render );
+					renderer.render( scene, camera );
+				})();
+
+			})();
+
+
+		//	World - Octree.
+			(function(){
+
+				world = new MW.World();
+
+				var x = 150, y = 150, z = 150;
+				var min = new THREE.Vector3( -x, -y, -z );
+				var max = new THREE.Vector3(  x,  y,  z );
+				var partition = 7; // nodes: Math.pow( 8, partition )
+
+				octree = new MW.Octree( min, max, partition );
+				world.add( octree );
+
+				var clock = new THREE.Clock();
+
+				(function update(){
+					requestAnimationFrame( update );
+					var delta = clock.getDelta();
+					var elapsed = clock.getElapsedTime();
+					world.step( Math.min( delta, 0.02 ) );
+				})();
+
+			})();
 
 		</script>
 
@@ -2119,7 +2232,7 @@
 
 		//	Main Loop.
 
-		//	const clock = new THREE.Clock();
+			const clock = new THREE.Clock();
 
 			(function runtime(){
 
@@ -2127,6 +2240,8 @@
 				var elapsed = clock.getElapsedTime();
 
 				SystemManager.prototype.update(dt, entities);
+
+				renderer.render( scene, camera );
 				
 				SystemManager.prototype.frameId = requestAnimationFrame( runtime );
 
@@ -2496,6 +2611,77 @@
 				
 			})();
 */
+		</script>
+
+		<script>
+/*
+			Component = function(obj){
+				if ( !obj ) return this;
+
+			//	Shallow copy.
+				Object.assign(this, obj);
+
+				return this;
+			};
+
+			Entity = function(){
+				Entity.prototype._count++;
+				this.id = Date.now().toString(36);
+				this.components = {};
+				return this;
+			};
+
+			Entity.prototype._count = 0; // keep track of entities.
+
+			Entity.prototype.add = function(component){
+				if ( !component ) return this;
+				if ( !component.name ) return this;
+				if ( component == {} ) return this;
+				this.components[component.name.toLowerCase()] = component;
+				return this;
+			};
+
+			Entity.prototype.get = function(component) {
+				if ( !component ) return null;
+				if ( !component.name ) return null;
+				if ( component == {} ) return null;
+				return this.components[component.name.toLowerCase()];
+			};
+
+			Entity.prototype.remove = function(name) {
+				if ( !component ) return this;
+				if ( !component.name ) return this;
+				if ( component == {} ) return this;
+				delete this.components[name.toLowerCase()];
+				return this;
+			};
+*/
+		</script>
+
+		<script>
+/*
+		//	System Class (under construction).
+
+			function isSystem(){ return true; }
+
+			function System(){}
+
+			System.prototype.isSystem = isSystem;
+
+			System.prototype.init = function(entities){};
+			System.prototype.start = function(entities){};
+			System.prototype.stop = function(entities){};
+			System.prototype.keydown = function(entities){};
+			System.prototype.keyup = function(entities){};
+			System.prototype.mousedown = function(entities){};
+			System.prototype.mouseup = function(entities){};
+			System.prototype.mousemove = function(entities){};
+			System.prototype.touchstart = function(entities){};
+			System.prototype.touchend = function(entities){};
+			System.prototype.touchmove = function(entities){};
+			System.prototype.update = function(dt, entities){};
+*/
+
 		</script>
 
 		<script>
