@@ -1134,25 +1134,25 @@
 		//	KeyInputControl events.
 
 			SystemManager.prototype.movekeyon = function(e, entities){
-				debugMode && console.log( e );
+			//	debugMode && console.log( e );
 				if ( e.type != "movekeyon" ) return;
 			//	Define jumpkeypress event systems order.
 				ModifyControllerStateSystem(e, entities);
 			};
 			SystemManager.prototype.movekeyoff = function(e, entities){
-				debugMode && console.log( e );
+			//	debugMode && console.log( e );
 				if ( e.type != "movekeyoff" ) return;
 			//	Define jumpkeypress event systems order.
 				ModifyControllerStateSystem(e, entities);
 			};
 			SystemManager.prototype.movekeychange = function(e, entities){
-				debugMode && console.log( e );
+			//	debugMode && console.log( e );
 				if ( e.type != "movekeychange" ) return;
 			//	Define jumpkeypress event systems order.
 				ModifyControllerStateSystem(e, entities);
 			};
 			SystemManager.prototype.jumpkeypress = function(e, entities){
-				debugMode && console.log( e );
+			//	debugMode && console.log( e );
 				if ( e.type != "jumpkeypress" ) return;
 			//	Define jumpkeypress event systems order.
 				ModifyControllerStateSystem(e, entities);
@@ -1335,7 +1335,7 @@
 					component.name = "localPlayer helper";
 					component.isComponent = true;
 				//	Add helper to scene.
-					localPlayer.Object3D.add( component );
+					entity.Object3D.add( component );
 					return component;
 				})(1,7);
 
@@ -1399,7 +1399,8 @@
 				}
 			}
 
-		//	TODO: a system to change controller object (when click something?).
+		//	Push localPlayer entity.
+			entities.push( localPlayer ); // important!
 
 		//	Debuging.
 		//	(function update(){
@@ -1407,8 +1408,7 @@
 		//		LocalPlayerRotationUpdateSystem([localPlayer]); // important!
 		//	})();
 
-		//	Push localPlayer entity.
-			entities.push( localPlayer );
+		//	TODO: a system to change controller object (when click something?).
 
 		</script>
 
@@ -1424,6 +1424,7 @@
 			const keyInputControls = new MW.KeyInputControl(); // component instance.
 
 		//	localPlayer entity may have a KeyInputControl component.
+
 			localPlayer.KeyInputControl = keyInputControls; // bypass add() method.
 
 			keyInputControls.addEventListener( "movekeyon", function (e) { 
@@ -1449,7 +1450,6 @@
 				//	localPlayerController.direction = THREE.Math.degToRad( 360 ) - cameraFrontAngle + characterFrontAngle;
 			});
 
-
 			function ModifyControllerStateSystem(e, entities){
 
 				var system = arguments.callee.name;
@@ -1473,29 +1473,33 @@
 				}
 
 				if ( !collected.length ) return;
-			//	debugMode && console.log( syslogcid( system, collectId ) );
+				debugMode && console.log( syslogcid( system, collectId ) );
 
 				while ( collected.length ){
 					update( collected.shift() );
 				}
 
-				function update(){
+				function update(entity){
 
 					switch ( e.type ){
 
 						case "movekeyon":
+							if ( entity.JumpOnly ) break;
 							entity.Controller.isRunning = true;
 						break;
 
 						case "movekeyoff":
+							if ( entity.JumpOnly ) break;
 							entity.Controller.isRunning = false;
 						break;
 
 						case "jumpkeypress":
+							if ( entity.JumpOnly === false ) break;
 							entity.Controller.jump();
 						break;
 
 						case "movekeychange": {
+							if ( entity.JumpOnly ) break;
 							var cameraFrontAngle = cameraControls.getFrontAngle();
 							var characterFrontAngle = entity.KeyInputControl.frontAngle;
 							entity.Controller.direction = THREE.Math.degToRad( 360 ) - cameraFrontAngle + characterFrontAngle;
