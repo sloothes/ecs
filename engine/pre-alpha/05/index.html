@@ -227,40 +227,6 @@
 		</script>
 
 		<script>
-
-		//	Camera Controls (component instance).
-
-			const cameraControls = (function(){
-
-				var object3d = new THREE.Object3D();
-				
-				var options = {	
-					el: renderer.domElement,
-					offset: new THREE.Vector3( 0, 0.9, 0 ), // eye height.
-					radius: 2, // default distance of the character to the camera.
-					minRadius: 2,
-					maxRadius: 10,
-					rigidObjects: [],
-				};
-
-				var cameraControls = new MW.TPSCameraControl(
-					camera, 	// three.js camera.
-					object3d,	// tracking object.
-					options
-				);
-
-				(function update(){
-					requestAnimationFrame( update );
-					cameraControls.update();
-				})();
-
-				return cameraControls;
-
-			})();
-
-		</script>
-
-		<script>
 /*
 		//	Enity Component System Engine.
 
@@ -1285,6 +1251,40 @@
 
 		<script>
 
+		//	Camera Controls (component instance).
+
+			const cameraControls = (function(){
+
+				var object3d = new THREE.Object3D();
+				
+				var options = {	
+					el: renderer.domElement,
+					offset: new THREE.Vector3( 0, 0, 0 ), // eye height.
+					radius: 2, // default distance of the character to the camera.
+					minRadius: 2,
+					maxRadius: 10,
+					rigidObjects: [],
+				};
+
+				var cameraControls = new MW.TPSCameraControl(
+					camera, 	// three.js camera.
+					object3d,	// tracking object.
+					options
+				);
+
+				(function update(){
+					requestAnimationFrame( update );
+					cameraControls.update();
+				})();
+
+				return cameraControls;
+
+			})();
+
+		</script>
+
+		<script>
+
 		//	## Local Player entity.
 
 		//	localPlayer is an entity instance.
@@ -1349,6 +1349,9 @@
 
 				entity.Rotation = object3d.rotation; // bypass add() method.
 				entity.Direction = controller.direction; // bypass add() method.
+
+			//	localPlayer.Object3D component takes now controls of cameraControls.
+				cameraControls.trackObject = entity.Object3D;
 
 			})( localPlayer );
 
@@ -1440,12 +1443,10 @@
 
 		// synch with keybord input and camera control input.
 			keyInputControls.addEventListener( "movekeychange",  function (e) {
-
+				SystemManager.prototype.movekeychange(e, entities);
 				//	var cameraFrontAngle = cameraControls.getFrontAngle();
 				//	var characterFrontAngle = keyInputControls.frontAngle;
 				//	localPlayerController.direction = THREE.Math.degToRad( 360 ) - cameraFrontAngle + characterFrontAngle;
-
-				SystemManager.prototype.movekeychange(e, entities);
 			});
 
 
