@@ -202,9 +202,8 @@
 		//	Systems helpers.
 
 			function systemValidator(components){
-				if ( !components.length ) return false;
 				while( components.length ){
-					if ( components.shift() == undefined ) return false;
+					if ( components.shift() === undefined ) return false;
 				}
 				return true;
 			}
@@ -223,7 +222,6 @@
 			function syslogcid( name, array ){ 
 				if (array.length) return name+":["+array.join()+"]"; 
 			}
-
 
 		</script>
 
@@ -985,19 +983,20 @@
 
 			//	debugMode && console.log( components );
 
-				var code = "var system = arguments.callee.name;\n\t\t\t\tvar entity, components, passed;\n\t\t\t\tvar collected = [], "
-				+"collectId = [];\n\n\t\t\t//\tCollect entities.\n\t\t\t\tfor (var i = 0; i < entities.length; i++){\n\n\t\t\t\t\t"
-				+"entity = entities[i];\n\n\t\t\t\t\tvar components = [" + components.join() + "\n\t\t\t\t\t];\n\n\t\t\t\t\tif ( systemValidator(components) ) "
-				+"{\n\t\t\t\t\t\tcollected.push(entity);\n\t\t\t\t\t\tcollectId.push(entity._id);\n\t\t\t\t\t}\n\t\t\t\t}\n\n\t\t\t\tif "
-				+"( !collected.length ) return;\n\t\t\t\tconsole.log( syslogcid( system, collectId ) );\n\n\t\t\t\twhile ( collected.length )"
-				+"{\n\t\t\t\t\tupdate( collected.shift() );\n\t\t\t\t}\n" + update.toString();
+			//	Code is wrong; (TODO)
+			//	var code = "var system = arguments.callee.name;\n\t\t\t\tvar entity, components, passed;\n\t\t\t\tvar collected = [], "
+			//	+"collectId = [];\n\n\t\t\t//\tCollect entities.\n\t\t\t\tfor (var i = 0; i < entities.length; i++){\n\n\t\t\t\t\t"
+			//	+"entity = entities[i];\n\n\t\t\t\t\tvar components = [" + components.join() + "\n\t\t\t\t\t];\n\n\t\t\t\t\tif ( systemValidator(components) ) "
+			//	+"{\n\t\t\t\t\t\tcollected.push(entity);\n\t\t\t\t\t\tcollectId.push(entity._id);\n\t\t\t\t\t}\n\t\t\t\t}\n\n\t\t\t\tif "
+			//	+"( !collected.length ) return;\n\t\t\t\tconsole.log( syslogcid( system, collectId ) );\n\n\t\t\t\twhile ( collected.length )"
+			//	+"{\n\t\t\t\t\tupdate( collected.shift() );\n\t\t\t\t}\n" + update.toString();
 
 			//	debugMode && console.log( code );
 
 				return new Function("entities", code);
 				
 			}
-			
+
 			System.prototype.isSystem = true;
 
 		</script>
@@ -1341,13 +1340,12 @@
 			function LocalPlayerRotationUpdateSystem(entities){
 
 				var system = arguments.callee.name;
-				var entity, components, passed;
 				var collected = [], collectId = [];
 
 			//	Collect entities.
 				for (var i = 0; i < entities.length; i++){
 
-					entity = entities[i];
+					var entity = entities[i];
 
 					var components = [
 						entity.Object3D,
@@ -1369,7 +1367,7 @@
 					update( collected.shift() );
 				}
 
-				function update(){
+				function update( entity ){
 					entity.Rotation.y = entity.Direction = entity.Controller.direction + Math.PI; // important!
 				}
 			}
@@ -1421,13 +1419,12 @@
 			function KeyInputControllerStateSystem(e, entities){
 
 				var system = arguments.callee.name;
-				var entity, components, passed;
 				var collected = [], collectId = [];
 
 			//	Collect entities.
 				for (var i = 0; i < entities.length; i++){
 
-					entity = entities[i];
+					var entity = entities[i];
 
 					var components = [
 						entity.Controller,
@@ -1448,7 +1445,7 @@
 					update( collected.shift() );
 				}
 
-				function update(entity){
+				function update( entity ){
 
 					switch ( e.type ){
 
@@ -1518,13 +1515,12 @@
 			function JoystickControllerStateSystem(e, entities){
 
 				var system = arguments.callee.name;
-				var entity, components, passed;
 				var collected = [], collectId = [];
 
 			//	Collect entities.
 				for (var i = 0; i < entities.length; i++){
 
-					entity = entities[i];
+					var entity = entities[i];
 
 					var components = [
 						entity.Controller,
@@ -1552,7 +1548,7 @@
 
 				}
 
-				function stateUpdate(entity){
+				function stateUpdate( entity ){
 
 					if ( entity.JumpOnly ) return;
 					if ( entity.Controller.isJumping ) return;
@@ -1588,9 +1584,7 @@
 
 			const jumpButton = (function(){
 
-				var joystickControlsSelector = "#joystick-controls-1";
-
-				var button = new virtualInput.Button( $( joystickControlsSelector ), 58, { id: "jumpButton", label: "<b>JUMP</b>" } ); // buttonSvgSrc
+				var button = new virtualInput.Button( $( "#joystick-controls-1" ), 58, { id: "jumpButton", label: "<b>JUMP</b>" } );
 
 				button.addEventListener( "press", function(e) { 
 					SystemManager.prototype.press(e, entities);
