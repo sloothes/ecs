@@ -1517,7 +1517,7 @@
 				}
 
 				if ( !collected.length ) return;
-				debugMode && console.log( syslogcid( system, collectId ) );
+			//	debugMode && console.log( syslogcid( system, collectId ) );
 
 				while ( collected.length ){
 					update( collected.shift() );
@@ -1624,7 +1624,7 @@
 				}
 
 				if ( !collected.length ) return;
-				debugMode && console.log( syslogcid( system, collectId ) );
+			//	debugMode && console.log( syslogcid( system, collectId ) );
 
 				while ( collected.length ){
 
@@ -1644,14 +1644,6 @@
 				}
 
 				function update(entity){
-
-				//	if ( e == null && entity.VirtualJoystick.isActive ){
-				//		var rad = THREE.Math.degToRad( 270 );
-				//		var joystickAngle = entity.VirtualJoystick.angle;
-				//		var cameraFrontAngle = cameraControls.getFrontAngle()
-				//		entity.Controller.direction = rad - cameraFrontAngle + joystickAngle;
-				//		return;
-				//	}
 
 					if ( entity.JumpOnly ) return;
 					if ( entity.Controller.isJumping ) return;
