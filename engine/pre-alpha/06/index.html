@@ -248,48 +248,7 @@
 		//	Speaking with mongodb terms, entity is a document: the id of the document 
 		//	is the entity id and the fields of the document are the components.
 		//	All entities are members of the Entity class.
-
-		//	Entity class.
-
-			function Entity(){
-
-				this.id = Entity.prototype._count++;
-				
-				return this;
-			}
-			
-			Entity.prototype._count = 0;
-			Entity.prototype.length = 0;
-			Entity.prototype.isEntity = true;
-
-			Entity.prototype.add = function( component ){
-				if ( component === undefined ) return;
-				if ( component.name === undefined ) return;
-				if ( component.isComponent === undefined ) return;
-				var key = component.name.toLowerCase();
-				if ( this[ key ] === undefined ){
-					this[ key ] = component;
-					++this.length;
-				}
-				return this;
-			};
-
-			Entity.prototype.get = function( name ){
-				if ( !name ) return;
-				var key = name.toLowerCase();
-				return this[ key ];
-			};
-
-			Entity.prototype.remove = function( name ) {
-				if ( !name ) return;
-				var key = name.toLowerCase();
-				if ( this[ key ] !== undefined ) {
-					--this.length;
-					delete this[ key ];
-				}
-				return this;
-			};
-
+		//
 		//	## Components.
 		//	(Implementations typically use structs[1], classes[2], or associative arrays[3]).
 		//
@@ -313,48 +272,24 @@
 		//	Components do not know what "state" they are.
 		//	Components do not know each other in an entity.
 		//	All components are members of the Component super class.
-
-		//	Component super class.
-
-			function Component ( name, data ){
-
-			//	if ( !name ) throw "ConstructorError: name is required.";
-			//	if ( !data ) throw "ConstructorError: data object is required";
-
-				Object.assign( this, data ); // shallow copy.
-
-				if ( name ) this.name = name; // after assign.
-				
-				return this;
-			}
-
-			Component.prototype.isComponent = true;
-
-			Component.prototype.set = function( key, value ){
-				this[ key ] = value;
-			};
-
-			Component.prototype.get = function( key ){
-				return this[ key ];
-			};
-						
+		//
 		//	Extend Component super class with Object3D child class (traditional js).
 		//	source: "https://medium.com/beginners-guide-to-mobile-web-development/super-and-extends-in-javascript-es6-understanding-the-tough-parts-6120372d3420"
-
-			function Object3D(name, data) {
-				Component.call(this, name, data);
-			}
-
-			Object3D.prototype = Object.create(Component.prototype);
-			Object3D.prototype.constructor = Object3D;
-			Object3D.prototype.isComponent = Component.prototype.isComponent;
-			Object3D.prototype.set = function( key, value ){
-				Component.prototype.set.call(this, key, value);
-			};
-			Object3D.prototype.get = function( key ){
-				Component.prototype.get.call(this, key);
-			};
-
+		//
+		//		function Object3D(name, data) {
+		//			Component.call(this, name, data);
+		//		}
+		//
+		//		Object3D.prototype = Object.create(Component.prototype);
+		//		Object3D.prototype.constructor = Object3D;
+		//		Object3D.prototype.isComponent = Component.prototype.isComponent;
+		//		Object3D.prototype.set = function( key, value ){
+		//			Component.prototype.set.call(this, key, value);
+		//		};
+		//		Object3D.prototype.get = function( key ){
+		//			Component.prototype.get.call(this, key);
+		//		};
+		//
 		//	## Systems.
 		//
 		//	(All the code for the one aspect of the gameobjects, with each System running continuously as 
@@ -373,24 +308,23 @@
 		//	System can add/remove components from an entity (change the "kind" of the entity).
 		//	Systems are triggered by events, by signals, by observers, or runs continuously.
 		//	All systems are members of the System super class.
-
+		//
 		//	System super class.
-
-			function System ( entities ){}
-
-			System.prototype.isSystem = true;
-
+		//
+		//	function System ( entities ){}
+		//	System.prototype.isSystem = true;
+		//
 		//	Example: Extend System super class with ChildSystem child class (traditional js).
 		//	source: "https://medium.com/beginners-guide-to-mobile-web-development/super-and-extends-in-javascript-es6-understanding-the-tough-parts-6120372d3420"
-
-			function ChildSystem ( entities ){
-				System.call(this, entities);
-			}
-
-			ChildSystem.prototype = Object.create(System.prototype);
-			ChildSystem.prototype.constructor = ChildSystem;
-			ChildSystem.prototype.isSystem = System.prototype.isSystem;
-
+		//
+		//		function ChildSystem ( entities ){
+		//			System.call(this, entities);
+		//		}
+		//
+		//		ChildSystem.prototype = Object.create(System.prototype);
+		//		ChildSystem.prototype.constructor = ChildSystem;
+		//		ChildSystem.prototype.isSystem = System.prototype.isSystem;
+		//
 		//	Notes:
 		//
 		//	[1] Using structs in JavaScript (example, syntax):  I like the idea of using something like a C-like “struct” 
@@ -596,24 +530,24 @@
 		<script>
 
 		//	Components class.
-
+		//
 		//	const isComponent = true; // primitive type, locked.
-
+		//
 		//	All primitive threejs objects are Component-Types.
 		//	We do not use any specific class for components.
 		//	Any object can be a component instance.
-			
+		//
 		//	THREE.Object3D.prototype.isComponent = true; // primitive type.
-
+		//
 		//	We can define threejs component classes that inherits
 		//	mixed from threejs constructors and the Component class.
-
-		//	function Component( data ){
-
-		//		Object.assign(this, data);
-
-		//	}
-
+		//
+		//		function Component( data ){
+		//
+		//			Object.assign(this, data);
+		//
+		//		}
+		//
 		//	Component.prototype.isComponent = true; // primitive type. How to lock it?
 
 		</script>
