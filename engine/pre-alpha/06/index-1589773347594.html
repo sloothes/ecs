@@ -1132,19 +1132,19 @@
 			SystemManager.prototype.movekeyon = function(e, entities){
 			//	debugMode && console.log( e );
 				if ( e.type != "movekeyon" ) return;
-			//	Define jumpkeypress event systems order.
+			//	Define movekeyon event systems order.
 				KeyInputControllerStateSystem(e, entities);
 			};
 			SystemManager.prototype.movekeyoff = function(e, entities){
 			//	debugMode && console.log( e );
 				if ( e.type != "movekeyoff" ) return;
-			//	Define jumpkeypress event systems order.
+			//	Define movekeyoff event systems order.
 				KeyInputControllerStateSystem(e, entities);
 			};
 			SystemManager.prototype.movekeychange = function(e, entities){
 			//	debugMode && console.log( e );
 				if ( e.type != "movekeychange" ) return;
-			//	Define jumpkeypress event systems order.
+			//	Define movekeychange event systems order.
 				KeyInputControllerStateSystem(e, entities);
 			};
 			SystemManager.prototype.jumpkeypress = function(e, entities){
@@ -1157,19 +1157,26 @@
 		//	VirtualJoystick events.
 
 			SystemManager.prototype.active = function(e, entities){
-				debugMode && console.log( e );
+			//	debugMode && console.log( e );
 				if ( e.type != "active" ) return;
-			//	Define jumpkeypress event systems order.
+			//	Define active event systems order.
 				JoystickControllerStateSystem(e, entities);
 			};
 			SystemManager.prototype.disactive = function(e, entities){
-				debugMode && console.log( e );
+			//	debugMode && console.log( e );
 				if ( e.type != "disactive" ) return;
-			//	Define jumpkeypress event systems order.
+			//	Define disactive event systems order.
 				JoystickControllerStateSystem(e, entities);
 			};
 
+		//	JumpButton events.
 
+			SystemManager.prototype.press = function(e, entities){
+			//	debugMode && console.log( e );
+				if ( e.type != "press" ) return;
+			//	Define press event systems order.
+				KeyInputControllerStateSystem(e, entities);
+			};
 
 		//	Keyboard events.
 
@@ -1537,6 +1544,7 @@
 							entity.Controller.isRunning = false;
 						break;
 
+						case "press":
 						case "jumpkeypress":
 							if ( entity.JumpOnly === false ) break;
 							entity.Controller.jump();
@@ -1561,7 +1569,7 @@
 
 		<script>
 
-		//	## JoystickControllerStateSystem.
+		//	## VirtualJoystickControl System.
 		//	VirtualJoystick modifies the state of Character Controller component.
 		//	VirtualJoystick + Controller + (event) => JoystickControllerStateSystem.
 
@@ -1658,14 +1666,17 @@
 			}
 
 
-		//	## Virtual Joystick Controls.
+		//	## JumbButton System.
 
 			const jumpButton = (function(){
 
-				var joystickControls1Selector = "#joystick-controls-1";
-				var jumpButtonSelector = "#jumpButton";
+				var joystickControlsSelector = "#joystick-controls-1";
 
-				return new virtualInput.Button(   $( joystickControls1Selector ), 58, { id: "jumpButton", label: "<b>JUMP</b>" } ); // buttonSvgSrc
+				var button = new virtualInput.Button( $( joystickControlsSelector ), 58, { id: "jumpButton", label: "<b>JUMP</b>" } ); // buttonSvgSrc
+
+				button.addEventListener( "press", function(e) { 
+					SystemManager.prototype.press(e, entities);
+				});
 
 			})();
 
@@ -1685,52 +1696,6 @@
 
 
 */
-
-/*
-
-				joystick1.addEventListener( "active", function onActive() { 
-
-					if (  localPlayerController.isJumping 
-						|| !localPlayerController.isGrounded 
-						|| localPlayerController.isOnSlope ) {
-						return;
-					}
-
-					localPlayerController.isRunning = true;
-
-				});
-
-				joystick1.addEventListener( "disactive", function onDisactive() { 
-
-					if (  localPlayerController.isJumping 
-						|| !localPlayerController.isGrounded 
-						||  localPlayerController.isOnSlope ) {
-						return;
-					}
-
-					localPlayerController.isRunning = false;
-
-				});
-
-				virtualJoystick.update = function(){
-
-					if ( this.isActive ) {
-
-						localPlayerController.direction = (3 * Math.PI/2) - cameraControls.getFrontAngle() + this.angle;
-
-					}
-				};
-
-				(function update(){
-					virtualJoystick.update();
-					SystemManager.prototype.frameId = requestAnimationFrame( update );
-				})();
-
-*/
-
-
-
-
 
 		</script>
 
