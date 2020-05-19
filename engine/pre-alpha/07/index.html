@@ -1505,17 +1505,19 @@
 
 			const jumpButton = (function(){
 
+				var interval;
 				var button = new virtualInput.Button( $( "#joystick-controls-1" ), 58, { id: "jumpButton", label: "<b>JUMP</b>" } );
 
-				var interval;
-			//	Because "press" event fires twice, we use 
-			//	the clearTimeout method to get only the last "press" event.
+			//	## Use clearTimeout to event listeners to ensure last event parsing.
+			//	Because "press" event fires twice, we use the clearTimeout method 
+			//	to parse only the last "press" event.
 				button.addEventListener( "press", function(e) { 
+				//	debugMode && console.log(e); // double event.
 					clearTimeout( interval );
 					interval = setTimeout(function(){
-					//	debugMode && console.log(e);
+					//	debugMode && console.log(e); // single event.
 						SystemManager.prototype.press(e, entities);
-					})
+					});
 				});
 
 				return button;
@@ -1526,7 +1528,46 @@
 
 		<script>
 
-		//	## ControlledObject3D entity.
+		//	## ControllableObject3D entity type.
+		//
+		//	ControllableObject3D entity type creates a controllable (by the user) object3d.
+		//	A ControllableObject3D type entity must have:
+		//		a Object3D ( or Group ) component,
+		//		a Rotation component,
+		//		a Direction component,
+		//		a Controller component, 
+		//		a KeyInputControl component,
+		//		and/or a VirtualJoystick component.
+		//
+		//	If one or more from the above components missing, then the entity 
+		//	Object3D (or Group) component instance is no more controllable and 
+		//	the entity is no more ControllableObject3D-type.
+		//	If only the KeyInputControl && VirtualJoystick is missing then the
+		//	entity is still ControllableObject3D-type, but not controllable by
+		//	the user.
+
+			function isControllable(entity){
+			//	All items must be "false" to parse the test.
+				var components = [
+					entity.Object3D === undefined && entity.Group === undefined, // true:(true && true):, false:(true && false, false && false)
+					entity.Rotation === undefined, // false,
+					entity.Direction === undefined, // false,
+					entity.Controller === undefined, // false,
+					entity.KeyInputControl === undefined && entity.VirtualJoystick === undefined // true:(true && true):, false:(true && false, false && false)
+				];
+
+			//	all items must be false:(!undefined) to pass test.
+				debugMode && console.log( components ); 
+
+			//	if ( a component is undefined:true ) return false.
+				while ( components.length ){
+					if ( components.shift() ) return false;
+				}
+
+				return true;
+			}
+
+		//	Example:
 
 		//	controlledObject is an entity instance.
 			var controlledObject = new Entity(); // entity instance.
@@ -1534,7 +1575,6 @@
 			(function(entity){
 
 			//	controlled object must have a object3d component.
-
 				var object3d = (function(){
 					var component = new THREE.Object3D();
 					component.name = "local player";
@@ -1547,24 +1587,7 @@
 			//	Add component to entity.
 				entity.Object3D = object3d; // bypass add() method.
 
-			//	controlled object must have a user controller component.
-
-				const controller = (function(object, radius){
-				//	Create controller component instance.
-					var component = new MW.CharacterController(object, radius);
-					component.movementSpeed = 10;
-					component.maxSlopeGradient = 0.5;
-					component.isComponent = true;
-				//	Add controller to world.
-					world.add( component ); // important!
-					return component;
-				})( entity.Object3D, 1.7/2 );
-
-			//	Add component to entity.
-				entity.Controller = controller; // bypass add() method.
-
-			//	controlled object can have a bounding sphere helper component.
-
+			//	controlled object may have a bounding sphere helper component.
 				var helper = (function(radius){
 					var component = new THREE.Mesh(
 						new THREE.SphereGeometry( radius, 8, 6 ),
@@ -1580,32 +1603,41 @@
 			//	Add component to entity.
 				entity.Helper = helper; // bypass add() method.
 
-			//	As we see in "ControlledObjectRotationSystem", we need a "Rotation" and  
+			//	controlled object must have a (user) controller component.
+				const controller = (function(object, radius){
+				//	Create controller component instance.
+					var component = new MW.CharacterController(object, radius);
+					component.movementSpeed = 10;
+					component.maxSlopeGradient = 0.5;
+					component.isComponent = true;
+				//	Add controller to world.
+					world.add( component ); // important!
+					return component;
+				})( entity.Object3D, 1.7/2 );
+
+			//	Add component to entity.
+				entity.Controller = controller; // bypass add() method.
+
+			//	As will see in "ControlledObjectRotationSystem", we need a "Rotation" and  
 			//	a "Direction" component to pass the "systemValidator()" of the system and
-			//	trigger the update function.
+			//	trigger the update() function.
 				entity.Rotation = object3d.rotation; // bypass add() method.
 				entity.Direction = controller.direction; // bypass add() method.
-
 			//	Add KeyInputControl and VirtualJoystick components to make entity controlable.
 				entity.VirtualJoystick = virtualJoystick; // bypass add() method.
 				entity.KeyInputControl = keyInputControls; // bypass add() method.
 
-			//	controlledObject.Object3D component takes now control of cameraControls component.
+			//	controlledObject.Object3D component takes 
+			//	the control of cameraControls component now.
 				cameraControls.trackObject = entity.Object3D;
+
+			//	Push controlledObject entity to entities queue.
+				entities.push( controlledObject ); // important!
 
 			})( controlledObject );
 
-		//	Push controlledObject entity.
-			entities.push( controlledObject ); // important!
-
 		//	controlledObject need a system to update the object3d component rotation.
 		//	Object3D + Rotation + Direction + Controller => ControlledObjectRotationSystem()
-
-		//	Debugging test.
-		//	(function update(){
-		//		SystemManager.prototype.frameId = requestAnimationFrame( update );
-		//		controlledObject.rotation.y = localPlayerController.direction + Math.PI; // important!
-		//	})();
 
 			function LocalPlayerRotationUpdateSystem(entities){
 
@@ -1642,10 +1674,10 @@
 				}
 			}
 
-		//	Debuging.
+		//	Debugging test.
 		//	(function update(){
-		//		requestAnimationFrame( update );
-		//		LocalPlayerRotationUpdateSystem([localPlayer]); // important!
+		//		SystemManager.prototype.frameId = requestAnimationFrame( update );
+		//		controlledObject.rotation.y = localPlayerController.direction + Math.PI; // important!
 		//	})();
 
 		//	TODO: a system to change controller object (when click something?).
@@ -1764,6 +1796,13 @@
 					entity.Rotation.y = entity.Direction = entity.Controller.direction + Math.PI; // important!
 				}
 			}
+
+
+		//	Debuging.
+		//	(function update(){
+		//		requestAnimationFrame( update );
+		//		LocalPlayerRotationUpdateSystem([localPlayer]); // important!
+		//	})();
 
 */
 
