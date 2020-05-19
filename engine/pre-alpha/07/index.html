@@ -1536,28 +1536,35 @@
 		//		a Rotation component,
 		//		a Direction component,
 		//		a Controller component, 
+		//	optional:
 		//		a KeyInputControl component,
 		//		and/or a VirtualJoystick component.
+		//		(+ any other user controls component)
 		//
-		//	If one or more from the above components missing, then the entity 
+		//	If one or more from the four components missing, then the entity 
 		//	Object3D (or Group) component instance is no more controllable and 
 		//	the entity is no more ControllableObject3D-type.
 		//	If only the KeyInputControl && VirtualJoystick is missing then the
 		//	entity is still ControllableObject3D-type, but not controllable by
 		//	the user.
 
+			function isUserControllable(entity){
+			//	returns true:  true && !(true && false), true && !(false && false),
+			//	returns false: true && !(true && true), false && (anything).
+				return isControllable(entity) && !(entity.KeyInputControl === undefined && entity.VirtualJoystick === undefined);
+			}
+
 			function isControllable(entity){
 			//	All items must be "false" to parse the test.
 				var components = [
-					entity.Object3D === undefined && entity.Group === undefined, // true:(true && true):, false:(true && false, false && false)
 					entity.Rotation === undefined, // false,
 					entity.Direction === undefined, // false,
 					entity.Controller === undefined, // false,
-					entity.KeyInputControl === undefined && entity.VirtualJoystick === undefined // true:(true && true):, false:(true && false, false && false)
+					entity.Object3D === undefined && entity.Group === undefined, // true:(true && true):, false:(true && false, false && false)
 				];
 
 			//	all items must be false:(!undefined) to pass test.
-				debugMode && console.log( components ); 
+			//	debugMode && console.log( components ); 
 
 			//	if ( a component is undefined:true ) return false.
 				while ( components.length ){
