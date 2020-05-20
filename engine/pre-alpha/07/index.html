@@ -1995,6 +1995,102 @@
 				return true;
 			}
 
+		</script>
+
+
+		<script>
+
+		//	## Synopsis.
+			
+			//	Define component types.
+			//	Create component instances.
+			//	Create entities instances.
+			//	Define entities systems.
+			//	Define systems order in SystemManager methods.
+			//	Define SystemManager methods order in runtime.
+
+		</script>
+
+		<script>
+
+		//	## Runtime.
+
+		//	Init.
+
+			SystemManager.prototype.init( entities );
+
+		//	Main Loop.
+
+			SystemManager.prototype.runtime();
+
+		//	Interval/Timeout.
+
+			//	Add here SystemManager.prototype.interval systems.
+
+		//
+
+		</script>
+
+		<script>
+
+			//	Rdbms With Code In Systems Implementation.
+			//	source: "http://entity-systems.wikidot.com/rdbms-with-code-in-systems"
+			//
+			//	## Concepts.
+			//		(integer) Entity
+			//		(enum) ComponentType
+			//		(interface OR empty base-class) Component
+			//		(interface OR empty base-class) System
+			//		(class with implementation) EntityManager
+			//
+			//	## Data Classes.
+			//
+			//	Entity: This is a non-negative integer, and uniquely identifies an entity 
+			//	within the ES. If you serialize your ES, this SHOULD be the same after serialization. 
+			//	New entities have to be assigned a new, unique, integer value when they are created. 
+			//	When an entity is destroyed, its integer value is freed, available for re-use.
+			//
+			//	ComponentType: This is needed because this ES is so simplistic it has no other way 
+			//	of identifying which Component you're talking about when you're looking at a single 
+			//	Entity. (richer EntitySystems MAY not need this type).
+			//
+			//	Component: This exists purely to make method-signatures type-safe. 
+			//	We need to know that certain objects are valid instances of a "component" 
+			//	(so we use this superclass to indicate that), but we also need a method that's 
+			//	guaranteed to work on all those objects. (richer EntitySystems make more use of this, 
+			//	and require it to be a class).
+			//
+			//	System: This exists purely to contain a known method-signature that your game-loop 
+			//	can call once per game-tick.
+			//
+			//	## EntitySystem Implementation Classes.
+			//
+			//	Each subclass of Component: Internally, the class has the following functions:
+			//	(ComponentType) getComponentType();
+			//
+			//	System: Just one method, that gives you a common interface to trigger each of 
+			//	the systems: processOneGameTick( long previousFrameTime );
+			//
+			//	EntityManager: This contains:
+			//	The master collections (arrays, hashmaps, whatever) that contain all the data for all the entities.
+			//	Logic for creating, modifying, fetching, and deleting entities.
+			//	Logic for fetching and modifying components-from-entities.
+			//	Internally, the class has the following variables:
+			//	LIST: all entities in existence (so it never duplicates entity-IDs!).
+			//	MAP: from "Entity + ComponentType" to "concrete Component subclass".
+			//	Internally, the class has the following functions:
+			//	(Component) getComponent( Entity, ComponentType );
+			//	(List) getAllComponentsOfType( ComponentType );
+			//	(List) getAllEntitiesPossessingComponent( ComponentType );
+			//	(void) addComponent( Entity, Component );
+			//	(int) createEntity;
+			//	void) killEntity( Entity );
+
+		</script>
+
+
+		<script>
+/*
 		//	Demo: editableObject is an entity instance.
 
 			var object = (function(d){
@@ -2097,37 +2193,6 @@
 				
 			})();
 
-		//	object rotation update.
-		//	window.addEventListener("keypress", function(e){
-		//		if (virtualJoystick.isActive){
-		//		//	debugMode && console.log(e);
-		//			var rad = THREE.Math.degToRad( 270 );
-		//			var joystickAngle = virtualJoystick.angle;
-		//			var cameraFrontAngle = cameraControls.getFrontAngle();
-		//			var angle = rad - cameraFrontAngle + joystickAngle;
-		//			if ( e && e.type == "keypress" && e.code == "KeyX" ) object.rotation.x = angle;
-		//		//	if ( e && e.type == "keypress" && e.code == "KeyC" ) object.rotation.y = angle;
-		//			if ( e && e.type == "keypress" && e.code == "KeyZ" ) object.rotation.z = angle;
-		//		}
-		//	});
-
-/*
-		//	object position update.
-			window.addEventListener("keypress", function(e){
-				if (virtualJoystick.isActive){
-				//	debugMode && console.log(e);
-					var rad = THREE.Math.degToRad( 270 );
-					var joystickAngle = virtualJoystick.angle;
-					var cameraFrontAngle = cameraControls.getFrontAngle();
-					controller.direction = rad - cameraFrontAngle + joystickAngle;
-					controller.updatePosition(0.02); // dt.
-					controller.updateVelocity();
-
-					if ( e && e.type == "keypress" && e.code == "KeyX" ) object.position.x = controller.center.x;
-					if ( e && e.type == "keypress" && e.code == "KeyC" ) object.position.y = controller.center.y;
-					if ( e && e.type == "keypress" && e.code == "KeyZ" ) object.position.z = controller.center.z;
-				}
-			});
 */
 
 /*
@@ -2196,96 +2261,6 @@
 				cameraControls.trackObject = editorControllable.Object3D;
 			}, 10000);
 */
-		</script>
-
-		<script>
-
-		//	## Synopsis.
-			
-			//	Define component types.
-			//	Create component instances.
-			//	Create entities instances.
-			//	Define entities systems.
-			//	Define systems order in SystemManager methods.
-			//	Define SystemManager methods order in runtime.
-
-		</script>
-
-		<script>
-
-		//	## Runtime.
-
-		//	Init.
-
-			SystemManager.prototype.init( entities );
-
-		//	Main Loop.
-
-			SystemManager.prototype.runtime();
-
-		//	Interval/Timeout.
-
-			//	Add here SystemManager.prototype.interval systems.
-
-		//
-
-		</script>
-
-		<script>
-
-			//	Rdbms With Code In Systems Implementation.
-			//	source: "http://entity-systems.wikidot.com/rdbms-with-code-in-systems"
-			//
-			//	## Concepts.
-			//		(integer) Entity
-			//		(enum) ComponentType
-			//		(interface OR empty base-class) Component
-			//		(interface OR empty base-class) System
-			//		(class with implementation) EntityManager
-			//
-			//	## Data Classes.
-			//
-			//	Entity: This is a non-negative integer, and uniquely identifies an entity 
-			//	within the ES. If you serialize your ES, this SHOULD be the same after serialization. 
-			//	New entities have to be assigned a new, unique, integer value when they are created. 
-			//	When an entity is destroyed, its integer value is freed, available for re-use.
-			//
-			//	ComponentType: This is needed because this ES is so simplistic it has no other way 
-			//	of identifying which Component you're talking about when you're looking at a single 
-			//	Entity. (richer EntitySystems MAY not need this type).
-			//
-			//	Component: This exists purely to make method-signatures type-safe. 
-			//	We need to know that certain objects are valid instances of a "component" 
-			//	(so we use this superclass to indicate that), but we also need a method that's 
-			//	guaranteed to work on all those objects. (richer EntitySystems make more use of this, 
-			//	and require it to be a class).
-			//
-			//	System: This exists purely to contain a known method-signature that your game-loop 
-			//	can call once per game-tick.
-			//
-			//	## EntitySystem Implementation Classes.
-			//
-			//	Each subclass of Component: Internally, the class has the following functions:
-			//	(ComponentType) getComponentType();
-			//
-			//	System: Just one method, that gives you a common interface to trigger each of 
-			//	the systems: processOneGameTick( long previousFrameTime );
-			//
-			//	EntityManager: This contains:
-			//	The master collections (arrays, hashmaps, whatever) that contain all the data for all the entities.
-			//	Logic for creating, modifying, fetching, and deleting entities.
-			//	Logic for fetching and modifying components-from-entities.
-			//	Internally, the class has the following variables:
-			//	LIST: all entities in existence (so it never duplicates entity-IDs!).
-			//	MAP: from "Entity + ComponentType" to "concrete Component subclass".
-			//	Internally, the class has the following functions:
-			//	(Component) getComponent( Entity, ComponentType );
-			//	(List) getAllComponentsOfType( ComponentType );
-			//	(List) getAllEntitiesPossessingComponent( ComponentType );
-			//	(void) addComponent( Entity, Component );
-			//	(int) createEntity;
-			//	void) killEntity( Entity );
-
 		</script>
 
 	</body>
