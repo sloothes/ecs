@@ -99,6 +99,7 @@
 		<script src="/threejs/r96/examples/js/exporters/OBJExporter.js"></script>
 		<script src="/threejs/r96/examples/js/exporters/ColladaExporter.js"></script>
 
+		<!--script src="/ecs/js/KeyboardState.js"></script-->
 		<script src="/ecs/engine/Enviroment.js"></script>
 		<script src="/ecs/engine/pre-alpha/Entity.js"></script>
 		<script src="/ecs/engine/pre-alpha/EntityManager.js"></script>
@@ -983,6 +984,92 @@
 
 		<script>
 
+			KeyboardState = function(){	
+
+			//	bind keyEvents.
+				window.addEventListener("keydown", KeyboardState.onKeyDown, false);
+				window.addEventListener("keyup",   KeyboardState.onKeyUp,   false);	
+
+			}
+
+			KeyboardState.k = {  
+				8: "backspace",  9: "tab",       13: "enter",    16: "shift", 
+				17: "ctrl",     18: "alt",       27: "esc",      32: "space",
+				33: "pageup",   34: "pagedown",  35: "end",      36: "home",
+				37: "left",     38: "up",        39: "right",    40: "down",
+				45: "insert",   46: "delete",   186: ";",       187: "=",
+				188: ",",      189: "-",        190: ".",       191: "/",
+				219: "[",      220: "\\",       221: "]",       222: "'"
+			};
+
+			KeyboardState.status = {};
+
+			KeyboardState.keyName = function ( keyCode ){
+				return ( KeyboardState.k[keyCode] != null ) ? KeyboardState.k[keyCode] : String.fromCharCode(keyCode);
+			}
+
+			KeyboardState.onKeyUp = function(event){
+				var key = KeyboardState.keyName(event.keyCode);
+				if ( KeyboardState.status[key] ) KeyboardState.status[key].pressed = false;
+			}
+
+			KeyboardState.onKeyDown = function(event){
+				var key = KeyboardState.keyName(event.keyCode);
+				if ( !KeyboardState.status[key] )
+					KeyboardState.status[key] = { down: false, pressed: false, up: false, updatedPreviously: false };
+
+			}
+
+			KeyboardState.prototype.update = function(){
+				for (var key in KeyboardState.status) {
+
+				//	insure that every keypress has "down" status exactly once
+					if ( !KeyboardState.status[key].updatedPreviously ) {
+
+						KeyboardState.status[key].down        		= true;
+						KeyboardState.status[key].pressed     		= true;
+						KeyboardState.status[key].updatedPreviously = true;
+
+					} else {
+						// updated previously
+						KeyboardState.status[key].down = false;
+					}
+
+				//	key has been flagged as "up" since last update
+					if ( KeyboardState.status[key].up ) {
+						delete KeyboardState.status[key];
+						continue; // move on to next key
+					}
+
+					if ( !KeyboardState.status[key].pressed ) // key released
+						KeyboardState.status[key].up = true;
+				}
+			}
+
+			KeyboardState.prototype.down = function(keyName){
+				return (KeyboardState.status[keyName] && KeyboardState.status[keyName].down);
+			}
+
+			KeyboardState.prototype.pressed = function(keyName){
+				return (KeyboardState.status[keyName] && KeyboardState.status[keyName].pressed);
+			}
+
+			KeyboardState.prototype.up = function(keyName){
+				return (KeyboardState.status[keyName] && KeyboardState.status[keyName].up);
+			}
+
+			KeyboardState.prototype.debug = function(){
+				var list = "Keys active: ";
+				for (var arg in KeyboardState.status)
+					list += " " + arg
+					console.log(list);
+			}
+
+
+		</script>
+
+		<script>
+
 		//	System constructor.
 
 			function System(components, update){
@@ -1031,7 +1118,7 @@
 		//	"event", "signal" or watched observers.
 
 			function SystemManager(){
-				this.frameId;
+				this.requestFrameId;
 			};
 
 			//	return {
@@ -1052,7 +1139,9 @@
 			//		get intervalSystems(){},
 			//	}
 
-			SystemManager.prototype.frameId = 0;
+
+			SystemManager.prototype.requestFrameId = 0;
+			SystemManager.keyboard = new KeyboardState(); // important! (non-prototype)
 			SystemManager.prototype.isSystemManager = true;
 
 			SystemManager.prototype.init = function(entities){
@@ -1060,6 +1149,7 @@
 			};
 
 			SystemManager.prototype.update = function(dt, entities){
+				SystemManager.keyboard.update();
 
 			//	Define updating systems order.
 				JoystickControllerStateSystem(null, entities);
@@ -1139,6 +1229,7 @@
 
 			SystemManager.prototype.keyup = function(e, entities){};
 			SystemManager.prototype.keydown = function(e, entities){};
+			SystemManager.prototype.keypress = function(e, entities){};
 
 		//	Mouse events.
 
@@ -1233,16 +1324,15 @@
 
 			SystemManager.prototype.runtime = function(){
 
-				var manager = this;
-				var frameId = this.frameId;
+				var system_manager = this;
+				var requestFrameId = this.requestFrameId;
 
 				(function runtime(){
 
 					var dt = clock.getDelta();
 					var elapsed = clock.getElapsedTime();
-					frameId = requestAnimationFrame( runtime );
-
-					manager.update(dt, entities);
+					system_manager.update(dt, entities);
+					requestFrameId = requestAnimationFrame( runtime );
 
 				})();
 			
@@ -1533,10 +1623,11 @@
 		//	WorldControllableObject entity type defines a world controllable object.
 		//
 		//	A WorldControllableObject-type entity must have:
-		//		a Object3D or Group component,
+		//		a Position component,
 		//		a Rotation component,
 		//		a Direction component,
 		//		a Controller component, 
+		//		a Object3D or Group component,
 		//	optional:
 		//		a KeyInputControl component,
 		//		and/or a VirtualJoystick component.
@@ -1550,13 +1641,16 @@
 		//	by the user.
 
 			function isControllable(entity){
-			//	All items must be "false" to parse the test.
+			//	All items must be "false" to pass test.
+
 				var components = [
 					entity.Position === undefined, // false,
 					entity.Rotation === undefined, // false,
 					entity.Direction === undefined, // false,
 					entity.Controller === undefined, // false,
-					entity.Object3D === undefined && entity.Group === undefined, // true:(true && true):, false:(true && false, false && false)
+				//	false: all except (true && true).
+					entity.Object3D === undefined 
+					&& entity.Group === undefined, 
 				];
 
 			//	all items must be false:(!undefined) to pass test.
@@ -1575,8 +1669,12 @@
 		//	Tip: By holding the "X" "Y" or "Z" key the system should be use to update the object3d component x,y,z rotation respectively. (TODO)
 
 			function isUserControllable(entity){
-			//	returns true:  true && !(true && false), true && !(false && false), returns false: true && !(true && true), false && (anything).
-				return isControllable(entity) && !(entity.KeyInputControl === undefined && entity.VirtualJoystick === undefined);
+			//	true: true && !(true && false), 
+			//		  true && !(false && false), 
+			//	false: all others.
+				return isControllable(entity) 
+					&& !(entity.KeyInputControl === undefined 
+					&& entity.VirtualJoystick === undefined);
 			}
 
 			function UserControllableObjectRotation(entities){
@@ -1600,7 +1698,8 @@
 				}
 
 				function update( entity ){
-					entity.Rotation.y = entity.Direction = entity.Controller.direction + Math.PI; // important!
+					entity.Rotation.y = entity.Direction = 
+					entity.Controller.direction + Math.PI; // important!
 				}
 			}
 
@@ -1614,8 +1713,9 @@
 			//	controllable object must have a object3d component.
 				var object3d = (function(){
 					var component = new THREE.Object3D();
-					component.name = "controllable object";
 					component.isComponent = true;
+					component.position.set(-0.5,1,-3.5);
+					component.name = "controllable object";
 				//	Add object to scene.
 					scene.add( component );
 					return component;
@@ -1626,12 +1726,12 @@
 
 			//	controllable object may have a bounding sphere helper component.
 				var helper = (function(radius){
-					var component = new THREE.Mesh(
-						new THREE.SphereGeometry( radius, 8, 6 ),
-						new THREE.MeshBasicMaterial( { color: 0xffff00,  wireframe: true} )
-					);
-					component.name = "controllable helper";
+					var sphere = new THREE.SphereGeometry( radius, 8, 6 );
+					var geometry = new THREE.EdgesGeometry( sphere );
+					var material = new THREE.LineBasicMaterial( { color: 0xffff00 } );
+					var component = new THREE.LineSegments( geometry, material );
 					component.isComponent = true;
+					component.name = "controllable helper";
 				//	Add helper to scene.
 					entity.Object3D.add( component );
 					return component;
@@ -1644,9 +1744,10 @@
 				const controller = (function(object, radius){
 				//	Create controller component instance.
 					var component = new MW.CharacterController(object, radius);
+					component.isComponent = true;
 					component.movementSpeed = 10;
 					component.maxSlopeGradient = 0.5;
-					component.isComponent = true;
+					component.center.copy(object3d.position);
 				//	Add controller to world.
 					world.add( component ); // important!
 					return component;
@@ -1773,7 +1874,7 @@
 					cameraLight.target = group;
 				//	abjust cameraControls height.
 					cameraControls.offset.y = r;
-				//	group takes controls of cameraControls.
+				//	give camera controls to group.
 					cameraControls.trackObject = group;
 
 				//	Add component to entity.
@@ -1781,10 +1882,10 @@
 
 				//	localPlayer has a bounding sphere helper component.
 					var helper = (function(radius){
-						var component = new THREE.Mesh(
-							new THREE.SphereGeometry( radius, 8, 6 ),
-							new THREE.MeshBasicMaterial( { color: 0xff0000,  wireframe: true} )
-						);
+						var sphere = new THREE.SphereGeometry( radius, 8, 6 );
+						var geometry = new THREE.EdgesGeometry( sphere );
+						var material = new THREE.LineBasicMaterial( { color: 0xff0000 } );
+						var component = new THREE.LineSegments( geometry, material );
 						component.isComponent = true;
 						component.position.y = radius;
 						component.name = "localPlayer helper";
@@ -1833,7 +1934,7 @@
 
 			})();
 
-		//	Debuging.
+		//	Debugging test.
 		//	(function update(){
 		//		SystemManager.prototype.frameId = requestAnimationFrame( update );
 		//		ControllableObjectPositionSystem( [localPlayer] ); // important!
@@ -1849,6 +1950,252 @@
 		//		);
 		//	})();
 
+		</script>
+
+		<script>
+
+		//	## EditorControllableObject Entity Type.
+		//	EditorControllableObject entity type defines editor controllable object.
+		//
+		//	An EditorControllableObject-type entity must have:
+		//		a Scale component,
+		//		a Position component,
+		//		a Rotation component,
+		//		a Object3d or Group or Mesh or Line or Sprite component,
+		//
+		//	An EditorControllableObject-type entity must NOT have:
+		//		...
+
+			function isEditorControllable(entity){
+			//	All items must be "false" to pass test.
+
+				var components = [
+					entity.Scale === undefined, // false,
+					entity.Position === undefined, // false,
+					entity.Rotation === undefined, // false,
+					entity.Controller === undefined, // false,
+				//	false: all except (true && true && true).
+					entity.Mesh === undefined 
+					&& entity.Line === undefined
+					&& entity.Group === undefined 
+					&& entity.Sprite === undefined
+					&& entity.Object3D === undefined
+					&& entity.SkinnedMesh === undefined
+					&& entity.LineSegments === undefined
+				];
+
+			//	all items must be false:(!undefined) to pass test.
+			//	debugMode && console.log( components ); 
+
+			//	if ( a component is undefined:true ) return false.
+				while ( components.length ){
+					if ( components.shift() ) return false;
+				}
+
+				return true;
+			}
+
+		//	Demo: editableObject is an entity instance.
+
+			var object = (function(d){
+				var box = new THREE.BoxGeometry(d,d,d,1,1,1 );
+				var geometry = new THREE.EdgesGeometry( box );
+				var material = new THREE.LineBasicMaterial( { color: 0xffffff } );
+				var component = new THREE.LineSegments( geometry, material );
+				component.isComponent = true;
+				component.position.set( -2.5, 0.5, -2.5 );
+				component.name = "editor controllable object";
+				//	Add mesh to scene.
+				scene.add( component );
+				return component;
+			})(1);
+
+		//	Take Camera controls.
+			setTimeout(function(){
+			//	Take cameraControls important!
+				cameraControls.offset.y = 0;
+				cameraControls.trackObject = object; // important!
+			//	Make localPlayer uncontrollable.
+				localPlayer.remove("VirtualJoystick");
+			}, 5000);
+
+			var controller = new MW.CharacterController( object, 0.5 );
+			controller.velocity.set(0,0,0);
+			controller.movementSpeed = 10; // (m/sec);
+
+		//	Update Position.
+			controller.updatePosition = function(dt) {
+				var x = this.center.x + this.velocity.x * dt;
+				var y = this.center.y + this.velocity.y * dt;
+				var z = this.center.z + this.velocity.z * dt;
+				this.center.set(x, y, z);
+			}
+
+		//	Update Velocity.
+			controller.updateVelocity = function(){
+				var frontDierction = -Math.cos(controller.direction);
+				var rightDierction = -Math.sin(controller.direction);
+				var x = rightDierction * this.movementSpeed * this.isRunning; // x,
+				var z = frontDierction * this.movementSpeed * this.isRunning; // z,
+				this.velocity.set(x,0,z);
+			};
+
+		//	Controller state.
+			virtualJoystick.addEventListener( "active", function onActive() { 
+				
+				controller.isIdling = false;
+				controller.isRunning = true;
+				controller.isJumping = false;
+				controller.isOnSlope = false;
+				controller.isGrounded = true;
+
+			});
+
+			virtualJoystick.addEventListener( "disactive", function onDisactive() { 
+
+				controller.isIdling = true;
+				controller.isRunning = false;
+				controller.isJumping = false;
+				controller.isOnSlope = false;
+				controller.isGrounded = true;
+
+			});
+
+		//	joystick update.
+			(function update(){
+
+				var dt = clock.getDelta();
+				SystemManager.prototype.requestFrameId = requestAnimationFrame( update );
+
+				if ( virtualJoystick.isActive ){
+				//	direction update.
+					var rad = THREE.Math.degToRad( 270 );
+					var joystickAngle = virtualJoystick.angle;
+					var cameraFrontAngle = cameraControls.getFrontAngle()
+					var angle = rad - cameraFrontAngle + joystickAngle;
+					controller.direction = rad - cameraFrontAngle + joystickAngle;
+
+				//	controller update.
+					controller.updatePosition(0.01); // dt.
+					controller.updateVelocity();
+
+					if (SystemManager.keyboard.pressed("X")) object.rotation.x += angle * dt;
+					else if (SystemManager.keyboard.pressed("C")) object.rotation.y += angle * dt;
+					else if (SystemManager.keyboard.pressed("Z")) object.rotation.z += angle * dt;
+					else {
+
+					//	object rotation update.
+						object.rotation.y = controller.direction;
+					//	object position update.
+						object.position.x = controller.center.x;
+						object.position.y = controller.center.y;
+						object.position.z = controller.center.z;
+					//	object.position.copy(controller.center);
+
+					}
+				} 
+				
+			})();
+
+		//	object rotation update.
+		//	window.addEventListener("keypress", function(e){
+		//		if (virtualJoystick.isActive){
+		//		//	debugMode && console.log(e);
+		//			var rad = THREE.Math.degToRad( 270 );
+		//			var joystickAngle = virtualJoystick.angle;
+		//			var cameraFrontAngle = cameraControls.getFrontAngle();
+		//			var angle = rad - cameraFrontAngle + joystickAngle;
+		//			if ( e && e.type == "keypress" && e.code == "KeyX" ) object.rotation.x = angle;
+		//		//	if ( e && e.type == "keypress" && e.code == "KeyC" ) object.rotation.y = angle;
+		//			if ( e && e.type == "keypress" && e.code == "KeyZ" ) object.rotation.z = angle;
+		//		}
+		//	});
+
+/*
+		//	object position update.
+			window.addEventListener("keypress", function(e){
+				if (virtualJoystick.isActive){
+				//	debugMode && console.log(e);
+					var rad = THREE.Math.degToRad( 270 );
+					var joystickAngle = virtualJoystick.angle;
+					var cameraFrontAngle = cameraControls.getFrontAngle();
+					controller.direction = rad - cameraFrontAngle + joystickAngle;
+					controller.updatePosition(0.02); // dt.
+					controller.updateVelocity();
+
+					if ( e && e.type == "keypress" && e.code == "KeyX" ) object.position.x = controller.center.x;
+					if ( e && e.type == "keypress" && e.code == "KeyC" ) object.position.y = controller.center.y;
+					if ( e && e.type == "keypress" && e.code == "KeyZ" ) object.position.z = controller.center.z;
+				}
+			});
+*/
+
+/*
+			var editableObject = (function(){
+
+				var entity = new Entity(); // entity instance.
+
+			//	editor controllable object has a Mesh component.
+				var object = (function(d){
+					var box = new THREE.BoxGeometry(d,d,d,1,1,1 );
+					var geometry = new THREE.EdgesGeometry( box );
+					var material = new THREE.LineBasicMaterial( { color: 0xffffff } );
+					var component = new THREE.LineSegments( geometry, material );
+					component.isComponent = true;
+					component.position.set( -2.5, 0.5, -2.5 );
+					component.name = "editor controllable object";
+				//	Add mesh to scene.
+					scene.add( component );
+					return component;
+				})(1);
+
+			//	Add component to entity
+				entity.Object3D = object;
+
+			//	Add components to meke entity editor controllable.
+				entity.Scale = object.scale;
+				entity.Position = object.position;
+				entity.Rotation = object.rotation;
+
+			//	Push entity to entities queue.
+				entities.push( entity ); // important!
+				debugMode && console.log( entity );
+
+				return entity;
+
+			})();
+			setTimeout(function(){
+			//	Let's try to take control of entity line segments object.
+			//	First we make the localPlayer entity user-uncontrollable.
+				delete localPlayer.VirtualJoystick;
+				delete localPlayer.KeyInputControl;
+			//	BE CAREFULL: DO NOT DELETE the localPlayer.Controller
+			//	component because will be difficult to find it again.
+			//	You may remove localPlayer controller from world's character pool.
+				var index = world.characterPool.findIndex(function( controller ){
+					return controller.object.uuid === localPlayer.Controller.object.uuid;
+				}); if ( index > -1 ) world.characterPool.splice(index, 1);
+			//	Now if you delete localPlayer.Controller component, it is imposible to find it again.
+
+				var radius = 0.5; //
+			//	Create a new character controller that will take control of entity line segments object.
+				var controller = new MW.CharacterController( editorControllable.Object3D, radius );
+			//	adjust movement speed.
+				controller.movementSpeed = 2;
+			//	reset controller center.
+				controller.center.copy( editorControllable.Position ); controller.center.y += radius;
+
+			//	Make entity user controllable.
+				editorControllable.Controller = controller;
+				editorControllable.Direction = controller.direction;
+				editorControllable.VirtualJoystick = virtualJoystick; // bypass add() method.
+				editorControllable.KeyInputControl = keyInputControls; // bypass add() method.
+
+			//	Give camera controls to editorControllable line segments object.
+				cameraControls.offset.y = 0;
+				cameraControls.trackObject = editorControllable.Object3D;
+			}, 10000);
+*/
 		</script>
 
 		<script>
