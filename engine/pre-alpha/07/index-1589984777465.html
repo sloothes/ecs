@@ -1,0 +1,2144 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+
+		<title>ECS Engine (pre-alpha 0.7)</title>
+
+		<meta charset="utf-8">
+		<meta name="generator" content="Three.js Editor">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+		<link rel="stylesheet" href="/css/joystick.css">
+		<link rel="stylesheet" href="/css/bootstrap.min.css">
+		<link rel="stylesheet" href="/css/bootbox-dialoges.css">
+		<link rel="stylesheet" href="/css/jcrop.css">
+
+		<script src="/js/watch.js"></script>
+		<script src="/js/jquery.min.js"></script> 
+		<script src="/js/system.min.js"></script>
+		<script src="/js/signals.min.js"></script>
+		<script src="/js/inflate.min.js"></script>
+		<script src="/js/zangodb.min.js"></script>
+		<script src="/js/bootstrap.min.js"></script>
+		<script src="/js/hold-event.min.js"></script>
+		<script src="/js/jcrop.js"></script>
+
+		<style>
+
+			body {
+				margin: 0px;
+				font-size: 13px;
+				font-family: sans-serif;
+				background-repeat: repeat;
+				background-image: url("https://i.imgur.com/rnZZU0i.png") !important;
+				overflow: hidden;
+			}
+
+			#loading-bar {
+				width:100%;
+				height:100%;
+				top:0; left:0;
+				position:fixed;
+				display:flex;
+				align-items:center;
+				justify-content:center;
+			}
+
+			.middle > * {
+				top:0; 
+				left:0;
+				right:0;
+				bottom:0;
+				margin:auto;
+				position:absolute;
+			}
+
+			#joystick1 {
+				right: calc(40px + 370px);
+			}
+			
+			#jumpButton {
+				right: calc(105px + 370px);
+			}
+
+			.btn-matcap,
+			.btn-terrain {
+				padding:0;
+				float:left;
+				width:55px;
+				height:55px;
+				border:1px solid;
+				border-radius:4px;
+				margin-right:4px;
+				margin-bottom:4px;
+				display:inline-block;
+			}
+
+			.btn-matcap + .btn-matcap,
+			.btn-terrain + .btn-terrain {
+				margin-right:4px;
+			}
+
+		</style>
+	</head>
+
+	<body ontouchstart="">
+
+		<script src="/ecs/js/three.js"></script>
+		<script src="/ecs/js/TabUI.js"></script>
+		<script src="/ecs/js/MeshWalk.js"></script>
+		<script src="/ecs/js/UVsDebug.js"></script>
+		<script src="/ecs/js/FBXLoader.js"></script>
+		<script src="/ecs/js/VirtualInput.js"></script>
+		<script src="/ecs/js/EditorControls.js"></script>
+		<script src="/ecs/js/SubdivisionModifier.js"></script>
+		<script src="/ecs/js/three-pathfinding.umd.js"></script>
+		<script src="/threejs/r96/examples/js/loaders/GLTFLoader.js"></script>
+		<script src="/threejs/r96/examples/js/exporters/GLTFExporter.js"></script>
+		<script src="/threejs/r96/examples/js/exporters/STLExporter.js"></script>
+		<script src="/threejs/r96/examples/js/exporters/OBJExporter.js"></script>
+		<script src="/threejs/r96/examples/js/exporters/ColladaExporter.js"></script>
+
+		<script src="/ecs/engine/Enviroment.js"></script>
+		<script src="/ecs/engine/pre-alpha/Entity.js"></script>
+		<script src="/ecs/engine/pre-alpha/EntityManager.js"></script>
+
+		<script>
+
+		//	Global helpers.
+
+			Number.prototype.format = function (){
+				return this.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
+			};
+
+		//	save_file.js
+
+			function saveString( text, filename ) {
+				save( new Blob( [ text ], { type: "text/plain" } ), filename );
+			}
+
+			function saveArrayBuffer( buffer, filename ) {
+				save( new Blob( [ buffer ], { type: "application/octet-stream" } ), filename );
+			}
+
+			function save( blob, filename ) {
+
+				var link = document.createElement( "a" );
+				link.href = URL.createObjectURL( blob );
+				link.download = filename || "untitled";
+				link.click();
+
+			}
+
+		//	round.js
+			function round(number, precision) {
+				var shift = function (number, precision, reverseShift) {
+					if (reverseShift) {
+						precision = -precision;
+					}  
+					numArray = ("" + number).split("e");
+					return +(numArray[0] + "e" + (numArray[1] ? (+numArray[1] + precision) : precision));
+				};
+				return shift(Math.round(shift(number, precision, false)), precision, true);
+			}
+
+		//	array_move.js
+			function array_move( arr, old_index, new_index ){
+
+				if (new_index >= arr.length) {
+					var k = new_index - arr.length + 1;
+					while (k--) {
+						arr.push(undefined);
+					}
+				}
+
+				arr.splice(new_index, 0, arr.splice(old_index, 1)[0]);
+			}
+
+		//	deep_copy.js
+			function deepCopy(obj) {
+				if (Object.prototype.toString.call(obj) === "[object Array]") {
+					var out = [], i = 0, len = obj.length;
+					for ( ; i < len; i++ ) {
+						out[i] = arguments.callee(obj[i]);
+					}
+				//	console.log("out:", out);
+					return out;
+				}
+				if (typeof obj === "object") {
+					var out = {}, i;
+					for ( i in obj ) {
+						out[i] = arguments.callee(obj[i]);
+					}
+				//	console.log("out:", out);
+					return out;
+				}
+				return obj;
+			}
+
+		//	## Copying an Object
+		//	source: "http://speakingjs.com/es5/ch17.html#private_data_for_objects".
+		//	To create an identical copy of an object, you need to get two things right:
+		//	The copy must have the same prototype as the original.
+		//	The copy must have the same properties, with the same attributes as the original.
+		//	The following function performs such a copy:
+		//
+		//	These are the steps involved:
+		//	[1] Get an array with the keys of all own properties of source.
+		//	[2] Iterate over those keys.
+		//	[3] Retrieve a property descriptor.
+		//	[4] Use that property descriptor to create an own property in target.
+
+			function copyObject(obj) {
+
+			//	1. copy has same prototype as orig
+				var copy = Object.create(Object.getPrototypeOf(obj));
+
+			//	2. copy has all of orig’s properties
+				copyOwnPropertiesFrom(copy, obj);
+
+				return copy; // warning: shallow copy!
+
+			//	The properties are copied from orig to copy via this function:
+
+				function copyOwnPropertiesFrom(target, source) {
+					Object.getOwnPropertyNames(source).forEach(function(propKey) { // [1][2]
+						var desc = Object.getOwnPropertyDescriptor(source, propKey); // [3]
+						Object.defineProperty(target, propKey, desc); // [4]
+					});
+					return target;
+				};
+
+			}
+
+		</script>
+
+		<script>
+
+			const Signal = signals.Signal;
+			const debugMode = true; // primitive type.
+
+		//	Systems helpers.
+
+			function systemValidator(components){
+				while( components.length ){
+					if ( components.shift() === undefined ) return false;
+				}
+				return true;
+			}
+			
+			function systemCheckLog(_id, system, passed, components){
+				debugMode && console.log("Check:", {
+					"_id": _id,
+					"system": system, 
+					"passed": passed,
+					"components": components
+				});
+			}
+
+		//	System debug helpers.
+			
+			function syslogcid( name, array ){ 
+				if (array.length) return name+":["+array.join()+"]"; 
+			}
+
+		</script>
+
+		<script>
+/*
+		//	Enity Component System Engine.
+
+		//	## Entities.
+		//	(A unique ID that tags each object as a separate item. 
+		//	Implementations typically use a plain integer for this).
+		//
+		//	Entities are objects with an id. 
+		//	Entities contains components. They are component containers.
+		//	We add/remove components in an entity to define the "kind" of this entity.
+		//	All values of all components of an entity defines the "state" of this entity.
+		//	An entity can be at least one or more entity "kinds".
+		//	Entity "kinds" can modified from systems by adding/removing components.
+		//	Entities are parsed to systems.
+		//	(entity) kind:  Entities do not know what "kind" they are.
+		//	(entity) state: Entities do not know what "state" they are.
+		//	System: Entities do not know which systems use them. 
+		//	Component: Entities do not know what components they contain.
+		//	Speaking with mongodb terms, entity is a document: the id of the document 
+		//	is the entity id and the fields of the document are the components.
+		//	All entities are members of the Entity class.
+		//
+		//	## Components.
+		//	(Implementations typically use structs[1], classes[2], or associative arrays[3]).
+		//
+		//	"Component" is used to mean both the template/OOP class that holds the data, 
+		//	and the individual instances of that template/class. When this is unclear, 
+		//	we usually say "Component-Type" to mean the class, and "Component Instance" 
+		//	to mean a single instance attached to a specific Entity.
+		//
+		//	Components are objects with data. They are data containers. 
+		//	Components are a piece of data. All data exists inside components (component intialition).
+		//	Components are added/removed to entities to define the "kind" of an entity (entity initialition).
+		//	The values (data) of this component define the "state" of this component in this entity.
+		//	The values (data) of each component of an entity defines a part of the "state" of this entity.
+		//	The population of all components in an entity defines the "kinds" of this entity.
+		//	The constructors of all components in an entity defines the "kind" of this entity.
+		//	Components values (data) are modified by systems. 
+		//	There are none or more systems that modify this component values (data).
+		//	Components can be shared by many entities.
+		//	Components do not know which entity contains them.
+		//	Components do not know what system modify them.
+		//	Components do not know what "state" they are.
+		//	Components do not know each other in an entity.
+		//	All components are members of the Component super class.
+		//
+		//	Extend Component super class with Object3D child class (traditional js).
+		//	source: "https://medium.com/beginners-guide-to-mobile-web-development/super-and-extends-in-javascript-es6-understanding-the-tough-parts-6120372d3420"
+		//
+		//		function Object3D(name, data) {
+		//			Component.call(this, name, data);
+		//		}
+		//
+		//		Object3D.prototype = Object.create(Component.prototype);
+		//		Object3D.prototype.constructor = Object3D;
+		//		Object3D.prototype.isComponent = Component.prototype.isComponent;
+		//		Object3D.prototype.set = function( key, value ){
+		//			Component.prototype.set.call(this, key, value);
+		//		};
+		//		Object3D.prototype.get = function( key ){
+		//			Component.prototype.get.call(this, key);
+		//		};
+		//
+		//	## Systems.
+		//
+		//	(All the code for the one aspect of the gameobjects, with each System running continuously as 
+		//	if it has a private internal thread, performing global actions on every Entity that possesses 
+		//	a Component of the same aspect as that System).
+		//
+		//	Originally, is recommended developers to start with "1 component-type per 1 System", 
+		//	but real-world projects rarely stick to this, often having multiple Component-types 
+		//	for a single System — and multiple Systems sharing individual Component-types.
+		//
+		//	System are functions that execute a piece of logic. All logic included in system's code (processors).
+		//	System accept [arrays of entities] and modify some values (data) of some components of each entity.
+		//	A system proccess only specific "kind" of entities (that contain specific components).
+		//	System modify the values (data) of components (changes the "state" of components).
+		//	System modify the values (data) of components (changes the "state" of the entity).
+		//	System can add/remove components from an entity (change the "kind" of the entity).
+		//	Systems are triggered by events, by signals, by observers, or runs continuously.
+		//	All systems are members of the System super class.
+		//
+		//	System super class.
+		//
+		//	function System ( entities ){}
+		//	System.prototype.isSystem = true;
+		//
+		//	Example: Extend System super class with ChildSystem child class (traditional js).
+		//	source: "https://medium.com/beginners-guide-to-mobile-web-development/super-and-extends-in-javascript-es6-understanding-the-tough-parts-6120372d3420"
+		//
+		//		function ChildSystem ( entities ){
+		//			System.call(this, entities);
+		//		}
+		//
+		//		ChildSystem.prototype = Object.create(System.prototype);
+		//		ChildSystem.prototype.constructor = ChildSystem;
+		//		ChildSystem.prototype.isSystem = System.prototype.isSystem;
+		//
+		//	Notes:
+		//
+		//	[1] Using structs in JavaScript (example, syntax):  I like the idea of using something like a C-like “struct” 
+		//	in my JavaScript code, so I used the following approach on a recent project. I define my JavaScript struct:
+		//
+		//		function BookStruct(title, href, imageUri, description) {
+		//			this.title = title;
+		//			this.href = href;
+		//			this.imageUri = imageUri;
+		//			this.description = description;
+		//		}
+		//
+		//	[2] Classes in JavaScript are a special syntax for its prototypical inheritance model that is a comparable 
+		//	inheritance in class-based object oriented languages. Classes are just special functions added to ES6 that 
+		//	are meant to mimic the class keyword from these other languages. In JavaScript, we can have class declarations 
+		//	and class expressions, because they are just functions. So like all other functions, there are function 
+		//	declarations and function expressions. Classes serve as templates to create new objects.
+		//	Classes always use strict. All code inside the class construct is automatically in strict mode.
+		//
+		//		class Person{
+		//			constructor(firstName, lastName) {
+		//				this.firstName= firstName;
+		//				this.lastName = lastName;
+		//			}
+		//		}
+		//
+		//	JavaScript classes initialize instances with constructors, define fields and methods. You can attach fields 
+		//	and methods even on the class itself using the "static" keyword. Inheritance is achieved using "extends" keyword: 
+		//	you can easily create a child class from a parent. "super" keyword is used to access the parent class from a 
+		//	child class. To take advantage of encapsulation, make the fields and methods private to hide the internal 
+		//	details of your classes. The private fields and methods names must begin with #.
+		//			
+		//	[3] Associative Array in JavaScript: Associative arrays are dynamic objects that the user redefines as needed. 
+		//  When you assign values to keys in a variable of type Array, the array is transformed into an object, and it 
+		//	loses the attributes and methods of Array. The length attribute has no effect because the variable is not longer 
+		//	of Array type.
+*/
+		</script>
+
+		<script>
+
+		//	# A Python ECS Implementation.
+		//	source: "https://github.com/seanfisk/ecs"
+		//	An MIT-licensed Python entity/component system library for games. http://ecs.rtfd.org
+		//
+		//	There are many articles on the Internet advocating a switch to entity-based systems for game logic. 
+		//	However, many authors seem to burn themselves out telling why the old inheritance-based approach is 
+		//	problematic and how an entity system will solve your problems — without ever really explaining what 
+		//	it is or how to do it. This project attempts to provide an actual implementation for use in real games.
+		//	The library is called an "entity/component system" library rather than an "entity system," 
+		//	as the entity portion is just one building block of the total concept.
+		//	Inspiration is taken from the Ash framework for ActionScript 3.0 and Artemis framework for Java.
+		//
+		//	## Concepts
+		//
+		//	ECS stands for Entity, Component, and System. Each of these parts is important. So what are these?
+		//	Entity: Simply a unique identifier, used to label components as belonging to a logical grouping.
+		//	Component: A collection of data. Has no behavior associated with it.
+		//	System: Piece of code to operate on data in components for a single frame.
+		//
+		//	## Details
+		//
+		//	ECS defines a few core core classes:
+		//	Entity, Component, System, EntityManager, SystemManager.
+		//
+		//	The Entity class is simply a representation of a unique identifier, and is not to be subclassed. 
+		//	The Component class is intended to be subclassed for your custom components. 
+		//	System is also intended to be subclassed for your custom systems.
+		//
+		//	The EntityManager is a database that stores Component subclasses, referenced by their type and entity ID. 
+		//	The SystemManager maintains a set of System instances and allows them to perform their operations.
+		//
+		//	The real action happens in the update() method of your subclassed System classes. 
+		//	A System instance queries the EntityManager database for a set of Component subclasses 
+		//	and operates on the data contained in them.
+		//
+		//	## Description
+		//
+		//	A system that maintains the state of the game as a database like structure.
+		//	The data stored is encapsulated in "Components", which have only data-members.
+		//	The interface of the various parts is defined below.
+		//
+		//	EntityManager {
+		//
+		//		addComponent(entity_id, component_instance)
+		//			Adds a component object to the database, associated with the entity_id
+		//
+		//		removeComponent(entity_id, component_type)
+		//			Removes a component object from the database if the entity_id has such a component.
+		//			Does not do any kind of data tear-down. This method simply makes that component
+		//			unavailable from the database.
+		//
+		//		getPairs(component_type)
+		//			Returns a list of pairs of entity_id's and components for a given component type.
+		//			Alleviates the need of doing a reverse look-up to get the id of an entity with
+		//			a certain kind of component.
+		//
+		//		getComponentForEntity(entity_id, component_type)
+		//			Returns the component_type component for the given entity_id. Returns None if there
+		//			is no component of that type associated with that id.
+		//
+		//	}
+		//
+		//
+		//	Entity {
+		//
+		//		guid
+		//
+		//	}
+		//
+		//	A unique number that identifies this identity.
+		//	The entity class is simply a way to logically encapsulate an identifier.
+		//
+		//
+		//	Component {
+		//
+		//		data1
+		//		data2
+		//		data3
+		//
+		//	}
+		//
+		//	Arbitrary data members. May contain a custom initializer but should not
+		//	have any other methods, especially any that modify state beyond simple getters/setters
+		//	with validation. Might be good to define factory methods at the class level 
+		//	for each component type.
+		//
+		//
+		//	All of these types are used by a separate set of classes called "Systems".  
+		//	Systems are bits of code that operate on items from the EntityManager database.
+		//
+		//	System {
+		//
+		//		update(dt, entity_manager)
+		//			Called every frame by the SystemManager.
+		//			The system can query the database for components and operate on them.
+		//			This is where the logic of the game is implemented.
+		//
+		//	}
+		//
+		//	Each System subclass is responsible for a narrow set of operations. 
+		//	Should only do the minimum necessary to make a certain feature work.
+		//	No persistent references should be made to things from the database 
+		//	unless you have	a really, really good reason. 
+		//	Things are likely to come and go from the database.
+		//
+		//
+		//	SystemManager {
+		//
+		//		initializer(entity_manager)
+		//			Creates a new SystemManager.  Requires a reference to an EntityManager so that the systems 
+		//			can get the required components.
+		//
+		//		addSystem(system_instance, priority)
+		//			Adds a system instance to the manager.  It will be updated according the priority passed in.
+		//			Will throw an Error if a system of that type is already present.
+		//
+		//		removeSystem(system_type)
+		//			Removes a given system type from the manager.
+		//
+		//		update(dt)
+		//			The SystemManager goes through its list of Systems and calls their update methods.
+		//			The list is sorted so systems get updated in their intended priority.
+		//			This method is called externally by the game-loop machinery.
+		//
+		//	}
+		//
+		//
+		//	## Database format:
+		//
+		//	Indexable by comp_type:
+		//
+		//	d = {
+		//		comp_type_1 : {
+		//			id_1 : comp_instance_1,
+		//			id_2 : comp_instance_2
+		//		},
+		//		comp_type_2 : {
+		//			id_1 : comp_instance_3,
+		//			id_2 : comp_instance_4
+		//		},
+		//	}
+		//
+		//	So to get all components of a certain type, it's simply:
+		//
+		//	all_comps = d[comp_type].values()
+		//
+		//	To get the comp for an entity,
+		//
+		//		comp_1 = d[comp_type][entity_id]
+		//
+		//	Both types of access are pretty fast and shouldn't cause any speed problems.
+		//
+		//
+		//	## Further Reading
+		//
+		//	Entity/component systems are a relatively new concept. The canonical source for all entity system-related 
+		//	topics is the Entity Systems wiki, created by Adam Martin. Adam Martin has also written abundantly in his 
+		//	series of posts about Entity Systems, which are a great read for those just getting familiar with the concept.
+
+		</script>
+
+		<script>
+
+		//	Components class.
+		//
+		//	const isComponent = true; // primitive type, locked.
+		//
+		//	All primitive threejs objects are Component-Types.
+		//	We do not use any specific class for components.
+		//	Any object can be a component instance.
+		//
+		//	THREE.Object3D.prototype.isComponent = true; // primitive type.
+		//
+		//	We can define threejs component classes that inherits
+		//	mixed from threejs constructors and the Component class.
+		//
+		//		function Component( data ){
+		//
+		//			Object.assign(this, data);
+		//
+		//		}
+		//
+		//	Component.prototype.isComponent = true; // primitive type. How to lock it?
+
+		</script>
+
+		<script>
+
+		//	[1] JavaScript provides six primitive types as "undefined", "null", 
+		//	"boolean", "number", "string", and "symbol", and a reference type "object".
+		//
+		//	[2] The "new" keyword performs following tasks:
+		//	source: "https://www.tutorialsteacher.com/javascript/new-keyword-in-javascript"
+		//
+		//	1. It creates new empty object e.g. obj = { };
+		//	2. It sets new empty object's invisible 'prototype' property to be the constructor function's 
+		//	visible and accessible 'prototype' property. (Every function has visible 'prototype' property 
+		//	whereas every object includes invisible 'prototype' property)
+		//	3. It binds property or function which is declared with this keyword to the new object.
+		//	4. It returns newly created object unless the constructor function returns a non-primitive value 
+		//	(custom JavaScript object). If constructor function does not include return statement then compiler 
+		//	will insert 'return this;' implicitly at the end of the function. If the constructor function returns 
+		//	a primitive value then it will be ignored.
+		//
+		//	The "new" keyword ignores return statement that returns primitive value.
+		//	If function returns non-primitive value (custom object) then "new" keyword 
+		//	does not perform the above 4 tasks.
+		//	Thus, "new" keyword builds an object of a function in JavaScript.
+		//
+		//	When comparing two objects, you need to be more careful. They are compared by their identity. 
+		//	That means it does not matter if the two objects have the same properties with the same values. 
+		//	They are equal only if they are the same instance. That is - if comparing two variables, 
+		//	they are equal only if they point to the very same object.
+
+		</script>
+
+		<script>
+/*
+		//	Scene.
+			scene = new THREE.Scene();
+
+		//	Camera.
+			(function(){
+
+				var aspect = (window.innerWidth - 370) / window.innerHeight;
+				camera = new THREE.PerspectiveCamera( 50, aspect, 1, 10000 );
+				camera.position.set(0, 20, 50);
+
+			})();
+
+		//	Editor Controls.
+		//	(function(){
+		//		controls = new THREE.EditorControls(camera);
+		//		if ( controls && controls instanceof THREE.EditorControls ) {
+		//			camera.lookAt(controls.center); // important!
+		//		}
+		//	})();
+
+		//  Camera Light. (entity)
+			(function(){
+
+				cameraLight = new THREE.DirectionalLight( 0xdfebff, 0.75 );
+				cameraLight.position.set( 0, 500, 300 );
+				cameraLight.castShadow = true;
+				cameraLight.shadow.mapSize.width  = Math.pow(2, 10); // 2048;
+				cameraLight.shadow.mapSize.height = Math.pow(2, 10); // 2048;
+
+				var d = 30;
+				cameraLight.shadow.camera.left = - d;
+				cameraLight.shadow.camera.right = d;
+				cameraLight.shadow.camera.top = d;
+				cameraLight.shadow.camera.bottom = - d;
+				cameraLight.shadow.camera.far = 10000;
+
+				shadowHelper = new THREE.CameraHelper(cameraLight.shadow.camera);
+				shadowHelper.visible = false;
+
+				scene.add( cameraLight, shadowHelper  );
+
+				(function update(){
+					requestAnimationFrame( update );
+					cameraLight.position.copy( camera.position );
+				})();
+
+			})();
+
+
+		//  Renderer.
+			(function(){
+
+				renderer = new THREE.WebGLRenderer({
+					alpha: true,  // for transparent rendering set alpha:true, important!
+					antialias: true,
+					preserveDrawingBuffer: true,
+				});
+
+				renderer.gammaInput = true;
+				renderer.gammaOutput = true;
+				renderer.shadowMap.enabled = true;
+				renderer.setClearAlpha( 1 ); // for transparent rendering set clear alpha: 0.
+				renderer.setClearColor( 0x000000, 1 ); // for transparent rendering set clear alpha: 0.
+				renderer.setPixelRatio( window.devicePixelRatio );
+				renderer.setSize( (window.innerWidth - 370), window.innerHeight );
+				renderer.domElement.style.background = "none";  // transparent rendering. important!
+				document.body.appendChild( renderer.domElement );
+
+				window.addEventListener("resize", function onWindowResize() {
+					renderer.setSize( (window.innerWidth - 370), window.innerHeight );
+				});
+
+				window.addEventListener("resize", function onWindowResize() {
+					camera.aspect = renderer.domElement.clientWidth / renderer.domElement.clientHeight;
+					camera.updateProjectionMatrix();
+				});
+
+			//	Mouse (component).
+				mouse = new THREE.Vector2();
+
+				renderer.domElement.addEventListener("mousemove", function(e) {
+					mouse.x = ( e.clientX / this.clientWidth ) * 2 - 1;
+					mouse.y = - ( e.clientY / this.clientHeight ) * 2 + 1;
+				});
+
+				(function render(){
+					requestAnimationFrame( render );
+					renderer.render( scene, camera );
+				})();
+
+			})();
+
+
+		//	World - Octree.
+			(function(){
+
+				world = new MW.World();
+
+				var x = 150, y = 150, z = 150;
+				var min = new THREE.Vector3( -x, -y, -z );
+				var max = new THREE.Vector3(  x,  y,  z );
+				var partition = 7; // nodes: Math.pow( 8, partition )
+
+				octree = new MW.Octree( min, max, partition );
+				world.add( octree );
+
+				var clock = new THREE.Clock();
+
+				(function update(){
+					requestAnimationFrame( update );
+					var delta = clock.getDelta();
+					var elapsed = clock.getElapsedTime();
+					world.step( Math.min( delta, 0.02 ) );
+				})();
+
+			})();
+
+		//	ground.js
+
+			(function(){
+
+			//	Ground (component).
+				var ground = new THREE.Mesh(
+					new THREE.PlaneGeometry( 300, 300, 1, 1 ).rotateX(-Math.PI/2),
+					new THREE.MeshLambertMaterial({ 
+						opacity:1, 
+						color:0x829ec4,
+					})
+				);
+				
+				ground.position.y = 0;
+
+			//	We need only the geometry of the ground
+			//	so there is not need to add to the scene.
+			//	ground.rotation.x = -Math.PI / 2; // THREE.Math.degToRad( -90 );
+				octree.importThreeMesh( ground ); // important!
+			//	scene.add( ground ); // optional!
+
+			//	Ground Helper (component).
+				groundHelper = new THREE.GridHelper( 300, 300, 0x444444, 0x444444 );
+				scene.add( groundHelper );
+
+			//	Raycaster helper (Raycaster Entity).
+				setTimeout(function(){
+					var raycaster = new THREE.Raycaster();
+					var rayhelper = new THREE.Mesh(
+						new THREE.CircleBufferGeometry( 2, 32 ).rotateX(-Math.PI/2),
+						new THREE.MeshBasicMaterial( { color:0xffff00, wireframe:false} )
+					);
+					renderer.domElement.addEventListener("mousemove", function(e) {
+						camera.updateMatrixWorld();
+						raycaster.setFromCamera( mouse, camera );
+						var intersects = raycaster.intersectObject( ground );
+						if ( !intersects.length ) return;
+						rayhelper.position.copy( intersects[0].point );
+					});
+				//	scene.add( rayhelper );
+				});
+
+			})();
+
+		//	localPlayer Controller.
+
+			(function(){
+
+				var playerRadius = 1.7; // (m)
+
+			//	Local Player (entity).
+				localPlayer = new THREE.Object3D();
+				localPlayer.position.set( 0, 10, 0 );
+				localPlayer.name = "localPlayer";
+				scene.add( localPlayer );
+
+			//	Player helper (component).
+				localPlayerHelper = new THREE.Mesh(
+					new THREE.SphereGeometry( playerRadius, 8, 6 ),
+					new THREE.MeshBasicMaterial( { color: 0xff0000,  wireframe: true} )
+				);
+
+				localPlayerHelper.name = "playerhelper";
+				localPlayer.add( localPlayerHelper );
+
+			//	Player controller (component).
+				localPlayerController = new MW.CharacterController( localPlayer, playerRadius );
+				localPlayerController.movementSpeed = 10;
+				localPlayerController.maxSlopeGradient = 0.5
+				world.add( localPlayerController ); // important!
+
+			//	CameraLight target.
+				cameraLight.target = localPlayer;
+
+			//	Update rotation.
+				(function update(){
+					requestAnimationFrame( update );
+					localPlayer.rotation.y = localPlayerController.direction + Math.PI; // important!
+				})();
+
+			})();
+
+			(function(){
+
+			//	Camera controls.
+
+				cameraControls = new MW.TPSCameraControl(
+					camera, 			// three.js camera.
+					localPlayer,		// tracking object.
+					{	
+						el: renderer.domElement,
+						offset: new THREE.Vector3( 0, 0.9, 0 ), // eye height.
+						radius: 2, // default distance of the character to the camera.
+						minRadius: 2,
+						maxRadius: 10,
+						rigidObjects: [],
+					}
+				);
+
+			//	keyInputControls.
+
+				keyInputControls = new MW.KeyInputControl();
+
+				keyInputControls.addEventListener( "movekeyon", function () { 
+					localPlayerController.isRunning = true; 
+				});
+
+				keyInputControls.addEventListener( "movekeyoff", function () { 
+					localPlayerController.isRunning = false; 
+				});
+
+				keyInputControls.addEventListener( "jumpkeypress", function () { 
+					localPlayerController.jump(); 
+				});
+
+			// synch with keybord input and camera control input.
+				keyInputControls.addEventListener( "movekeychange",  function () {
+					var cameraFrontAngle = cameraControls.getFrontAngle();
+					var characterFrontAngle = keyInputControls.frontAngle;
+					localPlayerController.direction = THREE.Math.degToRad( 360 ) - cameraFrontAngle + characterFrontAngle;
+				});
+
+			//	"updated" event is fired by "cameraControls.update()"
+			//	cameraControls.addEventListener( "updated", function () {
+				//	it updates character front angle with the camera view.
+				//  We want camera independed from character front angle,
+				//	so we keep it disactivated. Maybe used somewhere later.
+			//		var cameraFrontAngle = cameraControls.getFrontAngle();
+			//		var characterFrontAngle = keyInputControls.frontAngle;
+			//		localPlayerController.direction = THREE.Math.degToRad( 360 ) - cameraFrontAngle + characterFrontAngle;
+			//	});
+
+				(function update(){
+					requestAnimationFrame( update );
+					cameraControls.update();
+				})();
+
+			})();
+
+		//	joystickControls.
+
+			(function(){
+
+				var joystick1, joystick2;
+
+				var joysticControls1 = document.createElement( "div" );
+				joysticControls1.id = "joystick-controls-1";
+				joysticControls1.classList.add("joystick-controls");
+				document.body.appendChild( joysticControls1 );
+
+				var joysticControls2 = document.createElement( "div" );
+				joysticControls2.id = "joystick-controls-2";
+				joysticControls2.classList.add("joystick-controls");
+				document.body.appendChild( joysticControls2 );
+
+				var joystick1Selector  = "#joystick1";
+				var joystick2Selector  = "#joystick2";
+				var jumpButtonSelector = "#jumpButton";
+
+				var joystickControlsSelector  = ".joystick-controls";
+				var joystickControls1Selector = "#joystick-controls-1";
+				var joystickControls2Selector = "#joystick-controls-2";
+
+				joystick1  = new virtualInput.Joystick( $( joystickControls1Selector ), 94, { id: "joystick1" } );
+				joystick2  = new virtualInput.Joystick( $( joystickControls2Selector ), 94, { id: "joystick2" } );
+				jumpButton = new virtualInput.Button(   $( joystickControls1Selector ), 58, { id: "jumpButton", label: "<b>JUMP</b>" } ); // buttonSvgSrc
+
+				joystick1.addEventListener( "active", function onActive() { 
+
+					if (  localPlayerController.isJumping 
+						|| !localPlayerController.isGrounded 
+						|| localPlayerController.isOnSlope ) {
+						return;
+					}
+
+					localPlayerController.isRunning = true;
+
+				});
+
+				joystick1.addEventListener( "disactive", function onDisactive() { 
+
+					if (  localPlayerController.isJumping 
+						|| !localPlayerController.isGrounded 
+						||  localPlayerController.isOnSlope ) {
+						return;
+					}
+
+					localPlayerController.isRunning = false;
+
+				});
+
+				jumpButton.addEventListener( "press", function onPress() { 
+
+					if (  localPlayerController.isJumping 
+						|| !localPlayerController.isGrounded 
+						|| localPlayerController.isOnSlope ) {
+						return;
+					}
+
+					localPlayerController.jump();
+
+				});
+
+				joystick1.update = function(){
+
+					if ( this.isActive ) {
+
+						localPlayerController.direction = (3 * Math.PI/2) - cameraControls.getFrontAngle() + this.angle;
+
+					}
+				};
+
+				joystick2.update = function(){
+
+					if ( this.isActive ) {
+
+						cameraControls.setLatLon(
+							cameraControls.lat + this.position.y * 0.5, // deg.
+							cameraControls.lon - this.position.x        // deg.
+						);
+
+					}
+				};
+
+
+				(function update(){
+					requestAnimationFrame( update );
+					joystick1.update();
+					joystick2.update();
+				})();
+				
+			})();
+*/
+		</script>
+
+		<script>
+
+		//	## ECS and THREEJS
+
+		//	All objects of threejs are components.
+
+		//	Which threejs objects must defined as entities?
+		//	Which threejs objects must defined as components?
+		//	Can a object be Component-Type and Entity-Type at the same time?
+
+			//	A THREE.Vector is Component-Type.
+			//	A THREE.Object3D is Component-Type.
+			//	A THREE.Geometry is Component-Type.
+			//	A THREE.Material is Component-Type.
+
+			//	A THREE.Scene is Entity-Type?
+			//	A THREE.Mesh is Entity-Type?
+			//	A THREE.SkinnedMesh is Entity-Type?
+
+		//	THREE.Object3D is a Component-Type.
+		//	object3d = new THREE.Object3D(); is a component instance.
+
+		//	MW.CharacterController is a Component-Type.
+		//	controller = new MW.CharacterController() is a component instance.
+
+		</script>
+
+		<script>
+
+		//	System constructor.
+
+			function System(components, update){
+
+				if ( typeof components === "string" ) {
+					components = components.split(",");
+				}
+
+			//	debugMode && console.log( components );
+
+				var err = "SystemConstructorError:components is not an array!"
+				if ( !Array.isArray( components ) ) throw err;
+
+				for (var i = 0; i < components.length; i++){
+					components[i] = "\n\t\t\t\t\t\t" + "entity." + components[i];
+				}
+
+			//	debugMode && console.log( components );
+
+			//	Code is wrong; (TODO)
+			//	var code = "var system = arguments.callee.name;\n\t\t\t\tvar entity, components, passed;\n\t\t\t\tvar collected = [], "
+			//	+"collectId = [];\n\n\t\t\t//\tCollect entities.\n\t\t\t\tfor (var i = 0; i < entities.length; i++){\n\n\t\t\t\t\t"
+			//	+"entity = entities[i];\n\n\t\t\t\t\tvar components = [" + components.join() + "\n\t\t\t\t\t];\n\n\t\t\t\t\tif ( systemValidator(components) ) "
+			//	+"{\n\t\t\t\t\t\tcollected.push(entity);\n\t\t\t\t\t\tcollectId.push(entity._id);\n\t\t\t\t\t}\n\t\t\t\t}\n\n\t\t\t\tif "
+			//	+"( !collected.length ) return;\n\t\t\t\tconsole.log( syslogcid( system, collectId ) );\n\n\t\t\t\twhile ( collected.length )"
+			//	+"{\n\t\t\t\t\tupdate( collected.shift() );\n\t\t\t\t}\n" + update.toString();
+
+			//	debugMode && console.log( code );
+
+				return new Function("entities", code);
+				
+			}
+
+			System.prototype.isSystem = true;
+
+		</script>
+
+		<script>
+
+		//	System Manager Class (under construction).
+
+		//	System manager fires the systems on runtime.
+		//	System manager define the order that systems will fired.
+		//	System manager fires the systems for "init", "update"
+		//	and "render" state. It also fires the systems of every
+		//	"event", "signal" or watched observers.
+
+			function SystemManager(){
+				this.frameId;
+			};
+
+			//	return {
+			//		get requestAnimationFrameId(){
+			//			return this.frameId;
+			//		},
+			//		get initSystems(){},
+			//		get updateSystems(){},
+			//		get renderSystems(){},
+			//		get keyInputSystems(){},
+			//		get joystickSystems(){},
+			//		get mouseEventSystems(){},
+			//		get dragEventSystems(){},
+			//		get touchEventSystems(){},
+			//		get eventObjectSystems(){},
+			//		get windowEventSystems(){},
+			//		get timeoutSystems(){},
+			//		get intervalSystems(){},
+			//	}
+
+			SystemManager.prototype.frameId = 0;
+			SystemManager.prototype.isSystemManager = true;
+
+			SystemManager.prototype.init = function(entities){
+				//	Define init systems order.
+			};
+
+			SystemManager.prototype.update = function(dt, entities){
+
+			//	Define updating systems order.
+				JoystickControllerStateSystem(null, entities);
+				UserControllableObjectRotation(entities);
+				UserControllableObjectPosition(entities);
+			};
+
+			SystemManager.prototype.render = function(dt, entities){};
+
+		//	Start/Play/Pause/Stop events.
+
+			SystemManager.prototype.start = function(e, entities){
+				//	Define start systems order.
+			};
+			SystemManager.prototype.play = function(e, entities){
+				//	Define play systems order.
+			};
+			SystemManager.prototype.pause = function(e, entities){
+				//	Define pause systems order.
+			};
+			SystemManager.prototype.stop = function(e, entities){
+				//	Define stop systems order.
+			};
+
+		//	KeyInputControl events.
+
+			SystemManager.prototype.movekeyon = function(e, entities){
+			//	debugMode && console.log( e );
+				if ( e.type != "movekeyon" ) return;
+			//	Define movekeyon event systems order.
+				KeyInputControllerStateSystem(e, entities);
+			};
+			SystemManager.prototype.movekeyoff = function(e, entities){
+			//	debugMode && console.log( e );
+				if ( e.type != "movekeyoff" ) return;
+			//	Define movekeyoff event systems order.
+				KeyInputControllerStateSystem(e, entities);
+			};
+			SystemManager.prototype.movekeychange = function(e, entities){
+			//	debugMode && console.log( e );
+				if ( e.type != "movekeychange" ) return;
+			//	Define movekeychange event systems order.
+				KeyInputControllerStateSystem(e, entities);
+			};
+			SystemManager.prototype.jumpkeypress = function(e, entities){
+			//	debugMode && console.log( e );
+				if ( e.type != "jumpkeypress" ) return;
+			//	Define jumpkeypress event systems order.
+				KeyInputControllerStateSystem(e, entities);
+			};
+
+		//	VirtualJoystick events.
+
+			SystemManager.prototype.active = function(e, entities){
+			//	debugMode && console.log( e );
+				if ( e.type != "active" ) return;
+			//	Define active event systems order.
+				JoystickControllerStateSystem(e, entities);
+			};
+			SystemManager.prototype.disactive = function(e, entities){
+			//	debugMode && console.log( e );
+				if ( e.type != "disactive" ) return;
+			//	Define disactive event systems order.
+				JoystickControllerStateSystem(e, entities);
+			};
+
+		//	JumpButton events.
+
+			SystemManager.prototype.press = function(e, entities){
+			//	debugMode && console.log( e );
+				if ( e.type != "press" ) return;
+			//	Define press event systems order.
+				KeyInputControllerStateSystem(e, entities);
+			};
+
+		//	Keyboard events.
+
+			SystemManager.prototype.keyup = function(e, entities){};
+			SystemManager.prototype.keydown = function(e, entities){};
+
+		//	Mouse events.
+
+			SystemManager.prototype.click = function(e, entities){};
+			SystemManager.prototype.contextmenu = function(e, entities){};
+			SystemManager.prototype.dbclick = function(e, entities){};
+			SystemManager.prototype.mousedown = function(e, entities){};
+			SystemManager.prototype.mouseenter = function(e, entities){};
+			SystemManager.prototype.mouseleave = function(e, entities){};
+
+			SystemManager.prototype.mousemove = function(e){
+			//	debugMode && console.log( e );
+
+				if ( e.type != "mousemove" ) return;
+
+			//	Define mousemove event systems order.
+			//	MouseMoveSystemEventHandler(e, entities);
+
+			};
+
+			SystemManager.prototype.mouseout = function(e, entities){};
+			SystemManager.prototype.mouseover = function(e, entities){};
+			SystemManager.prototype.mouseup = function(e, entities){};
+
+		//	Drag events.
+
+			SystemManager.prototype.drag = function(e){
+			//	debugMode && console.log( e );
+
+				if ( e.type != "drag" ) return;
+
+			//	Define drag event systems order.
+			//	CameraLightUpdateSystem(entities);
+
+			};
+
+			SystemManager.prototype.dragenter = function(e, entities){};
+			SystemManager.prototype.dragover = function(e, entities){};
+			SystemManager.prototype.dragstart = function(e, entities){};
+			SystemManager.prototype.dragend = function(e, entities){};
+			SystemManager.prototype.dragleave = function(e, entities){};
+			SystemManager.prototype.drop = function(e, entities){};
+
+		//	Touch events.
+
+			SystemManager.prototype.touchstart = function(e, entities){};
+			SystemManager.prototype.touchmove = function(e, entities){};
+			SystemManager.prototype.touchend = function(e, entities){};
+			SystemManager.prototype.touchcancel = function(e, entities){};
+
+		//	EventObject events.
+
+			SystemManager.prototype.abort = function(e, entities){};
+			SystemManager.prototype.load = function(e, entities){};
+			SystemManager.prototype.change = function(e, entities){};
+			SystemManager.prototype.error = function(e, entities){};
+			SystemManager.prototype.input = function(e, entities){};
+			SystemManager.prototype.message = function(e, entities){};
+			SystemManager.prototype.online = function(e, entities){};
+			SystemManager.prototype.offline = function(e, entities){};
+			SystemManager.prototype.open = function(e, entities){};
+			SystemManager.prototype.pause = function(e, entities){};
+			SystemManager.prototype.play = function(e, entities){};
+			SystemManager.prototype.scroll = function(e, entities){};
+			SystemManager.prototype.select = function(e, entities){};
+			SystemManager.prototype.submit = function(e, entities){};
+			SystemManager.prototype.beforeunload = function(e, entities){};
+			SystemManager.prototype.unload = function(e, entities){};
+			SystemManager.prototype.progress = function(e, entities){};
+
+			SystemManager.prototype.resize = function(e){
+			//	debugMode && console.log( e );
+
+				if ( e.type != "resize" ) return;
+
+			//	Define resize event systems order.
+			//	WindowResizeSystemEventHandler(entities);
+
+			};
+
+		//	Intervals.
+
+			SystemManager.prototype.timeout = function(entities){
+				//	Define timeout systems order.
+			}
+
+			SystemManager.prototype.interval = function(entities){
+				//	Define interval systems order.
+			}
+
+		//	Runtime.
+
+			SystemManager.prototype.runtime = function(){
+
+				var manager = this;
+				var frameId = this.frameId;
+
+				(function runtime(){
+
+					var dt = clock.getDelta();
+					var elapsed = clock.getElapsedTime();
+					frameId = requestAnimationFrame( runtime );
+
+					manager.update(dt, entities);
+
+				})();
+			
+			};
+
+		</script>
+
+		<script>
+
+		//	Camera Controls (component instance).
+
+			const cameraControls = (function(){
+
+				var object3d = new THREE.Object3D();
+				
+				var options = {	
+					el: renderer.domElement,
+					offset: new THREE.Vector3( 0, 0, 0 ), // eye height.
+					radius: 2, // default distance of the character to the camera.
+					minRadius: 2,
+					maxRadius: 10,
+					rigidObjects: [],
+				};
+
+				var cameraControls = new MW.TPSCameraControl(
+					camera, 	// three.js camera.
+					object3d,	// tracking object.
+					options
+				);
+
+				(function update(){
+					cameraControls.update();
+					SystemManager.prototype.frameId = requestAnimationFrame( update );
+				})();
+
+				return cameraControls;
+
+			})();
+
+		//	Camera Joystick (component instance).
+
+			const cameraJoystick = (function(){
+
+				var joystickControls = document.createElement( "div" );
+				joystickControls.id = "joystick-controls-1";
+				joystickControls.classList.add("joystick-controls");
+				document.body.appendChild( joystickControls );
+
+				var joystick = new virtualInput.Joystick( $( "#joystick-controls-1" ), 94, { id: "joystick1" } );
+
+				joystick.update = function(){
+
+					if ( this.isActive ) {
+
+						cameraControls.setLatLon(
+							cameraControls.lat + this.position.y * 0.5, // deg.
+							cameraControls.lon - this.position.x        // deg.
+						);
+
+					}
+				};
+
+				(function update(){
+					joystick.update();
+					SystemManager.prototype.frameId = requestAnimationFrame( update );
+				})();
+
+				return joystick;
+
+			})();
+
+		</script>
+
+
+		<script>
+
+		//	## KeyInputControl System.
+
+		//	KeyInputControl systems are event drived. They fire in a keyInputControl event.
+		//	KeyInputControl modifies the state of Character Controller component.
+		//	KeyInputControl + Controller + (event) => ModifyControllerStateSystem.
+
+			const keyInputControls = new MW.KeyInputControl(); // component instance.
+
+			keyInputControls.addEventListener( "movekeyon", function (e) { 
+				SystemManager.prototype.movekeyon(e, entities);
+			});
+
+			keyInputControls.addEventListener( "movekeyoff", function (e) { 
+				SystemManager.prototype.movekeyoff(e, entities);
+			});
+
+			keyInputControls.addEventListener( "jumpkeypress", function (e) { 
+				SystemManager.prototype.jumpkeypress(e, entities);
+			});
+
+		//	synch keybord input and camera controls input.
+			keyInputControls.addEventListener( "movekeychange",  function (e) {
+				SystemManager.prototype.movekeychange(e, entities);
+			});
+
+			function KeyInputControllerStateSystem(e, entities){
+
+				var system = arguments.callee.name;
+				var collected = [], collectId = [];
+
+			//	Collect entities.
+				for (var i = 0; i < entities.length; i++){
+
+					var entity = entities[i];
+
+					var components = [
+						entity.Controller,
+						entity.KeyInputControl,
+					];
+
+				//	debugMode && console.log( components );
+
+					if ( systemValidator(components) ) {
+						collected.push(entity);
+						collectId.push(entity._id);
+					}
+				}
+
+				if ( !collected.length ) return;
+			//	debugMode && console.log( syslogcid( system, collectId ) );
+
+				while ( collected.length ){
+					update( collected.shift() );
+				}
+
+				function update( entity ){
+
+					switch ( e.type ){
+
+						case "movekeyon":
+							if ( entity.JumpOnly ) break;
+							entity.Controller.isRunning = true;
+						break;
+
+						case "movekeyoff":
+							if ( entity.JumpOnly ) break;
+							entity.Controller.isRunning = false;
+						break;
+
+						case "press":
+						case "jumpkeypress":
+							if ( entity.JumpOnly === false ) break;
+							entity.Controller.jump();
+						break;
+
+						case "movekeychange": {
+						//	if ( entity.JumpOnly ) break;
+							var rad = THREE.Math.degToRad( 360 );
+							var cameraFrontAngle = cameraControls.getFrontAngle();
+							var keyInputFrontAngle = entity.KeyInputControl.frontAngle;
+						//	synch keybord input and camera controls input.
+							entity.Controller.direction = rad - cameraFrontAngle + keyInputFrontAngle;
+						} break;
+
+					}
+
+				}
+
+			}
+
+		//	## VirtualJoystickControl System.
+		//	VirtualJoystick modifies the state of Character Controller component.
+		//	VirtualJoystick + Controller + (event) => JoystickControllerStateSystem.
+
+			const virtualJoystick = (function(){
+
+				var joystickControls = document.createElement( "div" );
+				joystickControls.id = "joystick-controls-2";
+				joystickControls.classList.add("joystick-controls");
+				document.body.appendChild( joystickControls );
+
+				var joystick = new virtualInput.Joystick( $( "#joystick-controls-2" ), 94, { id: "joystick2" } );
+
+				joystick.addEventListener( "active", function(e) { 
+					SystemManager.prototype.active(e, entities);
+				});
+
+				joystick.addEventListener( "disactive", function(e) { 
+					SystemManager.prototype.disactive(e, entities);
+				});
+
+				return joystick;
+
+			})();
+
+			function JoystickControllerStateSystem(e, entities){
+
+				var system = arguments.callee.name;
+				var collected = [], collectId = [];
+
+			//	Collect entities.
+				for (var i = 0; i < entities.length; i++){
+
+					var entity = entities[i];
+
+					var components = [
+						entity.Controller,
+						entity.VirtualJoystick,
+					];
+
+				//	debugMode && console.log( components );
+
+					if ( systemValidator(components) ) {
+						collected.push(entity);
+						collectId.push(entity._id);
+					}
+				}
+
+				if ( !collected.length ) return;
+			//	debugMode && console.log( syslogcid( system, collectId ) );
+
+				while ( collected.length ){
+
+					if ( e && e.type ) { 
+						stateUpdate( collected.shift() ); 
+						return; 
+					}
+
+					directionUpdate( collected.shift() );
+
+				}
+
+				function stateUpdate( entity ){
+
+					if ( entity.JumpOnly ) return;
+					if ( entity.Controller.isJumping ) return;
+					if ( entity.Controller.isOnSlope ) return;
+					if ( !entity.Controller.isGrounded ) return;
+
+					switch ( e.type ){
+
+						case "active": {
+							entity.Controller.isRunning = true;
+						} break;
+
+						case "disactive":
+							entity.Controller.isRunning = false;
+						break;
+
+					}
+
+				}
+
+				function directionUpdate( entity ){
+					if ( !entity.VirtualJoystick.isActive ) return;
+					var rad = THREE.Math.degToRad( 270 );
+					var joystickAngle = entity.VirtualJoystick.angle;
+					var cameraFrontAngle = cameraControls.getFrontAngle()
+					entity.Controller.direction = rad - cameraFrontAngle + joystickAngle;
+				}
+
+			}
+
+		//	## JumbButton System.
+
+			const jumpButton = (function(){
+
+				var interval;
+				var button = new virtualInput.Button( $( "#joystick-controls-1" ), 58, { id: "jumpButton", label: "<b>JUMP</b>" } );
+
+			//	## Use clearTimeout to event listeners to ensure last event parsing.
+			//	Because "press" event fires twice, we use the clearTimeout method 
+			//	to parse only the last "press" event.
+				button.addEventListener( "press", function(e) { 
+				//	debugMode && console.log(e); // double event.
+					clearTimeout( interval );
+					interval = setTimeout(function(){
+					//	debugMode && console.log(e); // single event.
+						SystemManager.prototype.press(e, entities);
+					});
+				});
+
+				return button;
+
+			})();
+
+		</script>
+
+		<script>
+
+		//	## WorldControllableObject Entity Type.
+		//	WorldControllableObject entity type defines a world controllable object.
+		//
+		//	A WorldControllableObject-type entity must have:
+		//		a Position component,
+		//		a Rotation component,
+		//		a Direction component,
+		//		a Controller component, 
+		//		a Object3D or Group component,
+		//	optional:
+		//		a KeyInputControl component,
+		//		and/or a VirtualJoystick component.
+		//		(+ any other user controls component)
+		//
+		//	If controller component or one of the four components missing, then 
+		//	object3d or group component instance is no more world controllable 
+		//	and the entity is no more WorldControllableObject-type.
+		//	If only the KeyInputControl and/or VirtualJoystick are missing then 
+		//	entity is still WorldControllableObject-type, but not controllable
+		//	by the user.
+
+			function isControllable(entity){
+			//	All items must be "false" to pass test.
+
+				var components = [
+					entity.Position === undefined, // false,
+					entity.Rotation === undefined, // false,
+					entity.Direction === undefined, // false,
+					entity.Controller === undefined, // false,
+				//	false: all except (true && true).
+					entity.Object3D === undefined 
+					&& entity.Group === undefined, 
+				];
+
+			//	all items must be false:(!undefined) to pass test.
+			//	debugMode && console.log( components ); 
+
+			//	if ( a component is undefined:true ) return false.
+				while ( components.length ){
+					if ( components.shift() ) return false;
+				}
+
+				return true;
+			}
+
+		//	WorldControllableObject-type entities needs a system to update its Object3D/Group component rotation.y;
+		//	(Object3D or Group) + Rotation + Direction + Controller + (KeyInputControl and/or VirtualJoystick) => UserControllableObjectRotation()
+		//	Tip: By holding the "X" "Y" or "Z" key the system should be use to update the object3d component x,y,z rotation respectively. (TODO)
+
+			function isUserControllable(entity){
+			//	true: true && !(true && false), 
+			//		  true && !(false && false), 
+			//	false: all others.
+				return isControllable(entity) 
+					&& !(entity.KeyInputControl === undefined 
+					&& entity.VirtualJoystick === undefined);
+			}
+
+			function UserControllableObjectRotation(entities){
+
+				var system = arguments.callee.name;
+				var collected = [], collectId = [];
+
+				for (var i = 0; i < entities.length; i++){
+
+					if ( isUserControllable( entities[i] ) ) {
+						collected.push( entities[i] );
+						collectId.push( entities[i]._id);
+					}
+				}
+
+				if ( !collected.length ) return;
+			//	debugMode && console.log( syslogcid( system, collectId ) );
+
+				while ( collected.length ){
+					update( collected.shift() );
+				}
+
+				function update( entity ){
+					entity.Rotation.y = entity.Direction = 
+					entity.Controller.direction + Math.PI; // important!
+				}
+			}
+
+		//	Example: controllableObject is an entity instance.
+
+			var controllableObject = (function(){
+
+				var r = 0.5; // radius.
+				var entity = new Entity(); // entity instance.
+
+			//	controllable object must have a object3d component.
+				var object3d = (function(){
+					var component = new THREE.Object3D();
+					component.isComponent = true;
+					component.position.set(-0.5,1,-3.5);
+					component.name = "controllable object";
+				//	Add object to scene.
+					scene.add( component );
+					return component;
+				})();
+
+			//	Add component to entity.
+				entity.Object3D = object3d; // bypass add() method.
+
+			//	controllable object may have a bounding sphere helper component.
+				var helper = (function(radius){
+					var sphere = new THREE.SphereGeometry( radius, 8, 6 );
+					var geometry = new THREE.EdgesGeometry( sphere );
+					var material = new THREE.LineBasicMaterial( { color: 0xffff00 } );
+					var component = new THREE.LineSegments( geometry, material );
+					component.isComponent = true;
+					component.name = "controllable helper";
+				//	Add helper to scene.
+					entity.Object3D.add( component );
+					return component;
+				})( r );
+
+			//	Add component to entity.
+				entity.Helper = helper; // bypass add() method.
+
+			//	controllable object must have a (user) controller component.
+				const controller = (function(object, radius){
+				//	Create controller component instance.
+					var component = new MW.CharacterController(object, radius);
+					component.isComponent = true;
+					component.movementSpeed = 10;
+					component.maxSlopeGradient = 0.5;
+					component.center.copy(object3d.position);
+				//	Add controller to world.
+					world.add( component ); // important!
+					return component;
+				})( entity.Object3D, r );
+
+			//	Add components to entity.
+
+			//	As will see in "UserControllableObjectRotation", we need a "Rotation" and  
+			//	a "Direction" component to pass the "isControllable()" of the system and
+			//	trigger the update() function.
+				entity.Position = object3d.position; // bypass add() method.
+				entity.Rotation = object3d.rotation; // bypass add() method.
+				entity.Direction = controller.direction; // bypass add() method.
+				entity.Controller = controller; // bypass add() method.
+
+			//	Add KeyInputControl and VirtualJoystick components to make entity user controllable.
+				entity.VirtualJoystick = virtualJoystick; // bypass add() method.
+				entity.KeyInputControl = keyInputControls; // bypass add() method.
+
+			//	controllableObject.Object3D component takes 
+			//	the control of cameraControls component now.
+				cameraControls.trackObject = entity.Object3D;
+
+			//	Push controlledObject entity to entities queue.
+				entities.push( entity ); // important!
+
+				return entity;
+
+			})();
+
+		//	Make the entity user uncontrollable.
+			delete controllableObject.VirtualJoystick;
+			delete controllableObject.KeyInputControl;
+			debugMode && console.log( controllableObject );
+
+		//	Debugging test.
+		//	(function update(){
+		//		SystemManager.prototype.frameId = requestAnimationFrame( update );
+		//		controlledObject.rotation.y = localPlayerController.direction + Math.PI; // important!
+		//	})();
+
+		//	TODO: a system to change controller object (when click something?).
+
+		</script>
+
+		<script>
+
+		//	## LocalPlayer entity instance (WorldControllableObject-type).
+		//
+		//	LocalPlayer is a special user controllable entity instance.
+		//	Used by the user (player) to control world controllable objects.
+		//	It is WorldControllableObject-type and most of the time
+		//	controls the user animated 3D model character. 
+		//	It used also to control editor controllable objects 
+		//	(we'll talk about editor controllabe objects later).
+		//
+		//	As most of the THREE mesh loaders loads a THREE.Group,
+		//	LocalPlayer has a Group instead of Object3D component. 
+		//	LocalPlayer entity holds the user's animated 3D model.
+		//
+		//	When the user want to control an other controllable component
+		//	we switch the Controller's component object and when we done,
+		//	we switch the controller's object back to its Group component.
+		//
+		//	LocalPlayer entity needs a system to update the group component position.y;
+		//	Group + Position + Rotation + Direction + Controller + (KeyInputControl and/or VirtualJoystick) => UserControllableObjectPosition()
+		//	Tip: By holding the "X" "Y" or "Z" key the system should be use to update the component x,y,z position respectively.(TODO)
+
+			function UserControllableObjectPosition(entities){
+
+				var system = arguments.callee.name;
+				var collected = [], collectId = [];
+
+			//	Collect entities.
+				for (var i = 0; i < entities.length; i++){
+
+					if ( isUserControllable( entities[i] ) ) {
+						collected.push( entities[i] );
+						collectId.push( entities[i]._id);
+					}
+				}
+
+				if ( !collected.length ) return;
+			//	debugMode && console.log( syslogcid( system, collectId ) );
+
+				while ( collected.length ){
+					update( collected.shift() );
+				}
+
+				function update( entity ){
+					entity.Position.y = entity.Controller.center.y - entity.Controller.radius;
+				}
+			}
+
+			const localPlayer = (function(){
+
+				var url = "/ecs/fbx/Idle (2).fbx";
+				var entity = new Entity(); // entity instance.
+
+			//	Load the animated 3D model.
+				var loader = new THREE.FBXLoader();
+				loader.load( url, function( group ){
+
+				//	Group component have two children component:
+				//	an armature component and a skinned mesh component.
+
+				//	All children in group have scale 100. We fix this:
+					group.traverse(function( child ){
+						var s = 1; 
+						if ( child.scale !== undefined ) {
+							child.scale.set(s,s,s);
+						}
+					});
+
+					group.position.y = 2;
+					group.isComponent = true;
+					debugMode && console.log( group );
+
+				//	Add group to scene.
+					scene.add( group );
+
+					var r = 0.85; // radius.
+				//	set group as camera light target.
+					cameraLight.target = group;
+				//	abjust cameraControls height.
+					cameraControls.offset.y = r;
+				//	give camera controls to group.
+					cameraControls.trackObject = group;
+
+				//	Add component to entity.
+					entity.Group = group;  // bypass add() method.
+
+				//	localPlayer has a bounding sphere helper component.
+					var helper = (function(radius){
+						var sphere = new THREE.SphereGeometry( radius, 8, 6 );
+						var geometry = new THREE.EdgesGeometry( sphere );
+						var material = new THREE.LineBasicMaterial( { color: 0xff0000 } );
+						var component = new THREE.LineSegments( geometry, material );
+						component.isComponent = true;
+						component.position.y = radius;
+						component.name = "localPlayer helper";
+					//	Add helper to scene.
+						entity.Group.add( component );
+						return component;
+					})( r );
+
+				//	Add component to entity.
+					entity.Helper = helper; // bypass add() method.
+
+				//	localPlayer has a controller component.
+					var controller = (function(object, radius){
+					//	Create controller component instance.
+						var component = new MW.CharacterController(object, radius);
+						component.isComponent = true;
+						component.movementSpeed = 5;
+						component.maxSlopeGradient = 0.5;
+					//	synch with 3d model front angle.
+						component.direction += Math.PI; // important!
+					//	Add controller to world.
+						world.add( component ); // important!
+						return component;
+					})( group, r );
+
+				//	Add components to make entity controllable.
+				//	localPlayer components: position, rotation, direction, controller.
+					entity.Position = group.position; // bypass add() method.
+					entity.Rotation = group.rotation; // bypass add() method.
+					entity.Direction = controller.direction; // bypass add() method.
+					entity.Controller = controller; // bypass add() method.
+
+				//	Add user-control components to make entity user-controllable.
+					entity.VirtualJoystick = virtualJoystick; // bypass add() method.
+					entity.KeyInputControl = keyInputControls; // bypass add() method.
+
+				//	Push localPlayer entity to entities queue.
+					entity.isLocalPlayer = true;
+					entities.push( entity ); // important!
+					debugMode && console.log( entity );
+
+				});
+
+			//	debugging.
+				return entity; // delete this line to encapsulate localPlayer entity.
+
+			})();
+
+		//	Debugging test.
+		//	(function update(){
+		//		SystemManager.prototype.frameId = requestAnimationFrame( update );
+		//		ControllableObjectPositionSystem( [localPlayer] ); // important!
+		//	})();
+		//
+		//	Update Group component position.
+		//	(function update(){
+		//		SystemManager.prototype.frameId = requestAnimationFrame( update );
+		//		entity.Group.position.set( 
+		//			entity.Controller.center.x, 
+		//			entity.Controller.center.y - entity.Controller.radius, // -0.85
+		//			entity.Controller.center.z 
+		//		);
+		//	})();
+
+		</script>
+
+		<script>
+
+		//	## EditorControllableObject Entity Type.
+		//	EditorControllableObject entity type defines editor controllable object.
+		//
+		//	An EditorControllableObject-type entity must have:
+		//		a Scale component,
+		//		a Position component,
+		//		a Rotation component,
+		//		a Object3d or Group or Mesh or Line or Sprite component,
+		//
+		//	An EditorControllableObject-type entity must NOT have:
+		//		...
+
+			function isEditorControllable(entity){
+			//	All items must be "false" to pass test.
+
+				var components = [
+					entity.Scale === undefined, // false,
+					entity.Position === undefined, // false,
+					entity.Rotation === undefined, // false,
+					entity.Controller === undefined, // false,
+				//	false: all except (true && true && true).
+					entity.Mesh === undefined 
+					&& entity.Line === undefined
+					&& entity.Group === undefined 
+					&& entity.Sprite === undefined
+					&& entity.Object3D === undefined
+					&& entity.SkinnedMesh === undefined
+					&& entity.LineSegments === undefined
+				];
+
+			//	all items must be false:(!undefined) to pass test.
+			//	debugMode && console.log( components ); 
+
+			//	if ( a component is undefined:true ) return false.
+				while ( components.length ){
+					if ( components.shift() ) return false;
+				}
+
+				return true;
+			}
+
+		//	Example: editableObject is an entity instance.
+
+			var object = (function(d){
+				var box = new THREE.BoxGeometry(d,d,d,1,1,1 );
+				var geometry = new THREE.EdgesGeometry( box );
+				var material = new THREE.LineBasicMaterial( { color: 0xffffff } );
+				var component = new THREE.LineSegments( geometry, material );
+				component.isComponent = true;
+				component.position.set( -2.5, 0.5, -2.5 );
+				component.name = "editor controllable object";
+				//	Add mesh to scene.
+				scene.add( component );
+				return component;
+			})(1);
+
+			var controller = new MW.CharacterController( object, 0.5 );
+			controller.velocity.set(0,0,0);
+			controller.movementSpeed = 10; // (m/sec);
+
+		//	Camera controls.
+			setTimeout(function(){
+			//	Take cameraControls.
+				cameraControls.offset.y = 0;
+				cameraControls.trackObject = object;
+			//	Make localPlayer uncontrollable.
+				localPlayer.remove("VirtualJoystick");
+			}, 5000);
+
+		//	Update Velocity.
+			controller.updateVelocity = function(){
+				var frontDierction = -Math.cos(controller.direction);
+				var rightDierction = -Math.sin(controller.direction);
+				var x = rightDierction * this.movementSpeed * this.isRunning; // x,
+				var z = frontDierction * this.movementSpeed * this.isRunning; // z
+				this.velocity.set(x,0,z);
+			};
+
+			(function update(){
+				SystemManager.prototype.frameId = requestAnimationFrame( update );
+				//	joystick update.
+					if ( virtualJoystick.isActive ){
+					//	direction update.
+						var rad = THREE.Math.degToRad( 270 );
+						var joystickAngle = virtualJoystick.angle;
+						var cameraFrontAngle = cameraControls.getFrontAngle()
+						controller.direction = rad - cameraFrontAngle + joystickAngle;
+					//	controller update.
+						controller.updatePosition(0.01); // dt.
+						controller.updateVelocity();
+					//	object position update.
+						object.position.copy(controller.center);
+						object.rotation.y = controller.direction;
+					}
+			})();
+
+			virtualJoystick.addEventListener( "active", function onActive() { 
+				
+				controller.isIdling = false;
+				controller.isRunning = true;
+			//
+				controller.isJumping = false;
+				controller.isOnSlope = false;
+				controller.isGrounded = true;
+
+			});
+
+			virtualJoystick.addEventListener( "disactive", function onDisactive() { 
+
+				controller.isIdling = true;
+				controller.isRunning = false;
+			//
+				controller.isJumping = false;
+				controller.isOnSlope = false;
+				controller.isGrounded = true;
+
+			});
+
+/*
+			var editableObject = (function(){
+
+				var entity = new Entity(); // entity instance.
+
+			//	editor controllable object has a Mesh component.
+				var object = (function(d){
+					var box = new THREE.BoxGeometry(d,d,d,1,1,1 );
+					var geometry = new THREE.EdgesGeometry( box );
+					var material = new THREE.LineBasicMaterial( { color: 0xffffff } );
+					var component = new THREE.LineSegments( geometry, material );
+					component.isComponent = true;
+					component.position.set( -2.5, 0.5, -2.5 );
+					component.name = "editor controllable object";
+				//	Add mesh to scene.
+					scene.add( component );
+					return component;
+				})(1);
+
+			//	Add component to entity
+				entity.Object3D = object;
+
+			//	Add components to meke entity editor controllable.
+				entity.Scale = object.scale;
+				entity.Position = object.position;
+				entity.Rotation = object.rotation;
+
+			//	Push entity to entities queue.
+				entities.push( entity ); // important!
+				debugMode && console.log( entity );
+
+				return entity;
+
+			})();
+			setTimeout(function(){
+			//	Let's try to take control of entity line segments object.
+			//	First we make the localPlayer entity user-uncontrollable.
+				delete localPlayer.VirtualJoystick;
+				delete localPlayer.KeyInputControl;
+			//	BE CAREFULL: DO NOT DELETE the localPlayer.Controller
+			//	component because will be difficult to find it again.
+			//	You may remove localPlayer controller from world's character pool.
+				var index = world.characterPool.findIndex(function( controller ){
+					return controller.object.uuid === localPlayer.Controller.object.uuid;
+				}); if ( index > -1 ) world.characterPool.splice(index, 1);
+			//	Now if you delete localPlayer.Controller component, it is imposible to find it again.
+
+				var radius = 0.5; //
+			//	Create a new character controller that will take control of entity line segments object.
+				var controller = new MW.CharacterController( editorControllable.Object3D, radius );
+			//	adjust movement speed.
+				controller.movementSpeed = 2;
+			//	reset controller center.
+				controller.center.copy( editorControllable.Position ); controller.center.y += radius;
+
+			//	Make entity user controllable.
+				editorControllable.Controller = controller;
+				editorControllable.Direction = controller.direction;
+				editorControllable.VirtualJoystick = virtualJoystick; // bypass add() method.
+				editorControllable.KeyInputControl = keyInputControls; // bypass add() method.
+
+			//	Give camera controls to editorControllable line segments object.
+				cameraControls.offset.y = 0;
+				cameraControls.trackObject = editorControllable.Object3D;
+			}, 10000);
+*/
+		</script>
+
+		<script>
+
+		//	## Synopsis.
+			
+			//	Define component types.
+			//	Create component instances.
+			//	Create entities instances.
+			//	Define entities systems.
+			//	Define systems order in SystemManager methods.
+			//	Define SystemManager methods order in runtime.
+
+		</script>
+
+		<script>
+
+		//	## Runtime.
+
+		//	Init.
+
+			SystemManager.prototype.init( entities );
+
+		//	Main Loop.
+
+			SystemManager.prototype.runtime();
+
+		//	Interval/Timeout.
+
+			//	Add here SystemManager.prototype.interval systems.
+
+		//
+
+		</script>
+
+		<script>
+
+			//	Rdbms With Code In Systems Implementation.
+			//	source: "http://entity-systems.wikidot.com/rdbms-with-code-in-systems"
+			//
+			//	## Concepts.
+			//		(integer) Entity
+			//		(enum) ComponentType
+			//		(interface OR empty base-class) Component
+			//		(interface OR empty base-class) System
+			//		(class with implementation) EntityManager
+			//
+			//	## Data Classes.
+			//
+			//	Entity: This is a non-negative integer, and uniquely identifies an entity 
+			//	within the ES. If you serialize your ES, this SHOULD be the same after serialization. 
+			//	New entities have to be assigned a new, unique, integer value when they are created. 
+			//	When an entity is destroyed, its integer value is freed, available for re-use.
+			//
+			//	ComponentType: This is needed because this ES is so simplistic it has no other way 
+			//	of identifying which Component you're talking about when you're looking at a single 
+			//	Entity. (richer EntitySystems MAY not need this type).
+			//
+			//	Component: This exists purely to make method-signatures type-safe. 
+			//	We need to know that certain objects are valid instances of a "component" 
+			//	(so we use this superclass to indicate that), but we also need a method that's 
+			//	guaranteed to work on all those objects. (richer EntitySystems make more use of this, 
+			//	and require it to be a class).
+			//
+			//	System: This exists purely to contain a known method-signature that your game-loop 
+			//	can call once per game-tick.
+			//
+			//	## EntitySystem Implementation Classes.
+			//
+			//	Each subclass of Component: Internally, the class has the following functions:
+			//	(ComponentType) getComponentType();
+			//
+			//	System: Just one method, that gives you a common interface to trigger each of 
+			//	the systems: processOneGameTick( long previousFrameTime );
+			//
+			//	EntityManager: This contains:
+			//	The master collections (arrays, hashmaps, whatever) that contain all the data for all the entities.
+			//	Logic for creating, modifying, fetching, and deleting entities.
+			//	Logic for fetching and modifying components-from-entities.
+			//	Internally, the class has the following variables:
+			//	LIST: all entities in existence (so it never duplicates entity-IDs!).
+			//	MAP: from "Entity + ComponentType" to "concrete Component subclass".
+			//	Internally, the class has the following functions:
+			//	(Component) getComponent( Entity, ComponentType );
+			//	(List) getAllComponentsOfType( ComponentType );
+			//	(List) getAllEntitiesPossessingComponent( ComponentType );
+			//	(void) addComponent( Entity, Component );
+			//	(int) createEntity;
+			//	void) killEntity( Entity );
+
+		</script>
+
+	</body>
+</html>
