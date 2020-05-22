@@ -2196,8 +2196,6 @@
 					try {
 
 					//	Move up/down.
-					//	if ( keyboard.pressed("E") ) object.translateOnAxis( axisY,  0.01 ); // up,
-					//	if ( keyboard.pressed("Q") ) object.translateOnAxis( axisY, -0.01 ); // down,
 						if ( keyboard.pressed("E") || keyboard.pressed("Q") ) {
 
 							var rad = 0; // Math.PI;
@@ -2214,45 +2212,55 @@
 
 						}
 
-						var UP = keyboard.pressed("up");       var W = keyboard.pressed("W");
-						var LEFT = keyboard.pressed("left");   var A = keyboard.pressed("A");
-						var DOWN = keyboard.pressed("down");   var S = keyboard.pressed("S");
-						var RIGHT = keyboard.pressed("right"); var D = keyboard.pressed("D")
-
 					//	Move left/right/forward/backward
-						if ( entity.State.isRotating && ( UP || LEFT || DOWN || RIGHT ) ) {
+						if ( entity.State.isRotating ) {
 
-						//	var rad = 3 * Math.PI/4 // joystick input.
-							var rad = 2 * Math.PI;  // keyboard input.
-							var movementSpeed = Math.max(dt, 0.05);
-							var cameraFrontAngle = SystemManager.cameraControls.frontAngle;
-							var keyboardFrontAngle = SystemManager.keyboard.frontAngle;
-							var direction = rad - cameraFrontAngle + keyboardFrontAngle;
-							var directionOnAxisX = -Math.sin(direction);
-							var directionOnAxisZ = -Math.cos(direction);
-							var x = directionOnAxisX * movementSpeed;
-							var z = directionOnAxisZ * movementSpeed;
-							var velocity = new THREE.Vector3(x,0,z);
-							object.position.x += velocity.x; 
-							object.position.z += velocity.z;
+							var UP = keyboard.pressed("up");
+							var LEFT = keyboard.pressed("left");
+							var DOWN = keyboard.pressed("down");
+							var RIGHT = keyboard.pressed("right");
 
-						} else if ( !entity.State.isRotating 
-							&& ( W || A || S || D || UP || LEFT || DOWN || RIGHT ) ) {
+							if ( UP || LEFT || DOWN || RIGHT ) {
 
-						//	var rad = 3 * Math.PI/4 // joystick input.
-							var rad = 2 * Math.PI;  // keyboard input.
-							var movementSpeed = Math.max(dt, 0.05);
-							var cameraFrontAngle = SystemManager.cameraControls.frontAngle;
-							var keyboardFrontAngle = SystemManager.keyboard.frontAngle;
-							var direction = rad - cameraFrontAngle + keyboardFrontAngle;
-							var directionOnAxisX = -Math.sin(direction);
-							var directionOnAxisZ = -Math.cos(direction);
-							var x = directionOnAxisX * movementSpeed;
-							var z = directionOnAxisZ * movementSpeed;
-							var velocity = new THREE.Vector3(x,0,z);
-							object.position.x += velocity.x; 
-							object.position.z += velocity.z;
+							//	var rad = 3 * Math.PI/4 // joystick input.
+								var rad = 2 * Math.PI;  // keyboard input.
+								var movementSpeed = Math.max(dt, 0.05);
+								var cameraFrontAngle = SystemManager.cameraControls.frontAngle;
+								var keyboardFrontAngle = SystemManager.keyboard.frontAngle;
+								var direction = rad - cameraFrontAngle + keyboardFrontAngle;
+								var directionOnAxisX = -Math.sin(direction);
+								var directionOnAxisZ = -Math.cos(direction);
+								var x = directionOnAxisX * movementSpeed;
+								var z = directionOnAxisZ * movementSpeed;
+								var velocity = new THREE.Vector3(x,0,z);
+								object.position.x += velocity.x; 
+								object.position.z += velocity.z;
+							}
 
+						} else if ( !entity.State.isRotating ) {
+
+							var UP = keyboard.pressed("up");       var W = keyboard.pressed("W");
+							var LEFT = keyboard.pressed("left");   var A = keyboard.pressed("A");
+							var DOWN = keyboard.pressed("down");   var S = keyboard.pressed("S");
+							var RIGHT = keyboard.pressed("right"); var D = keyboard.pressed("D");
+
+							if ( W || A || S || D || UP || LEFT || DOWN || RIGHT ) {
+
+							//	var rad = 3 * Math.PI/4 // joystick input.
+								var rad = 2 * Math.PI;  // keyboard input.
+								var movementSpeed = Math.max(dt, 0.05);
+								var cameraFrontAngle = SystemManager.cameraControls.frontAngle;
+								var keyboardFrontAngle = SystemManager.keyboard.frontAngle;
+								var direction = rad - cameraFrontAngle + keyboardFrontAngle;
+								var directionOnAxisX = -Math.sin(direction);
+								var directionOnAxisZ = -Math.cos(direction);
+								var x = directionOnAxisX * movementSpeed;
+								var z = directionOnAxisZ * movementSpeed;
+								var velocity = new THREE.Vector3(x,0,z);
+								object.position.x += velocity.x; 
+								object.position.z += velocity.z;
+
+							}
 						}
 
 					//	Resets.
