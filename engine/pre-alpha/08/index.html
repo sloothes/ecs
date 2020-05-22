@@ -1168,7 +1168,7 @@
 				EditorControllableRotateSystem(dt, entities);     // was EditorControllableObjectRotation.
 				EditorControllableTranslateSystem(dt, entities);  // was EditorControllableObjectPosition.
 				KeyboardControllableMovingSystem(dt, entities);   // was KeyboardControllableMoveSystem.
-			//	WorldControllableRotatingSystem(dt, entities);    // was UserControllableObjectRotation.
+				WorldControllableRotatingSystem(dt, entities);    // was UserControllableObjectRotation.
 				WorldControllableGroundingSystem(entities);       // last, important!
 			};
 
@@ -1817,193 +1817,6 @@
 
 		<script>
 
-		//	## LocalPlayer entity instance (WorldControllableObject-type).
-		//
-		//	LocalPlayer is a special user controllable entity instance.
-		//	Used by the user (player) to control world controllable objects.
-		//	It is WorldControllableObject-type and most of the time
-		//	controls the user animated 3D model character. 
-		//	It used also to control editor controllable objects 
-		//	(we'll talk about editor controllabe objects later).
-		//
-		//	As most of the THREE mesh loaders loads a THREE.Group,
-		//	LocalPlayer has a Group instead of Object3D component. 
-		//	LocalPlayer entity holds the user's animated 3D model.
-		//
-		//	When the user want to control an other controllable component
-		//	we switch the Controller's component object and when we done,
-		//	we switch the controller's object back to its Group component.
-		//
-		//	LocalPlayer entity needs a system to update the group component position.y;
-		//	Group + Position + Rotation + Direction + Controller + (KeyInputControl and/or VirtualJoystick) => UserControllableObjectPosition()
-		//	Tip: By holding the "X" "Y" or "Z" key the system should be use to update the component x,y,z position respectively.(TODO)
-
-			function isWorldControllable(entity){
-			//	Must have a MW.CharacterController component
-			//	and controller has been added to world.characterPool ???
-
-			//	NOTICE: All components must be "false" to pass test.
-				var components = [
-					entity.Controller === undefined,
-				//	world.characterPool.includes( entity.Controller ) === false,
-				];
-
-			//	all components must be false:(!undefined) to pass test.
-			//	debugMode && console.log( components ); 
-
-			//	if ( a component is undefined:true ) return false.
-				while ( components.length ){
-					if ( components.shift() ) return false;
-				}
-
-				return true;
-			}
-
-		//	to rename to "WorldControllableGroundingSystem()" ???
-		//	Keeping objects on ground.
-			function WorldControllableGroundingSystem(entities){
-
-				var system = arguments.callee.name;
-				var collected = [], collectId = [];
-
-			//	Collect entities.
-				for (var i = 0; i < entities.length; i++){
-
-					if ( isWorldControllable(entities[i]) ) {
-						collected.push( entities[i] );
-						collectId.push( entities[i]._id);
-					}
-				}
-
-				if ( !collected.length ) return;
-			//	debugMode && console.log( syslogcid( system, collectId ) );
-
-				while ( collected.length ){
-					update( collected.shift() );
-				}
-
-			
-				function update( entity ){
-					try {
-						entity.Position.y = entity.Controller.center.y - entity.Controller.radius; // keep object on ground.
-					} catch(err){
-						debugMode && console.log(err);
-					}
-				}
-			}
-/*
-			const localPlayer = (function(){
-
-				var url = "/ecs/fbx/Idle (2).fbx";
-				var entity = new Entity(); // entity instance.
-
-			//	Load the animated 3D model.
-				var loader = new THREE.FBXLoader();
-				loader.load( url, function( group ){
-
-				//	Group component have two children component:
-				//	an armature component and a skinned mesh component.
-
-				//	All children in group have scale 100. We fix this:
-					group.traverse(function( child ){
-						var s = 1; 
-						if ( child.scale !== undefined ) {
-							child.scale.set(s,s,s);
-						}
-					});
-
-					group.position.y = 2;
-					group.isComponent = true;
-					debugMode && console.log( group );
-
-				//	Add group to scene.
-					scene.add( group );
-
-					var r = 0.85; // radius.
-				//	set group as camera light target.
-					cameraLight.target = group;
-				//	abjust cameraControls height.
-					cameraControls.offset.y = r;
-				//	give camera controls to group.
-					cameraControls.trackObject = group;
-
-				//	Add component to entity.
-					entity.Group = group;  // bypass add() method.
-
-				//	localPlayer has a bounding sphere helper component.
-					var helper = (function(radius){
-						var sphere = new THREE.SphereGeometry( radius, 8, 6 );
-						var geometry = new THREE.EdgesGeometry( sphere );
-						var material = new THREE.LineBasicMaterial( { color: 0xff0000 } );
-						var component = new THREE.LineSegments( geometry, material );
-						component.isComponent = true;
-						component.position.y = radius;
-						component.name = "localPlayer helper";
-					//	Add helper to scene.
-						entity.Group.add( component );
-						return component;
-					})( r );
-
-				//	Add component to entity.
-					entity.Helper = helper; // bypass add() method.
-
-				//	localPlayer has a controller component.
-					var controller = (function(object, radius){
-					//	Create controller component instance.
-						var component = new MW.CharacterController(object, radius);
-						component.isComponent = true;
-						component.movementSpeed = 5;
-						component.maxSlopeGradient = 0.5;
-					//	synch with 3d model front angle.
-						component.direction += Math.PI; // important!
-					//	Add controller to world.
-						world.add( component ); // important!
-						return component;
-					})( group, r );
-
-				//	Add components to make entity controllable.
-				//	localPlayer components: position, rotation, direction, controller.
-					entity.Position = group.position; // bypass add() method.
-					entity.Rotation = group.rotation; // bypass add() method.
-					entity.Direction = controller.direction; // bypass add() method.
-					entity.Controller = controller; // bypass add() method.
-
-				//	Add user-control components to make entity user-controllable.
-					entity.VirtualJoystick = virtualJoystick; // bypass add() method.
-					entity.KeyInputControl = keyInputControls; // bypass add() method.
-
-				//	Push localPlayer entity to entities queue.
-					entity.isLocalPlayer = true;
-					entities.push( entity ); // important!
-					debugMode && console.log( entity );
-
-				});
-
-			//	debugging.
-				return entity; // delete this line to encapsulate localPlayer entity.
-
-			})();
-*/
-		//	Debugging test.
-		//	(function update(){
-		//		SystemManager.prototype.frameId = requestAnimationFrame( update );
-		//		ControllableObjectPositionSystem( [localPlayer] ); // important!
-		//	})();
-		//
-		//	Update Group component position.
-		//	(function update(){
-		//		SystemManager.prototype.frameId = requestAnimationFrame( update );
-		//		entity.Group.position.set( 
-		//			entity.Controller.center.x, 
-		//			entity.Controller.center.y - entity.Controller.radius, // -0.85
-		//			entity.Controller.center.z 
-		//		);
-		//	})();
-
-		</script>
-
-		<script>
-
 		//	## EditorControllableObject Entity Type.
 		//	EditorControllableObject entity type defines editor controllable object.
 		//
@@ -2312,9 +2125,9 @@
 				};
 
 			//	Take camera controls and camera light.
-				cameraControls.offset.y = 0;
-				cameraControls.trackObject = entity.Object3D;
-				cameraLight.target = entity.Object3D;
+			//	cameraControls.offset.y = 0;
+			//	cameraControls.trackObject = entity.Object3D;
+			//	cameraLight.target = entity.Object3D;
 
 			//	Push entity to entities queue.
 				entities.push( entity ); // important!
@@ -2488,6 +2301,195 @@
 			})();
 
 		//	var cube = keyableObject.Object3D;
+
+		</script>
+
+		<script>
+
+		//	## LocalPlayer entity instance (WorldControllableObject-type).
+		//
+		//	LocalPlayer is a special user controllable entity instance.
+		//	Used by the user (player) to control world controllable objects.
+		//	It is WorldControllableObject-type and most of the time
+		//	controls the user animated 3D model character. 
+		//	It used also to control editor controllable objects 
+		//	(we'll talk about editor controllabe objects later).
+		//
+		//	As most of the THREE mesh loaders loads a THREE.Group,
+		//	LocalPlayer has a Group instead of Object3D component. 
+		//	LocalPlayer entity holds the user's animated 3D model.
+		//
+		//	When the user want to control an other controllable component
+		//	we switch the Controller's component object and when we done,
+		//	we switch the controller's object back to its Group component.
+		//
+		//	LocalPlayer entity needs a system to update the group component position.y;
+		//	Group + Position + Rotation + Direction + Controller + (KeyInputControl and/or VirtualJoystick) => UserControllableObjectPosition()
+		//	Tip: By holding the "X" "Y" or "Z" key the system should be use to update the component x,y,z position respectively.(TODO)
+
+			function isWorldControllable(entity){
+			//	Must have a MW.CharacterController component
+			//	and controller has been added to world.characterPool ???
+
+			//	NOTICE: All components must be "false" to pass test.
+				var components = [
+					entity.Controller === undefined,
+				//	world.characterPool.includes( entity.Controller ) === false,
+				];
+
+			//	NOTICE: all components must be false:(!undefined) to pass test.
+			//	debugMode && console.log( components ); 
+
+			//	if ( a component is undefined:true ) return false.
+				while ( components.length ){
+					if ( components.shift() ) return false;
+				}
+
+				return true;
+			}
+
+			function WorldControllableGroundingSystem(entities){
+
+				var system = arguments.callee.name;
+				var collected = [], collectId = [];
+
+			//	Collect entities.
+				for (var i = 0; i < entities.length; i++){
+
+					if ( isWorldControllable(entities[i]) ) {
+						collected.push( entities[i] );
+						collectId.push( entities[i]._id);
+					}
+				}
+
+				if ( !collected.length ) return;
+			//	debugMode && console.log( syslogcid( system, collectId ) );
+
+				while ( collected.length ){
+					update( collected.shift() );
+				}
+
+			//	Keeping objects on ground.
+				function update( entity ){
+					try {
+						entity.Position.y = entity.Controller.center.y - entity.Controller.radius; // keep object on ground.
+					} catch(err){
+						debugMode && console.log(err);
+					}
+				}
+			}
+
+			const localPlayer = (function(){
+
+				var url = "/ecs/fbx/Idle (2).fbx";
+				var entity = new Entity(); // entity instance.
+
+			//	Load the animated 3D model.
+				var loader = new THREE.FBXLoader();
+				loader.load( url, function( group ){
+
+				//	Group component have two children component:
+				//	an armature component and a skinned mesh component.
+
+				//	All children in group have scale 100. We fix this:
+					group.traverse(function( child ){
+						var s = 1; 
+						if ( child.scale !== undefined ) {
+							child.scale.set(s,s,s);
+						}
+					});
+
+					group.position.y = 2;
+					group.isComponent = true;
+					debugMode && console.log( group );
+
+				//	Add group to scene.
+					scene.add( group );
+
+					var r = 0.85; // radius.
+
+				//	Take camera light.
+					cameraLight.target = group;
+				//	Take camera controls.
+					cameraControls.offset.y = r;
+					cameraControls.trackObject = group;
+
+				//	Add component to entity.
+					entity.Group = group;  // bypass add() method.
+
+				//	localPlayer has a bounding sphere helper component.
+					var helper = (function( radius ){
+						var sphere = new THREE.SphereGeometry( radius, 8, 6 );
+						var geometry = new THREE.EdgesGeometry( sphere );
+						var material = new THREE.LineBasicMaterial( { color: 0xff0000 } );
+						var component = new THREE.LineSegments( geometry, material );
+						component.isComponent = true;
+						component.position.y = radius;
+						component.name = "localPlayer helper";
+					//	Add helper to scene.
+						entity.Group.add( component );
+						return component;
+					})( r );
+
+				//	Add component to entity.
+					entity.Helper = helper; // bypass add() method.
+
+				//	localPlayer has a controller component.
+					var controller = (function(object, radius){
+					//	Create controller component instance.
+						var component = new MW.CharacterController(object, radius);
+						component.isComponent = true;
+						component.movementSpeed = 5; // (m/fps)
+						component.maxSlopeGradient = 0.5; // important!
+					//	synch with 3d model front angle.
+						component.direction += Math.PI; // important!
+					//	Add controller to world.
+						world.add( component ); // important!
+						return component;
+					})( group, r );
+
+				//	Add components to make entity controllable.
+				//	localPlayer components: position, rotation, direction, controller.
+					entity.Position = group.position; // bypass add() method.
+					entity.Rotation = group.rotation; // bypass add() method.
+					entity.Direction = controller.direction; // bypass add() method.
+					entity.Controller = controller; // bypass add() method.
+
+				//	Add user-control components to make entity user-controllable.
+					entity.VirtualJoystick = virtualJoystick; // bypass add() method.
+					entity.KeyInputControl = keyInputControls; // bypass add() method.
+
+				//	Entity metadata.
+					entity.State = {
+						isLocalPlayer: true,
+					};
+
+				//	Push localPlayer entity to queue.
+					entities.push( entity ); // important!
+					debugMode && console.log( entity );
+
+				});
+
+			//	debugging.
+				return entity; // delete this line to encapsulate localPlayer entity.
+
+			})();
+
+		//	Debugging test.
+		//	(function update(){
+		//		SystemManager.prototype.frameId = requestAnimationFrame( update );
+		//		ControllableObjectPositionSystem( [localPlayer] ); // important!
+		//	})();
+		//
+		//	Update Group component position.
+		//	(function update(){
+		//		SystemManager.prototype.frameId = requestAnimationFrame( update );
+		//		entity.Group.position.set( 
+		//			entity.Controller.center.x, 
+		//			entity.Controller.center.y - entity.Controller.radius, // -0.85
+		//			entity.Controller.center.z 
+		//		);
+		//	})();
 
 		</script>
 
