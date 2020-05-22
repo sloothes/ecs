@@ -2117,12 +2117,13 @@
 				entity.Position = object.position;
 				entity.Rotation = object.rotation;
 
-				entity.State = {
-				//	editorMode:true,
-				//	isSelected:true,
-					isRotating:true,
-					isTranslating:true,
-				};
+			//	Use state component to activate systems.
+			//	entity.State = {
+			//		editorMode:true,
+			//		isSelected:true,
+			//		isRotating:true,
+			//		isTranslating:true,
+			//	};
 
 			//	Take camera controls and camera light.
 			//	cameraControls.offset.y = 0;
@@ -2281,11 +2282,12 @@
 				entity.Position = object.position;
 				entity.Rotation = object.rotation;
 
-				entity.State = {
-					isMoving:true,
-					isRotating:true,
-				//	isSelected:true,
-				};
+			//	Use state component to activate systems.
+			//	entity.State = {
+			//		isMoving:true,
+			//		isRotating:true,
+			//		isSelected:true,
+			//	};
 
 			//	Take camera controls and camera light.
 			//	cameraControls.offset.y = 0;
@@ -2406,16 +2408,10 @@
 				//	Add group to scene.
 					scene.add( group );
 
-					var r = 0.85; // radius.
-
-				//	Take camera light.
-					cameraLight.target = group;
-				//	Take camera controls.
-					cameraControls.offset.y = r;
-					cameraControls.trackObject = group;
-
 				//	Add component to entity.
 					entity.Group = group;  // bypass add() method.
+
+					var r = 0.85; // radius.
 
 				//	localPlayer has a bounding sphere helper component.
 					var helper = (function( radius ){
@@ -2459,10 +2455,16 @@
 					entity.VirtualJoystick = virtualJoystick; // bypass add() method.
 					entity.KeyInputControl = keyInputControls; // bypass add() method.
 
-				//	Entity metadata.
+				//	Use state component to activate systems.
 					entity.State = {
 						isLocalPlayer: true,
 					};
+
+				//	Take camera light.
+					cameraLight.target = group;
+				//	Take camera controls.
+					cameraControls.offset.y = r;
+					cameraControls.trackObject = group;
 
 				//	Push localPlayer entity to queue.
 					entities.push( entity ); // important!
