@@ -1907,13 +1907,17 @@
 			value: function update() {
 
 				this._center = new THREE.Vector3(
-					this.trackObject.matrixWorld.elements[12] 
-					+ this.offset.x, this.trackObject.matrixWorld.elements[13] 
-					+ this.offset.y, this.trackObject.matrixWorld.elements[14] 
-					+ this.offset.z
+					this.trackObject.matrixWorld.elements[12] + this.offset.x, 
+					this.trackObject.matrixWorld.elements[13] + this.offset.y, 
+					this.trackObject.matrixWorld.elements[14] + this.offset.z
 				);
 
-				var position = new THREE.Vector3(Math.cos(this.phi) * Math.cos(this.theta + PI_HALF), Math.sin(this.phi), Math.cos(this.phi) * Math.sin(this.theta + PI_HALF));
+				var position = new THREE.Vector3(
+					Math.cos(this.phi) * Math.cos(this.theta + PI_HALF), 
+					Math.sin(this.phi), 
+					Math.cos(this.phi) * Math.sin(this.theta + PI_HALF)
+				);
+
 				var distance = this.collisionTest(position.clone().normalize());
 				position.multiplyScalar(distance);
 				position.add(this._center);
