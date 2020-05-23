@@ -835,8 +835,9 @@
 				EditorControllableTranslateSystem(dt, entities);  // was EditorControllableObjectPosition.
 				KeyboardControllableMovingSystem(dt, entities);   // was KeyboardControllableMoveSystem.
 				WorldControllableRotatingSystem(dt, entities);    // was UserControllableObjectRotation.
-				AnimationControllerUpdatingSystem(dt, entities);
+			//	AnimationControllerUpdatingSystem(dt, entities);
 				WorldControllableGroundingSystem(entities);       // last, important!
+
 			};
 
 			SystemManager.prototype.render = function(dt, entities){};
@@ -1615,40 +1616,6 @@
 
 		//	## EditorControllableTranslateSystem
 
-			//	!!! SOS !!!  VERY IMPORTANT! !!! SOS !!!
-
-			function translateOnScreenPlaneXZ( object ){
-			//	(from MW character controller).
-			//	Axis XZ (using camera controls theta angle).
-			//	var rad = 3 * Math.PI/4 // joystick input.
-				var rad = 2 * Math.PI;  // keyboard input.
-				var movementSpeed = 0.05; // (m/fps) => 5cm/fps
-				var cameraAngle = SystemManager.cameraControls.frontAngle;
-				var keyboardAngle = SystemManager.keyboard.frontAngle;
-				var direction = rad - cameraAngle + keyboardAngle;
-				var directionOnAxisX = -Math.sin(direction);
-				var directionOnAxisZ = -Math.cos(direction);
-				var x = directionOnAxisX * movementSpeed;
-				var z = directionOnAxisZ * movementSpeed;
-				var velocity = new THREE.Vector3(x,0,z);
-				object.position.x += velocity.x; 
-				object.position.z += velocity.z;
-			}
-
-			function translateOnScreenAxisY( object ){
-			//	Axis Y (using camera controls phi angle).
-				var rad = 0;  // keyboard input.
-				var movementSpeed = 0.05; // (m/fps) => 5cm/fps
-				var cameraAngle = SystemManager.cameraControls.phi;
-				var keyboardAngle = SystemManager.keyboard.verticalAngle;
-				var direction = rad - cameraAngle + keyboardAngle;
-				var directionOnAxisY = Math.sin(direction);
-				var velocity = directionOnAxisY * movementSpeed;
-				object.position.y += velocity; 
-			}
-
-			//	!!! SOS !!!  VERY IMPORTANT! !!! SOS !!!
-
 			function EditorControllableTranslateSystem(dt, entities){
 
 				var system = arguments.callee.name;
@@ -1660,8 +1627,7 @@
 					if ( isEditorControllable( entity ) 
 						&& entity.State !== undefined 
 						&& entity.State.editorMode 
-						&& entity.State.isSelected
-						&& entity.State.isTranslating ) {
+						&& entity.State.isSelected ) {
 						collected.push( entity );
 						collectId.push( entity._id);
 					}
@@ -1676,99 +1642,77 @@
 
 				function update( entity ){
 
-					var object;
-
-					if ( entity.Object3D ) object = entity.Object3D;
-					else if ( entity.Group ) object = entity.Group;
-					else if ( entity.Mesh )  object = entity.Mesh;
-					else if ( entity.Line )  object = entity.Line;
-					else if ( entity.Sprite ) object = entity.Sprite;
-					else if ( entity.SkinnedMesh )  object = entity.SkinnedMesh;
-					else if ( entity.LineSegments ) object = entity.LineSegments;
+					if ( !entity.State.isSelected ) return;
+					if ( !entity.State.isTranslating ) return;
 
 					try {
 
-					//	Move up/down.
-						if ( keyboard.pressed("E") || keyboard.pressed("Q") ) translateOnScreenAxisY( object );
+						var object;
 
-					/*	{
+						if ( entity.Object3D ) object = entity.Object3D;
+						else if ( entity.Group ) object = entity.Group;
+						else if ( entity.Mesh )  object = entity.Mesh;
+						else if ( entity.Line )  object = entity.Line;
+						else if ( entity.Sprite ) object = entity.Sprite;
+						else if ( entity.SkinnedMesh )  object = entity.SkinnedMesh;
+						else if ( entity.LineSegments ) object = entity.LineSegments;
 
-							var rad = 0; // Math.PI;
-							var movementSpeed = 0.05;
-							var keyboardFrontAngle = 0;
-							var cameraFrontAngle = SystemManager.cameraControls.phi;
-							if ( keyboard.pressed("E") ) keyboardFrontAngle =  Math.PI/2;
-							if ( keyboard.pressed("Q") ) keyboardFrontAngle = -Math.PI/2;
-							var direction = rad - cameraFrontAngle + keyboardFrontAngle;
+						if ( !object ) return;
+
+						function translateOnScreenPlaneXZ( object ){
+						//	(from MW character controller).
+						//	Axis XZ (using camera controls theta angle).
+						//	var rad = 3 * Math.PI/4 // joystick input.
+							var rad = 2 * Math.PI;  // keyboard input.
+							var movementSpeed = 0.05; // (m/fps) => 5cm/fps
+							var cameraAngle = SystemManager.cameraControls.frontAngle;
+							var keyboardAngle = SystemManager.keyboard.frontAngle;
+							var direction = rad - cameraAngle + keyboardAngle;
+							var directionOnAxisX = -Math.sin(direction);
+							var directionOnAxisZ = -Math.cos(direction);
+							var x = directionOnAxisX * movementSpeed;
+							var z = directionOnAxisZ * movementSpeed;
+							var velocity = new THREE.Vector3(x,0,z);
+							object.position.x += velocity.x; 
+							object.position.z += velocity.z;
+						}
+
+						function translateOnScreenAxisY( object ){
+						//	Axis Y (using camera controls phi angle).
+							var rad = 0;  // keyboard input.
+							var movementSpeed = 0.05; // (m/fps) => 5cm/fps
+							var cameraAngle = SystemManager.cameraControls.phi;
+							var keyboardAngle = SystemManager.keyboard.verticalAngle;
+							var direction = rad - cameraAngle + keyboardAngle;
 							var directionOnAxisY = Math.sin(direction);
-							var y = directionOnAxisY * movementSpeed;
-							var velocity = new THREE.Vector3(0,y,0);
-							object.position.y += velocity.y; 
+							var velocity = directionOnAxisY * movementSpeed;
+							object.position.y += velocity; 
+						}
 
-						}	
-					*/
+						var E = keyboard.pressed("E");         var Q = keyboard.pressed("Q");
+						var R = keyboard.pressed("R");         var F = keyboard.pressed("F");
+						var UP = keyboard.pressed("up");       var W = keyboard.pressed("W");
+						var LEFT = keyboard.pressed("left");   var A = keyboard.pressed("A");
+						var DOWN = keyboard.pressed("down");   var S = keyboard.pressed("S");
+						var RIGHT = keyboard.pressed("right"); var D = keyboard.pressed("D");
 
-					//	Move left/right/forward/backward
+					//	Move up/down.
+						if ( E || Q ) translateOnScreenAxisY( object );
+
 						if ( entity.State.isRotating ) {
 
-							var UP = keyboard.pressed("up");
-							var LEFT = keyboard.pressed("left");
-							var DOWN = keyboard.pressed("down");
-							var RIGHT = keyboard.pressed("right");
-
+						//	Move left/right/forward/backward
 							if ( UP || LEFT || DOWN || RIGHT ) translateOnScreenPlaneXZ( object );
 
-						/*	{
+						//	Reset rotations.
+							else if ( R ) object.rotation.set(0,0,0);
+							else if ( F ) object.setRotationFromQuaternion(camera.quaternion);
 
-							//	var rad = 3 * Math.PI/4 // joystick input.
-								var rad = 2 * Math.PI;  // keyboard input.
-								var movementSpeed = Math.max(dt, 0.05);
-								var cameraFrontAngle = SystemManager.cameraControls.frontAngle;
-								var keyboardFrontAngle = SystemManager.keyboard.frontAngle;
-								var direction = rad - cameraFrontAngle + keyboardFrontAngle;
-								var directionOnAxisX = -Math.sin(direction);
-								var directionOnAxisZ = -Math.cos(direction);
-								var x = directionOnAxisX * movementSpeed;
-								var z = directionOnAxisZ * movementSpeed;
-								var velocity = new THREE.Vector3(x,0,z);
-								object.position.x += velocity.x; 
-								object.position.z += velocity.z;
-							}
-						*/
-
-						} else if ( !entity.State.isRotating ) {
-
-							var UP = keyboard.pressed("up");       var W = keyboard.pressed("W");
-							var LEFT = keyboard.pressed("left");   var A = keyboard.pressed("A");
-							var DOWN = keyboard.pressed("down");   var S = keyboard.pressed("S");
-							var RIGHT = keyboard.pressed("right"); var D = keyboard.pressed("D");
+						} else {
 
 							if ( W || A || S || D || UP || LEFT || DOWN || RIGHT ) translateOnScreenPlaneXZ( object );
 
-						/*	{
-
-							//	var rad = 3 * Math.PI/4 // joystick input.
-								var rad = 2 * Math.PI;  // keyboard input.
-								var movementSpeed = Math.max(dt, 0.05);
-								var cameraFrontAngle = SystemManager.cameraControls.frontAngle;
-								var keyboardFrontAngle = SystemManager.keyboard.frontAngle;
-								var direction = rad - cameraFrontAngle + keyboardFrontAngle;
-								var directionOnAxisX = -Math.sin(direction);
-								var directionOnAxisZ = -Math.cos(direction);
-								var x = directionOnAxisX * movementSpeed;
-								var z = directionOnAxisZ * movementSpeed;
-								var velocity = new THREE.Vector3(x,0,z);
-								object.position.x += velocity.x; 
-								object.position.z += velocity.z;
-
-							}
-						*/
-
 						}
-
-					//	Resets.
-						if ( keyboard.pressed("R") ) object.rotation.set(0,0,0);
-						if ( keyboard.pressed("F") ) object.setRotationFromQuaternion(camera.quaternion);
 
 					} catch(err){
 						debugMode && console.error( "SystemError:", system, err );
@@ -1778,6 +1722,60 @@
 
 			}
 
+/*
+			{
+
+				var rad = 0; // Math.PI;
+				var movementSpeed = 0.05;
+				var keyboardFrontAngle = 0;
+				var cameraFrontAngle = SystemManager.cameraControls.phi;
+				if ( keyboard.pressed("E") ) keyboardFrontAngle =  Math.PI/2;
+				if ( keyboard.pressed("Q") ) keyboardFrontAngle = -Math.PI/2;
+				var direction = rad - cameraFrontAngle + keyboardFrontAngle;
+				var directionOnAxisY = Math.sin(direction);
+				var y = directionOnAxisY * movementSpeed;
+				var velocity = new THREE.Vector3(0,y,0);
+				object.position.y += velocity.y; 
+
+			}	
+*/
+/*
+			{
+
+				//	var rad = 3 * Math.PI/4 // joystick input.
+				var rad = 2 * Math.PI;  // keyboard input.
+				var movementSpeed = Math.max(dt, 0.05);
+				var cameraFrontAngle = SystemManager.cameraControls.frontAngle;
+				var keyboardFrontAngle = SystemManager.keyboard.frontAngle;
+				var direction = rad - cameraFrontAngle + keyboardFrontAngle;
+				var directionOnAxisX = -Math.sin(direction);
+				var directionOnAxisZ = -Math.cos(direction);
+				var x = directionOnAxisX * movementSpeed;
+				var z = directionOnAxisZ * movementSpeed;
+				var velocity = new THREE.Vector3(x,0,z);
+				object.position.x += velocity.x; 
+				object.position.z += velocity.z;
+			}
+*/
+/*
+			{
+
+				//	var rad = 3 * Math.PI/4 // joystick input.
+				var rad = 2 * Math.PI;  // keyboard input.
+				var movementSpeed = Math.max(dt, 0.05);
+				var cameraFrontAngle = SystemManager.cameraControls.frontAngle;
+				var keyboardFrontAngle = SystemManager.keyboard.frontAngle;
+				var direction = rad - cameraFrontAngle + keyboardFrontAngle;
+				var directionOnAxisX = -Math.sin(direction);
+				var directionOnAxisZ = -Math.cos(direction);
+				var x = directionOnAxisX * movementSpeed;
+				var z = directionOnAxisZ * movementSpeed;
+				var velocity = new THREE.Vector3(x,0,z);
+				object.position.x += velocity.x; 
+				object.position.z += velocity.z;
+
+			}
+*/
 		//	Example: editorableObject is an entity instance.
 
 			var editorableObject = (function(){
@@ -1810,15 +1808,17 @@
 			//	Use state component to activate systems.
 				entity.State = {
 					editorMode:true,
-					isSelected:true,
+					isSelected:false,
 					isRotating:true,
-					isTranslating:true,
+					isTranslating:false,
+					hasCameraLight:false,
+					hasCameraControls:false,
 				};
 
 			//	Take camera controls and camera light.
-				cameraControls.offset.y = 0;
-				cameraControls.trackObject = entity.Object3D;
-				cameraLight.target = entity.Object3D;
+			//	cameraControls.offset.y = 0;
+			//	cameraControls.trackObject = entity.Object3D;
+			//	cameraLight.target = entity.Object3D;
 
 			//	Push entity to entities queue.
 				entities.push( entity ); // important!
@@ -1873,8 +1873,6 @@
 					
 					if ( isKeyboardControllable( entity ) 
 						&& entity.State !== undefined 
-						&& entity.State.isMoving
-						&& entity.State.isRotating 
 						&& entity.State.isSelected ) {
 						collected.push( entity );
 						collectId.push( entity._id);
@@ -1890,34 +1888,58 @@
 
 				function update( entity ){
 
-					var object;
-
-					if ( entity.Object3D ) object = entity.Object3D;
-					else if ( entity.Group ) object = entity.Group;
-					else if ( entity.Mesh )  object = entity.Mesh;
-					else if ( entity.Line )  object = entity.Line;
-					else if ( entity.Sprite ) object = entity.Sprite;
-					else if ( entity.SkinnedMesh )  object = entity.SkinnedMesh;
-					else if ( entity.LineSegments ) object = entity.LineSegments;
+					if ( !entity.State.isSelected ) return;
 
 					try {
+
+						var object;
+
+						if ( entity.Object3D ) object = entity.Object3D;
+						else if ( entity.Group ) object = entity.Group;
+						else if ( entity.Mesh )  object = entity.Mesh;
+						else if ( entity.Line )  object = entity.Line;
+						else if ( entity.Sprite ) object = entity.Sprite;
+						else if ( entity.SkinnedMesh )  object = entity.SkinnedMesh;
+						else if ( entity.LineSegments ) object = entity.LineSegments;
 
 						var rad = Math.max(dt, 0.02);  // (rad/fps)
 						var dist = Math.max(dt, 0.05); //  (m/fps)
 
-					//	turn up/down.
-						if ( keyboard.pressed("E") ) object.rotateOnAxis( axisX,  rad ); // turn up, 
-						if ( keyboard.pressed("Q") ) object.rotateOnAxis( axisX, -rad ); // turn down,
-					//	turn left/right.
-						if ( keyboard.pressed("A") || keyboard.pressed("left") )  object.rotateOnAxis( axisY,  rad ); // turn left,
-						if ( keyboard.pressed("D") || keyboard.pressed("right") ) object.rotateOnAxis( axisY, -rad ); // turn right,
-					//	move forward/backward.
-						if ( keyboard.pressed("W") || keyboard.pressed("up") )    object.translateOnAxis( axisZ, -dist ); // move forward,
-						if ( keyboard.pressed("S") || keyboard.pressed("down") )  object.translateOnAxis( axisZ,  dist ); // move backward,
+						var E = keyboard.pressed("E");         var Q = keyboard.pressed("Q");
+						var R = keyboard.pressed("R");         var F = keyboard.pressed("F");
+						var UP = keyboard.pressed("up");       var W = keyboard.pressed("W");
+						var LEFT = keyboard.pressed("left");   var A = keyboard.pressed("A");
+						var DOWN = keyboard.pressed("down");   var S = keyboard.pressed("S");
+						var RIGHT = keyboard.pressed("right"); var D = keyboard.pressed("D");
 
-					//	reset rotation (Tip: Hold "W"+"F" keys while controling camera).
-						if ( keyboard.pressed("R") ) object.rotation.set(0,0,0);
-						if ( keyboard.pressed("F") ) object.setRotationFromQuaternion(camera.quaternion);
+					//	var keys = "up,left,down,right,W,A,S,D,E,Q,R,F".split(",");
+					//	var KEY = {UP:0,LEFT:0,DOWN:0,RIGHT:0,W:0,A:0,S:0,D:0,E:0,Q:0,R:0,F:0}; 
+					//	while ( keys.length ) {
+					//		var key = keys.shift(); 
+					//		var name = key.toUpperCase();
+					//		KEY[ name ] = keyboard.pressed( key );
+					//	}
+
+						if ( entity.State.isMoving ) {
+
+						//	move forward/backward.
+							if ( W || UP    ) object.translateOnAxis( axisZ, -dist ); // move forward,
+							if ( S || DOWN  ) object.translateOnAxis( axisZ,  dist ); // move backward,
+						}
+
+						if ( entity.State.isRotating ) {
+
+							if ( E ) object.rotateOnAxis( axisX,  rad ); // turn up, 
+							if ( Q ) object.rotateOnAxis( axisX, -rad ); // turn down,
+
+						//	turn left/right.
+							if ( A || LEFT  ) object.rotateOnAxis( axisY,  rad ); // turn left,
+							if ( D || RIGHT ) object.rotateOnAxis( axisY, -rad ); // turn right,
+
+						//	reset rotation (Tip: Hold "W"+"F" keys while controling camera).
+							if ( R ) object.rotation.set(0,0,0);
+							if ( F ) object.setRotationFromQuaternion(camera.quaternion);
+						}
 
 					} catch(err){
 						debugMode && console.error( "SystemError:", system, err );
@@ -1927,17 +1949,17 @@
 
 			}
 
-				//	function resetAxisX(){}
-				//	function resetAxisZ(){}
-				//	function resetAxisY(){}
-
-				//	function directionUpdate(controller){
-				//		var rad = THREE.Math.degToRad( 360 );
-				//		var cameraFrontAngle = cameraControls.getFrontAngle();
-				//		var keyInputFrontAngle = keyInputControls.frontAngle;
-				//	//	synch keybord input and camera controls input.
-				//		controller.direction = rad - cameraFrontAngle + keyInputFrontAngle;
-				//	}
+			//	function resetAxisX(){}
+			//	function resetAxisZ(){}
+			//	function resetAxisY(){}
+			//	function directionUpdate(controller){
+			//		var rad = 3 * Math.PI/4; // joystick.
+			//		var rad = 2 * Math.PI;   // keyboard.
+			//		var cameraFrontAngle = cameraControls.getFrontAngle();
+			//		var keyInputFrontAngle = keyInputControls.frontAngle;
+			//	//	synch keybord input and camera controls input.
+			//		controller.direction = rad - cameraFrontAngle + keyInputFrontAngle;
+			//	}
 
 		//	Example: keyableObject is an entity instance.
 
@@ -1973,11 +1995,13 @@
 				entity.Rotation = object.rotation;
 
 			//	Use state component to activate systems.
-			//	entity.State = {
-			//		isMoving:true,
-			//		isRotating:true,
-			//		isSelected:true,
-			//	};
+				entity.State = {
+					isMoving:false,
+					isRotating:true,
+					isSelected:false,
+					hasCameraLight:false,
+					hasCameraControls:false,
+				};
 
 			//	Take camera controls and camera light.
 			//	cameraControls.offset.y = 0;
@@ -2119,8 +2143,13 @@
 				}
 
 				function update( entity ){
+					if ( !entity.State.isAnimating ) return;
+
 					try {
-						entity.AnimationController.update(dt);
+
+					//	entity.AnimationController.update(dt);
+					//	console.log( "updating" );
+
 					} catch(err){
 						debugMode && console.log(err);
 					}
@@ -2197,12 +2226,17 @@
 					var animationController = (function( object ){
 						var component = new MW.AnimationController( object );
 						debugMode && console.log( "animations:", Object.keys( component.motion ).join() );
+						var clock = new THREE.Clock();
+						characterController.addEventListener( "startIdling",  function () { 
+							component.play( "idling" ); 
+						});
+						(function update(){
+							requestAnimationFrame( update );
+							var delta = clock.getDelta();
+							component.update( delta );
+						})();
 						return component;
 					})( group );
-
-					characterController.addEventListener( "startIdling",  function () { 
-						animationController.play( "idling" ); 
-					});
 
 				//	Add components to make entity controllable.
 				//	localPlayer components: position, rotation, direction, controller.
@@ -2214,31 +2248,56 @@
 
 				//	Add user-control components to make entity user-controllable.
 					entity.VirtualJoystick = virtualJoystick; // bypass add() method.
-				//	entity.KeyInputControl = keyInputControls; // bypass add() method.
+					entity.KeyInputControl = keyInputControls; // bypass add() method.
 
 				//	Use state component for metadata
 				//	and system activating flags.
 					entity.State = {
-						isAnimated: true,
+						isSelected: true,
+					//	isAnimating: true,
 						isLocalPlayer: true,
+						hasCameraLight:true,
+						hasCameraControls:true,
 					};
 
 				//	Take camera light.
-				//	cameraLight.target = group;
+					cameraLight.target = group;
 				//	Take camera controls.
-				//	cameraControls.offset.y = r;
-				//	cameraControls.trackObject = group;
+					cameraControls.offset.y = r;
+					cameraControls.trackObject = group;
+
+				//	takeCameraLight( entity, entity.Group );
+				//	takeCameraControls( entity, entity.Group, 0.85 );
 
 				//	Push localPlayer entity to queue.
 					entities.push( entity ); // important!
 					debugMode && console.log( entity );
 
+					characterController.dispatchEvent( {type:"startIdling"} );
 				});
 
 			//	debugging.
 				return entity; // delete this line to encapsulate localPlayer entity.
 
 			})();
+
+		//	Helpers.
+
+			function takeCameraLight( entity, target ){
+				if ( !entity || !target ) return;
+				if ( entity.State === undefined ) return;
+				if ( !entity.State.hasCameraLight ) return;
+				SystemManager.cameraLight.target = target;
+			}
+
+			function takeCameraControls( entity, target, offset ){
+				if ( !entity || !target ) return;
+				if ( entity.State === undefined ) return;
+				if ( !entity.State.hasCameraControls ) return;
+				SystemManager.cameraControls.trackObject = target;
+				SystemManager.cameraControls.offset.y = offset || 0;
+			}
+
 
 		//	Debugging test.
 		//	(function update(){
