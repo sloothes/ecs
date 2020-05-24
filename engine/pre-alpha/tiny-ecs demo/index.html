@@ -1,0 +1,1837 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+
+		<title>ECS Engine (tiny-ecs demo)</title>
+
+		<meta charset="utf-8">
+		<meta name="generator" content="Three.js Editor">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+		<link rel="stylesheet" href="/css/joystick.css">
+		<link rel="stylesheet" href="/css/bootstrap.min.css">
+		<link rel="stylesheet" href="/css/bootbox-dialoges.css">
+		<link rel="stylesheet" href="/css/jcrop.css">
+
+		<script src="/js/watch.js"></script>
+		<script src="/js/jquery.min.js"></script> 
+		<script src="/js/system.min.js"></script>
+		<script src="/js/signals.min.js"></script>
+		<script src="/js/inflate.min.js"></script>
+		<script src="/js/zangodb.min.js"></script>
+		<script src="/js/bootstrap.min.js"></script>
+		<script src="/js/hold-event.min.js"></script>
+		<script src="/js/jcrop.js"></script>
+
+		<style>
+
+			body {
+				margin: 0px;
+				font-size: 13px;
+				font-family: sans-serif;
+				background-repeat: repeat;
+				background-image: url("https://i.imgur.com/rnZZU0i.png") !important;
+				overflow: hidden;
+			}
+
+			#loading-bar {
+				width:100%;
+				height:100%;
+				top:0; left:0;
+				position:fixed;
+				display:flex;
+				align-items:center;
+				justify-content:center;
+			}
+
+			.middle > * {
+				top:0; 
+				left:0;
+				right:0;
+				bottom:0;
+				margin:auto;
+				position:absolute;
+			}
+
+			#joystick1 {
+				right: calc(40px + 370px);
+			}
+			
+			#jumpButton {
+				right: calc(105px + 370px);
+			}
+
+			.btn-matcap,
+			.btn-terrain {
+				padding:0;
+				float:left;
+				width:55px;
+				height:55px;
+				border:1px solid;
+				border-radius:4px;
+				margin-right:4px;
+				margin-bottom:4px;
+				display:inline-block;
+			}
+
+			.btn-matcap + .btn-matcap,
+			.btn-terrain + .btn-terrain {
+				margin-right:4px;
+			}
+
+		</style>
+	</head>
+
+	<body ontouchstart="">
+
+		<script src="/ecs/js/three.js"></script>
+		<script src="/ecs/js/TabUI.js"></script>
+		<script src="/ecs/js/MeshWalk.js"></script>
+		<script src="/ecs/js/UVsDebug.js"></script>
+		<script src="/ecs/js/FBXLoader.js"></script>
+		<script src="/ecs/js/VirtualInput.js"></script>
+		<script src="/ecs/js/EditorControls.js"></script>
+		<script src="/ecs/js/SubdivisionModifier.js"></script>
+		<script src="/ecs/js/three-pathfinding.umd.js"></script>
+		<script src="/threejs/r96/examples/js/loaders/GLTFLoader.js"></script>
+		<script src="/threejs/r96/examples/js/exporters/GLTFExporter.js"></script>
+		<script src="/threejs/r96/examples/js/exporters/STLExporter.js"></script>
+		<script src="/threejs/r96/examples/js/exporters/OBJExporter.js"></script>
+		<script src="/threejs/r96/examples/js/exporters/ColladaExporter.js"></script>
+
+		<!--script src="/ecs/js/KeyboardState.js"></script-->
+		<!--script src="/ecs/engine/Enviroment.js"></script-->
+		<!--script src="/ecs/engine/pre-alpha/Entity.js"></script-->
+		<!--script src="/ecs/engine/pre-alpha/EntityManager.js"></script-->
+
+		<script>
+
+			KeyboardState = function(){
+
+			//	to store the current state
+				this.keyCodes = {};
+				this.modifiers = {};
+
+			//	create callback to bind/unbind keyboard events
+				var self = this;
+				this._onKeyDown	= function(event){ self._onKeyChange(event, true); };
+				this._onKeyUp	= function(event){ self._onKeyChange(event, false);};
+
+			//	bind keyEvents
+				window.addEventListener("keydown", this._onKeyDown, false);
+				window.addEventListener("keyup", this._onKeyUp, false);
+			}
+
+			KeyboardState.prototype.destroy	= function(){
+			//	unbind keyEvents
+				window.removeEventListener("keydown", this._onKeyDown, false);
+				window.removeEventListener("keyup", this._onKeyUp, false);
+			}
+
+			KeyboardState.MODIFIERS	= ['shift', 'ctrl', 'alt', 'meta'];
+			KeyboardState.ALIAS	= {
+				'left'		: 37,
+				'up'		: 38,
+				'right'		: 39,
+				'down'		: 40,
+				'space'		: 32,
+				'pageup'	: 33,
+				'pagedown'	: 34,
+				'tab'		: 9
+			};
+
+			KeyboardState.prototype._onKeyChange = function(event, pressed){
+			//	debugMode && console.log("onKeyChange", event, pressed, 
+			//	event.keyCode, event.shiftKey, event.ctrlKey, event.altKey, event.metaKey);
+
+			//	update this.keyCodes.
+				var keyCode = event.keyCode;
+				this.keyCodes[keyCode] = pressed;
+
+			//	update this.modifiers.
+				this.modifiers['shift'] = event.shiftKey;
+				this.modifiers['ctrl']	= event.ctrlKey;
+				this.modifiers['alt']	= event.altKey;
+				this.modifiers['meta']	= event.metaKey;
+			};
+
+			KeyboardState.prototype.pressed	= function(keyDesc){
+				var keys = keyDesc.split("+");
+				for (var i = 0; i < keys.length; i++){
+					var pressed, key = keys[i];
+					if( KeyboardState.MODIFIERS.indexOf( key ) !== -1 ){
+						pressed	= this.modifiers[key];
+					} else if ( Object.keys(KeyboardState.ALIAS).indexOf( key ) != -1 ){
+						pressed	= this.keyCodes[ KeyboardState.ALIAS[key] ];
+					} else {
+						pressed	= this.keyCodes[key.toUpperCase().charCodeAt(0)]
+					}
+					if( !pressed) return false;
+				};
+				return true;
+			};
+
+		</script>
+
+		<!-- 
+			TinyECS: A mean lean Entity-Component-System library.
+			https://github.com/bvalosek/tiny-ecs 
+		-->
+
+		<script>
+
+		//	tiny-ecs.js
+
+		//	Entity.js
+			const Entity = (function(){
+
+			//	Basic component-driven object with facade functions 
+			//	for interacting with the injected EntityManager object.
+
+				function Entity(){
+
+					// Unique identifier.
+					this.id = nextId++;
+
+					//	Ref to the manager for this facade, injected right after being.
+					this._manager = null;
+
+					//	List of all the types of components on this entity.
+					this._Components = [];
+
+					//	All tags that this entity currently has.
+					this._tags = [];
+				}
+
+				//	Re-init for pooling purposes.
+				Entity.prototype.__init = function(){
+					this.id                 = nextId++;
+					this._manager           = null;
+					this._Components.length = 0;
+					this._tags.length       = 0;
+				};
+
+				var nextId = 0;
+
+				Entity.prototype.addComponent = function(TComponent){
+					//	param {Function} TComponent
+					//	return {Entity} This entity.
+					this._manager.entityAddComponent(this, TComponent);
+					return this;
+				};
+
+				Entity.prototype.removeComponent = function(TComponent){
+					//	param {Function} TComponent
+					//	return {Entity} This entity.
+					this._manager.entityRemoveComponent(this, TComponent);
+					return this;
+				};
+
+				Entity.prototype.hasComponent = function(TComponent){
+					//	param {Function} TComponent
+					//	return {boolean} True if this entity has TComponent.
+					return !!~this._Components.indexOf(TComponent);
+				};
+
+				//	Drop all components.
+				Entity.prototype.removeAllComponents = function(){
+					return this._manager.entityRemoveAllComponents(this);
+				};
+
+				Entity.prototype.hasAllComponents = function(Components){
+					//	param {Array.<Function>} Components
+					//	return {boolean} True if entity has all Components.
+					var b = true;
+
+					for (var i = 0; i < Components.length; i++) {
+						var C = Components[i];
+						b &= !!~this._Components.indexOf(C);
+					}
+
+					return b;
+				};
+
+				Entity.prototype.hasTag = function(tag){
+					//	param {String} tag
+					//	return {boolean} True if entity has tag.
+					return !!~this._tags.indexOf(tag);
+				};
+
+				Entity.prototype.addTag = function(tag){
+					//	param {String} tag
+					//	return {Entity} This entity.
+					this._manager.entityAddTag(this, tag);
+					return this;
+				};
+
+				Entity.prototype.removeTag = function(tag){
+					//	param {String} tag
+					//	return {Entity} This entity.
+					this._manager.entityRemoveTag(this, tag);
+					return this;
+				};
+
+				//	Fire off an event on the messanger with this entity as the first parameter.
+				Entity.prototype.trigger = function(eventName, option){
+					//	param {String} eventName
+					//	param {Object=} option
+					this._manager.trigger(eventName, this, option);
+				};
+
+				//	Remove the entity.
+				Entity.prototype.remove = function(){
+					return this._manager.removeEntity(this);
+				};
+
+				return Entity;
+			})();
+
+		//	Event.js
+			const Event = (function(){
+
+				function Event(name, callback){
+					this._name     = name || 'name';
+					this._callback = callback || null;
+
+					// Additional filters
+					this._Components = [];
+					this._entity     = null;
+				}
+
+				Event.prototype.fire = function(eventName, entity, option){
+					//	param {String} eventName
+					//	param {{hasAllComponents:Function}} entity
+					//	param {Object=} option
+					//	return {Boolean} True if fired.
+					// Name check
+					if (eventName !== this._name)
+						return false;
+
+					// Component filters
+					var Comps = this._Components;
+					if (entity && entity.hasAllComponents && Comps.length) {
+						if (!entity || !entity.hasAllComponents(Comps))
+							return false;
+					}
+
+					// Entity filter
+					if (this._entity !== null && this._entity !== entity) {
+						return false;
+					}
+
+					// Made it
+					this._callback(entity, option);
+					return true;
+				};
+
+				Event.prototype.whereEntity = function(entity){
+					//	param {Entity} entity The entity that the event has to match.
+					//	return {Event} This object.
+					if (this._entity)
+						throw new Error('Cannot call whereEntity twice');
+					this._entity = entity;
+					return this;
+				};
+
+				Event.prototype.whereComponent = function(T){
+					//	param {Function} T
+					//	return {Event} This object.
+					this._Components.push(T);
+					return this;
+				};
+
+				Event.prototype.whereComponents = function(Components){
+					//	param {Array.<Function>} Components
+					//	return {Event} This object.
+					this._Components = this._Components.concat(Components);
+					return this;
+				};
+
+				return Event;
+			})();
+
+
+		//	Messager.js
+			const Messenger = (function( Event ){
+
+				//	General event aggregation with 
+				//	filtering on components or tags.
+
+				function Messenger(){
+					this._events = {};
+					this.fired   = 0;
+					this.handled = 0;
+				}
+
+				Messenger.prototype.listenTo = function(eventName, callback){
+					//	param {String} eventName
+					//	param {Function} callback
+					//	return {Event}
+					if (!this._events[eventName])
+						this._events[eventName] = [];
+
+					var event = new Event(eventName, callback);
+
+					//	Dump and chump
+					this._events[eventName].push(event);
+					return event;
+				};
+
+				Messenger.prototype.trigger = function(eventName, entity, option){
+					//	param {String} eventName
+					//	param {Object=} entity
+					//	param {Option=} option
+					this.fired++;
+
+					var events = this._events[eventName];
+					if (!events) return;
+
+					//	Try all events
+					for (var n = 0; n < events.length; n++) {
+						var event = events[n];
+						if (event.fire(eventName, entity, option))
+							this.handled++;
+					}
+				};
+
+				//	Reset stats (should be done in the primary loop).
+				Messenger.prototype.resetCounters = function(){
+					this.fired = this.handled = 0;
+				};
+
+				return Messenger;
+			})( Event );
+
+
+		//	Loop.js
+			const Loop = (function( Messenger ){
+
+				//	Game loop with independent clock events 
+				//	for fixed durations and variable durations.
+
+				function Loop(messenger){
+					//	Messenger we'll use for clock signals
+					//	param {Messenger} messenger
+					this.messenger = messenger || new Messenger();
+
+					this.fixedDuration = 8;
+					this.started       = false;
+
+					//	Live stats.
+					this.currentTime        = 0;
+					this.fixedStepsPerFrame = 0;
+					this.fixedTimePerFrame  = 0;
+					this.renderTimePerFrame = 0;
+					this.frameTime          = 0;
+				}
+
+				//	Happens at a variable rate based on system (render loop)
+				Loop.TICK = "Loop#TICK"; //	event
+
+				//	Happens at a fixed length (simulation loop)
+				Loop.FIXED_TICK = "Loop#FIXED_TICK"; //	event
+
+				//	Fire.
+				Loop.prototype.start = function(){
+					if (this.started) return;
+
+					//	Loop params and syncing.
+					var lastTime  = 0;
+					var simAcc    = 0;
+					var simTime   = 0;
+					var simStep   = this.fixedDuration;
+					var messenger = this.messenger;
+					var _this     = this;
+
+					//	Stats.
+					var simStart = 0;
+					var renderStart = 0;
+					var frameStart = 0;
+
+					function loop(time) {
+						global.requestAnimationFrame(loop);
+
+						//	Log duration of each raf-fired frame.
+						if (frameStart)
+							_this.frameTime = global.performance.now() - frameStart;
+						frameStart = global.performance.now();
+
+						//	Determine what our delta is since last raf-frame.
+						var dt = lastTime ? time - lastTime : 0;
+
+						messenger.resetCounters();
+
+						//	Dump as much time that has passed 
+						//	into the simulator time accumulator.
+						simAcc += dt;
+
+						//	Continue to step the fixed loop until 
+						//	we run out of time on the accumulator.
+						_this.fixedStepsPerFrame = 0;
+						simStart = global.performance.now();
+						while (simAcc >= simStep) {
+							messenger.trigger(Loop.FIXED_TICK, simStep, simTime);
+							simTime += simStep;
+							simAcc -= simStep;
+							_this.fixedStepsPerFrame++;
+						}
+						_this.fixedTimePerFrame = global.performance.now() - simStart;
+						_this.currentTime = simTime;
+
+						//	Fire the variable step clock once.
+						renderStart = global.performance.now();
+						messenger.trigger(Loop.TICK, dt, time);
+						_this.renderTimePerFrame = global.performance.now() - renderStart;
+						lastTime = time;
+					}
+
+					//	BOOM.
+					global.requestAnimationFrame(loop);
+					this.started = true;
+				};
+
+				//	Convenience function for variable tick event.
+				Loop.prototype.onTick = function(fn){
+					//	param {Function} fn
+					return this.messenger.listenTo(Loop.TICK, fn);
+				};
+
+				//	Convenience function for fixed tick event.
+				Loop.prototype.onFixedTick = function(fn){
+					//	param {Function} fn
+					return this.messenger.listenTo(Loop.FIXED_TICK, fn);
+				};
+
+				return Loop;
+			})( Messenger );
+
+
+		//	ObjectPool.js
+			const ObjectPool = (function(){
+
+				//	Minimize garbage collector thrashing by re-using existing objects 
+				//	instead of creating new ones. Requires manually lifecycle management.
+
+				function ObjectPool(T){
+					//	param {Function} T
+					this.freeList = [];
+					this.count    = 0;
+					this.T        = T;
+				}
+
+				//	Get a pooled object
+				ObjectPool.prototype.aquire = function(){
+					//	Grow the list by 20%ish if we're out.
+					if (this.freeList.length <= 0) {
+						this.expand(Math.round(this.count*0.2) + 1);
+					}
+
+					var item = this.freeList.pop();
+
+					//	We can provide explicit initing, 
+					//	otherwise re-call constructor (hackish).
+					if (item.__init)
+						item.__init();
+					else
+						this.T.call(item);
+
+					return item;
+				};
+
+				//	Return an object back to the pool.
+				ObjectPool.prototype.release = function(item){
+					this.freeList.push(item);
+				};
+
+				ObjectPool.prototype.expand = function(count){
+					//	param {Number} Amount of new objects to allocate for this pool.
+					for (var n = 0; n < count; n++)
+						this.freeList.push(new this.T());
+					this.count += count;
+				};
+
+				ObjectPool.prototype.totalSize = function(){
+					//	return {Number} Total amount of allocated objects (available and in-use).
+					return this.count;
+				};
+
+				ObjectPool.prototype.totalFree = function(){
+					//	return {Number} Total number of objects currently available.
+					return this.freeList.length;
+				};
+
+				ObjectPool.prototype.totalUsed = function(){
+					//	return {Number} Total number of objects currently in-use.
+					return this.count - this.freeList.length;
+				};
+
+				return ObjectPool;
+			})();
+
+
+		//	Vec2.js
+			const Vec2 = (function( ObjectPool ){
+
+			//	2D Cartesian vector with built-in (optional) object pool.
+
+				function Vec2(x, y){
+					//	param {Number} x
+					//	param {Number} y
+					this.x = +x || 0.0;
+					this.y = +y || 0.0;
+				}
+
+				//	Reset for pool.
+				Vec2.prototype.__init = function(){
+					this.clear();
+				};
+
+				//	Interal static object pool
+				var pool = new ObjectPool(Vec2);
+
+				//	Get a vector from the pool.
+				Vec2.aquire = function(){
+					//	return {Vec2}
+					return pool.aquire();
+				};
+
+				//	Return a vector to the pool.
+				Vec2.release = function(v){
+					//	param {Vec2} v
+					//	return {Number}
+					if (v) pool.release(v);
+					return pool.count - pool.freeList.length;
+				};
+
+				//	Reset this vector to (0,0).
+				Vec2.prototype.clear = function(){
+					//	return {Vec2} This vector.
+					this.x = this.y = 0.0;
+					return this;
+				};
+
+				//	Assign this vector the value of another.
+				Vec2.prototype.assign = function(v){
+					//	param {Vec2} v
+					//	return {Vec2} This vector.
+					this.x = v.x;
+					this.y = v.y;
+					return this;
+				};
+
+				//	Determine if this vector is equal to another.
+				Vec2.prototype.equals = function(v){
+					//	param {Vec2} v
+					//	return {Boolean} True if vectors are equal.
+					return this.x === v.x && this.y === v.y;
+				};
+
+				//	Set this vector to a set of coordinates.
+				Vec2.prototype.set = function(x, y){
+					//	param {Number} x
+					//	param {Number} y
+					//	return {Vec2} This vector.
+					this.x = +x;
+					this.y = +y;
+					return this;
+				};
+
+				//	Limit this vector to a specific magnitude.
+				Vec2.prototype.limit = function(size){
+					//	param {Number} size
+					//	return {Vec2} This vector.
+					size = +size;
+					if (!size)
+						return this;
+					else if (this.magnitude() > size)
+						return this.normalize(size);
+					else
+						return this;
+				};
+
+				//	Normalize this vector.
+				Vec2.prototype.normalize = function(m){
+					//	param {Number=} m Length.
+					//	return {Vec2} This vector.
+					m = m || +1.0;
+					var length = Math.sqrt(this.x * this.x + this.y * this.y);
+					this.x = m * this.x / length;
+					this.y = m * this.y / length;
+					return this;
+				};
+
+				//	Project this vector onto another.
+				Vec2.prototype.project = function(v){
+					//	param {Vec2} v
+					//	return {Vec2} This vector.
+					var m = v.dot(this) / v.magnitude2();
+					this.assign(v).smult(m);
+					return this;
+				};
+
+				//	Make this vector perpandicular.
+				Vec2.prototype.perp = function(){
+					//	return {Vec2} This vector.
+					var x  = this.x;
+					this.x = -this.y;
+					this.y = x;
+					return this;
+				};
+
+				//	Left-hand perpandicular.
+				Vec2.prototype.lperp = function(){
+					var x  = this.x;
+					this.x = this.y;
+					this.y = -x;
+					return this;
+				};
+
+				//	Subtract some vector from this one.
+				Vec2.prototype.sub = function(v){
+					//	param {Vec2} v
+					//	return {Vec2} This vector.
+					this.x -= v.x;
+					this.y -= v.y;
+					return this;
+				};
+
+				//	Add some vector to this one.
+				Vec2.prototype.add = function(v){
+					//	param {Vec2} v
+					//	return {Vec2} This vector.
+					this.x += v.x;
+					this.y += v.y;
+					return this;
+				};
+
+				//	Scalar multiply this vector by a value.
+				Vec2.prototype.smult = function(n){
+					//	param {Number} n
+					//	return {Vec2} This vector.
+					n = +n;
+					this.x *= n;
+					this.y *= n;
+					return this;
+				};
+
+				//	Rotate this vector clockwise about the origin by a certain angle.
+				Vec2.prototype.rotate = function(theta){
+					//	param {Number} theta
+					//	return {Vec2} This vector.
+					return this.set(
+						this.x * Math.cos(theta) - this.y * Math.sin(theta),
+						this.x * Math.sin(theta) + this.y * Math.cos(theta)
+					);
+				};
+
+				//	Get the dot product of this vector and another.
+				Vec2.prototype.dot = function(v){
+					//	param {Vec2} v
+					//	return {Number}
+					return +(this.x * v.x + this.y * v.y);
+				};
+
+				//	Get the determinate of this vector and another.
+				Vec2.prototype.det = function(v){
+					//	param {Vec2} v
+					//	return {Number}
+					return +(this.x * v.y - this.y * v.x);
+				};
+
+				//	Get the magnitude of this vector.
+				Vec2.prototype.magnitude = function(){
+					//	return {Number}
+					return Math.sqrt(this.x * this.x + this.y * this.y);
+				};
+
+				//	Get the squared magnitude of this vector.
+				Vec2.prototype.magnitude2 = function(){
+					//	return {Number}
+					return this.x * this.x + this.y * this.y;
+				};
+
+				var _vTemp = new Vec2();
+
+				//	Distance between two vectors.
+				Vec2.prototype.distance = function(v){
+					//	param {Vec2} v
+					//	return {Number}
+					_vTemp.assign(this).sub(v);
+					return _vTemp.magnitude();
+				};
+
+				//	Distance squared between two vectors.
+				Vec2.prototype.distance2 = function(v){
+					//	param {Vec2} v
+					//	return {Number}
+					_vTemp.assign(this).sub(v);
+					return _vTemp.magnitude2();
+				};
+
+				//	Get the angle of this vector.
+				Vec2.prototype.angle = function(){
+					//	return {Number}
+					return Math.atan2(this.y, this.x);
+				};
+
+				//	Get the angle between this vector and another.
+				Vec2.prototype.angleBetween = function(v){
+					//	param {Vec2} v
+					//	return {Number}
+					return Math.atan2(this.det(v), this.dot(v));
+				};
+
+				//	Make a pooled copy of this vector
+				Vec2.prototype.pcopy = function(){
+					//	return {Vec2} A new vector.
+					return Vec2.aquire().assign(this);
+				};
+
+				//	Make a copy of this vector.
+				Vec2.prototype.copy = function(){
+					//	return {Vec2} A new vector.
+					return new Vec2().assign(this);
+				};
+
+				//	Create a vector with a specific angle and magnitude.
+				Vec2.fromAngle = function(theta, m){
+					//	param {Number} theta
+					//	param {Number=} m
+					//	return {Vec2} A new vector.
+					m = +m || 1.0;
+					return new Vec2(Math.cos(theta) * m, Math.sin(theta) * m);
+				};
+
+				//	Create a pooled vector with a specific angle and magnitude.
+				Vec2.pfromAngle = function(theta, m){
+					//	param {Number} theta
+					//	param {Number} m
+					//	return {Vec2} A new vector.
+					m = +m || 1.0;
+					return Vec2.aquire().set(
+						Math.cos(theta) * m,
+						Math.sin(theta) * m
+					);
+				};
+
+				//	Determine if two rectangles, defined by 
+				Vec2.rectIntersect = function(p1, r1, p2, r2){
+					//	param {Vec2} p1 Position of rectangle 1
+					//	param {Vec2} r1 Halfwidths of rectangle 1
+					//	param {Vec2} p2 Position of rectangle 2
+					//	param {Vec2} r2 Halfwidths of rectangle 2
+					//	return {Boolean} True if they intersect
+
+					//	Basically, rectangles dont intersect if one's bottom is higher 
+					//	than ones top, ones left is more left than ones right, etc
+					//	a position and a halfwidth vector, overlap.
+
+					var a = p1.x + r1.x < p2.x - r2.x;
+					var b = p1.x - r1.x > p2.x + r2.x;
+					var c = p1.y + r1.y < p2.y - r2.y;
+					var d = p1.y - r1.y > p2.y + r2.y;
+
+					//	We want if they do.
+					return !(a || b || c || d);
+				};
+
+				//	Determine if two circles, determined by a position and radius, overlap.
+				Vec2.circleIntersect = function(p1, r1, p2, r2){
+					//	param {Vec2} p1
+					//	param {Number} r1
+					//	param {Vec2} p2
+					//	param {Number} r2
+					var minDist2 = (r1 + r2) * (r1+ r2);
+					return p1.distance2(p2) <= minDist2;
+				};
+
+				//	Determines if rectangle 1 is entirely inside of rectangle 2.
+				Vec2.rectContains = function(p1, r1, p2, r2){
+					//	param {Vec2} p1 Position of rectangle 1
+					//	param {Vec2} r1 Halfwidths of rectangle 1
+					//	param {Vec2} p2 Position of rectangle 2
+					//	param {Vec2} r2 Halfwidths of rectangle 2
+					//	return {Boolean} True if they rectangle 1 is inside of rectangle 2
+					if (p1.x - r1.x < p2.x - r2.x) return false;
+					if (p1.x + r1.x > p2.x + r2.x) return false;
+					if (p1.y - r1.y < p2.y - r2.y) return false;
+					if (p1.y + r1.y > p2.y + r2.y) return false;
+
+					return true;
+				};
+
+				//	Convert a rectangle specified by top-left  
+				//	point + size into center location + halfwidths.
+				Vec2.sizeToHwidth = function(position, size, outPosition, outHwidth){
+					//	param {Vec2} position
+					//	param {Vec2} size
+					//	param {Vec2} outPosition Output position
+					//	param {Vec2} outHwidth Output hwidths
+					outHwidth.assign(size).smult(0.5);
+					outPosition.assign(position).add(outHwidth);
+				};
+
+				//	Output this vector.
+				Vec2.prototype.toString = function(){
+					return "" + (this.x.toFixed(2)) + "," + (this.y.toFixed(2));
+				};
+
+				return Vec2;
+			})( ObjectPool );
+
+
+		//	Transform.js
+
+			const Transform = (function( Vec2 ){
+
+			//	Basic transform component.
+
+				function Transform(){
+					this.position = new Vec2();
+
+					//	cached.
+					this._absPosition = new Vec2();
+
+					this.__init();
+				}
+
+				//	Reset for pool.
+				Transform.prototype.__init = function(){
+					this.position.clear();
+					this._absPosition.clear();
+
+					this.rotation = 0;
+					this.scale    = 1;
+					this.parent   = null;
+				};
+
+				//	Absolute world position.
+				Transform.prototype.absPosition = function(){
+					//	return {Vec2}
+					var position = this._absPosition.assign(this.position);
+
+					//	Trivial case, no parent.
+					if (!this.parent) {
+						return position;
+					}
+
+					var parent = this.parent;
+
+					position
+
+					//	Rotate our angle by parent's angle.
+						.rotate(parent.absRotation())
+
+					//	Scale by parents scale.
+						.smult(parent.absScale())
+
+					//	Add parent's position.
+						.add(parent.absPosition());
+
+					return position;
+				};
+
+				//	The absolute world rotation of this component.
+				Transform.prototype.absRotation = function(){
+					//	return {Number}
+
+					//	Trivial case.
+					if (!this.parent)
+						return this.rotation;
+
+					//	This + parent.
+					var r = this.rotation + this.parent.absRotation();
+
+					return r % (Math.PI*2);
+				};
+
+				//	The absolute world scale of this component.
+				Transform.prototype.absScale = function(){
+					//	return {Number}
+
+					//	Trivial case.
+					if (!this.parent) {
+						return this.scale;
+					}
+
+					//	This + parent.
+					return this.scale * this.parent.absScale();
+				};
+
+				return Transform;
+			})( Vec2 );
+
+
+		//	EntityManager.js
+			const EntityManager = (function( Entity, ObjectPool, Messenger, Transform ){
+
+			//	Manage, create, and destroy entities. Can use methods to mutate 
+			//	entities (tags, components) directly or via the facade on the Entity.
+
+				function EntityManager(messenger){
+				//	param {Messenger} messenger
+
+				//	Event messenger, injected.
+				//	type {Messenger}
+					this.messenger = messenger;
+
+				//	Map of tags to the list of their entities.
+					this._tags = {};
+
+				//	type {Array.<Entity>}
+					this._entities = [];
+
+				//	type {Array.<Group>}
+					this._groups = {};
+
+				//	Pool entities.
+					this._entityPool = new ObjectPool(Entity);
+
+				//	Map of component names to their respective object pools.
+					this._componentPools = {};
+				}
+
+			//	Fired AFTER an entity has be created.
+				EntityManager.ENTITY_CREATED = "EntityManager#ENTITY_CREATED"; // event.
+
+			//	Fired BEFORE an entity has been removed.
+				EntityManager.ENTITY_REMOVE = "EntityManager#ENTITY_REMOVE"; // event.
+
+			//	Fired AFTER a component has been removed.
+				EntityManager.COMPONENT_ADDED = "EntityManager#COMPONENT_ADDED"; // event.
+
+			//	Fired BEFORE a component has been removed.
+				EntityManager.COMPONENT_REMOVE = "EntityManager#COMPONENT_REMOVE"; // event.
+
+			//	Used for indexing our component groups.
+				function Group(Components, entities){
+					//	constructor
+					//	param {Array.<Function>} Components
+					//	param {Array<Entity>} entities
+					this.Components = Components || [];
+					this.entities = entities || [];
+				}
+
+			//	Get a new entity.
+				EntityManager.prototype.createEntity = function(){
+					//	return {Entity}
+					var entity = this._entityPool.aquire();
+
+					this._entities.push(entity);
+					entity._manager = this;
+					this._trigger(EntityManager.ENTITY_CREATED, entity);
+					return entity;
+				};
+
+			//	Create a new entity with a Transform automatically attached.
+				EntityManager.prototype.create = function(){
+					//	return {Entity}
+					return this.createEntity().addComponent(Transform);
+				};
+
+			//	Cleanly remove entities based on tag. Avoids loop issues.
+				EntityManager.prototype.removeEntitiesByTag = function(tag){
+					//	param {String} tag
+					var entities = this._tags[tag];
+
+					if (!entities) return;
+
+					for (var x = entities.length - 1; x >= 0; x--) {
+						var entity = entities[x];
+						entity.remove();
+					}
+				};
+
+			//	Dump all entities out of the manager. Avoids loop issues.
+				EntityManager.prototype.removeAllEntities = function(){
+					for (var x = this._entities.length - 1; x >= 0; x--) {
+						this._entities[x].remove();
+					}
+				};
+
+			//	Drop an entity. Returns it to the pool 
+			//	and fires all events for removing components as well.
+				EntityManager.prototype.removeEntity = function(entity){
+					//	param {Entity} entity
+					var index = this._entities.indexOf(entity);
+
+					if (!~index) 
+						throw new Error('Tried to remove entity not in list');
+
+					this.entityRemoveAllComponents(entity);
+
+				//	Remove from entity list.
+					this._trigger(EntityManager.ENTITY_REMOVE, entity);
+					this._entities.splice(index, 1);
+
+				//	Remove entity from any tag groups and clear the on-entity ref.
+					entity._tags.length = 0;
+					for (var tag in this._tags) {
+						var entities = this._tags[tag];
+						var n = entities.indexOf(entity);
+						if (~n) entities.splice(n, 1);
+					}
+
+				//	Prevent any acecss and free.
+					entity._manager = null;
+					this._entityPool.release(entity);
+				};
+
+				EntityManager.prototype.entityAddTag = function(entity, tag){
+					//	param {Entity} entity
+					//	param {String} tag
+					var entities = this._tags[tag];
+
+					if (!entities) entities = this._tags[tag] = [];
+
+				//	Don't add if already there.
+					if (~entities.indexOf(entity)) return;
+
+				//	Add to our tag index AND the list on the entity.
+					entities.push(entity);
+					entity._tags.push(tag);
+				};
+
+				EntityManager.prototype.entityRemoveTag = function(entity, tag){
+					//	param {Entity} entity
+					//	param {String} tag
+					var entities = this._tags[tag];
+					if (!entities) return;
+
+					var index = entities.indexOf(entity);
+					if (!~index) return;
+
+				//	Remove from our index AND the list on the entity.
+					entities.splice(index, 1);
+					entity._tags.splice(entity._tags.indexOf(tag), 1);
+				};
+
+				EntityManager.prototype.entityAddComponent = function(entity, Component){
+					//	param {Entity} entity
+					//	param {Function} Component
+
+					if (~entity._Components.indexOf(Component)) return;
+
+					entity._Components.push(Component);
+
+				//	Create the reference on the entity to this (aquired) component.
+					var cName = componentPropertyName(Component);
+					var cPool = this._componentPools[cName];
+					if (!cPool) cPool = this._componentPools[cName] = new ObjectPool(Component);
+					var component = cPool.aquire();
+					entity[cName] = component;
+
+				//	Check each indexed group to see if we need to add this entity to the list.
+					for (var groupName in this._groups) {
+						var group = this._groups[groupName];
+
+						//	Only add this entity to a group index if this component is in the group,
+						//	this entity has all the components of the group, and its not already in
+						//	the index.
+						if (!~group.Components.indexOf(Component))
+							continue;
+						if (!entity.hasAllComponents(group.Components))
+							continue;
+						if (~group.entities.indexOf(entity))
+							continue;
+
+						group.entities.push(entity);
+					}
+
+					this._trigger(EntityManager.COMPONENT_ADDED, entity, Component);
+				};
+
+			//	Drop all components on an entity. Avoids loop issues.
+				EntityManager.prototype.entityRemoveAllComponents = function(entity){
+					//	param {Entity} entity
+					var Cs = entity._Components;
+
+					for (var j = Cs.length - 1; j >= 0; j--) {
+						var C = Cs[j];
+						entity.removeComponent(C);
+					}
+				};
+
+				EntityManager.prototype.entityRemoveComponent = function(entity, Component){
+					//	param {Entity} entity
+					//	param {Function} Component
+					var index = entity._Components.indexOf(Component);
+					if (!~index) return;
+
+					this._trigger(EntityManager.COMPONENT_REMOVE, entity, Component);
+
+					//	Check each indexed group to see if we need to remove it.
+					for (var groupName in this._groups) {
+						var group = this._groups[groupName];
+
+						if (!~group.Components.indexOf(Component))
+							continue;
+						if (!entity.hasAllComponents(group.Components))
+							continue;
+
+						var loc = group.entities.indexOf(entity);
+						if (~loc) {
+							group.entities.splice(loc, 1);
+						}
+					}
+
+				//	Remove T listing on entity and property ref, then free the component.
+					var propName = componentPropertyName(Component);
+					entity._Components.splice(index, 1);
+					var component = entity[propName];
+					delete entity[propName];
+					this._componentPools[propName].release(component);
+				};
+
+			//	Get a list of entities that have a certain set of components.
+				EntityManager.prototype.queryComponents = function(Components){
+					//	param {Array.<Function>} Components
+					//	return {Array.<Entity>}
+					var group = this._groups[groupKey(Components)];
+
+					if (!group) {
+						group = this._indexGroup(Components);
+					}
+
+					return group.entities;
+				};
+
+			//	Get a list of entities that all have a certain tag.
+				EntityManager.prototype.queryTag = function(tag){
+					//	param {String} tag
+					//	return {Array.<Entity>}
+					var entities = this._tags[tag];
+
+					if (entities === undefined)
+						entities = this._tags[tag] = [];
+
+					return entities;
+				};
+
+				EntityManager.prototype.count = function(){
+					//	return {Number} Total number of entities.
+					return this._entities.length;
+				};
+
+			//	Get information about the object pools of the entities and the 
+			//	various components. NOT optimized or garbage collector friendly.
+				EntityManager.prototype.poolStats = function(){
+					//	return {Object}
+					var stats = {};
+					var e = this._entityPool;
+					stats.entity = {
+						used: this._entityPool.totalUsed(),
+						size: this._entityPool.count
+					};
+
+					for (var cName in this._componentPools) {
+						var pool = this._componentPools[cName];
+						stats[cName] = {
+							used: pool.totalUsed(),
+							size: pool.count
+						};
+					}
+
+					return stats;
+				};
+
+			//	Create an index of entities with a set of components.
+				EntityManager.prototype._indexGroup = function(Components){
+					//	param {Array.<Function>} Components
+					var key = groupKey(Components);
+
+					if (this._groups[key]) return;
+
+					var group = this._groups[key] = new Group(Components);
+
+					for (var n = 0; n < this._entities.length; n++) {
+						var entity = this._entities[n];
+						if (entity.hasAllComponents(Components)) {
+							group.entities.push(entity);
+						}
+					}
+
+					return group;
+				};
+
+			//	Trigger the messenger if we have one.
+				EntityManager.prototype._trigger = function(event, a, b){
+					//	param {String} event
+					//	param {Object=} a
+					//	param {Object=} b
+					if (this.messenger)
+						this.messenger.trigger(event, a, b);
+				};
+
+				function componentPropertyName(Component){
+					//	param {Function} Component
+					//	return {String}
+					var name = getName(Component);
+					return name.charAt(0).toLowerCase() + name.slice(1);
+				}
+
+				function groupKey(Components){
+					//	param {Array.<Function>} Components
+					//	return {String}
+					var names = [];
+					for (var n = 0; n < Components.length; n++) {
+						var T = Components[n];
+						names.push(getName(T));
+					}
+
+					return names
+						.map(function(x) { return x.toLowerCase(); })
+						.sort()
+						.join('-');
+				}
+
+			//	Get the name of a function (e.g. constructor).
+				function getName(f){
+					//	param {Function} f
+					//	return {String} The function name.
+					var FUNCTION_NAME = /function\s+([^\s(]+)/;
+
+					var name = "";
+
+					if (f instanceof Function) {
+						if (f.name) {
+							return f.name;
+						}
+
+						var match = f.toString().match(FUNCTION_NAME);
+
+						if (match) {
+							name = match[1];
+						}
+					} else if (f && f.constructor instanceof Function) {
+						name = getName(f.constructor);
+					}
+
+					return name;
+				}
+
+				return EntityManager;
+			})( Entity, ObjectPool, Messenger, Transform );
+
+		</script>
+
+		<script>
+/*
+		//	Enity Component System Engine.
+
+		//	## Entities.
+		//	(A unique ID that tags each object as a separate item. 
+		//	Implementations typically use a plain integer for this).
+		//
+		//	Entities are objects with an id. 
+		//	Entities contains components. They are component containers.
+		//	We add/remove components in an entity to define the "kind" of this entity.
+		//	All values of all components of an entity defines the "state" of this entity.
+		//	An entity can be at least one or more entity "kinds".
+		//	Entity "kinds" can modified from systems by adding/removing components.
+		//	Entities are parsed to systems.
+		//	(entity) kind:  Entities do not know what "kind" they are.
+		//	(entity) state: Entities do not know what "state" they are.
+		//	System: Entities do not know which systems use them. 
+		//	Component: Entities do not know what components they contain.
+		//	Speaking with mongodb terms, entity is a document: the id of the document 
+		//	is the entity id and the fields of the document are the components.
+		//	All entities are members of the Entity class.
+		//
+		//	## Components.
+		//	(Implementations typically use structs[1], classes[2], or associative arrays[3]).
+		//
+		//	"Component" is used to mean both the template/OOP class that holds the data, 
+		//	and the individual instances of that template/class. When this is unclear, 
+		//	we usually say "Component-Type" to mean the class, and "Component Instance" 
+		//	to mean a single instance attached to a specific Entity.
+		//
+		//	Components are objects with data. They are data containers. 
+		//	Components are a piece of data. All data exists inside components (component intialition).
+		//	Components are added/removed to entities to define the "kind" of an entity (entity initialition).
+		//	The values (data) of this component define the "state" of this component in this entity.
+		//	The values (data) of each component of an entity defines a part of the "state" of this entity.
+		//	The population of all components in an entity defines the "kinds" of this entity.
+		//	The constructors of all components in an entity defines the "kind" of this entity.
+		//	Components values (data) are modified by systems. 
+		//	There are none or more systems that modify this component values (data).
+		//	Components can be shared by many entities.
+		//	Components do not know which entity contains them.
+		//	Components do not know what system modify them.
+		//	Components do not know what "state" they are.
+		//	Components do not know each other in an entity.
+		//	All components are members of the Component super class.
+		//
+		//	Extend Component super class with Object3D child class (traditional js).
+		//	source: "https://medium.com/beginners-guide-to-mobile-web-development/super-and-extends-in-javascript-es6-understanding-the-tough-parts-6120372d3420"
+		//
+		//		function Object3D(name, data) {
+		//			Component.call(this, name, data);
+		//		}
+		//
+		//		Object3D.prototype = Object.create(Component.prototype);
+		//		Object3D.prototype.constructor = Object3D;
+		//		Object3D.prototype.isComponent = Component.prototype.isComponent;
+		//		Object3D.prototype.set = function( key, value ){
+		//			Component.prototype.set.call(this, key, value);
+		//		};
+		//		Object3D.prototype.get = function( key ){
+		//			Component.prototype.get.call(this, key);
+		//		};
+		//
+		//	## Systems.
+		//
+		//	(All the code for the one aspect of the gameobjects, with each System running continuously as 
+		//	if it has a private internal thread, performing global actions on every Entity that possesses 
+		//	a Component of the same aspect as that System).
+		//
+		//	Originally, is recommended developers to start with "1 component-type per 1 System", 
+		//	but real-world projects rarely stick to this, often having multiple Component-types 
+		//	for a single System — and multiple Systems sharing individual Component-types.
+		//
+		//	System are functions that execute a piece of logic. All logic included in system's code (processors).
+		//	System accept [arrays of entities] and modify some values (data) of some components of each entity.
+		//	A system proccess only specific "kind" of entities (that contain specific components).
+		//	System modify the values (data) of components (changes the "state" of components).
+		//	System modify the values (data) of components (changes the "state" of the entity).
+		//	System can add/remove components from an entity (change the "kind" of the entity).
+		//	Systems are triggered by events, by signals, by observers, or runs continuously.
+		//	All systems are members of the System super class.
+		//
+		//	System super class.
+		//
+		//	function System ( entities ){}
+		//	System.prototype.isSystem = true;
+		//
+		//	Example: Extend System super class with ChildSystem child class (traditional js).
+		//	source: "https://medium.com/beginners-guide-to-mobile-web-development/super-and-extends-in-javascript-es6-understanding-the-tough-parts-6120372d3420"
+		//
+		//		function ChildSystem ( entities ){
+		//			System.call(this, entities);
+		//		}
+		//
+		//		ChildSystem.prototype = Object.create(System.prototype);
+		//		ChildSystem.prototype.constructor = ChildSystem;
+		//		ChildSystem.prototype.isSystem = System.prototype.isSystem;
+		//
+		//	Notes:
+		//
+		//	[1] Using structs in JavaScript (example, syntax):  I like the idea of using something like a C-like “struct” 
+		//	in my JavaScript code, so I used the following approach on a recent project. I define my JavaScript struct:
+		//
+		//		function BookStruct(title, href, imageUri, description) {
+		//			this.title = title;
+		//			this.href = href;
+		//			this.imageUri = imageUri;
+		//			this.description = description;
+		//		}
+		//
+		//	[2] Classes in JavaScript are a special syntax for its prototypical inheritance model that is a comparable 
+		//	inheritance in class-based object oriented languages. Classes are just special functions added to ES6 that 
+		//	are meant to mimic the class keyword from these other languages. In JavaScript, we can have class declarations 
+		//	and class expressions, because they are just functions. So like all other functions, there are function 
+		//	declarations and function expressions. Classes serve as templates to create new objects.
+		//	Classes always use strict. All code inside the class construct is automatically in strict mode.
+		//
+		//		class Person{
+		//			constructor(firstName, lastName) {
+		//				this.firstName= firstName;
+		//				this.lastName = lastName;
+		//			}
+		//		}
+		//
+		//	JavaScript classes initialize instances with constructors, define fields and methods. You can attach fields 
+		//	and methods even on the class itself using the "static" keyword. Inheritance is achieved using "extends" keyword: 
+		//	you can easily create a child class from a parent. "super" keyword is used to access the parent class from a 
+		//	child class. To take advantage of encapsulation, make the fields and methods private to hide the internal 
+		//	details of your classes. The private fields and methods names must begin with #.
+		//			
+		//	[3] Associative Array in JavaScript: Associative arrays are dynamic objects that the user redefines as needed. 
+		//  When you assign values to keys in a variable of type Array, the array is transformed into an object, and it 
+		//	loses the attributes and methods of Array. The length attribute has no effect because the variable is not longer 
+		//	of Array type.
+*/
+		</script>
+
+		<script>
+
+		//	# A Python ECS Implementation.
+		//	source: "https://github.com/seanfisk/ecs"
+		//	An MIT-licensed Python entity/component system library for games. http://ecs.rtfd.org
+		//
+		//	There are many articles on the Internet advocating a switch to entity-based systems for game logic. 
+		//	However, many authors seem to burn themselves out telling why the old inheritance-based approach is 
+		//	problematic and how an entity system will solve your problems — without ever really explaining what 
+		//	it is or how to do it. This project attempts to provide an actual implementation for use in real games.
+		//	The library is called an "entity/component system" library rather than an "entity system," 
+		//	as the entity portion is just one building block of the total concept.
+		//	Inspiration is taken from the Ash framework for ActionScript 3.0 and Artemis framework for Java.
+		//
+		//	## Concepts
+		//
+		//	ECS stands for Entity, Component, and System. Each of these parts is important. So what are these?
+		//	Entity: Simply a unique identifier, used to label components as belonging to a logical grouping.
+		//	Component: A collection of data. Has no behavior associated with it.
+		//	System: Piece of code to operate on data in components for a single frame.
+		//
+		//	## Details
+		//
+		//	ECS defines a few core core classes:
+		//	Entity, Component, System, EntityManager, SystemManager.
+		//
+		//	The Entity class is simply a representation of a unique identifier, and is not to be subclassed. 
+		//	The Component class is intended to be subclassed for your custom components. 
+		//	System is also intended to be subclassed for your custom systems.
+		//
+		//	The EntityManager is a database that stores Component subclasses, referenced by their type and entity ID. 
+		//	The SystemManager maintains a set of System instances and allows them to perform their operations.
+		//
+		//	The real action happens in the update() method of your subclassed System classes. 
+		//	A System instance queries the EntityManager database for a set of Component subclasses 
+		//	and operates on the data contained in them.
+		//
+		//	## Description
+		//
+		//	A system that maintains the state of the game as a database like structure.
+		//	The data stored is encapsulated in "Components", which have only data-members.
+		//	The interface of the various parts is defined below.
+		//
+		//	EntityManager {
+		//
+		//		addComponent(entity_id, component_instance)
+		//			Adds a component object to the database, associated with the entity_id
+		//
+		//		removeComponent(entity_id, component_type)
+		//			Removes a component object from the database if the entity_id has such a component.
+		//			Does not do any kind of data tear-down. This method simply makes that component
+		//			unavailable from the database.
+		//
+		//		getPairs(component_type)
+		//			Returns a list of pairs of entity_id's and components for a given component type.
+		//			Alleviates the need of doing a reverse look-up to get the id of an entity with
+		//			a certain kind of component.
+		//
+		//		getComponentForEntity(entity_id, component_type)
+		//			Returns the component_type component for the given entity_id. Returns None if there
+		//			is no component of that type associated with that id.
+		//
+		//	}
+		//
+		//
+		//	Entity {
+		//
+		//		guid
+		//
+		//	}
+		//
+		//	A unique number that identifies this identity.
+		//	The entity class is simply a way to logically encapsulate an identifier.
+		//
+		//
+		//	Component {
+		//
+		//		data1
+		//		data2
+		//		data3
+		//
+		//	}
+		//
+		//	Arbitrary data members. May contain a custom initializer but should not
+		//	have any other methods, especially any that modify state beyond simple getters/setters
+		//	with validation. Might be good to define factory methods at the class level 
+		//	for each component type.
+		//
+		//
+		//	All of these types are used by a separate set of classes called "Systems".  
+		//	Systems are bits of code that operate on items from the EntityManager database.
+		//
+		//	System {
+		//
+		//		update(dt, entity_manager)
+		//			Called every frame by the SystemManager.
+		//			The system can query the database for components and operate on them.
+		//			This is where the logic of the game is implemented.
+		//
+		//	}
+		//
+		//	Each System subclass is responsible for a narrow set of operations. 
+		//	Should only do the minimum necessary to make a certain feature work.
+		//	No persistent references should be made to things from the database 
+		//	unless you have	a really, really good reason. 
+		//	Things are likely to come and go from the database.
+		//
+		//
+		//	SystemManager {
+		//
+		//		initializer(entity_manager)
+		//			Creates a new SystemManager.  Requires a reference to an EntityManager so that the systems 
+		//			can get the required components.
+		//
+		//		addSystem(system_instance, priority)
+		//			Adds a system instance to the manager.  It will be updated according the priority passed in.
+		//			Will throw an Error if a system of that type is already present.
+		//
+		//		removeSystem(system_type)
+		//			Removes a given system type from the manager.
+		//
+		//		update(dt)
+		//			The SystemManager goes through its list of Systems and calls their update methods.
+		//			The list is sorted so systems get updated in their intended priority.
+		//			This method is called externally by the game-loop machinery.
+		//
+		//	}
+		//
+		//
+		//	## Database format:
+		//
+		//	Indexable by comp_type:
+		//
+		//	d = {
+		//		comp_type_1 : {
+		//			id_1 : comp_instance_1,
+		//			id_2 : comp_instance_2
+		//		},
+		//		comp_type_2 : {
+		//			id_1 : comp_instance_3,
+		//			id_2 : comp_instance_4
+		//		},
+		//	}
+		//
+		//	So to get all components of a certain type, it's simply:
+		//
+		//	all_comps = d[comp_type].values()
+		//
+		//	To get the comp for an entity,
+		//
+		//		comp_1 = d[comp_type][entity_id]
+		//
+		//	Both types of access are pretty fast and shouldn't cause any speed problems.
+		//
+		//
+		//	## Further Reading
+		//
+		//	Entity/component systems are a relatively new concept. The canonical source for all entity system-related 
+		//	topics is the Entity Systems wiki, created by Adam Martin. Adam Martin has also written abundantly in his 
+		//	series of posts about Entity Systems, which are a great read for those just getting familiar with the concept.
+
+		</script>
+
+		<script>
+
+		//	Components class.
+		//
+		//	const isComponent = true; // primitive type, locked.
+		//
+		//	All primitive threejs objects are Component-Types.
+		//	We do not use any specific class for components.
+		//	Any object can be a component instance.
+		//
+		//	THREE.Object3D.prototype.isComponent = true; // primitive type.
+		//
+		//	We can define threejs component classes that inherits
+		//	mixed from threejs constructors and the Component class.
+		//
+		//		function Component( data ){
+		//
+		//			Object.assign(this, data);
+		//
+		//		}
+		//
+		//	Component.prototype.isComponent = true; // primitive type. How to lock it?
+
+		</script>
+
+		<script>
+
+		//	[1] JavaScript provides six primitive types as "undefined", "null", 
+		//	"boolean", "number", "string", and "symbol", and a reference type "object".
+		//
+		//	[2] The "new" keyword performs following tasks:
+		//	source: "https://www.tutorialsteacher.com/javascript/new-keyword-in-javascript"
+		//
+		//	1. It creates new empty object e.g. obj = { };
+		//	2. It sets new empty object's invisible 'prototype' property to be the constructor function's 
+		//	visible and accessible 'prototype' property. (Every function has visible 'prototype' property 
+		//	whereas every object includes invisible 'prototype' property)
+		//	3. It binds property or function which is declared with this keyword to the new object.
+		//	4. It returns newly created object unless the constructor function returns a non-primitive value 
+		//	(custom JavaScript object). If constructor function does not include return statement then compiler 
+		//	will insert 'return this;' implicitly at the end of the function. If the constructor function returns 
+		//	a primitive value then it will be ignored.
+		//
+		//	The "new" keyword ignores return statement that returns primitive value.
+		//	If function returns non-primitive value (custom object) then "new" keyword 
+		//	does not perform the above 4 tasks.
+		//	Thus, "new" keyword builds an object of a function in JavaScript.
+		//
+		//	When comparing two objects, you need to be more careful. They are compared by their identity. 
+		//	That means it does not matter if the two objects have the same properties with the same values. 
+		//	They are equal only if they are the same instance. That is - if comparing two variables, 
+		//	they are equal only if they point to the very same object.
+
+		</script>
+
+		<script>
+
+		//	## ECS and THREEJS
+
+		//	All objects of threejs are components.
+
+		//	Which threejs objects must defined as entities?
+		//	Which threejs objects must defined as components?
+		//	Can a object be Component-Type and Entity-Type at the same time?
+
+			//	A THREE.Vector is Component-Type.
+			//	A THREE.Object3D is Component-Type.
+			//	A THREE.Geometry is Component-Type.
+			//	A THREE.Material is Component-Type.
+
+			//	A THREE.Scene is Entity-Type?
+			//	A THREE.Mesh is Entity-Type?
+			//	A THREE.SkinnedMesh is Entity-Type?
+
+		//	THREE.Object3D is a Component-Type.
+		//	object3d = new THREE.Object3D(); is a component instance.
+
+		//	MW.CharacterController is a Component-Type.
+		//	controller = new MW.CharacterController() is a component instance.
+
+		</script>
+
+		<script>
+
+			const Signal = signals.Signal;
+			const debugMode = true; // primitive type.
+
+		//	Global helpers.
+
+			Number.prototype.format = function (){
+				return this.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
+			};
+
+		//	save_file.js
+
+			function saveString( text, filename ) {
+				save( new Blob( [ text ], { type: "text/plain" } ), filename );
+			}
+
+			function saveArrayBuffer( buffer, filename ) {
+				save( new Blob( [ buffer ], { type: "application/octet-stream" } ), filename );
+			}
+
+			function save( blob, filename ) {
+
+				var link = document.createElement( "a" );
+				link.href = URL.createObjectURL( blob );
+				link.download = filename || "untitled";
+				link.click();
+
+			}
+
+		//	round.js
+			function round(number, precision) {
+				var shift = function (number, precision, reverseShift) {
+					if (reverseShift) {
+						precision = -precision;
+					}  
+					numArray = ("" + number).split("e");
+					return +(numArray[0] + "e" + (numArray[1] ? (+numArray[1] + precision) : precision));
+				};
+				return shift(Math.round(shift(number, precision, false)), precision, true);
+			}
+
+		//	array_move.js
+			function array_move( arr, old_index, new_index ){
+
+				if (new_index >= arr.length) {
+					var k = new_index - arr.length + 1;
+					while (k--) {
+						arr.push(undefined);
+					}
+				}
+
+				arr.splice(new_index, 0, arr.splice(old_index, 1)[0]);
+			}
+
+		//	deep_copy.js
+			function deepCopy(obj) {
+				if (Object.prototype.toString.call(obj) === "[object Array]") {
+					var out = [], i = 0, len = obj.length;
+					for ( ; i < len; i++ ) {
+						out[i] = arguments.callee(obj[i]);
+					}
+				//	console.log("out:", out);
+					return out;
+				}
+				if (typeof obj === "object") {
+					var out = {}, i;
+					for ( i in obj ) {
+						out[i] = arguments.callee(obj[i]);
+					}
+				//	console.log("out:", out);
+					return out;
+				}
+				return obj;
+			}
+
+		//	## Copying an Object
+		//	source: "http://speakingjs.com/es5/ch17.html#private_data_for_objects".
+		//	To create an identical copy of an object, you need to get two things right:
+		//	The copy must have the same prototype as the original.
+		//	The copy must have the same properties, with the same attributes as the original.
+		//	The following function performs such a copy:
+		//
+		//	These are the steps involved:
+		//	[1] Get an array with the keys of all own properties of source.
+		//	[2] Iterate over those keys.
+		//	[3] Retrieve a property descriptor.
+		//	[4] Use that property descriptor to create an own property in target.
+
+			function copyObject(obj) {
+
+			//	1. copy has same prototype as orig
+				var copy = Object.create(Object.getPrototypeOf(obj));
+
+			//	2. copy has all of orig’s properties
+				copyOwnPropertiesFrom(copy, obj);
+
+				return copy; // warning: shallow copy!
+
+			//	The properties are copied from orig to copy via this function:
+
+				function copyOwnPropertiesFrom(target, source) {
+					Object.getOwnPropertyNames(source).forEach(function(propKey) { // [1][2]
+						var desc = Object.getOwnPropertyDescriptor(source, propKey); // [3]
+						Object.defineProperty(target, propKey, desc); // [4]
+					});
+					return target;
+				};
+
+			}
+
+		</script>
+
+		<script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		</script>
+
+	</body>
+</html>
