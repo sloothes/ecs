@@ -99,10 +99,11 @@
 		<script src="/threejs/r96/examples/js/exporters/OBJExporter.js"></script>
 		<script src="/threejs/r96/examples/js/exporters/ColladaExporter.js"></script>
 
-		<!--script src="/ecs/js/KeyboardState.js"></script-->
+		<script src="/ecs/js/tiny-ecs.js"></script>
+		<script src="/ecs/js/KeyboardState.js"></script>
 		<script src="/ecs/engine/Enviroment.js"></script>
-		<script src="/ecs/engine/pre-alpha/Entity.js"></script>
-		<script src="/ecs/engine/pre-alpha/EntityManager.js"></script>
+		<!--script src="/ecs/engine/pre-alpha/Entity.js"></script-->
+		<!--script src="/ecs/engine/pre-alpha/EntityManager.js"></script-->
 
 		<script>
 
@@ -210,37 +211,6 @@
 					return target;
 				};
 
-			}
-
-		</script>
-
-		<script>
-
-			const Signal = signals.Signal;
-			const debugMode = true; // primitive type.
-
-		//	Systems helpers.
-
-			function systemValidator(components){
-				while( components.length ){
-					if ( components.shift() === undefined ) return false;
-				}
-				return true;
-			}
-			
-			function systemCheckLog(_id, system, passed, components){
-				debugMode && console.log("Check:", {
-					"_id": _id,
-					"system": system, 
-					"passed": passed,
-					"components": components
-				});
-			}
-
-		//	System debug helpers.
-			
-			function syslogcid( name, array ){ 
-				if (array.length) return name+":["+array.join()+"]"; 
 			}
 
 		</script>
@@ -605,20 +575,23 @@
 
 		//	## ECS and THREEJS
 
-		//	All objects of threejs are components.
-
 		//	Which threejs objects must defined as entities?
 		//	Which threejs objects must defined as components?
-		//	Can a object be Component-Type and Entity-Type at the same time?
+		//	Can a object be Component-Type and Entity-Type at the same time? Nope!
 
-			//	A THREE.Vector is Component-Type.
-			//	A THREE.Object3D is Component-Type.
-			//	A THREE.Geometry is Component-Type.
+			//	A THREE.Scene is not Component-Type.
+			//	A THREE.Object3D is not Component-Type.
+			//	A THREE.Geometry is not Component-Type.
+			//	A THREE.SkinnedMesh is not Component-Type.
+
+			//	A THREE.Texture is Component-Type.
+			//	A THREE.Vector3 is Component-Type.
+			//	A THREE.Matrix4 is Component-Type
 			//	A THREE.Material is Component-Type.
 
-			//	A THREE.Scene is Entity-Type?
-			//	A THREE.Mesh is Entity-Type?
-			//	A THREE.SkinnedMesh is Entity-Type?
+			//	A THREE.Mesh is not Entity-Type.
+			//	A THREE.Scene is not Entity-Type.
+			//	A THREE.SkinnedMesh is not Entity-Type.
 
 		//	THREE.Object3D is a Component-Type.
 		//	object3d = new THREE.Object3D(); is a component instance.
@@ -629,8 +602,8 @@
 		</script>
 
 		<script>
-
-			KeyboardState = function(){
+/*
+			const KeyboardState = function(){
 
 			//	to store the current state
 				this.keyCodes = {};
@@ -694,12 +667,12 @@
 				};
 				return true;
 			};
-
+*/
 		</script>
 
 		<script>
-
-		//	System constructor.
+/*
+		//	System Class (constructor).
 
 			function System(components, update){
 
@@ -734,12 +707,76 @@
 			}
 
 			System.prototype.isSystem = true;
+*/
+
+		//	System helpers.
+
+			function systemValidator(components){
+				while( components.length ){
+					if ( components.shift() === undefined ) return false;
+				}
+				return true;
+			}
+			
+			function systemCheckLog(_id, system, passed, components){
+				debugMode && console.log("Check:", {
+					"_id": _id,
+					"system": system, 
+					"passed": passed,
+					"components": components
+				});
+			}
+
+		//	System debug helpers.
+			
+			function syslogcid( name, array ){ 
+				if (array.length) return name+":["+array.join()+"]"; 
+			}
 
 		</script>
 
 		<script>
 
-		//	System Manager Class (under construction).
+		//	Singals.js
+
+			const Signal = signals.Signal;
+
+		</script>
+
+		<script>
+
+		//	## Application State Class.
+
+			const StateManager = function(){};
+
+			StateManager.prototype.INIT = true;
+			StateManager.prototype.STOP = false;
+			StateManager.prototype.TEAR = false;
+			StateManager.prototype.START = false;
+			StateManager.prototype.PAUSE = false;
+			StateManager.prototype.UPDATE = false;
+
+			StateManager.prototype.debugMode = true;
+			StateManager.prototype.editorMode = false;
+			StateManager.prototype.isScaling = false;
+			StateManager.prototype.isRotating = false;
+			StateManager.prototype.isTranslating = false;
+
+			StateManager.prototype.update = function(){
+				debugMode = this.debugMode;
+				editorMode = this.editorMode;
+				isScaling = this.isScaling;
+				isRotating = this.isRotating;
+				isTranslating = this.isTranslating;
+			};
+
+			StateManager.prototype.update();
+
+		</script>
+
+		<script>
+
+		//	## System Manager Class (under construction).
 
 		//	System manager fires the systems on runtime.
 		//	System manager define the order that systems will fired.
@@ -747,27 +784,7 @@
 		//	and "render" state. It also fires the systems of every
 		//	"event", "signal" or watched observers.
 
-			function SystemManager(){
-			//	this.requestFrameId;
-			};
-
-			//	return {
-			//		get requestAnimationFrameId(){
-			//			return this.frameId;
-			//		},
-			//		get initSystems(){},
-			//		get updateSystems(){},
-			//		get renderSystems(){},
-			//		get keyInputSystems(){},
-			//		get joystickSystems(){},
-			//		get mouseEventSystems(){},
-			//		get dragEventSystems(){},
-			//		get touchEventSystems(){},
-			//		get eventObjectSystems(){},
-			//		get windowEventSystems(){},
-			//		get timeoutSystems(){},
-			//		get intervalSystems(){},
-			//	}
+			function SystemManager(){};
 
 		//	requestFrameId.
 			SystemManager.prototype.requestFrameId = 0;
@@ -776,6 +793,7 @@
 		//	KeyboardState.
 			SystemManager.keyboard = new KeyboardState(); // important! (non-prototype)
 			SystemManager.keyboard.frontAngle = 0;
+
 			window.addEventListener("keyup", updateKeyboardFrontAngle );
 			window.addEventListener("keydown", updateKeyboardFrontAngle );
 			window.addEventListener("keyup", updateKeyboardVerticalAngle );
@@ -822,39 +840,38 @@
 
 			}
 
+		//	Init/Start/Pause/Stop/Tear events.
+
 			SystemManager.prototype.init = function(entities){
 				//	Define init systems order.
+			};
+			SystemManager.prototype.start = function(entities){
+				//	Define start systems order.
+			};
+			SystemManager.prototype.pause = function(entities){
+				//	Define pause systems order.
+			};
+			SystemManager.prototype.stop = function(entities){
+				//	Define stop systems order.
+			};
+			SystemManager.prototype.tear = function(entities){
+				//	Define tear??? systems order.
 			};
 
 			SystemManager.prototype.update = function(dt, entities){
 
 			//	Define updating systems order.
 			//	JoystickControllerStateSystem(null, entities);
-				EditorControllableScaleSystem(dt, entities)       //
-				EditorControllableRotateSystem(dt, entities);     // was EditorControllableObjectRotation.
-				EditorControllableTranslateSystem(dt, entities);  // was EditorControllableObjectPosition.
-				KeyboardControllableMovingSystem(dt, entities);   // was KeyboardControllableMoveSystem.
-				WorldControllableRotatingSystem(dt, entities);    // was UserControllableObjectRotation.
+			//	EditorControllableScaleSystem(dt, entities)       //
+			//	EditorControllableRotateSystem(dt, entities);     // was EditorControllableObjectRotation.
+			//	EditorControllableTranslateSystem(dt, entities);  // was EditorControllableObjectPosition.
+			//	KeyboardControllableMovingSystem(dt, entities);   // was KeyboardControllableMoveSystem.
+			//	WorldControllableRotatingSystem(dt, entities);    // was UserControllableObjectRotation.
 				WorldControllableGroundingSystem(entities);       // last, important!
 
 			};
 
-			SystemManager.prototype.render = function(dt, entities){};
-
-		//	Start/Play/Pause/Stop events.
-
-			SystemManager.prototype.start = function(e, entities){
-				//	Define start systems order.
-			};
-			SystemManager.prototype.play = function(e, entities){
-				//	Define play systems order.
-			};
-			SystemManager.prototype.pause = function(e, entities){
-				//	Define pause systems order.
-			};
-			SystemManager.prototype.stop = function(e, entities){
-				//	Define stop systems order.
-			};
+			SystemManager.prototype.render = function(e, entities){};
 
 		//	KeyInputControl events.
 
@@ -1008,16 +1025,176 @@
 
 			//	var system_manager = this;
 
+				var INIT = StateManager.prototype.INIT;
+				var TEAR = StateManager.prototype.TEAR;
+				var STOP = StateManager.prototype.STOP;
+				var START = StateManager.prototype.START;
+				var PAUSE = StateManager.prototype.PAUSE;
+				var UPDATE = StateManager.prototype.UPDATE;
+
+				if ( INIT ) {
+					SystemManager.prototype.init(entities);
+					INIT = false; 
+					START = true;
+				} else if ( START ) {
+					SystemManager.prototype.start(entities);
+					START = false; 
+					UPDATE = true;
+				}
+
+			//	SystemManager.prototype.pause(entities);
+			//	SystemManager.prototype.stop(entities);
+			//	SystemManager.prototype.tear(entities);
+
 				(function runtime(){
 
 					var dt = clock.getDelta();
 					var elapsed = clock.getElapsedTime();
 					SystemManager.prototype.requestFrameId = requestAnimationFrame( runtime );
-					SystemManager.prototype.update(dt, entities);
+
+					if ( START ) { UPDATE = true;  PAUSE = false; STOP  = false; }
+					if ( PAUSE ) { UPDATE = false; START = false; STOP  = false; }
+					if ( STOP  ) { UPDATE = false; PAUSE = false; START = false; }
+					if ( UPDATE) { START  = false; PAUSE = false; STOP  = false  }
+				//	cancelAnimationFrame( SystemManager.prototype.requestFrameId );
+					if ( !INIT && !START && !PAUSE && !STOP && !TEAR ) UPDATE = true;
+
+					if ( UPDATE ) {
+						SystemManager.prototype.update(dt, entities);
+					} else if ( START ) {
+						SystemManager.prototype.start(dt, entities);
+						START = false;
+					} else if ( PAUSE ) {
+						SystemManager.prototype.pause(dt, entities);
+					} else if ( STOP  ) {
+						SystemManager.prototype.stop(dt, entities);
+					} else if ( TEAR ) {
+						SystemManager.prototype.tear(dt, entities);
+					}
+
+
+					StateManager.prototype.update();
 
 				})();
 			
 			};
+
+		</script>
+
+		<script>
+
+		//	TinyECS: mean lean Entity-Component-System library.
+
+		//	TinyECS is not a ready-to-go game engine framework, 
+		//	it is a small library of some very performance critical 
+		//	pieces and common utility classes that can be used to make 
+		//	a game from scratch. (should be named Tiny Entity Manager).
+
+		//	## Creating Components ##
+			
+		//	Any object constructor can be used as a component, nothing special 
+		//	required. Components should be lean, PRIMARILY data containers, 
+		//	leaving all the heavy lifting for the systems.
+
+		//	## Creating Systems ##
+
+		//	In TinyECS, there is no formal notion of a system. 
+		//	A system is considered any context in which entities and their 
+		//	components are updated. As to how this occurs will vary depending 
+		//	on your use.
+
+
+
+		//	## Entity Manager Class.
+
+		//	Manage your entities via an EntityManager instance:
+
+			const entities = new EntityManager();
+			console.log( entities );
+
+		//	## Creating Entities.
+		//	Create an entity with the default Transform component:
+
+		//	var entity = new Entity();
+			var entity = entities.createEntity();
+			console.log( entity );
+
+		//	## Adding Components.
+		//	A component is just a basic Javascript class.
+
+			var Component = THREE.Vector3;
+			debugMode && console.log( Component );
+
+		//	Add the components:
+			entity.addComponent( Component );
+
+		//	We now have new data members on our entity for the components. 
+		//	TinyECS will add an instance member that is the name of the 
+		//	component constructor, lowercased:
+
+		//	Add arbitrary text tags to an entity:
+			entity.addTag("player controller");
+
+		//	Remove components and tags in much the same way:
+			//	entity.removeComponent( Component );
+			//	entity.removeTag("player controller");
+
+			console.log( entity );
+
+		//	To determine if an entity has a specific component:
+		//	if (entity.hasComponent(Component)) {...}
+			console.log( 
+				"entity.hasComponent(Component):", 
+				 entity.hasComponent(Component)
+			);
+
+		//	And to check if an entity has ALL of a set of components:
+		//	if (hero.hasAllComponents([Transform, Sprite])) { ... }
+			console.log( 
+				"entity.hasComponent([Component, MW.CharacterController]):", 
+				 entity.hasComponent([Component, MW.CharacterController])
+			);
+
+		//	## Querying Entities
+		//	The entity manager is setup with indexed queries, allowing 
+		//	extremely fast querying of the current entities. Querying 
+		//	entities returns an array of entities.
+
+		//	Get all entities that have a specific set of components:
+			console.log( 
+				entities.queryComponents([Component]) );
+		//	Get all entities with a certain tag:
+			console.log( entities.queryTag("player controller") );
+
+		//	## Removing Entities
+			//	entity.remove();
+
+
+		</script>
+
+		<script>
+
+			const keyboard = SystemManager.keyboard;
+
+		//	Selected.
+		//	Selected component is a boolean flag-component that allow 
+		//	to a system to trigger and operate in entity's components
+		//	data. Selected component is moving from entity to entity
+		//	to represent the current selected entity. Only on multi-
+		//	selecting entities is allowed to exist in more than one  
+		//	entities and must be removed when the entity deselected.
+
+			const Selected = {
+			//	value: always true.
+			//	flag-type boolean component.
+				get value( ){ return true; },
+			};
+
+		//	Axies components.
+			const axies = new THREE.Vector3(1,1,1); // component-type.
+			const axisX = new THREE.Vector3(1,0,0); // component-type.
+			const axisY = new THREE.Vector3(0,1,0); // component-type.
+			const axisZ = new THREE.Vector3(0,0,1); // component-type.
 
 		</script>
 
@@ -1101,18 +1278,6 @@
 
 			})();
 
-		//	Helpers.
-
-			function takeCameraLight( target ){
-				cameraLight.target = target;
-			}
-
-			function takeCameraControls( target, offset ){
-				cameraControls.trackObject = target;
-				cameraControls.offset.y = offset || 0;
-			}
-
-
 		//	Camera Virtual Joystick.
 
 			const cameraJoystick = (function(){
@@ -1180,6 +1345,17 @@
 		//	Jump Button.
 
 			const jumpButton = new virtualInput.Button( $( "#joystick-controls-1" ), 58, { id: "jumpButton", label: "<b>JUMP</b>" } );
+
+		//	Helpers.
+
+			function takeCameraLight( target ){
+				cameraLight.target = target;
+			}
+
+			function takeCameraControls( target, offset ){
+				cameraControls.trackObject = target;
+				cameraControls.offset.y = offset || 0;
+			}
 
 		</script>
 
@@ -1416,6 +1592,7 @@
 					update( collected.shift() );
 				}
 
+			//	Update direction (rotation.y)
 				function update( entity ){
 					try {
 						entity.Rotation.y = entity.Direction = entity.Controller.direction + Math.PI; // important!
@@ -1425,86 +1602,86 @@
 				}
 			}
 
-		//	Example: controllableObject is an entity instance.
+		//	Example: worldControllableEntity is an entity instance.
 
-			var controllableObject = (function(){
+			var worldControllableEntity = (function(){
 
 				var r = 0.5; // radius.
 				var entity = new Entity(); // entity instance.
 
-			//	controllable object must have a object3d component.
+			//	world controllable entity controls an object3d (is not componenet).
 				var object3d = (function(){
-					var component = new THREE.Object3D();
-					component.isComponent = true;
-					component.position.set(-0.5,1,-3.5);
-					component.name = "controllable object";
+					var object = new THREE.Object3D();
+					object.position.set(-0.5, 1, -3.5);
+					object.name = "world controllable object";
 				//	Add object to scene.
-					scene.add( component );
-					return component;
+					scene.add( object );
+					return object;
 				})();
 
-			//	Add component to entity.
-				entity.Object3D = object3d; // bypass add() method.
+			//	Add object to entity (is not component).
+			//	entity.object = object3d;
 
-			//	controllable object may have a bounding sphere helper component.
+			//	controllable object may have a bounding sphere helper (is not component).
 				var helper = (function(radius){
 					var sphere = new THREE.SphereGeometry( radius, 8, 6 );
 					var geometry = new THREE.EdgesGeometry( sphere );
 					var material = new THREE.LineBasicMaterial( { color: 0xffff00 } );
-					var component = new THREE.LineSegments( geometry, material );
-					component.isComponent = true;
-					component.position.y = radius
-					component.name = "controllable helper";
-				//	Add helper to scene.
-					entity.Object3D.add( component );
-					return component;
+					var segments = new THREE.LineSegments( geometry, material );
+					segments.position.y = radius
+					segments.name = "world controllable helper";
+				//	Add helper to object3d.
+					object3d.add( segments );
+					return segments;
 				})( r );
 
-			//	Add component to entity.
-				entity.Helper = helper; // bypass add() method.
+			//	Add helper to entity (is not component).
+			//	entity.helper = helper;
 
-			//	controllable object must have a (user) controller component.
-				const controller = (function(object, radius){
+			//	world controllable entity must have a (character) controller (is it component or entity?).
+				var controller = (function(object, radius){
 				//	Create controller component instance.
 					var component = new MW.CharacterController(object, radius);
-					component.isComponent = true;
+				//	component.isComponent = true; // ???
+				//	Intialize.
 					component.movementSpeed = 10;
 					component.maxSlopeGradient = 0.5;
 					component.center.copy(object3d.position);
 				//	Add controller to world.
-					world.add( component ); // important!
+					world.add( component ); // starts updating, (is world controllable), important!
 					return component;
-				})( entity.Object3D, r );
+				})( object3d, r );
 
-			//	Add components to entity.
+			//	Add controller to entity (let's say that controller is a component).
+			//	entity.object = controller.
+				entity.addComponent( controller );
+				entity.addComponent( object3d.position );
+				entity.addComponent( object3d.rotation );
 
 			//	As will see in "UserControllableObjectRotation", we need a "Rotation" and  
 			//	a "Direction" component to pass the "isControllable()" of the system and
 			//	trigger the update() function.
-				entity.Position = object3d.position; // bypass add() method.
-				entity.Rotation = object3d.rotation; // bypass add() method.
-				entity.Direction = controller.direction; // bypass add() method.
-				entity.Controller = controller; // bypass add() method.
-
-			//	Add KeyInputControl and VirtualJoystick components to make entity user controllable.
-				entity.VirtualJoystick = virtualJoystick; // bypass add() method.
-				entity.KeyInputControl = keyInputControls; // bypass add() method.
+			//	entity.Position = object3d.position; // bypass add() method.
+			//	entity.Rotation = object3d.rotation; // bypass add() method.
+			//	entity.Direction = controller.direction; // bypass add() method.
+			//	entity.Controller = controller; // bypass add() method.
 
 			//	controllableObject.Object3D component takes 
 			//	the control of cameraControls component now.
-				cameraControls.trackObject = entity.Object3D;
+				cameraControls.trackObject = object3d;
 
 			//	Push controlledObject entity to entities queue.
-				entities.push( entity ); // important!
+			//	entities.push( entity ); // important!
 
+				debugMode && console.log( entity );
 				return entity;
 
 			})();
 
 		//	Make the entity user uncontrollable.
-			delete controllableObject.VirtualJoystick;
-			delete controllableObject.KeyInputControl;
-			debugMode && console.log( controllableObject );
+		//	delete controllableObject.VirtualJoystick;
+		//	delete controllableObject.KeyInputControl;
+		//	debugMode && console.log( controllableObject );
 
 		//	Debugging test.
 		//	(function update(){
@@ -1536,18 +1713,18 @@
 			//	All items must be "false" to pass test.
 
 				var components = [
-					entity.State === undefined, // false,
+				//	entity.State === undefined, // false,
 					entity.Scale === undefined, // false,
 					entity.Position === undefined, // false,
 					entity.Rotation === undefined, // false,
 				//	false: all except (true && true && true).
-					entity.Mesh === undefined 
-					&& entity.Line === undefined
-					&& entity.Group === undefined 
-					&& entity.Sprite === undefined
-					&& entity.Object3D === undefined
-					&& entity.SkinnedMesh === undefined
-					&& entity.LineSegments === undefined
+				//	entity.Mesh === undefined 
+				//	&& entity.Line === undefined
+				//	&& entity.Group === undefined 
+				//	&& entity.Sprite === undefined
+				//	&& entity.Object3D === undefined
+				//	&& entity.SkinnedMesh === undefined
+				//	&& entity.LineSegments === undefined
 				];
 
 			//	all items must be false:(!undefined) to pass test.
@@ -1561,11 +1738,6 @@
 				return true;
 			}
 
-			const axisX = new THREE.Vector3(1,0,0);
-			const axisY = new THREE.Vector3(0,1,0);
-			const axisZ = new THREE.Vector3(0,0,1);
-			const keyboard = SystemManager.keyboard;
-
 			function EditorControllableScaleSystem(dt, entities){} // (TODO)
 			function EditorControllableRotateSystem(dt, entities){
 
@@ -1575,11 +1747,7 @@
 				for (var i = 0; i < entities.length; i++){
 					var entity = entities[i];
 					
-					if ( isEditorControllable( entity ) 
-					&& entity.State !== undefined 
-					&& entity.State.editorMode 
-					&& entity.State.isSelected
-					&& entity.State.isRotating ) {
+					if ( isEditorControllable( entity ) ){
 						collected.push( entity );
 						collectId.push( entity._id);
 					}
@@ -1593,22 +1761,19 @@
 				}
 
 				function update( entity ){
-
-					var object;
-
-					if ( entity.Object3D ) object = entity.Object3D;
-					else if ( entity.Group ) object = entity.Group;
-					else if ( entity.Mesh )  object = entity.Mesh;
-					else if ( entity.Line )  object = entity.Line;
-					else if ( entity.Sprite ) object = entity.Sprite;
-					else if ( entity.SkinnedMesh )  object = entity.SkinnedMesh;
-					else if ( entity.LineSegments ) object = entity.LineSegments;
-
-				//	if ( !object ) throw "SystemError:", system, "update()";
+					
+					if ( !entity.Selected ) return;
 
 					try {
 
 						var rad = Math.max(dt, 0.02);
+
+						var E = keyboard.pressed("E");         var Q = keyboard.pressed("Q");
+						var R = keyboard.pressed("R");         var F = keyboard.pressed("F");
+						var UP = keyboard.pressed("up");       var W = keyboard.pressed("W");
+						var LEFT = keyboard.pressed("left");   var A = keyboard.pressed("A");
+						var DOWN = keyboard.pressed("down");   var S = keyboard.pressed("S");
+						var RIGHT = keyboard.pressed("right"); var D = keyboard.pressed("D");
 
 						if ( entity.State.isTranslating ) {
 
@@ -1755,63 +1920,9 @@
 
 			}
 
-/*
-			{
-
-				var rad = 0; // Math.PI;
-				var movementSpeed = 0.05;
-				var keyboardFrontAngle = 0;
-				var cameraFrontAngle = SystemManager.cameraControls.phi;
-				if ( keyboard.pressed("E") ) keyboardFrontAngle =  Math.PI/2;
-				if ( keyboard.pressed("Q") ) keyboardFrontAngle = -Math.PI/2;
-				var direction = rad - cameraFrontAngle + keyboardFrontAngle;
-				var directionOnAxisY = Math.sin(direction);
-				var y = directionOnAxisY * movementSpeed;
-				var velocity = new THREE.Vector3(0,y,0);
-				object.position.y += velocity.y; 
-
-			}	
-*/
-/*
-			{
-
-				//	var rad = 3 * Math.PI/4 // joystick input.
-				var rad = 2 * Math.PI;  // keyboard input.
-				var movementSpeed = Math.max(dt, 0.05);
-				var cameraFrontAngle = SystemManager.cameraControls.frontAngle;
-				var keyboardFrontAngle = SystemManager.keyboard.frontAngle;
-				var direction = rad - cameraFrontAngle + keyboardFrontAngle;
-				var directionOnAxisX = -Math.sin(direction);
-				var directionOnAxisZ = -Math.cos(direction);
-				var x = directionOnAxisX * movementSpeed;
-				var z = directionOnAxisZ * movementSpeed;
-				var velocity = new THREE.Vector3(x,0,z);
-				object.position.x += velocity.x; 
-				object.position.z += velocity.z;
-			}
-*/
-/*
-			{
-
-				//	var rad = 3 * Math.PI/4 // joystick input.
-				var rad = 2 * Math.PI;  // keyboard input.
-				var movementSpeed = Math.max(dt, 0.05);
-				var cameraFrontAngle = SystemManager.cameraControls.frontAngle;
-				var keyboardFrontAngle = SystemManager.keyboard.frontAngle;
-				var direction = rad - cameraFrontAngle + keyboardFrontAngle;
-				var directionOnAxisX = -Math.sin(direction);
-				var directionOnAxisZ = -Math.cos(direction);
-				var x = directionOnAxisX * movementSpeed;
-				var z = directionOnAxisZ * movementSpeed;
-				var velocity = new THREE.Vector3(x,0,z);
-				object.position.x += velocity.x; 
-				object.position.z += velocity.z;
-
-			}
-*/
 		//	Example: editorableObject is an entity instance.
 
-			var editorableObject = (function(){
+			var editorableEntity = (function(){
 
 				var r = 0.5; // radius.
 				var entity = new Entity(); // entity instance.
@@ -1830,23 +1941,23 @@
 					return component;
 				})();
 
-			//	Add component to entity
-				entity.Object3D = object;
+			//	Add to entity (is not component)
+				entity.object = object;
 
 			//	Add components to make entity editor controllable.
-				entity.Scale = object.scale;
-				entity.Position = object.position;
-				entity.Rotation = object.rotation;
+				entity.addComponent( object.scale ); 
+				entity.addComponent( object.position ); 
+				entity.addComponent( object.rotation ); 
 
 			//	Use state component to activate systems.
-				entity.State = {
-					editorMode:true,
-					isSelected:false,
-					isRotating:true,
-					isTranslating:false,
-					hasCameraLight:false,
-					hasCameraControls:false,
-				};
+			//	entity.State = {
+			//		editorMode:true,
+			//		isSelected:false,
+			//		isRotating:true,
+			//		isTranslating:false,
+			//		hasCameraLight:false,
+			//		hasCameraControls:false,
+			//	};
 
 			//	Take camera controls and camera light.
 			//	cameraControls.offset.y = 0;
@@ -1854,13 +1965,67 @@
 			//	cameraLight.target = entity.Object3D;
 
 			//	Push entity to entities queue.
-				entities.push( entity ); // important!
+			//	entities.push( entity ); // important!
 				debugMode && console.log( entity );
 
 				return entity;
 
 			})();
 
+/*		//	IMPORTANT!
+			{
+
+				var rad = 0; // Math.PI;
+				var movementSpeed = 0.05;
+				var keyboardFrontAngle = 0;
+				var cameraFrontAngle = SystemManager.cameraControls.phi;
+				if ( keyboard.pressed("E") ) keyboardFrontAngle =  Math.PI/2;
+				if ( keyboard.pressed("Q") ) keyboardFrontAngle = -Math.PI/2;
+				var direction = rad - cameraFrontAngle + keyboardFrontAngle;
+				var directionOnAxisY = Math.sin(direction);
+				var y = directionOnAxisY * movementSpeed;
+				var velocity = new THREE.Vector3(0,y,0);
+				object.position.y += velocity.y; 
+
+			}	
+*/
+/*		//	IMPORTANT!
+			{
+
+				//	var rad = 3 * Math.PI/4 // joystick input.
+				var rad = 2 * Math.PI;  // keyboard input.
+				var movementSpeed = Math.max(dt, 0.05);
+				var cameraFrontAngle = SystemManager.cameraControls.frontAngle;
+				var keyboardFrontAngle = SystemManager.keyboard.frontAngle;
+				var direction = rad - cameraFrontAngle + keyboardFrontAngle;
+				var directionOnAxisX = -Math.sin(direction);
+				var directionOnAxisZ = -Math.cos(direction);
+				var x = directionOnAxisX * movementSpeed;
+				var z = directionOnAxisZ * movementSpeed;
+				var velocity = new THREE.Vector3(x,0,z);
+				object.position.x += velocity.x; 
+				object.position.z += velocity.z;
+			}
+*/
+/*		//	IMPORTANT!
+			{
+
+				//	var rad = 3 * Math.PI/4 // joystick input.
+				var rad = 2 * Math.PI;  // keyboard input.
+				var movementSpeed = Math.max(dt, 0.05);
+				var cameraFrontAngle = SystemManager.cameraControls.frontAngle;
+				var keyboardFrontAngle = SystemManager.keyboard.frontAngle;
+				var direction = rad - cameraFrontAngle + keyboardFrontAngle;
+				var directionOnAxisX = -Math.sin(direction);
+				var directionOnAxisZ = -Math.cos(direction);
+				var x = directionOnAxisX * movementSpeed;
+				var z = directionOnAxisZ * movementSpeed;
+				var velocity = new THREE.Vector3(x,0,z);
+				object.position.x += velocity.x; 
+				object.position.z += velocity.z;
+
+			}
+*/
 		</script>
 
 		<script>
@@ -1871,17 +2036,17 @@
 			//	All items must be "false" to pass test.
 
 				var components = [
-					entity.State === undefined, // false,
+					entity.Selected === undefined, // false,
 					entity.Position === undefined, // false,
 					entity.Rotation === undefined, // false,
 				//	false: all except (true && true && true).
-					entity.Mesh === undefined 
-					&& entity.Line === undefined
-					&& entity.Group === undefined 
-					&& entity.Sprite === undefined
-					&& entity.Object3D === undefined
-					&& entity.SkinnedMesh === undefined
-					&& entity.LineSegments === undefined
+				//	entity.Mesh === undefined 
+				//	&& entity.Line === undefined
+				//	&& entity.Group === undefined 
+				//	&& entity.Sprite === undefined
+				//	&& entity.Object3D === undefined
+				//	&& entity.SkinnedMesh === undefined
+				//	&& entity.LineSegments === undefined
 				];
 
 			//	all items must be false:(!undefined) to pass test.
@@ -1904,9 +2069,7 @@
 				for (var i = 0; i < entities.length; i++){
 					var entity = entities[i];
 					
-					if ( isKeyboardControllable( entity ) 
-						&& entity.State !== undefined 
-						&& entity.State.isSelected ) {
+					if ( isKeyboardControllable( entity ) ) {
 						collected.push( entity );
 						collectId.push( entity._id);
 					}
@@ -1927,23 +2090,8 @@
 
 						var object;
 
-						if ( entity.Object3D ) object = entity.Object3D;
-						else if ( entity.Group ) object = entity.Group;
-						else if ( entity.Mesh )  object = entity.Mesh;
-						else if ( entity.Line )  object = entity.Line;
-						else if ( entity.Sprite ) object = entity.Sprite;
-						else if ( entity.SkinnedMesh )  object = entity.SkinnedMesh;
-						else if ( entity.LineSegments ) object = entity.LineSegments;
-
 						var rad = Math.max(dt, 0.02);  // (rad/fps)
 						var dist = Math.max(dt, 0.05); //  (m/fps)
-
-						var E = keyboard.pressed("E");         var Q = keyboard.pressed("Q");
-						var R = keyboard.pressed("R");         var F = keyboard.pressed("F");
-						var UP = keyboard.pressed("up");       var W = keyboard.pressed("W");
-						var LEFT = keyboard.pressed("left");   var A = keyboard.pressed("A");
-						var DOWN = keyboard.pressed("down");   var S = keyboard.pressed("S");
-						var RIGHT = keyboard.pressed("right"); var D = keyboard.pressed("D");
 
 					//	var keys = "up,left,down,right,W,A,S,D,E,Q,R,F".split(",");
 					//	var KEY = {UP:0,LEFT:0,DOWN:0,RIGHT:0,W:0,A:0,S:0,D:0,E:0,Q:0,R:0,F:0}; 
@@ -1953,7 +2101,16 @@
 					//		KEY[ name ] = keyboard.pressed( key );
 					//	}
 
-						if ( entity.State.isMoving ) {
+					//	keyboard state.
+						var E = keyboard.pressed("E");         var Q = keyboard.pressed("Q");
+						var R = keyboard.pressed("R");         var F = keyboard.pressed("F");
+						var UP = keyboard.pressed("up");       var W = keyboard.pressed("W");
+						var LEFT = keyboard.pressed("left");   var A = keyboard.pressed("A");
+						var DOWN = keyboard.pressed("down");   var S = keyboard.pressed("S");
+						var RIGHT = keyboard.pressed("right"); var D = keyboard.pressed("D");
+					//	application state.
+
+						if ( State.editorMode && State.isTranslate && ) {
 
 						//	move forward/backward.
 							if ( W || UP    ) object.translateOnAxis( axisZ, -dist ); // move forward,
@@ -2001,17 +2158,16 @@
 				var r = 0.5; // radius.
 				var entity = new Entity(); // entity instance.
 
-			//	editorable object must have a object3d component.
+			//	editorable entity have a object3d (is not component).
 				var object = (function(){
 					var geometry = new THREE.BoxGeometry(1,1,1,1,1,1 );
 					var material = new THREE.MeshLambertMaterial();
-					var component = new THREE.Mesh(geometry, material);
-					component.isComponent = true;
-					component.position.set( 2.5, 0.5, -2.5 );
-					component.name = "keyboard controllable object";
+					var mesh = new THREE.Mesh(geometry, material);
+					mesh.position.set( 2.5, 0.5, -2.5 );
+					mesh.name = "keyboard controllable object";
 				//	Add object to scene.
-					scene.add( component );
-					return component;
+					scene.add( mesh );
+					return mesh;
 				})();
 
 			//	axis helper.	
@@ -2019,22 +2175,22 @@
 				helper.rotation.y = Math.PI/2;
 				object.add( helper );
 
-			//	Add component to entity
-				entity.Object3D = object;
+			//	Add object to entity
+				entity.object = object; // bypass "addComponent" method.
 
-			//	Add components to make entity editor controllable.
-				entity.Scale = object.scale;
-				entity.Position = object.position;
-				entity.Rotation = object.rotation;
+			//	Add components to make entity key-controllable.
+				entity.addComponent( object.scale );
+				entity.addComponent( object.position );
+				entity.addComponent( object.rotation );
 
 			//	Use state component to activate systems.
-				entity.State = {
-					isMoving:false,
-					isRotating:true,
-					isSelected:false,
-					hasCameraLight:false,
-					hasCameraControls:false,
-				};
+			//	entity.State = {
+			//		isMoving:false,
+			//		isRotating:true,
+			//		isSelected:false,
+			//		hasCameraLight:false,
+			//		hasCameraControls:false,
+			//	};
 
 			//	Take camera controls and camera light.
 			//	cameraControls.offset.y = 0;
@@ -2042,7 +2198,7 @@
 			//	cameraLight.target = entity.Object3D;
 
 			//	Push entity to entities queue.
-				entities.push( entity ); // important!
+			//	entities.push( entity ); // important!
 				debugMode && console.log( entity );
 
 				return entity;
@@ -2139,7 +2295,6 @@
 
 				var url = "/ecs/fbx/Idle (2).fbx";
 				var entity = new Entity(); // entity instance.
-				debugMode && console.log( clock );
 
 			//	Load the animated 3D model.
 				var loader = new THREE.FBXLoader();
@@ -2158,7 +2313,6 @@
 					});
 
 					group.position.y = 2;
-					group.isComponent = true;
 					debugMode && console.log( group );
 
 				//	Add group to scene.
@@ -2328,9 +2482,9 @@
 
 				//	localPlayer skinned mesh has a skeleton helper (not a component, could be entity).
 					var skeletonHelper = (function( armature ){
-						var component = new THREE.SkeletonHelper(armature);
-						scene.add( component );
-						return component;
+						var helper = new THREE.SkeletonHelper(armature);
+						scene.add( helper );
+						return helper;
 					})( group.getObjectByName("Armature") );
 				//	Add component to entity (not a component).
 				//	entity.SkeletonHelper = skeletonHelper;
@@ -2338,11 +2492,14 @@
 				//	Add components to make entity controllable.
 				//	localPlayer components: position, rotation, direction.
 				//	entity.Rotation = group.rotation; // bypass add() method.
-					entity.Position = characterController.center; // bypass add() method.
-					entity.Direction = characterController.direction; // bypass add() method.
+				//	entity.Position = characterController.center; // bypass add() method.
+				//	entity.Direction = characterController.direction; // bypass add() method.
 				//	Add user-control components to make entity user-controllable.
 				//	entity.VirtualJoystick = virtualJoystick; // (not a component).
 				//	entity.KeyInputControl = keyInputControls; // (not a component).
+
+					entity.addComponent( characterController.center );
+					entity.addComponent( characterController.direction );
 
 				//	Take camera light.
 				//	cameraLight.target = group;
@@ -2354,19 +2511,19 @@
 					takeCameraControls( group, 0.85 );
 
 				//	Use state component to help system manager?
-					entity.State = {
-						isSelected: true,
-						isAnimating: true,
-						isLocalPlayer: true,
-						hasCameraLight:true,
-						hasCameraControls:true,
-					};
+				//	entity.State = {
+				//		isSelected: true,
+				//		isAnimating: true,
+				//		isLocalPlayer: true,
+				//		hasCameraLight:true,
+				//		hasCameraControls:true,
+				//	};
 
 				//	Start animation.
 					characterController.dispatchEvent( {type:"startIdling"} );
 
 				//	Push localPlayer entity to entity manager.
-					entities.push( entity ); // important!
+				//	entities.push( entity ); // important!
 					debugMode && console.log( entity );
 				});
 
@@ -2413,8 +2570,6 @@
 		//	## Runtime.
 
 		//	Init.
-
-			SystemManager.prototype.init( entities );
 
 		//	Main Loop.
 
