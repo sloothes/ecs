@@ -867,7 +867,7 @@
 			//	EditorControllableTranslateSystem(dt, entities);  // was EditorControllableObjectPosition.
 			//	KeyboardControllableMovingSystem(dt, entities);   // was KeyboardControllableMoveSystem.
 			//	WorldControllableRotatingSystem(dt, entities);    // was UserControllableObjectRotation.
-				WorldControllableGroundingSystem(entities);       // last, important!
+			//	WorldControllableGroundingSystem(entities);       // last, important!
 
 			};
 
@@ -1103,8 +1103,6 @@
 		//	components are updated. As to how this occurs will vary depending 
 		//	on your use.
 
-
-
 		//	## Entity Manager Class.
 
 		//	Manage your entities via an EntityManager instance:
@@ -1116,44 +1114,44 @@
 		//	Create an entity with the default Transform component:
 
 		//	var entity = new Entity();
-			var entity = entities.createEntity();
-			console.log( entity );
+		//	var entity = entities.createEntity();
+		//	console.log( entity );
 
 		//	## Adding Components.
 		//	A component is just a basic Javascript class.
 
-			var Component = THREE.Vector3;
-			debugMode && console.log( Component );
+		//	var Component = THREE.Vector3;
+		//	debugMode && console.log( Component );
 
 		//	Add the components:
-			entity.addComponent( Component );
+		//	entity.addComponent( Component );
 
 		//	We now have new data members on our entity for the components. 
 		//	TinyECS will add an instance member that is the name of the 
 		//	component constructor, lowercased:
 
 		//	Add arbitrary text tags to an entity:
-			entity.addTag("player controller");
+		//	entity.addTag("player controller");
 
 		//	Remove components and tags in much the same way:
 			//	entity.removeComponent( Component );
 			//	entity.removeTag("player controller");
 
-			console.log( entity );
+		//	console.log( entity );
 
 		//	To determine if an entity has a specific component:
 		//	if (entity.hasComponent(Component)) {...}
-			console.log( 
-				"entity.hasComponent(Component):", 
-				 entity.hasComponent(Component)
-			);
+		//	console.log( 
+		//		"entity.hasComponent(Component):", 
+		//		 entity.hasComponent(Component)
+		//	);
 
 		//	And to check if an entity has ALL of a set of components:
 		//	if (hero.hasAllComponents([Transform, Sprite])) { ... }
-			console.log( 
-				"entity.hasComponent([Component, MW.CharacterController]):", 
-				 entity.hasComponent([Component, MW.CharacterController])
-			);
+		//	console.log( 
+		//		"entity.hasComponent([Component, MW.CharacterController]):", 
+		//		 entity.hasComponent([Component, MW.CharacterController])
+		//	);
 
 		//	## Querying Entities
 		//	The entity manager is setup with indexed queries, allowing 
@@ -1161,13 +1159,13 @@
 		//	entities returns an array of entities.
 
 		//	Get all entities that have a specific set of components:
-			console.log( 
-				entities.queryComponents([Component]) );
+		//	console.log( 
+		//		entities.queryComponents([Component]) );
 		//	Get all entities with a certain tag:
-			console.log( entities.queryTag("player controller") );
+		//	console.log( entities.queryTag("player controller") );
 
 		//	## Removing Entities
-			//	entity.remove();
+		//	entity.remove();
 
 
 		</script>
@@ -1543,7 +1541,7 @@
 		//	WorldControllableObject-type entities needs a system to update its Object3D/Group component rotation.y;
 		//	(Object3D or Group) + Rotation + Direction + Controller + (KeyInputControl and/or VirtualJoystick) => UserControllableObjectRotation()
 		//	Tip: By holding the "X" "Y" or "Z" key the system should be use to update the object3d component x,y,z rotation respectively. (TODO)
-
+/*
 			function isControllable(entity){
 			//	All items must be "false" to pass test.
 
@@ -1690,7 +1688,7 @@
 		//	})();
 
 		//	TODO: a system to change controller object (when click something?).
-
+*/
 		</script>
 
 		<script>
@@ -1708,7 +1706,7 @@
 		//
 		//	An EditorControllableObject-type entity must NOT have:
 		//		...
-
+/*
 			function isEditorControllable(entity){
 			//	All items must be "false" to pass test.
 
@@ -1807,13 +1805,13 @@
 				}
 
 			}
-
+*/
 		</script>
 
 		<script>
 
 		//	## EditorControllableTranslateSystem
-
+/*
 			function EditorControllableTranslateSystem(dt, entities){
 
 				var system = arguments.callee.name;
@@ -1971,7 +1969,7 @@
 				return entity;
 
 			})();
-
+*/
 /*		//	IMPORTANT!
 			{
 
@@ -2031,7 +2029,7 @@
 		<script>
 
 		//	## KeyboardControllableMovingSystem.
-
+/*
 			function isKeyboardControllable( entity ){
 			//	All items must be "false" to pass test.
 
@@ -2206,7 +2204,7 @@
 			})();
 
 		//	var cube = keyableObject.Object3D;
-
+*/
 		</script>
 
 		<script>
@@ -2231,7 +2229,7 @@
 		//	LocalPlayer entity needs a system to update the group component position.y;
 		//	Group + Position + Rotation + Direction + Controller + (KeyInputControl and/or VirtualJoystick) => UserControllableObjectPosition()
 		//	Tip: By holding the "X" "Y" or "Z" key the system should be use to update the component x,y,z position respectively.(TODO)
-
+/*
 			function isWorldControllable(entity){
 			//	Must have a MW.CharacterController component
 			//	and controller has been added to world.characterPool ???
@@ -2283,7 +2281,7 @@
 					}
 				}
 			}
-
+*/
 		//	## Local Player entity instance.
 		//	Local player is a WorldControllable-type entity instance.
 		//	Local player is world-user-animate-controllable.
@@ -2291,19 +2289,16 @@
 		//	Local player has an animation controller.
 		//	Local player takes camera and camera-light controls.
 
-			const localPlayer = (function(){
-
-				var url = "/ecs/fbx/Idle (2).fbx";
-				var entity = new Entity(); // entity instance.
+			(function(){
 
 			//	Load the animated 3D model.
+				var url = "/ecs/fbx/Idle (2).fbx";
 				var loader = new THREE.FBXLoader();
 				loader.load( url, function( group ){
 
-				//	manny = group; // for debugging only.
-				//	Group (is not component) have two children:
-				//	an armature and a skinned mesh (are not components).
-
+					fbx = group; // for debugging only.
+				//	Group have two children:
+				//	an armature and a skinned mesh.
 				//	All children in group have scale 100. Fix this:
 					group.traverse(function( child ){
 						var s = 1; 
@@ -2318,12 +2313,9 @@
 				//	Add group to scene.
 					scene.add( group );
 
-				//	Add component to entity (is not component).
-				//	entity.Group = group;  // bypass add() method.
-
 					var r = 0.85; // radius.
 
-				//	localPlayer has a bounding sphere helper (not a component, could be entity).
+				//	localPlayer has a bounding sphere helper.
 					var helper = (function( radius ){
 						var sphere = new THREE.SphereGeometry( radius, 8, 6 );
 						var geometry = new THREE.EdgesGeometry( sphere );
@@ -2335,8 +2327,6 @@
 						group.add( segments );
 						return segments;
 					})( r );
-				//	Add component to entity (not a component).
-				//	entity.Helper = helper; // bypass add() method.
 
 				//	localPlayer has a charecter controller (not a component).
 					var characterController = (function(object, radius){  // global for debuggin only.
@@ -2365,6 +2355,8 @@
 						return controller;
 					})( group, r );
 
+					debugMode && console.log( characterController );
+
 
 				//	Bind keyInputControls events.
 
@@ -2377,7 +2369,6 @@
 					keyInputControls.addEventListener( "jumpkeypress", function (e) { 
 						characterController.jump();
 					});
-
 				//	Synch keyInput and camera controls.
 					keyInputControls.addEventListener( "movekeychange",  function (e) {
 						var rad = 2 * Math.PI; // THREE.Math.degToRad( 360 );
@@ -2416,7 +2407,8 @@
 						virtualJoystick.update( characterController );
 					})();
 
-				//	Bind jumpButton events.
+				//	Bind jumpButton event.
+
 				//	Use clearTimeout to event listeners to ensure last event parsing.
 				//	Because "press" event fires twice, we use the clearTimeout method 
 				//	to parse only the last "press" event.
@@ -2480,55 +2472,64 @@
 						return controller;
 					})();
 
-				//	localPlayer skinned mesh has a skeleton helper (not a component, could be entity).
+					debugMode && console.log( animationController );
+
+
+				//	Skeleton Helper.
+
+				//	localPlayer skinned mesh has a skeleton helper.
 					var skeletonHelper = (function( armature ){
 						var helper = new THREE.SkeletonHelper(armature);
 						scene.add( helper );
 						return helper;
 					})( group.getObjectByName("Armature") );
-				//	Add component to entity (not a component).
-				//	entity.SkeletonHelper = skeletonHelper;
 
-				//	Add components to make entity controllable.
-				//	localPlayer components: position, rotation, direction.
-				//	entity.Rotation = group.rotation; // bypass add() method.
-				//	entity.Position = characterController.center; // bypass add() method.
-				//	entity.Direction = characterController.direction; // bypass add() method.
-				//	Add user-control components to make entity user-controllable.
-				//	entity.VirtualJoystick = virtualJoystick; // (not a component).
-				//	entity.KeyInputControl = keyInputControls; // (not a component).
-
-					entity.addComponent( characterController.center );
-					entity.addComponent( characterController.direction );
-
-				//	Take camera light.
-				//	cameraLight.target = group;
 				//	Take camera controls.
-				//	cameraControls.offset.y = r;
-				//	cameraControls.trackObject = group;
-
 					takeCameraLight( group );
 					takeCameraControls( group, 0.85 );
-
-				//	Use state component to help system manager?
-				//	entity.State = {
-				//		isSelected: true,
-				//		isAnimating: true,
-				//		isLocalPlayer: true,
-				//		hasCameraLight:true,
-				//		hasCameraControls:true,
-				//	};
 
 				//	Start animation.
 					characterController.dispatchEvent( {type:"startIdling"} );
 
-				//	Push localPlayer entity to entity manager.
-				//	entities.push( entity ); // important!
-					debugMode && console.log( entity );
-				});
+					function Position(){
+						this.x = characterController.center.x;
+						this.y = characterController.center.y;
+						this.z = characterController.center.z;
+					}
+					function Rotation(){
+						this.x = group.rotation.x;
+						this.y = characterController.direction;
+						this.z = group.rotation.z;
+					}
+					function Scale(){
+						this.x = group.scale.x;
+						this.y = group.scale.y;
+						this.z = group.scale.z;
+					}
 
-			//	debugging.
-				return entity; // delete this line to encapsulate localPlayer entity.
+					function CharacterController(){
+						this.radius = characterController.radius;
+						this.position = characterController.center;
+						this.direction = characterController.direction;
+						this.isIdling = characterController.isIdling;
+						this.isJumping = characterController.isJumping;
+						this.isOnSlope = characterController.isOnSlope;
+						this.isRunning = characterController.isRunning;
+						this.isGrounded = characterController.isGrounded;
+						this.groundHeight = characterController.groundHeight;
+						this.movementSpeed = characterController.movementSpeed;
+						this.maxSlopeGradient = characterController.maxSlopeGradient;
+					}
+
+					localPlayer = entities.createEntity();
+					localPlayer.addComponent( Scale )
+							.addComponent( Position )
+							.addComponent( Rotation )
+							.addComponent( CharacterController );
+
+					debugMode && console.log( "localPlayer:", localPlayer );
+
+				});
 
 			})();
 
