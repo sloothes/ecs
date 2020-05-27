@@ -1,7 +1,7 @@
 //	Entity Manager.
 
-	const entities = [];
-	const removedEntities = [];
+//	const entities = [];
+//	const removedEntities = [];
 
 	function EntityManager(){};
 
@@ -32,6 +32,8 @@
 		for (var i = 0; i < components.length; i++){
 			entity.add( components[i] );
 		}
+
+		return entity;
 	};
 
 	EntityManager.prototype.removeComponents = function( entity, components ){
@@ -43,6 +45,8 @@
 		for (var i = 0; i < components.length; i++){
 			entity.remove( components[i] );
 		}
+
+		return entity;
 	};
 
 	EntityManager.prototype.move = function( entity, new_index ){
@@ -54,7 +58,7 @@
 		if ( old_index < 0 ) return; // important!
 		if ( old_index == new_index ) return;
 
-		(function( entities, old_index, new_index ){
+		(function( arr, old_index, new_index ){
 
 			if (new_index >= arr.length) {
 				var k = new_index - arr.length + 1;
@@ -64,7 +68,8 @@
 			}
 
 			arr.splice(new_index, 0, arr.splice(old_index, 1)[0]);
-		})();
+
+		})( entities, old_index, new_index );
 
 	};
 
@@ -81,7 +86,7 @@
 
 		while ( removedItems.length ){
 			var removed = removedItems.shift();
-			//	debugMode && console.log( removed );
+		//	debugMode && console.log( removed );
 			removedEntities.push( removed );
 		}
 
