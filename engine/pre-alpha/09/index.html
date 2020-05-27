@@ -856,6 +856,7 @@
 				}
 
 				joystick.update = function( entity ){
+					if ( !entity.joystickControls ) return;
 					if ( joystick.isActive ) updateDirection( entity );
 				};
 
@@ -879,7 +880,7 @@
 
 				joystick.addEventListener( "active", function(e) { 
 					this.entities = entities.filter(function( entity ){
-						return !!entity.characterController;
+						return !!entity.joystickControls && !!entity.characterController;
 					});
 					for (var i = 0; i < this.entities.length; i++ ){
 						startRunning( this.entities[i] );
@@ -888,7 +889,7 @@
 
 				joystick.addEventListener( "disactive", function(e) { 
 					this.entities = entities.filter(function( entity ){
-						return !!entity.characterController;
+						return !!entity.joystickControls && !!entity.characterController;
 					});
 					for (var i = 0; i < this.entities.length; i++ ){
 						stopRunning( this.entities[i] );
@@ -922,7 +923,7 @@
 					//	debugMode && console.log(e); // single event.
 
 						button.entities = entities.filter(function( entity ){
-							return !!entity.characterController;
+							return !!entity.joystickControls && !!entity.characterController;
 						});
 
 						for (var i = 0; i < button.entities.length; i++ ){
@@ -1377,7 +1378,71 @@
 
 			const localPlayer = new Entity();
 
+		//	localPlayer without avatar.
+
 			(function(){
+
+				var radius = 0.85; // radius.
+
+			//	localPlayer has object3d holder.
+				var object = (function(){
+					var object3d = new THREE.Object3D();
+					object3d.position.y = 2;
+					object3d.name = "localPlayer object";
+					scene.add( object3d );
+					return object3d;
+				})();
+
+			//	localPlayer has a bounding sphere helper.
+				var boundingSphere = (function( radius ){
+					var sphere = new THREE.SphereGeometry( radius, 8, 6 );
+					var geometry = new THREE.EdgesGeometry( sphere );
+					var material = new THREE.LineBasicMaterial( { color: 0x00ff00 } );
+					var segments = new THREE.LineSegments( geometry, material );
+					segments.position.y = radius;
+					segments.name = "localPlayer helper";
+				//	Add helper to scene.
+					object.add( segments );
+					return segments;
+				})( radius );
+
+			//	localPlayer has a charecter controller.
+				var characterController = (function(object, radius){
+				//	Create controller.
+					var controller = new MW.CharacterController(object, radius);
+				//	Initialize.
+					controller.movementSpeed = 5; // (m/fps)
+					controller.maxSlopeGradient = 0.5; // important!
+				//	synch with 3d model front angle.
+					controller.direction += Math.PI; // important!
+				//	Add controller to world (start controller update).
+					world.add( controller ); // important! updating controller.
+					return controller;
+				})( object, radius );
+
+			//	Take camera controls.
+				takeCameraLight( object );
+				takeCameraControls( object, radius );
+
+			//	And components.
+				localPlayer.holder = object;
+				localPlayer.boundingSphere = boundingSphere;
+				localPlayer.keyInputControls = keyInputControls;
+				localPlayer.joystickControls = virtualJoystick;
+				localPlayer.characterController = characterController;
+				debugMode && console.log( "localPlayer:", localPlayer );
+
+			//	Add entity to entities.
+				entities.push( localPlayer ); // important!
+
+			})();
+
+
+		//	entity with avatar loading.
+
+			(function(){
+				
+				var entity = new Entity();
 
 			//	Load the animated 3D model.
 				var url = "/ecs/fbx/Idle (2).fbx";
@@ -1472,6 +1537,38 @@
 
 					debugMode && console.log( animationController );
 
+				//	Bind character controller animation events.
+				//	All characters skinned 3d models (avatars) must have at least one "idling" animation.
+					characterController.addEventListener( "startIdling",  function () { 
+						debugMode && console.log( "start Idling" );
+						if ( animationController.motion.idling )
+							animationController.play( "idling" );
+					});
+					characterController.addEventListener( "startWalking",  function () { 
+						debugMode && console.log( "start Walking" );
+						if ( animationController.motion.running )
+							animationController.play( "running" );
+					});
+					characterController.addEventListener( "startSliding", function () { 
+						debugMode && console.log( "start Sliding" );
+						if ( animationController.motion.wobbling )
+							animationController.play( "wobbling" );
+					});
+					characterController.addEventListener( "startFalling", function () { 
+						debugMode && console.log( "start Falling" );
+						if ( animationController.motion.wobbling )
+							animationController.play( "wobbling" );
+					});
+					characterController.addEventListener( "startJumping", function() { 
+						debugMode && console.log( "start Jumping" );
+						if ( !characterController.isRunning ) {
+							if ( animationController.motion.jumpingUp )
+								animationController.play( "jumpingUp" ); 
+						} else {
+							if ( animationController.motion.runningJump )
+								animationController.play( "runningJump" );
+						}
+					});
 
 				//	Skeleton Helper.
 
@@ -1483,55 +1580,20 @@
 					})( group.getObjectByName("Armature") );
 
 				//	Take camera controls.
-					takeCameraLight( group );
-					takeCameraControls( group, 0.85 );
+				//	takeCameraLight( group );
+				//	takeCameraControls( group, 0.85 );
 
 				//	And components.
-				//	localPlayer.cameraLight = cameraLight;
-				//	localPlayer.cameraControls = cameraControls;
-					localPlayer.boundingSphere = boundingSphere;
-					localPlayer.skeletonHelper = skeletonHelper;
-					localPlayer.keyInputControls = keyInputControls;
-					localPlayer.joystickControls = virtualJoystick;
-					localPlayer.characterController = characterController;
-					localPlayer.animationController = animationController;
-					debugMode && console.log( "localPlayer:", localPlayer );
-
-				//	Bind character controller animation events.
-				//	All characters skinned 3d models (avatars) must have at least one "idling" animation.
-					localPlayer.characterController.addEventListener( "startIdling",  function () { 
-						debugMode && console.log( "start Idling" );
-						if ( localPlayer.animationController.motion.idling )
-							localPlayer.animationController.play( "idling" );
-					});
-					localPlayer.characterController.addEventListener( "startWalking",  function () { 
-						debugMode && console.log( "start Walking" );
-						if ( localPlayer.animationController.motion.running )
-							localPlayer.animationController.play( "running" );
-					});
-					localPlayer.characterController.addEventListener( "startSliding", function () { 
-						debugMode && console.log( "start Sliding" );
-						if ( localPlayer.animationController.motion.wobbling )
-							localPlayer.animationController.play( "wobbling" );
-					});
-					localPlayer.characterController.addEventListener( "startFalling", function () { 
-						debugMode && console.log( "start Falling" );
-						if ( localPlayer.animationController.motion.wobbling )
-							localPlayer.animationController.play( "wobbling" );
-					});
-					localPlayer.characterController.addEventListener( "startJumping", function() { 
-						debugMode && console.log( "start Jumping" );
-						if ( !localPlayer.characterController.isRunning ) {
-							if ( localPlayer.animationController.motion.jumpingUp )
-								localPlayer.animationController.play( "jumpingUp" ); 
-						} else {
-							if ( localPlayer.animationController.motion.runningJump )
-								localPlayer.animationController.play( "runningJump" );
-						}
-					});
+					entity.boundingSphere = boundingSphere;
+					entity.skeletonHelper = skeletonHelper;
+				//	entity.keyInputControls = keyInputControls;
+				//	entity.joystickControls = virtualJoystick;
+					entity.characterController = characterController;
+					entity.animationController = animationController;
+					debugMode && console.log( "entity:", entity );
 
 				//	Add entity to entities.
-					entities.push( localPlayer ); // important!
+					entities.push( entity ); // important!
 
 				});
 
