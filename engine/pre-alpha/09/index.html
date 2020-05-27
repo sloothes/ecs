@@ -615,13 +615,6 @@
 		</script>
 
 		<script>
-/*
-		//	System Class (constructor).
-
-			function System(components, update){}
-
-			System.prototype.isSystem = true;
-*/
 
 		//	System helpers.
 
@@ -1178,9 +1171,8 @@
 						SystemManager.prototype.tear(entities);
 					}
 
-
 					StateManager.prototype.update(entities);
-				//	StateManager.prototype.render(dt, entities);
+				//	StateManager.prototype.render(entities);
 
 				})();
 			
@@ -1280,7 +1272,9 @@
 			const Selected = {
 			//	value: always true.
 			//	flag-type boolean component.
-				get value( ){ return true; },
+				get get(){ return true; },
+				get value(){ return true; },
+				get valueOf(){ return true; },
 			};
 
 		//	Axies components.
@@ -1347,7 +1341,7 @@
 			const cameraJoystick = SystemManager.prototype.cameraJoystick;
 
 		//	Character Virtual Joystick.
-			const virtualJoystick = SystemManager.prototype.virtualJoystick;
+			const joystickControls = SystemManager.prototype.virtualJoystick;
 
 		//	Jump Button.
 			const jumpButton = SystemManager.prototype.jumpButton;
@@ -1429,7 +1423,7 @@
 				localPlayer.holder = object;
 				localPlayer.boundingSphere = boundingSphere;
 				localPlayer.keyInputControls = keyInputControls;
-				localPlayer.joystickControls = virtualJoystick;
+				localPlayer.joystickControls = joystickControls;
 				localPlayer.characterController = characterController;
 				debugMode && console.log( "localPlayer:", localPlayer );
 
@@ -1589,7 +1583,7 @@
 					entity.boundingSphere = boundingSphere;
 					entity.skeletonHelper = skeletonHelper;
 				//	entity.keyInputControls = keyInputControls;
-				//	entity.joystickControls = virtualJoystick;
+				//	entity.joystickControls = joystickControls;
 					entity.characterController = characterController;
 					entity.animationController = animationController;
 					debugMode && console.log( "entity:", entity );
