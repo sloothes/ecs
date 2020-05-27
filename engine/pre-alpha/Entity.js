@@ -2,53 +2,53 @@
 
 	function Entity(){
 
-		this._id = EntityManager.prototype._count++;
+		this._id = Entity.prototype._count++;
 
 	}
 
-	Entity.prototype.isEntity = true; // primative type.
+	Entity.prototype = {
 
-	Entity.prototype.length = function(){
-		return Object.keys(this).length - 1;
-	};
+		_count: 0,
+		isEntity: true,
+		constructor: Entity,
 
-	Entity.prototype.add = function(component, name){
-		var err = "EntityAddComponentError: component name is not defined!";
+		get length(){ return Object.keys(this).length - 1 },
 
-		if ( !name ) name = component.constructor.name;
-		if ( !name ) {
-			console.error(err);
+		add( key, object ){
+			if ( !key ) throw "EntityAddComponentError: component key is not defined!";
+			this[ key ] = object;
 			return this;
-		}
-		this[ name ] = component;
+		},
+
+		remove( key ){
+			if ( !key ) throw "EntityRemoveComponentError: component key is not defined!";
+			delete this[ key ];
+			return this;
+		},
+
+	};
+
+//	Entity.prototype.constructor = Entity;
+
+//	Entity.prototype._count = 0;
+//	Entity.prototype.isEntity = true; // primative type.
+/*
+	Entity.prototype.add = function(key, object){
+		var err = "EntityAddComponentError: component key is not defined!";
+
+		if ( !key ) throw err;
+
+		this[ key ] = object;
 		return this;
 	};
 
-	Entity.prototype.remove = function(component){
-		var err = "EntityRemoveComponentError: component name is not defined!";
+	Entity.prototype.remove = function(key){
+		var err = "EntityRemoveComponentError: component key is not defined!";
 
-		var name;
-		switch( typeof component ){
+		if (!key) throw err;
+	//	debugMode && console.log( "remove:", this[ key ] );
 
-			case "string":
-				name = component;
-				break;
-
-			case "object":
-				name = component.constructor.name;
-				break;
-
-			case "function":
-				name = component.prototype.constructor.name;
-				break;
-
-			case "number":
-				break;
-		}
-
-		if (!name) throw err;
-		//	debugMode && console.log("remove:", name);
-
-		delete this[ name ];
+		delete this[ key ];
 		return this;
 	};
+*/
