@@ -83,7 +83,6 @@
 		return this;
 	};
 
-
 /*
 		add( key, object ){
 			if ( !key ) throw "EntityAddComponentError: component key is not defined!";
@@ -97,3 +96,18 @@
 			return this;
 		},
 */
+
+
+//	CollectionEntity class: inherit from Entity.
+
+	function CollectionEntity(){
+		Entity.call( this );
+	};
+
+	CollectionEntity.prototype = Object.assign( Object.create(Entity.prototype), {
+
+		constructor: CollectionEntity,
+		isCollectionEntity: true,
+
+	});
+
