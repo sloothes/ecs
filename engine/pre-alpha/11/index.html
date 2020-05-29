@@ -630,14 +630,13 @@
 			SystemManager.prototype.update = function(entities){
 			//	Define updating systems order.
 				for (var i = 0; i < entities.length; i++ ){
-					var entity = entities[i];
+					var entity = entities[i]; // DO NOT USE .forEach();
 
-				//	THREELoadingSystem.
+				//	THREELoadingSystem:
 					if ( entity.loader ) THREELoadingSystem(entity); // important!
 
 				//	AddToCollection: Add to animations collection (system).
-					if ( isAnimation( entity ) ) (function AddToCollection( entity ){
-					//	entity.collection[ entity.key ] = entity.value;
+					if ( toCollection( entity ) ) (function AddToCollection( entity ){
 						entity.collection.add( entity.key, entity.value );
 					})( entity );
 
@@ -645,7 +644,7 @@
 					if ( isOption( entity ) ) (function AddOptionSystem( entity ){
 						var name = entity.target.name;
 						var value = entity.target.uuid;
-						var index = entity.collection.length + 1 ;
+						var index = entity.collection.length;
 						var option = document.createElement("option");
 						var select = document.querySelector(entity.selector);
 						option.value = value;
@@ -653,6 +652,8 @@
 						debugMode && console.log( option );
 						select.appendChild( option );
 					})( entity );
+
+
 
 
 				//	Update direction system.
@@ -685,6 +686,12 @@
 
 			//	helpers.
 
+				function toCollection( entity ){
+					return entity.key
+						&& entity.value
+						&& entity.collection;
+				}
+
 				function isOption( entity ){
 					return entity.tag 
 						&& entity.target
@@ -693,14 +700,6 @@
 						&& entity.tag == "option" 
 						&& document.querySelector(entity.selector);
 				}
-
-				function isAnimation( entity ){
-					return entity.key
-						&& entity.value
-						&& entity.collection
-						&& entity.collection == animations;
-				}
-
 
 			};
 
@@ -1187,6 +1186,26 @@
 
 				//	Rename animations???
 
+				//	Create a composite entity for AddToCollection and
+				//	AddOptionSystem systems so can get correct indexes
+				//	in options.
+					if ( group.animations.length ) group.animations
+					//	Create a self removed entity for each animation clip.
+					//	"AddToCollection" system will add to "animations".
+					//	"AddOptionSystem" system will add an option element
+					//	to animation droplist.
+						.forEach(function( clip ){
+							var entity = new Entity();
+							entity.tag = "option";
+							entity.key = clip.uuid;
+							entity.value = clip;
+							entity.target = clip;
+							entity.selector = "select#animation-droplist";
+							entity.collection = animations;
+							entity.selfRemoved = true;
+							entities.push( entity );
+						});
+/*
 				//	Add to "animations" collection. 
 					if ( group.animations.length ) (function(){
 						var length = group.animations.length; // DO NOT USE .forEach();
@@ -1234,7 +1253,7 @@
 							})( group.animations[i] );
 						}
 					})();
-
+*/
 
 				//	Remove from entities when done.
 				//	entities.remove( entity._id ); // very important!
