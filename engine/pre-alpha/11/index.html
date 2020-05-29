@@ -324,7 +324,7 @@
 			SystemManager.prototype.requestFrameId = 0;
 			SystemManager.prototype.isSystemManager = true;
 
-		//	KeyboardState.
+		//	Keyboard (KeyboardState).
 			SystemManager.keyboard = new KeyboardState(); // important! (non-prototype)
 			SystemManager.keyboard.frontAngle = 0;
 
@@ -374,7 +374,7 @@
 
 			}
 
-		//	Camera Controls.
+		//	Camera Controls system.
 
 			SystemManager.prototype.cameraControls = (function( camera ){
 
@@ -609,32 +609,99 @@
 
 			})( SystemManager.prototype.cameraControls );
 
+
+	//	## SYSTEMS.
+
+		//	THREELoadingSystem.
+		//	var FBXLoadingSystem;
+
+			const THREELoadingSystem = function(entity){
+				switch( Object.getPrototypeOf( entity.loader ).constructor.name ){
+
+					case "FBXLoader":
+						FBXLoadingSystem( entity );
+					break;
+
+				}
+			};
+
 		//	Updates.
 
 			SystemManager.prototype.update = function(entities){
 			//	Define updating systems order.
 				for (var i = 0; i < entities.length; i++ ){
+					var entity = entities[i];
 
-				//	Update direction.
+				//	THREELoadingSystem.
+					if ( entity.loader ) THREELoadingSystem(entity); // important!
+
+				//	AddToCollection: Add to animations collection (system).
+					if ( isAnimation( entity ) ) (function AddToCollection( entity ){
+					//	entity.collection[ entity.key ] = entity.value;
+						entity.collection.add( entity.key, entity.value );
+					})( entity );
+
+				//	AddOptionSystem: Add option to droplist (system).
+					if ( isOption( entity ) ) (function AddOptionSystem( entity ){
+						var name = entity.target.name;
+						var value = entity.target.uuid;
+						var index = entity.collection.length + 1 ;
+						var option = document.createElement("option");
+						var select = document.querySelector(entity.selector);
+						option.value = value;
+						option.text = index + "." + name;
+						debugMode && console.log( option );
+						select.appendChild( option );
+					})( entity );
+
+
+				//	Update direction system.
 					if ( entities[i].characterController ) (function(entity){
 						SystemManager.prototype.joystickControls.update( entity );
 					})( entities[i] );
 
-				//	Update rotation.y
+				//	Update rotation.y system.
 					if ( entities[i].characterController ) (function(entity){
 						var object = entity.characterController.object;
 						var controller = entity.characterController;
 						object.rotation.y = controller.direction + Math.PI; // important!
 					})( entities[i] );
 
-				//	Keep object on ground.
+				//	Keep object on ground system.
 					if ( entities[i].characterController ) (function(entity){
 						var object = entity.characterController.object;
 						var controller = entity.characterController;
 						object.position.y = controller.center.y - controller.radius;
 					})( entities[i] );
 
+
+				//	SelfRemovedEntity system.
+				//	Remove selfRemoved entities from queue.
+					if ( entities[i].selfRemoved ) (function(entity){
+						entities.remove( entity._id );
+					})( entities[i] );
+
 				}
+
+			//	helpers.
+
+				function isOption( entity ){
+					return entity.tag 
+						&& entity.target
+						&& entity.selector 
+						&& entity.collection
+						&& entity.tag == "option" 
+						&& document.querySelector(entity.selector);
+				}
+
+				function isAnimation( entity ){
+					return entity.key
+						&& entity.value
+						&& entity.collection
+						&& entity.collection == animations;
+				}
+
+
 			};
 
 			SystemManager.prototype.init = function(entities){};
@@ -761,6 +828,35 @@
 
 		<script>
 
+		//	"animations" is a collection named entity that hold all animation clips.
+		//	const animations = new Entity(); // important!
+		//	collection entities is not important to be added in entities queue.
+		//	entities.push( animations );
+
+		//	Same as "animations" collection entity...
+		//	"textures" is a collection named entity that hold all textures (a texture is component).
+		//	"materials" is a collection named entity that hold all materials (a material is component).
+		//	"geometries" is a collection named entity that hold all geometries (a geometry is component)...
+
+			const meshes = new Entity();
+			const skinned = new Entity();
+			const textures = new Entity();
+			const materials = new Entity();
+			const geometries = new Entity();
+			const animations = new Entity(); // important!
+
+		//	collection entities is not important to be added in entities queue.
+		//	entities.push( meshes );
+		//	entities.push( skinned );
+		//	entities.push( textures );
+		//	entities.push( materials );
+		//	entities.push( geometries );
+		//	entities.push( animations );
+
+		</script>
+
+		<script>
+
 		//	TabUI.js
 
 			(function(){
@@ -785,11 +881,6 @@
 		</script>
 
 		<script>
-
-		//	"animations" is a named entity that hold all animation clips.
-			const animations = new Entity(); // important!
-		//	as named entity is not important to be added in entities queue.
-		//	entities.push( animations );
 
 		//	Animation tab.
 
@@ -929,25 +1020,11 @@
 
 			})();
 
-		//	Same as "animations" named entity...
-		//	"textures" is a named entity that hold all textures (a texture is a component).
-		//	"materials" is a named entity that hold all materials (a material is a component).
-		//	"geometries" is a named entity that hold all materials (a geometry is a component).
-
-			const textures = new Entity();
-			const materials = new Entity();
-			const geometries = new Entity();
-
-		//	...as named entity is not important to added in entities queue.
-		//	entities.push( textures );
-		//	entities.push( materials );
-		//	entities.push( geometries );
-
 		</script>
 
 		<script>
 
-		//	## Local Player entity instance.
+		//	## Local Player "named" entity.
 
 			const localPlayer = new Entity();
 
@@ -1031,10 +1108,146 @@
 
 		<script>
 
+		//	DevNote: We should make a loading system where every is loading to be added
+		//	(animations, materials, textures, -geometries?-, meshes, skinned meshes, etc.),
+		//	to corresponding "named" entities. This way we know what is avaliable in
+		//	systems. Everything that loads in runtime should be parsed from this system.
+		//	At the same time, the system will add options to corresponding droplists.
+		//	To do this, we should create an entity that will be parsed from the loading
+		//	system and removed from the entities queue when done.
+		//	Same way, the loading system will create entities of each items that will
+		//	add in entities queue. Each entity will parsed from the "create option" system
+		//	and removed from the queue when done.
+
+			var loader = (function(){
+				var entity = new Entity();
+			//	Create a loader entity and add to entities queue.
+			//	Loading entity will parsed from loading system and remove
+			//	itself when done.
+				entity.url = "/textme/animations/TextMeGirlv2.3_TextOnPhoneT49b.fbx";
+				entity.loader = new THREE.FBXLoader();
+				entity.setScale = 0.000029;
+			//	Self remove component.(removes itself when done).
+				entity.selfRemoved = true;
+				return entity;
+			})();
+
+			debugMode && console.log( "loader:", loader );
+
+
+		//	FBXLoadingSystem is responible only for:
+
+			//	resetting group scale,
+			//	setting group scale,
+
+			//	adding group textures to "textures".
+
+			//	resetting materials?
+			//	adding group materials in "materials",
+
+			//	rename group animations?
+			//	adding group animations in "animations",
+
+			//	adding group meshes in "meshes",
+			//	adding group skinned meshes in "skinned",
+
+			function FBXLoadingSystem(entity){
+				var url = entity.url;
+				var loader = entity.loader;
+				loader.load( url, function( group ){
+					fbx = group; // for debugging only.
+
+				//	All children in group have scale 100.
+
+				//	Reset scale.
+					(function resetScale( group ){
+					//	All children in group have scale: 100.
+						group.traverse(function( child ){
+							if ( child.scale !== undefined ) {
+								child.scale.set(1,1,1); // important!
+							}
+						});
+					})( group );
+
+
+				//	Set scale.
+					if ( entity.setScale ) 
+						setScale(entity.setScale);
+					function setScale( s ){
+						group.scale.set(s,s,s);
+					}
+
+
+				//	Add animation clips to "animations".
+					debugMode && console.log( 
+						group.animations.map(function( clip ){
+							return clip.name;
+						})
+					);
+
+				//	Rename animations???
+
+				//	Add to "animations" collection. 
+					if ( group.animations.length ) (function(){
+						var length = group.animations.length; // DO NOT USE .forEach();
+					//	Create a self removed entity for each animation clip.
+					//	"AddToCollection" system will add to "animations".
+						for ( var i = 0; i < length; i++ ) {
+							(function( clip ){
+								var entity = new Entity();
+								entity.key = clip.uuid;
+								entity.value = clip;
+								entity.collection = animations;
+								entity.selfRemoved = true;
+								entities.push( entity );
+							})( group.animations[i] );
+						}
+					})();
+
+					//	AddToCollection system.
+					//	Add an animation record to collection named entity:
+					//	function AddToCollectionSystem(entity){
+					//		entity.collection[ entity.key ] = entity.value; // or...
+					//		entity.collection.add( entity.key, entity.value );
+					//	}
+
+					//	DO NOT USE .forEach();
+					//	group.animations.forEach( function( clip ){
+					//		animations[ clip.uuid ] = clip;
+					//	});
+
+				//	Add options to "animation-droplist".
+					if ( group.animations.length ) (function(){
+						var length = group.animations.length; // DO NOT USE .forEach();
+					//	Create a self removed entity for each animation clip.
+					//	"AddOptionSystem" system will create an option element
+					//	to selector droplist. DO NOT USE .forEach();
+						for ( var i = 0; i < length; i++ ) {
+							(function( clip ){
+								var entity = new Entity();
+								entity.tag = "option";
+								entity.target = clip;
+								entity.selector = "select#animation-droplist";
+								entity.collection = animations;
+								entity.selfRemoved = true;
+								entities.push( entity );
+							})( group.animations[i] );
+						}
+					})();
+
+
+				//	Remove from entities when done.
+				//	entities.remove( entity._id ); // very important!
+
+					debugMode && console.log( group );
+				});
+			}
+/*
 			(function(){
 
 				var url = "/textme/animations/TextMeGirlv2.3_TextOnPhoneT49b.fbx";
 				var loader = new THREE.FBXLoader();
+
 				loader.load( url, function( group ){
 
 					fbx = group; // for debugging only.
@@ -1157,7 +1370,7 @@
 				});
 
 			})();
-
+*/
 		</script>
 
 
