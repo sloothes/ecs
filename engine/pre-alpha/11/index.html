@@ -635,6 +635,29 @@
 				//	THREELoadingSystem:
 					if ( entity.loader ) THREELoadingSystem(entity); // important!
 
+				//	ImportMeshToSystem: Create geometry and material entities
+				//	to add in system.
+					if ( isMesh( entity ) ) (function( entity ){
+					//	Create self-removed geometry entity to add in "geometries".
+
+					//	Create self-removed material entities to add in "materials".
+
+					})( entity );
+
+					if ( isGeometry( entity ) ) (function( entity ){
+					//	Add geometry to "geometries" collection.
+					})( entity );
+
+					if ( isMaterial( entity ) ) (function( entity ){
+					//	Create self-removed texture entity to add in "textures".
+					//	Add material to "materials" collection.
+					})( entity );
+
+					if ( isTexture( entity ) ) (function( entity ){
+					//	Create self-removed image entity to add in "images" (optional).
+					//	Add texture to "textures" collection.
+					})( entity );
+
 				//	AddToCollection: Add to animations collection (system).
 					if ( toCollection( entity ) ) (function AddToCollection( entity ){
 						entity.collection.add( entity.key, entity.value );
@@ -686,10 +709,64 @@
 
 			//	helpers.
 
+				function isMesh( entity ){
+					return entity.mesh
+						&& entity.uuid
+						&& entity.selfRemoved;
+				}
+
+				function isGeometry( entity ){
+					return entity.geometry
+						&& entity.uuid
+						&& entity.selfRemoved;
+				}
+
+				function isMaterial( entity ){
+					return entity.material
+						&& entity.uuid
+						&& entity.selfRemoved;
+				}
+
+				function isTexture( entity ){
+					return entity.texture
+						&& entity.uuid
+						&& entity.selfRemoved;
+				}
+
 				function toCollection( entity ){
 					return entity.key
 						&& entity.value
 						&& entity.collection;
+				}
+
+				function toMeshes( entity ){
+					return toCollection( entity )
+						&& entity.collection === meshes;
+				}
+
+				function toSkinned( entity ){
+					return toCollection( entity )
+						&& entity.collection === skinned;
+				}
+
+				function toGeometries( entity ){
+					return toCollection( entity )
+						&& entity.collection === geometries;
+				}
+
+				function toMaterials( entity ){
+					return toCollection( entity )
+						&& entity.collection === materials;
+				}
+
+				function toTextures( entity ){
+					return toCollection( entity )
+						&& entity.collection === textures;
+				}
+
+				function toAnimations( entity ){
+					return toCollection( entity )
+						&& entity.collection === animations;
 				}
 
 				function isOption( entity ){
@@ -827,6 +904,25 @@
 
 		<script>
 
+		//	Collection Entity class.
+		//	Inherited from Entity class.
+
+			function CollectionEntity(){
+				Entity.call( this );
+			};
+
+			CollectionEntity.prototype = Object.assign( Object.create(Entity.prototype), {
+
+				constructor: CollectionEntity,
+				isCollectionEntity: true,
+
+			});
+
+		</script>
+
+		<script>
+
+
 		//	"animations" is a collection named entity that hold all animation clips.
 		//	const animations = new Entity(); // important!
 		//	collection entities is not important to be added in entities queue.
@@ -837,12 +933,13 @@
 		//	"materials" is a collection named entity that hold all materials (a material is component).
 		//	"geometries" is a collection named entity that hold all geometries (a geometry is component)...
 
-			const meshes = new Entity();
-			const skinned = new Entity();
-			const textures = new Entity();
-			const materials = new Entity();
-			const geometries = new Entity();
-			const animations = new Entity(); // important!
+			const images = new CollectionEntity();
+			const meshes = new CollectionEntity();
+			const skinned = new CollectionEntity();
+			const textures = new CollectionEntity();
+			const materials = new CollectionEntity();
+			const geometries = new CollectionEntity();
+			const animations = new CollectionEntity(); // important!
 
 		//	collection entities is not important to be added in entities queue.
 		//	entities.push( meshes );
@@ -1189,12 +1286,12 @@
 				//	Create a composite entity for AddToCollection and
 				//	AddOptionSystem systems so can get correct indexes
 				//	in options.
-					if ( group.animations.length ) group.animations
+					if ( group.animations && group.animations.length ) 
 					//	Create a self removed entity for each animation clip.
 					//	"AddToCollection" system will add to "animations".
 					//	"AddOptionSystem" system will add an option element
 					//	to animation droplist.
-						.forEach(function( clip ){
+						group.animations.forEach(function( clip ){
 							var entity = new Entity();
 							entity.tag = "option";
 							entity.key = clip.uuid;
@@ -1254,6 +1351,34 @@
 						}
 					})();
 */
+
+				group.traverse( function( child ){
+
+                    if (child.isMesh) {	
+                        child.castShadow = true;	
+                        child.receiveShadow = true;	
+                    }
+
+					switch ( child.type ) {
+
+						case "Mesh":
+						case "SkinnedMesh":
+					//	Create a self removed entity for each mesh.
+					//	ImportMeshSystem will create new entities for
+					//	mesh geometry and materials to add in collections.
+							(function( mesh ){
+								var entity = new Entity();
+								entity.mesh = mesh;
+								entity.name = mesh.name;
+								entity.uuid = mesh.uuid;
+								entity.selfRemoved = true;
+								entities.push( entity );
+							})( child );
+						break;
+
+					}
+
+				});
 
 				//	Remove from entities when done.
 				//	entities.remove( entity._id ); // very important!
