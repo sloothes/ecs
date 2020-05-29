@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+
+		<title>Legacy ECS Engine (pre-alpha 1.1)</title>
+
+		<meta charset="utf-8">
+		<meta name="generator" content="Three.js Editor">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+		<link rel="stylesheet" href="/css/joystick.css">
+		<link rel="stylesheet" href="/css/bootstrap.min.css">
+		<link rel="stylesheet" href="/css/bootbox-dialoges.css">
+		<link rel="stylesheet" href="/css/jcrop.css">
+
+		<script src="/js/watch.js"></script>
+		<script src="/js/jquery.min.js"></script> 
+		<script src="/js/system.min.js"></script>
+		<script src="/js/signals.min.js"></script>
+		<script src="/js/inflate.min.js"></script>
+		<script src="/js/zangodb.min.js"></script>
+		<script src="/js/bootstrap.min.js"></script>
+		<script src="/js/hold-event.min.js"></script>
+		<script src="/js/jcrop.js"></script>
+
+		<style>
+
+			body {
+				margin: 0px;
+				font-size: 13px;
+				font-family: sans-serif;
+				background-repeat: repeat;
+				background-image: url("https://i.imgur.com/rnZZU0i.png") !important;
+				overflow: hidden;
+			}
+
+			#loading-bar {
+				width:100%;
+				height:100%;
+				top:0; left:0;
+				position:fixed;
+				display:flex;
+				align-items:center;
+				justify-content:center;
+			}
+
+			.middle > * {
+				top:0; 
+				left:0;
+				right:0;
+				bottom:0;
+				margin:auto;
+				position:absolute;
+			}
+
+			#joystick1 {
+				right: calc(40px + 370px);
+			}
+			
+			#jumpButton {
+				right: calc(105px + 370px);
+			}
+
+			.btn-matcap,
+			.btn-terrain {
+				padding:0;
+				float:left;
+				width:55px;
+				height:55px;
+				border:1px solid;
+				border-radius:4px;
+				margin-right:4px;
+				margin-bottom:4px;
+				display:inline-block;
+			}
+
+			.btn-matcap + .btn-matcap,
+			.btn-terrain + .btn-terrain {
+				margin-right:4px;
+			}
+
+		</style>
+	</head>
+
+	<body ontouchstart="">
+
+		<script src="/ecs/js/three.js"></script>
+		<script src="/ecs/js/TabUI.js"></script>
+		<script src="/ecs/js/MeshWalk.js"></script>
+		<script src="/ecs/js/UVsDebug.js"></script>
+		<script src="/ecs/js/FBXLoader.js"></script>
+		<script src="/ecs/js/VirtualInput.js"></script>
+		<script src="/ecs/js/EditorControls.js"></script>
+		<script src="/ecs/js/SubdivisionModifier.js"></script>
+		<script src="/ecs/js/three-pathfinding.umd.js"></script>
+		<script src="/threejs/r96/examples/js/loaders/GLTFLoader.js"></script>
+		<script src="/threejs/r96/examples/js/exporters/GLTFExporter.js"></script>
+		<script src="/threejs/r96/examples/js/exporters/STLExporter.js"></script>
+		<script src="/threejs/r96/examples/js/exporters/OBJExporter.js"></script>
+		<script src="/threejs/r96/examples/js/exporters/ColladaExporter.js"></script>
+
+		<script src="/ecs/js/KeyboardState.js"></script>
+		<script src="/ecs/engine/Enviroment.js"></script>
+		<script src="/ecs/engine/pre-alpha/Entity.js"></script>
+		<script src="/ecs/engine/pre-alpha/EntityManager.js"></script>
+
+		<script>
+
+		//	Global helpers.
+
+			Number.prototype.format = function (){
+				return this.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
+			};
+
+		//	save_file.js
+			function saveString( text, filename ) {
+				save( new Blob( [ text ], { type: "text/plain" } ), filename );
+			}
+
+			function saveArrayBuffer( buffer, filename ) {
+				save( new Blob( [ buffer ], { type: "application/octet-stream" } ), filename );
+			}
+
+			function save( blob, filename ) {
+
+				var link = document.createElement( "a" );
+				link.href = URL.createObjectURL( blob );
+				link.download = filename || "untitled";
+				link.click();
+
+			}
+
+		//	round.js
+			function round(number, precision) {
+				var shift = function (number, precision, reverseShift) {
+					if (reverseShift) {
+						precision = -precision;
+					}  
+					numArray = ("" + number).split("e");
+					return +(numArray[0] + "e" + (numArray[1] ? (+numArray[1] + precision) : precision));
+				};
+				return shift(Math.round(shift(number, precision, false)), precision, true);
+			}
+
+		//	array_move.js
+			function array_move( arr, old_index, new_index ){
+
+				if (new_index >= arr.length) {
+					var k = new_index - arr.length + 1;
+					while (k--) {
+						arr.push(undefined);
+					}
+				}
+
+				arr.splice(new_index, 0, arr.splice(old_index, 1)[0]);
+			}
+
+		//	deep_copy.js
+			function deepCopy(obj) {
+				if (Object.prototype.toString.call(obj) === "[object Array]") {
+					var out = [], i = 0, len = obj.length;
+					for ( ; i < len; i++ ) {
+						out[i] = arguments.callee(obj[i]);
+					}
+				//	console.log("out:", out);
+					return out;
+				}
+				if (typeof obj === "object") {
+					var out = {}, i;
+					for ( i in obj ) {
+						out[i] = arguments.callee(obj[i]);
+					}
+				//	console.log("out:", out);
+					return out;
+				}
+				return obj;
+			}
+
+			function copyObject(obj) {
+
+			//	1. copy has same prototype as orig
+				var copy = Object.create(Object.getPrototypeOf(obj));
+
+			//	2. copy has all of orig’s properties
+				copyOwnPropertiesFrom(copy, obj);
+
+				return copy; // warning: shallow copy!
+
+			//	The properties are copied from orig to copy via this function:
+
+				function copyOwnPropertiesFrom(target, source) {
+					Object.getOwnPropertyNames(source).forEach(function(propKey) { // [1][2]
+						var desc = Object.getOwnPropertyDescriptor(source, propKey); // [3]
+						Object.defineProperty(target, propKey, desc); // [4]
+					});
+					return target;
+				};
+
+			}
+
+		</script>
+
+		<script>
+
+		//	three-quaternion-from-normal.
+		//	Builds a ThreeJS quaternion from a normal vector.
+		//	This is useful for getting meshes to 'point' in the direction of a vector.
+
+		//	Usage: quat = quaternionFromNormal(normal, [quaternionTarget])
+		//	Builds a quaternion from the normal (a normalized THREE.Vector3), 
+		//	storing the result in quaternionTarget (a THREE.Quaternion) 
+		//	or creating a new quaternion object if no target is specified.
+		//	The quaternion target is returned.
+
+		//	Example:
+		//	Say we want mesh to point from A to B point.
+			//	var A = new THREE.Vector3(1, 0, 0);
+			//	var B = new THREE.Vector3(2, 5,-1);
+		//	Get normal A->B.
+			//	var normal = B.clone().sub(A).normalize();
+		//	Get orientation.
+			//	var quaternion = quaternionFromNormal(normal);
+		//	Apply orientation to mesh.
+			//	mesh.quaternion.copy(quaternion);
+
+			function quaternionFromNormal( normal, quaternion ){
+
+				return setDirection(normal, quaternion);
+
+				function setDirection(normal, quaternion) {
+					quaternion = quaternion || new THREE.Quaternion();
+				//	vector is assumed to be normalized.
+					if (normal.y > 0.99999) {
+						quaternion.set(0, 0, 0, 1);
+					} else if (normal.y < -0.99999) {
+						quaternion.set(1, 0, 0, 0);
+					} else {
+						var axis = new THREE.Vector3();
+						axis.set(normal.z, 0, -normal.x).normalize();
+						var radians = Math.acos(normal.y);
+						quaternion.setFromAxisAngle(axis, radians);
+					}
+
+					return quaternion;
+				}
+			}
+
+		</script>
+
+		<script>
+
+		//	Singals.js
+
+			const Signal = signals.Signal;
+
+		</script>
+
+		<script>
+
+		//	System helpers.
+
+			function systemValidator(components){
+				while( components.length ){
+					if ( components.shift() === undefined ) return false;
+				}
+				return true;
+			}
+			
+			function systemCheckLog(_id, system, passed, components){
+				debugMode && console.log("Check:", {
+					"_id": _id,
+					"system": system, 
+					"passed": passed,
+					"components": components
+				});
+			}
+
+		//	System debug helpers.
+			
+			function syslogcid( name, array ){ 
+				if (array.length) return name+":["+array.join()+"]"; 
+			}
+
+		</script>
+
+		<script>
+
+		//	## Application State Class.
+
+			const StateManager = function(){};
+
+			StateManager.prototype.INIT = true;
+			StateManager.prototype.STOP = false;
+			StateManager.prototype.TEAR = false;
+			StateManager.prototype.START = false;
+			StateManager.prototype.PAUSE = false;
+			StateManager.prototype.UPDATE = false;
+
+			StateManager.prototype.debugMode = true;
+			StateManager.prototype.editorMode = false;
+			StateManager.prototype.isScaling = false;
+			StateManager.prototype.isRotating = false;
+			StateManager.prototype.isTranslating = false;
+
+			StateManager.prototype.update = function(){
+				debugMode = this.debugMode;
+				editorMode = this.editorMode;
+				isScaling = this.isScaling;
+				isRotating = this.isRotating;
+				isTranslating = this.isTranslating;
+			};
+
+			StateManager.prototype.update(); // init states.
+
+		</script>
+
+		<script>
+
+		//	## System Manager Class.
+
+			function SystemManager(){};
+
+		//	requestFrameId.
+			SystemManager.prototype.requestFrameId = 0;
+			SystemManager.prototype.isSystemManager = true;
+
+		//	KeyboardState.
+			SystemManager.keyboard = new KeyboardState(); // important! (non-prototype)
+			SystemManager.keyboard.frontAngle = 0;
+
+			window.addEventListener("keyup", updateKeyboardFrontAngle );
+			window.addEventListener("keydown", updateKeyboardFrontAngle );
+			window.addEventListener("keyup", updateKeyboardVerticalAngle );
+			window.addEventListener("keydown", updateKeyboardVerticalAngle );
+
+			function updateKeyboardFrontAngle(){
+
+				var rad = Math.PI/4;
+				var keyboard = SystemManager.keyboard; 
+
+				var UP     = keyboard.pressed("W") || keyboard.pressed("up");
+				var LEFT   = keyboard.pressed("A") || keyboard.pressed("left");
+				var DOWN   = keyboard.pressed("S") || keyboard.pressed("down");
+				var RIGHT  = keyboard.pressed("D") || keyboard.pressed("right");
+
+			//	debugMode && console.log( UP, LEFT, DOWN, RIGHT );
+
+					 if (  UP && !LEFT && !DOWN && !RIGHT ) keyboard.frontAngle = 0 * rad; //   0 deg.
+				else if (  UP &&  LEFT && !DOWN && !RIGHT ) keyboard.frontAngle = 1 * rad; //  45 deg.
+				else if ( !UP &&  LEFT && !DOWN && !RIGHT ) keyboard.frontAngle = 2 * rad; //  90 deg.
+				else if ( !UP &&  LEFT &&  DOWN && !RIGHT ) keyboard.frontAngle = 3 * rad; // 135 deg.
+				else if ( !UP && !LEFT &&  DOWN && !RIGHT ) keyboard.frontAngle = 4 * rad; // 180 deg.
+				else if ( !UP && !LEFT &&  DOWN &&  RIGHT ) keyboard.frontAngle = 5 * rad; // 225 deg.
+				else if ( !UP && !LEFT && !DOWN &&  RIGHT ) keyboard.frontAngle = 6 * rad; // 270 deg.
+				else if (  UP && !LEFT && !DOWN &&  RIGHT ) keyboard.frontAngle = 7 * rad; // 315 deg.
+			//	else if ( !UP && !LEFT && !DOWN && !RIGHT ) keyboard.frontAngle = 8 * rad; // 360 deg.
+
+			}
+
+			function updateKeyboardVerticalAngle(){
+
+				var rad = Math.PI/4;
+				var keyboard = SystemManager.keyboard; 
+
+				var ZENITH = keyboard.pressed("E");
+				var NATHIR = keyboard.pressed("Q");
+
+			//	debugMode && console.log( TOP, BOTTOM );
+
+				     if ( !ZENITH && !NATHIR ) keyboard.verticalAngle =  0 * rad; //   0 deg.
+				else if (  ZENITH && !NATHIR ) keyboard.verticalAngle =  2 * rad; //  90 deg.
+				else if ( !ZENITH &&  NATHIR ) keyboard.verticalAngle = -2 * rad; // -90 deg.
+				else if (  ZENITH &&  NATHIR ) keyboard.verticalAngle =  0 * rad; //   0 deg.
+
+			}
+
+		//	Camera Controls.
+
+			SystemManager.prototype.cameraControls = (function( camera ){
+
+				var object = new THREE.Object3D();
+				
+				var options = {	
+					el: renderer.domElement,
+					offset: new THREE.Vector3( 0, 0, 0 ), // eye height.
+					radius: 2, // default distance of the character to the camera.
+					minRadius: 2,
+					maxRadius: 10,
+					rigidObjects: [],
+				};
+
+				var cameraControls = new MW.TPSCameraControl(
+					camera, 	// three.js camera.
+					object,	    // tracking object.
+					options
+				);
+
+				(function update(){
+					requestAnimationFrame( update );
+					cameraControls.update();
+					cameraControls.frontAngle = cameraControls.getFrontAngle();
+				})();
+
+				return cameraControls;
+
+			})( camera );
+
+		//	Camera Joystick.
+
+			SystemManager.prototype.cameraJoystick = (function( cameraControls ){
+
+				var joystickControls = document.createElement( "div" );
+				joystickControls.id = "joystick-controls-1";
+				joystickControls.classList.add("joystick-controls");
+				document.body.appendChild( joystickControls );
+
+				var joystick = new virtualInput.Joystick( $( "#joystick-controls-1" ), 94, { id: "joystick1" } );
+
+				joystick.update = function(){
+
+					if ( joystick.isActive ) {
+
+						cameraControls.setLatLon(
+							cameraControls.lat + joystick.position.y * 0.5, // deg.
+							cameraControls.lon - joystick.position.x        // deg.
+						);
+
+					}
+				};
+
+				(function update(){
+					requestAnimationFrame( update );
+					joystick.update();
+				})();
+
+				return joystick;
+
+			})( SystemManager.prototype.cameraControls );
+
+		//	Joystick Controls.
+
+			SystemManager.prototype.joystickControls = (function( cameraControls ){
+
+				var joystickControls = document.createElement( "div" );
+				joystickControls.id = "joystick-controls-2";
+				joystickControls.classList.add("joystick-controls");
+				document.body.appendChild( joystickControls );
+
+				var joystick = new virtualInput.Joystick( $( "#joystick-controls-2" ), 94, { id: "joystick2" } );
+
+			//	Update.
+
+				function updateDirection( entity ){
+					var rad = 3 * Math.PI/2; // 270 deg.
+					var joystickAngle = joystick.angle;
+					var cameraFrontAngle = cameraControls.getFrontAngle();
+					entity.characterController.direction = rad - cameraFrontAngle + joystickAngle;
+				}
+
+				joystick.update = function( entity ){
+					if ( !entity.joystickControls ) return;
+					if ( joystick.isActive ) updateDirection( entity );
+				};
+
+			//	Bind virtualJoystick events.
+
+				function isOnAir( entity ){
+					return ( entity.characterController.isJumping 
+					|| !entity.characterController.isGrounded 
+					|| entity.characterController.isOnSlope );
+				}
+
+				function startRunning( entity ){
+					if ( isOnAir( entity ) ) return;
+					entity.characterController.isRunning = true;
+				}
+
+				function stopRunning(entity){
+					if ( isOnAir( entity ) ) return;
+					entity.characterController.isRunning = false;
+				}
+
+				joystick.addEventListener( "active", function(e) { 
+					this.entities = entities.filter(function( entity ){
+						return !!entity.joystickControls && !!entity.characterController;
+					});
+					for (var i = 0; i < this.entities.length; i++ ){
+						startRunning( this.entities[i] );
+					}
+				});
+
+				joystick.addEventListener( "disactive", function(e) { 
+					this.entities = entities.filter(function( entity ){
+						return !!entity.joystickControls && !!entity.characterController;
+					});
+					for (var i = 0; i < this.entities.length; i++ ){
+						stopRunning( this.entities[i] );
+					}
+				});
+
+				return joystick;
+
+			})( SystemManager.prototype.cameraControls );
+
+		//	Jumb Button.
+
+			SystemManager.prototype.jumpButton = (function(){
+
+				var interval;
+				var button = new virtualInput.Button( $( "#joystick-controls-1" ), 58, { id: "jumpButton", label: "<b>JUMP</b>" } );
+
+			//	Use clearTimeout to event listeners to ensure last event parsing.
+			//	Because "press" event fires twice, we use the clearTimeout method 
+			//	to parse only the last "press" event.
+
+				function startJumping( entity ){
+					entity.characterController.jump();
+				}
+
+				button.addEventListener( "press", function(e) {
+				//	debugMode && console.log(e); // double event.
+
+					clearTimeout( interval );
+					interval = setTimeout(function(){
+					//	debugMode && console.log(e); // single event.
+
+						button.entities = entities.filter(function( entity ){
+							return !!entity.joystickControls && !!entity.characterController;
+						});
+
+						for (var i = 0; i < button.entities.length; i++ ){
+							startJumping( button.entities[i] );
+						}
+
+					});
+				});
+
+				return button;
+
+			})();
+
+		//	Key Input Controls.
+
+			SystemManager.prototype.keyInputControls = (function( cameraControls ){
+				
+				var keyInputControls = new MW.KeyInputControl();
+
+			//	KeyInputControl events.
+
+				function startJumping( entity ){
+					entity.characterController.jump();
+				}
+
+				function startRunning( entity ){
+					entity.characterController.isRunning = true;
+				}
+
+				function stopRunning( entity ){
+					entity.characterController.isRunning = false;
+				}
+
+				function updateDirection( entity ){
+					var rad = 2 * Math.PI; // THREE.Math.degToRad( 360 );
+					var cameraFrontAngle = cameraControls.getFrontAngle();
+					var keyInputFrontAngle = keyInputControls.frontAngle;
+					entity.characterController.direction = rad - cameraFrontAngle + keyInputFrontAngle;
+				}
+
+				keyInputControls.addEventListener( "movekeyon", function (e) { 
+					this.entities = entities.filter(function( entity ){
+						return !!entity.keyInputControls && !!entity.characterController;
+					});
+					for (var i = 0; i < this.entities.length; i++ ){
+						startRunning( this.entities[i] );
+						updateDirection( this.entities[i] );
+					}
+				});
+
+				keyInputControls.addEventListener( "movekeyoff", function (e) { 
+					this.entities = entities.filter(function( entity ){
+						return !!entity.keyInputControls && !!entity.characterController;
+					});
+					for (var i = 0; i < this.entities.length; i++ ){
+						stopRunning( this.entities[i] );
+						updateDirection( this.entities[i] );
+					}
+				});
+
+			//	Synch keyInput and camera controls.
+				keyInputControls.addEventListener( "movekeychange",  function (e) {
+					this.entities = entities.filter(function( entity ){
+						return !!entity.keyInputControls && !!entity.characterController;
+					});
+					for (var i = 0; i < this.entities.length; i++ ){
+						updateDirection( this.entities[i] );
+					}
+				});
+
+				keyInputControls.addEventListener( "jumpkeypress", function (e) { 
+					this.entities = entities.filter(function( entity ){
+						return !!entity.keyInputControls && !!entity.characterController;
+					});
+					for (var i = 0; i < this.entities.length; i++ ){
+						startJumping( this.entities[i] );
+					}
+				});
+
+				return keyInputControls;
+
+			})( SystemManager.prototype.cameraControls );
+
+		//	Updates.
+
+			SystemManager.prototype.update = function(entities){
+			//	Define updating systems order.
+				for (var i = 0; i < entities.length; i++ ){
+
+				//	Update direction.
+					if ( entities[i].characterController ) (function(entity){
+						SystemManager.prototype.joystickControls.update( entity );
+					})( entities[i] );
+
+				//	Update rotation.y
+					if ( entities[i].characterController ) (function(entity){
+						var object = entity.characterController.object;
+						var controller = entity.characterController;
+						object.rotation.y = controller.direction + Math.PI; // important!
+					})( entities[i] );
+
+				//	Keep object on ground.
+					if ( entities[i].characterController ) (function(entity){
+						var object = entity.characterController.object;
+						var controller = entity.characterController;
+						object.position.y = controller.center.y - controller.radius;
+					})( entities[i] );
+
+				}
+			};
+
+			SystemManager.prototype.init = function(entities){};
+			SystemManager.prototype.start = function(entities){};
+			SystemManager.prototype.pause = function(entities){};
+			SystemManager.prototype.stop = function(entities){};
+			SystemManager.prototype.tear = function(entities){};
+			SystemManager.prototype.render = function(entities){};
+
+		//	Runtime.
+
+			SystemManager.prototype.runtime = function(){
+
+			//	var system_manager = this;
+
+				var INIT = StateManager.prototype.INIT;
+				var TEAR = StateManager.prototype.TEAR;
+				var STOP = StateManager.prototype.STOP;
+				var START = StateManager.prototype.START;
+				var PAUSE = StateManager.prototype.PAUSE;
+				var UPDATE = StateManager.prototype.UPDATE;
+
+				if ( INIT ) {
+					SystemManager.prototype.init(entities);
+					INIT = false; 
+					START = true;
+				} else if ( START ) {
+					SystemManager.prototype.start(entities);
+					START = false; 
+					UPDATE = true;
+				}
+
+				(function runtime(){
+
+				//	var dt = clock.getDelta();
+				//	var elapsed = clock.getElapsedTime();
+					SystemManager.prototype.requestFrameId = requestAnimationFrame( runtime );
+
+					if ( START ) { UPDATE = true;  PAUSE = false; STOP  = false; }
+					if ( PAUSE ) { UPDATE = false; START = false; STOP  = false; }
+					if ( STOP  ) { UPDATE = false; PAUSE = false; START = false; }
+					if ( UPDATE) { START  = false; PAUSE = false; STOP  = false  }
+				//	cancelAnimationFrame( SystemManager.prototype.requestFrameId );
+					if ( !INIT && !START && !PAUSE && !STOP && !TEAR ) UPDATE = true;
+
+					if ( UPDATE ) {
+						SystemManager.prototype.update(entities);
+					} else if ( START ) {
+						SystemManager.prototype.start(entities);
+						START = false;
+					} else if ( PAUSE ) {
+						SystemManager.prototype.pause(entities);
+					} else if ( STOP  ) {
+						SystemManager.prototype.stop(entities);
+					} else if ( TEAR ) {
+						SystemManager.prototype.tear(entities);
+					}
+
+					StateManager.prototype.update(entities);
+				//	StateManager.prototype.render(entities);
+
+				})();
+			
+			};
+
+		</script>
+
+		<script>
+
+			const keyboard = SystemManager.keyboard;
+
+		//	Selected.
+		//	Selected component is a boolean flag-component that allow 
+		//	to a system to trigger and operate in entity's components
+		//	data. Selected component is moving from entity to entity
+		//	to represent the current selected entity. Only on multi-
+		//	selecting entities is allowed to exist in more than one  
+		//	entities and must be removed when the entity deselected.
+
+			const Selected = {
+			//	value: always true.
+			//	flag-type boolean component.
+				get get(){ return true; },
+				get value(){ return true; },
+				get valueOf(){ return true; },
+			};
+
+		//	Axies components.
+			const axies = new THREE.Vector3(1,1,1); // component-type.
+			const axisX = new THREE.Vector3(1,0,0); // component-type.
+			const axisY = new THREE.Vector3(0,1,0); // component-type.
+			const axisZ = new THREE.Vector3(0,0,1); // component-type.
+
+		</script>
+
+		<script>
+
+		//	Camera Controls.
+			const cameraControls = SystemManager.prototype.cameraControls;
+
+		//	Camera Virtual Joystick.
+			const cameraJoystick = SystemManager.prototype.cameraJoystick;
+
+		//	Character Virtual Joystick.
+			const joystickControls = SystemManager.prototype.joystickControls;
+
+		//	Jump Button.
+			const jumpButton = SystemManager.prototype.jumpButton;
+
+		//	Key Input Controls.
+			const keyInputControls = SystemManager.prototype.keyInputControls;
+
+		//	Helpers.
+			function takeCameraLight( target ){
+				cameraLight.target = target;
+			}
+
+			function takeCameraControls( target, offset ){
+				cameraControls.trackObject = target;
+				cameraControls.offset.y = offset || 0;
+			}
+
+		</script>
+
+		<script>
+
+		//	TabUI.js
+
+			(function(){
+
+				var sidePanel = createSidePanel();
+				var loginTab = TabUI.add( "Login", "login-tab" );
+				var debugTab = TabUI.add( "Debug", "debug-tab" );
+				var levelTab = TabUI.add( "Levels", "level-tab" );
+				var cameraTab = TabUI.add( "Camera", "camera-tab" );
+				var controlTab = TabUI.add( "Controls", "control-tab" );
+				var materialTab = TabUI.add( "Material", "material-tab" );
+				var animationTab = TabUI.add( "Animations", "animation-tab" );
+				var pathfinderTab = TabUI.add( "Pathfinder", "pathfinder-tab" );
+
+				document.body.appendChild( sidePanel );
+				TabUI.append("Animations", "Debug" );
+				TabUI.Animations.role.classList.add("active");
+				TabUI.Animations.tab.classList.add("in","active");
+
+			})();
+
+		</script>
+
+		<script>
+
+		//	"animations" is a named entity that hold all animation clips.
+			const animations = new Entity(); // important!
+		//	as named entity is not important to be added in entities queue.
+		//	entities.push( animations );
+
+		//	Animation tab.
+
+			(function(){
+
+				var tab = TabUI.Animations.tab;
+				var row = document.createElement("h3");
+				row.textContent = "Animation";
+
+				var select = document.createElement("select");
+				select.id = "animation-droplist";
+				select.style.cssText = "width:180px;color:#000;" // float:left;
+					+ "border:1px solid;border-radius:4px;padding:2px 4px 4px 4px;"
+					+ "font-size:20px;margin-left:10px;";
+
+				row.appendChild( select );
+				tab.appendChild( row );
+
+			})();
+
+			(function(){
+
+			//	Import Animation.
+
+				var tab = TabUI.Animations.tab;
+				var row = document.createElement("div");
+				row.style.cssText = "margin:10px 12px;height:35px;text-align:center;";
+
+				var button1 = IdleButton();
+				var button2 = ImportAnimationButton();
+
+				row.appendChild( button1 );
+				row.appendChild( button2 );
+				tab.appendChild( row );
+
+				function ImportAnimationButton() {
+
+					var button = document.createElement("div");
+					button.id = "import-animaton";
+					button.textContent = "Import animation";
+					button.style.cssText = "min-width:60%;width:180px;float:right;height:40px;font-size:large;";
+					button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
+
+					var input = document.createElement("input");
+					input.type = "file";
+					input.style.display = "none";
+					input.setAttribute("multiple", "");
+
+					var k = 0; // important!
+					input.addEventListener( "change", function(){
+
+						var select = document.getElementById("animation-droplist");
+						if ( !select ) return;
+
+						for ( var i = 0; i < input.files.length; i++ ) {
+							(function( file ){
+
+								var filename = file.name.replace(".fbx", "");
+								var extension = file.name.split( "." ).pop().toLowerCase();
+
+								var reader = new FileReader();
+
+								reader.addEventListener( "progress", function ( e ) {
+									var size = "(" + Math.floor( e.total / 1000 ).format() + " KB)";
+									var progress = Math.floor( ( e.loaded / e.total ) * 100 ) + "%";
+									debugMode && console.log( "Loading", file.name, size, progress );
+								});
+
+								reader.addEventListener( "load", function ( e ) {
+
+									var data = reader.result;
+									var loader = new THREE.FBXLoader();
+									var group = loader.parse( data );
+								//	debugMode && console.log( group );
+
+								//	Add animations.
+									if ( !group.animations.length ) return;
+									debugMode && console.log( group.animations );
+
+								//	Each clip is a component of animations entity.
+									group.animations.forEach( function( clip ){
+									//	Add clip to animations entity.
+										animations[ clip.uuid ] = clip;
+									//	create option.
+										clip.name = filename;
+										var name = ++k+"."+filename;
+										var option = document.createElement("option");
+										option.text = name;
+										option.value = clip.uuid;
+										select.appendChild( option );
+									});
+
+								}, false );
+								reader.readAsArrayBuffer( file );
+
+							})( input.files[i] );
+						}
+
+					});
+
+					button.addEventListener( "click", function(){
+						
+						input.value = "";
+						input.click();
+
+					});
+
+					button.appendChild( input );
+					return button;
+
+				}
+
+				function IdleButton(){
+
+					var button = document.createElement("div");
+					button.id = "idle-animaton";
+					button.textContent = "Pause";
+					button.style.cssText = "max-width:120px;width:100px;float:left;height:40px;font-size:large;";
+					button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
+
+					function playIdling( entity ){
+						if ( entity.animationController.currentMotionName == "idling" ) return;
+						entity.animationController.play( "idling" ); 
+					}
+
+					button.addEventListener( "click", function(){
+						button.entities = entities.filter(function( entity ){
+							return !!entity.characterController && !!entity.animationController;
+						});
+						for (var i = 0; i < button.entities.length; i++ ) {
+							playIdling( button.entities[i] );
+						}
+					});
+
+					return button;
+				}
+
+			})();
+
+		</script>
+
+		<script>
+
+		//	## Local Player entity instance.
+
+			const localPlayer = new Entity();
+
+		//	localPlayer abstract.
+
+			(function(){
+
+				var radius = 0.85; // radius.
+
+			//	localPlayer has object3d holder.
+				var object = (function(){
+					var object3d = new THREE.Object3D();
+					object3d.position.y = 2;
+					object3d.name = "localPlayer object";
+					scene.add( object3d );
+					return object3d;
+				})();
+
+			//	localPlayer has a bounding sphere helper.
+				var boundingSphere = (function( radius ){
+					var sphere = new THREE.SphereGeometry( radius, 8, 6 );
+					var geometry = new THREE.EdgesGeometry( sphere );
+					var material = new THREE.LineBasicMaterial( { color: 0x00ff00 } );
+					var segments = new THREE.LineSegments( geometry, material );
+					segments.position.y = radius;
+					segments.name = "localPlayer helper";
+				//	Add helper to scene.
+					object.add( segments );
+					return segments;
+				})( radius );
+
+			//	localPlayer has a charecter controller.
+				var characterController = (function(object, radius){
+				//	Create controller.
+					var controller = new MW.CharacterController(object, radius);
+				//	Initialize controller.
+					controller.movementSpeed = 5; // (m/fps)
+					controller.maxSlopeGradient = 0.5; // important!
+				//	synch with 3d model front angle.
+					controller.direction += Math.PI; // important!
+				//	Add controller to world (start controller update).
+					world.add( controller ); // important! updating controller.
+					return controller;
+				})( object, radius );
+
+			//	Take camera controls.
+				takeCameraLight( object );
+				takeCameraControls( object, radius );
+
+			//	And components.
+				localPlayer.holder = object;
+				localPlayer.boundingSphere = boundingSphere;
+				localPlayer.keyInputControls = keyInputControls;
+				localPlayer.joystickControls = joystickControls;
+				localPlayer.characterController = characterController;
+				debugMode && console.log( "localPlayer:", localPlayer );
+
+			//	Add entity to entities.
+				entities.push( localPlayer ); // important!
+
+			})();
+
+		</script>
+
+		<script>
+
+		//	## Synopsis.
+			
+			//	Define component types.
+			//	Create component instances.
+			//	Create entities instances.
+			//	Define entities systems.
+			//	Define systems order in SystemManager methods.
+			//	Define SystemManager methods order in runtime.
+
+		//	## Runtime.
+
+			SystemManager.prototype.runtime();
+
+		</script>
+
+		<script>
+
+			(function(){
+
+				var url = "/textme/animations/TextMeGirlv2.3_TextOnPhoneT49b.fbx";
+				var loader = new THREE.FBXLoader();
+				loader.load( url, function( group ){
+
+					fbx = group; // for debugging only.
+				//	All children in group have scale 100. Fix it:
+					group.traverse(function( child ){
+						if ( child.scale !== undefined ) {
+							child.scale.set(1,1,1);
+						}
+					});
+
+					var s = 0.000029; 
+					group.scale.set(s,s,s);
+
+				//	Add group to scene.
+				//	scene.add( group );
+					debugMode && console.log( group );
+
+				//	localPlayer.holder = group;
+				//	localPlayer.characterController.object = group;
+				//	Take camera controls.
+				//	var radius = 0.85;
+				//	takeCameraLight( group );
+				//	takeCameraControls( group, radius );
+					localPlayer.holder.add( group );
+
+
+
+				});
+
+			})();
+
+		</script>
+
+
+	</body>
+</html>
