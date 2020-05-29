@@ -102,7 +102,76 @@
 		<script src="/ecs/js/KeyboardState.js"></script>
 		<script src="/ecs/engine/Enviroment.js"></script>
 		<script src="/ecs/engine/pre-alpha/Entity.js"></script>
-		<script src="/ecs/engine/pre-alpha/EntityManager.js"></script>
+		<!-- script src="/ecs/engine/pre-alpha/EntityManager.js"></script -->
+		<script>
+
+		//	Entity Manager: (inherits from Array class).
+
+			function EntityManager(){
+
+				Array.call( this );
+
+			};
+
+
+			EntityManager.prototype = Object.assign( Object.create(Array.prototype), {
+
+				constructor: EntityManager,
+				isArray: true,
+
+				move: function( entity, new_index ){
+
+					var old_index = this.findIndex(function( item ){
+						return item.id === entity.id;
+					});
+
+					if ( old_index < 0 ) return; // important!
+					if ( old_index == new_index ) return;
+
+					(function( arr, old_index, new_index ){
+
+						if (new_index >= arr.length) {
+							var k = new_index - arr.length + 1;
+							while (k--) {
+								arr.push(undefined);
+							}
+						}
+
+						arr.splice(new_index, 0, arr.splice(old_index, 1)[0]);
+
+					})( this, old_index, new_index);
+
+				},
+
+				remove: function( _id ){
+
+					var index = this.findIndex(function( item ){
+						return item._id === _id;
+					});
+
+					if ( index < 0 ) return; // important!
+
+					var removedItems = this.splice(index, 1);
+					//	debugMode && console.log( removedItems );
+
+					while ( removedItems.length ){
+						var removed = removedItems.shift();
+						//	debugMode && console.log( removed );
+						removedEntities.push( removed );
+					}
+
+				},
+
+				clear: function(){
+					this.length = 0;
+				},
+
+			});
+
+			const entities = new EntityManager();
+			const removedEntities = new EntityManager();
+
+		</script>
 
 		<script>
 
@@ -904,24 +973,6 @@
 
 		<script>
 
-		//	Collection Entity class.
-		//	Inherited from Entity class.
-
-			function CollectionEntity(){
-				Entity.call( this );
-			};
-
-			CollectionEntity.prototype = Object.assign( Object.create(Entity.prototype), {
-
-				constructor: CollectionEntity,
-				isCollectionEntity: true,
-
-			});
-
-		</script>
-
-		<script>
-
 
 		//	"animations" is a collection named entity that hold all animation clips.
 		//	const animations = new Entity(); // important!
@@ -929,17 +980,17 @@
 		//	entities.push( animations );
 
 		//	Same as "animations" collection entity...
-		//	"textures" is a collection named entity that hold all textures (a texture is component).
-		//	"materials" is a collection named entity that hold all materials (a material is component).
-		//	"geometries" is a collection named entity that hold all geometries (a geometry is component)...
+		//	"textures" is a named collection entity that hold all textures (a texture is component).
+		//	"materials" is a named collection entity that hold all materials (a material is component).
+		//	"geometries" is a named collection entity that hold all geometries (a geometry is component)...
 
-			const images = new CollectionEntity();
-			const meshes = new CollectionEntity();
-			const skinned = new CollectionEntity();
-			const textures = new CollectionEntity();
-			const materials = new CollectionEntity();
-			const geometries = new CollectionEntity();
-			const animations = new CollectionEntity(); // important!
+			const images = new EntityCollection();
+			const meshes = new EntityCollection();
+			const skinned = new EntityCollection();
+			const textures = new EntityCollection();
+			const materials = new EntityCollection();
+			const geometries = new EntityCollection();
+			const animations = new EntityCollection(); // important!
 
 		//	collection entities is not important to be added in entities queue.
 		//	entities.push( meshes );
