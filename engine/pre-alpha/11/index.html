@@ -929,6 +929,20 @@
 
 			})();
 
+		//	Same as "animations" named entity...
+		//	"textures" is a named entity that hold all textures (a texture is a component).
+		//	"materials" is a named entity that hold all materials (a material is a component).
+		//	"geometries" is a named entity that hold all materials (a geometry is a component).
+
+			const textures = new Entity();
+			const materials = new Entity();
+			const geometries = new Entity();
+
+		//	...as named entity is not important to added in entities queue.
+		//	entities.push( textures );
+		//	entities.push( materials );
+		//	entities.push( geometries );
+
 		</script>
 
 		<script>
@@ -1037,7 +1051,6 @@
 				//	Add group to scene.
 				//	scene.add( group );
 					debugMode && console.log( group );
-
 				//	localPlayer.holder = group;
 				//	localPlayer.characterController.object = group;
 				//	Take camera controls.
@@ -1046,7 +1059,100 @@
 				//	takeCameraControls( group, radius );
 					localPlayer.holder.add( group );
 
+					debugMode && console.log( 
+						group.animations.map(function( clip ){
+							return clip.name;
+						})
+					);
 
+				//	Rename animation clips.
+				//	group.animations.forEach(function( clip ){
+				//		clip.name = clip.name.replace("Armature|", "");
+				//	})
+
+				//	Add animation clips to animation entity.
+					(function(){
+						var k = animations.length;
+						var select = document.querySelector("select#animation-droplist");
+						group.animations.forEach( function( clip ){
+						//	Rename animation clips.
+							clip.name = clip.name.replace("Armature|", "");
+						//	Add clip to "animations" entity.
+							animations[ clip.uuid ] = clip;
+						//	create option.
+							var option = document.createElement("option");
+							option.text = ++k+"."+clip.name;
+							option.value = clip.uuid;
+							select.appendChild( option );
+						});
+					})();
+
+				//	localPlayer has an animation controller.
+					var animationController = (function(){ // global for debuggin only.
+
+						var controller = new MW.AnimationController( group );
+						debugMode && console.log( "animations:", Object.keys( controller.motion ).join() );
+
+					//	Start mixer updating immidiatly when animation controller created.
+					//	Not need for an animation updating system to update the animation mixer,
+					//	but need an animation manager to manage which animation is currently playing. 
+					//	Can be done with character controller by adding event listeners?
+
+					//	Start animation controller mixer.
+						var clock = new THREE.Clock(); // needs own clock. Why?
+						(function update(){
+							requestAnimationFrame( update );
+							var delta = clock.getDelta();
+							controller.update( delta );
+						})();
+						
+						return controller;
+					})();
+
+					debugMode && console.log( animationController );
+
+				//	Bind character controller animation events.
+				//	All characters skinned 3d models (avatars) must have at least one "idling" animation.
+					localPlayer.characterController.addEventListener( "startIdling",  function () { 
+						debugMode && console.log( "start Idling" );
+						if ( animationController.motion["idling"] )
+							animationController.play( "idling" );
+					});
+					localPlayer.characterController.addEventListener( "startWalking",  function () { 
+						debugMode && console.log( "start Walking" );
+						if ( animationController.motion["running"] )
+							animationController.play( "running" );
+					});
+					localPlayer.characterController.addEventListener( "startSliding", function () { 
+						debugMode && console.log( "start Sliding" );
+						if ( animationController.motion["wobbling"] )
+							animationController.play( "wobbling" );
+					});
+					localPlayer.characterController.addEventListener( "startFalling", function () { 
+						debugMode && console.log( "start Falling" );
+						if ( animationController.motion["wobbling"] )
+							animationController.play( "wobbling" );
+					});
+					localPlayer.characterController.addEventListener( "startJumping", function() { 
+						debugMode && console.log( "start Jumping" );
+						if ( localPlayer.characterController.isRunning ) {
+							if ( animationController.motion["jumping"] ) {
+								animationController.motion["jumping"].reset(); // important!
+								animationController.play( "jumping" );
+							}
+						} else {
+							if ( animationController.motion["jumpingUp"] ) {
+								animationController.motion["jumpingUp"].reset(); // important!
+								animationController.play( "jumpingUp" );
+							}
+						}
+					});
+
+				//	Add animationController component.
+					localPlayer.animationController = animationController;
+
+				//	Start idling.
+					localPlayer.characterController.dispatchEvent({type:"startIdling"});
 
 				});
 
