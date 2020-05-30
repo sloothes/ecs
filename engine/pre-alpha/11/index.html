@@ -102,9 +102,11 @@
 		<script src="/ecs/js/KeyboardState.js"></script>
 		<script src="/ecs/engine/Enviroment.js"></script>
 		<script src="/ecs/engine/pre-alpha/Entity.js"></script>
-		<!-- script src="/ecs/engine/pre-alpha/EntityManager.js"></script -->
+		<script src="/ecs/engine/pre-alpha/EntityManager.js"></script>
 
 		<script>
+/*
+		//	EntityManager.js
 
 		//	Entity Manager: inherits (extends) Array class.
 		//	sources: https://stackoverflow.com/questions/26700164/extending-array-with-es6-classes
@@ -221,7 +223,7 @@
 			console.warn( "read about extending array with ES6 classes at:",
 				"https://stackoverflow.com/questions/26700164/extending-array-with-es6-classes"
 			);
-
+*/
 		</script>
 
 		<script>
@@ -759,8 +761,8 @@
 				//	THREELoadingSystem:
 					if ( entity.loader ) THREELoadingSystem(entity); // important!
 
-				//	ImportMeshToSystem: Create geometry and material entities
-				//	to add in system.
+				//	ImportMeshToSystem: 
+				//	Create geometry and material entities to import in system.
 					if ( isMesh( entity ) ) (function( entity ){
 					//	Create self-removed geometry entity to add in "geometries".
 
@@ -824,19 +826,20 @@
 
 
 				//	SelfRemovedEntity system.
-				//	Prepear toRemove selfRemoved entities from queue.
+				//	Prepear to remove selfRemoved entities from queue.
 					if ( entities[i].selfRemoved ) (function(entity){
 					//	entities.remove( entity._id );
-						toRemoveIds.push( entity._id );
+					//	ids to be removed at end of update-cycle.
+						toRemoveIds.push( entity._id ); 
 					})( entities[i] );
 
 				}
 
-			//	Remove selfRemoved entities from queue.
-				if ( toRemoveIds.length ) {
-					debugMode && console.log( toRemoveIds );
-
-				}
+			//	Remove selfRemoved entities from queue (at end to update-cycle).
+				if ( toRemoveIds.length ) (function(){
+					debugMode && console.log( "toRemoveIds:", toRemoveIds );
+					entities.remove.apply(entities, toRemoveIds); // important.
+				})();
 
 			//	helpers.
 
@@ -860,6 +863,12 @@
 
 				function isTexture( entity ){
 					return entity.texture
+						&& entity.uuid
+						&& entity.selfRemoved;
+				}
+
+				function isAnimation( entity ){
+					return entity.clip
 						&& entity.uuid
 						&& entity.selfRemoved;
 				}
