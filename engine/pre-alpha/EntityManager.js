@@ -1,4 +1,7 @@
-//	Entity Manager.
+//	Entity Manager class.
+
+
+/*
 
 //	const entities = [];
 //	const removedEntities = [];
@@ -91,3 +94,73 @@
 		}
 
 	};
+*/
+
+/*
+
+//	WARNING: his is not an Array; is an array-like object.
+
+	function EntityManager(){
+
+		Array.call( this );
+
+	};
+
+
+	EntityManager.prototype = Object.assign( Object.create(Array.prototype), {
+
+		constructor: EntityManager,
+	//	isArray: true, // this is not Array.
+
+		move: function( entity, new_index ){
+
+			var old_index = this.findIndex(function( item ){
+				return item.id === entity.id;
+			});
+
+			if ( old_index < 0 ) return; // important!
+			if ( old_index == new_index ) return;
+
+			(function( arr, old_index, new_index ){
+
+				if (new_index >= arr.length) {
+					var k = new_index - arr.length + 1;
+					while (k--) {
+						arr.push(undefined);
+					}
+				}
+
+				arr.splice(new_index, 0, arr.splice(old_index, 1)[0]);
+
+			})( this, old_index, new_index);
+
+		},
+
+		remove: function( _id ){
+
+			var index = this.findIndex(function( item ){
+				return item._id === _id;
+			});
+
+			if ( index < 0 ) return; // important!
+
+			var removedItems = this.splice(index, 1);
+		//	debugMode && console.log( removedItems );
+
+			while ( removedItems.length ){
+				var removed = removedItems.shift();
+			//	debugMode && console.log( removed );
+				removedEntities.push( removed );
+			}
+
+		},
+		
+		clear: function(){
+			this.length = 0;
+		},
+
+	});
+
+	const entities = new EntityManager();
+	const removedEntities = new EntityManager();
+*/
