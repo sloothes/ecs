@@ -106,16 +106,17 @@
 
 		<script>
 
-		//	Entity Manager: (inherits -extends- Array class).
-		//	source: https://stackoverflow.com/questions/26700164/extending-array-with-es6-classes
+		//	Entity Manager: inherits (extends) Array class.
+		//	sources: https://stackoverflow.com/questions/26700164/extending-array-with-es6-classes
+		//	https://stackoverflow.com/questions/11337849/ways-to-extend-array-object-in-javascript
+
 			function EntityManager(){
 				var array = new Array(0);
-			//	array.__proto__ = EntityManager.prototype; // original!
-				Object.setPrototypeOf( array, EntityManager.prototype ); // testing!
-				return array;
+				Object.setPrototypeOf( array, EntityManager.prototype );
+				return array; // important!
 			};
 
-			EntityManager.prototype = Object.create(Array.prototype);  
+			EntityManager.prototype = Object.create(Array.prototype); // important!
 
 			EntityManager.prototype.move = function( entity, new_index ){
 
@@ -191,10 +192,13 @@
 			};
 
 		//	Create entities managers.
+
 			const entities = new EntityManager();
 			const removedEntities = new EntityManager();
 
+
 		//	Testing.
+
 		//	Now entities and removedEntities ARE Arrays...
 			console.log( 
 				"entities, removedEntities, ARE Array...",
@@ -217,40 +221,6 @@
 			console.warn( "read about extending array with ES6 classes at:",
 				"https://stackoverflow.com/questions/26700164/extending-array-with-es6-classes"
 			);
-
-
-		//	"https://stackoverflow.com/questions/11337849/ways-to-extend-array-object-in-javascript"
-		//	WARNING: entities and removedEntities ARE NOT Array class.
-		//	entities prototype and removedEntities prototypes ARE Array class.
-		//	console.log( 
-		//		"Array.isArray(entities, removedEntities):", 
-		//		Array.isArray(entities),       // false,
-		//		Array.isArray(removedEntities) // false,
-		//	);
-		//	console.log( 
-		//		"Array.isArray(entities.prototype, removedEntities.prototype):", 
-		//		Array.isArray(Object.getPrototypeOf(entities)),       // true,
-		//		Array.isArray(Object.getPrototypeOf(removedEntities)) // true,
-		//	);
-		//
-		//	EntityManager.prototype.clear = function(){
-		//	Because new EntityManager() is array-like object,
-		//	and not a Array, "this.length = 0;" doen't reset 
-		//	the array. You must first delete array items 
-		//	(leaves an empty item in array) and then set 
-		//	length = 0.
-		//		var self = this;
-		//		var keys = Object.keys(this)
-		//		.filter(function(key){
-		//			return key != "length";
-		//		});
-		//		console.log( keys );
-		//		_delete.call(this, keys);
-		//		this.length = 0;
-		//		function _delete(key){
-		//			delete self[ key ];
-		//		}
-		//	};
 
 		</script>
 
