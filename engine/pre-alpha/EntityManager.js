@@ -48,18 +48,18 @@
 	};
 
 	EntityManager.prototype.remove = function(){
-		//	params: {number:entity._id} or {object:entity} 
+	//	params: {number:entity._id} or {object:entity} 
 
 		if ( arguments.length < 1 ) return;
 
-		//	Get removed _ids.
+	//	Get removed _ids.
 		var remove_ids = [];
 		for ( var i in arguments ) {
 			var param = arguments[i];
 			if ( typeof param === "number" ) 
-				remove_ids.push( param );
+				remove_ids.unshift( param );     // remove_ids.push( param );
 			else if ( typeof param === "object" && param.isEntity )
-				remove_ids.push( param._id );
+				remove_ids.unshift( param._id ); // remove_ids.push( param._id );
 			else continue;
 		}
 
