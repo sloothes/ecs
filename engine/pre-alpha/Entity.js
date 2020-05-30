@@ -56,10 +56,11 @@
 	function EntityCollection(){
 		var entity = new Entity();
 		Object.setPrototypeOf( entity, EntityCollection.prototype );
-		return entity; // important!
+		return entity;
 	};
 
-	EntityCollection.prototype = Object.create(Entity.prototype); // important!
+	EntityCollection.prototype = Object.create(Entity.prototype); 
+	EntityCollection.prototype.isEntityCollection = true; 
 
 /*
 	function EntityCollection(){
