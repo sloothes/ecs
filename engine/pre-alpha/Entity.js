@@ -51,7 +51,17 @@
 
 
 //	EntityCollection: (inherits from Entity class).
+//	EntityManager-like implementation.
 
+	function EntityCollection(){
+		var entity = new Entity();
+		Object.setPrototypeOf( entity, EntityCollection.prototype );
+		return entity; // important!
+	};
+
+	EntityCollection.prototype = Object.create(Entity.prototype); // important!
+
+/*
 	function EntityCollection(){
 		Entity.call( this );
 	};
@@ -62,7 +72,7 @@
 		isEntityCollection: true,
 
 	});
-
+*/
 
 
 
