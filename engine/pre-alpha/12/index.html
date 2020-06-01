@@ -2,7 +2,7 @@
 <html lang="en">
 	<head>
 
-		<title>Legacy ECS Engine (pre-alpha 0.11)</title>
+		<title>Legacy ECS Engine (pre-alpha 0.12)</title>
 
 		<meta charset="utf-8">
 		<meta name="generator" content="Three.js Editor">
@@ -763,95 +763,75 @@
 					if ( entity.loader ) THREELoadingSystem(entity); // important!
 
 				//	ImportClipToSystem:
-				//	Create self-removed toCollection 
-				//	new entity to add in "animations".
-					if ( isClip( entity ) ) (function( entity ){
-						var clip = entity.clip;
-						var uuid = entity.uuid;
-						var new_entity = new Entity();
-						new_entity.key = uuid;
-						new_entity.value = clip;
-						new_entity.collection = animations;
-						new_entity.selfRemoved = true;
-						entities.push( new_entity );
-					})( entity );
+				//	Create self-removed-toCollection new entity to add in "animations".
+					if ( isClip( entity ) ) addtoCollection( entity.clip, animations );
 
 				//	ImportMeshToSystem: 
 				//	Create mesh, skinned, geometry and material entities to import in system.
 					else if ( isMesh( entity ) ) (function( entity ){
-						var mesh = entity.mesh;
+
+						var mesh = entity.mesh; if ( !material ) return;
+
 						var geometry = mesh.geometry;
 						var material = mesh.material;
 
-					//	Create self-removed toCollection new
-					//	entity to add in "meshes" or "skinned".
-						(function( mesh ){
-							var entity = new Entity();
-							entity.key = mesh.uuid;
-							entity.value = mesh;
-							entity.selfRemoved = true;
-							if ( mesh.type === "SkinnedMesh" ) entity.collection = skinned;
-							else if (  mesh.type === "Mesh"  ) entity.collection = meshes;
-							entities.push( entity );
-						})( mesh );
+					//	Create self-removed-toCollection new entity to add in "meshes" or "skinned".
+						if ( mesh.type === "SkinnedMesh" ) addtoCollection( mesh, skinned );
+						else if (  mesh.type === "Mesh"  ) addtoCollection( mesh, meshes );
 
-					//	Create self-removed toCollection
-					//	new entity to add in "geometries".
-						(function( geometry ){
-							var entity = new Entity();
-							entity.key = geometry.uuid;
-							entity.value = geometry;
-							entity.selfRemoved = true;
-							entity.collection = geometries;
-							entities.push( entity );
-						})( geometry );
+					//	Create self-removed-toCollection new entity to add in "geometries".
+						if ( geometry ) addtoCollection( geometry, geometries );
 
-					//	Create self-removed toCollection 
-					//	new entities to add in "materials".
-						(function( material ){
-
-							if ( Array.isArray( material ) ) {
-								var length = material.length;
-								for ( var i=0; i<length; i++ ) {
-									materialEntity( material[i] );
+					//	Create self-removed-toCollection new entities to add in "materials".
+						if ( material ) {
+							if ( Array.isArray( material ) ) (function( material ){
+								for ( var i=0; i < material.length; i++ ) {
+									addtoCollection( material[i], materials );
 								}
-							}
+							})( material );
 
-							else materialEntity( material );
-
-							function materialEntity( material ){
-								var entity = new Entity();
-								entity.key = material.uuid;
-								entity.value = material;
-								entity.selfRemoved = true;
-								entity.collection = materials;
-								entities.push( entity );
-							}
-
-						})( material );
+							else addtoCollection( material, materials );
+						}
 
 					})( entity );
 
-					else if ( isGeometry( entity ) ) (function( entity ){
-					//	Add geometry to "geometries" collection.
-					})( entity );
+				//	Create self-removed toCollection new entity to add in "geometries".
+					else if ( isGeometry( entity ) ) 
+						addtoCollection( entity.geometry, geometries );
 
 					else if ( isMaterial( entity ) ) (function( entity ){
-					//	Create self-removed texture entity to add in "textures".
-					//	Add material to "materials" collection.
+						var material = entity.material; if ( !material ) return;
+					//	Create self-removed-toCollection new entity to add in "materials".
+						if ( material ) addtoCollection( material, materials );
+					//	Create self-removed-toCollection new entities to add in "textures".
+						for ( var key in material ) {
+							if ( material[ key ] && material[ key ].isTexture ) {
+								var texture = material[ key ];
+								addtoCollection( texture, textures );
+							}
+						}
 					})( entity );
 
 					else if ( isTexture( entity ) ) (function( entity ){
-					//	Create self-removed image entity to add in "images" (optional).
-					//	Add texture to "textures" collection.
+						var texture = entity.texture; if ( !texture ) return;
+					//	Create self-removed-toCollection new entities to add in "textures".
+						if ( texture ) addtoCollection( texture, textures );
+					//	Create self-removed-toCollection new entity to add in "images" (optional).
+						if ( texture.image ) (function addtoImages( image ){
+							var entity = new Entity();
+							entity.key = THREE.Math.generateUUID();
+							entity.value = image.src;
+							entity.selfRemoved = true;
+							entity.collection = images;
+							entities.push( entity );
+						})( texture.image );
 					})( entity );
 
-				//	AddToCollection: Add to animations collection (system).
-					else if ( toCollection( entity ) ) (function AddToCollection( entity ){
+				//	AddToCollection: Add to entity collections system.
+					else if ( toCollection( entity ) ) 
 						entity.collection.add( entity.key, entity.value );
-					})( entity );
 
-				//	AddOptionSystem: Add option to droplist (system).
+				//	AddOptionSystem: Add option to droplist system.
 					if ( isOption( entity ) ) (function AddOptionSystem( entity ){
 						var name = entity.target.name;
 						var value = entity.target.uuid;
@@ -904,6 +884,15 @@
 				})();
 
 			//	helpers.
+
+				function addtoCollection( object, collection ){
+					var entity = new Entity();
+					entity.key = object.uuid;
+					entity.value = object;
+					entity.selfRemoved = true;
+					entity.collection = collection;
+					entities.push( entity );
+				}
 
 				function isClip( entity ){
 					return entity.clip
@@ -1463,44 +1452,6 @@
 						group.scale.set(s,s,s);
 					}
 
-				//	Rename animations???
-
-				//	Add to "animations" collection. 
-				//	if ( group.animations.length ) (function(){
-				//		var length = group.animations.length; // DO NOT USE .forEach();
-				//	//	Create a self removed entity for each animation clip.
-				//	//	"AddToCollection" system will add to "animations".
-				//		for ( var i = 0; i < length; i++ ) {
-				//			(function( clip ){
-				//				var entity = new Entity();
-				//				entity.key = clip.uuid;
-				//				entity.value = clip;
-				//				entity.collection = animations;
-				//				entity.selfRemoved = true;
-				//				entities.push( entity );
-				//			})( group.animations[i] );
-				//		}
-				//	})();
-
-				//	Add options to "animation-droplist".
-				//	if ( group.animations.length ) (function(){
-				//		var length = group.animations.length; // DO NOT USE .forEach();
-				//	//	Create a self removed entity for each animation clip.
-				//	//	"AddOptionSystem" system will create an option element
-				//	//	to selector droplist. DO NOT USE .forEach();
-				//		for ( var i = 0; i < length; i++ ) {
-				//			(function( clip ){
-				//				var entity = new Entity();
-				//				entity.tag = "option";
-				//				entity.target = clip;
-				//				entity.selector = "select#animation-droplist";
-				//				entity.collection = animations;
-				//				entity.selfRemoved = true;
-				//				entities.push( entity );
-				//			})( group.animations[i] );
-				//		}
-				//	})();
-
 				//	Create a composite entity for AddToCollection and
 				//	AddOptionSystem systems so can get correct indexes
 				//	in options.
@@ -1535,7 +1486,7 @@
 				//	ImportClipToSystem will create new entities to add in
 				//	"animations" collection.
 
-					if ( group.animations && group.animations.length ) 
+					if ( group.animations && group.animations.length ) {
 						group.animations.forEach(function( clip ){
 							var entity = new Entity();
 							entity.clip = clip;
@@ -1543,6 +1494,7 @@
 							entity.selfRemoved = true;
 							entities.push( entity );
 						});
+					}
 
 			//
 
@@ -1557,6 +1509,7 @@
 
 							case "Mesh":
 							case "SkinnedMesh":
+
 						//	Create a self removed entity for each mesh.
 						//	ImportMeshToSystem will create new entities for
 						//	mesh geometry and materials to add in collections.
