@@ -8,83 +8,64 @@
 
 	Entity.prototype = {
 
-		get length(){ return Object.keys(this).length - 1 },
+		_count: 0,
+		isEntity: true,
+		constructor: Entity,
 
-	};
-
-	Entity.prototype._count = 0;
-	Entity.prototype.isEntity = true;
-	Entity.prototype.constructor = Entity;
-
-	Entity.prototype.add = function(key, object){
-		var err = "EntityAddComponentError: component key is not defined!";
-
-		if ( !key ) throw err;
-
-		this[ key ] = object;
-		return this;
-	};
-
-	Entity.prototype.remove = function(key){
-		var err = "EntityRemoveComponentError: component key is not defined!";
-
-		if (!key) throw err;
-	//	debugMode && console.log( "remove:", this[ key ] );
-
-		delete this[ key ];
-		return this;
-	};
-
-/*
-		add( key, object ){
+		add(key, value){
 			if ( !key ) throw "EntityAddComponentError: component key is not defined!";
 			this[ key ] = object;
 			return this;
 		},
 
-		remove( key ){
-			if ( !key ) throw "EntityRemoveComponentError: component key is not defined!";
+		remove(key){
+			if (!key) throw "EntityRemoveComponentError: component key is not defined!";
 			delete this[ key ];
 			return this;
 		},
-*/
 
+		get length(){ return Object.keys(this).length - 1 },
 
-//	EntityCollection: (inherits from Entity class).
-//	EntityManager-like implementation.
-
-	function EntityCollection(){
-		var entity = new Entity();
-		Object.setPrototypeOf( entity, EntityCollection.prototype );
-		return entity;
 	};
 
-	EntityCollection.prototype = Object.create(Entity.prototype); 
-	EntityCollection.prototype.isEntityCollection = true; 
 
-/*
+//	EntityCollection: 
+
 	function EntityCollection(){
 		Entity.call( this );
 	};
 
-	EntityCollection.prototype = Object.assign( Object.create(Entity.prototype), {
+	EntityCollection.prototype.isEntityCollection: true;
+	EntityCollection.prototype.constructor: EntityCollection;
 
-		constructor: EntityCollection,
-		isEntityCollection: true,
+//	EntityManager-like implementation (inherits from Entity class).
 
-	});
-*/
+//	function EntityCollection(){
+//		var entity = new Entity();
+//		Object.setPrototypeOf( entity, EntityCollection.prototype );
+//		return entity;
+//	};
+
+//	EntityCollection.prototype = Object.create(Entity.prototype); 
+//	EntityCollection.prototype.isEntityCollection = true; 
 
 
 
+//	Entity Manager class.
 
-/*
-//	Entities Manager.
+//	Entity Manager: inherits (extends) Array class.
+//	sources: https://stackoverflow.com/questions/26700164/extending-array-with-es6-classes
+//	https://stackoverflow.com/questions/11337849/ways-to-extend-array-object-in-javascript
 
-	const entities = [];
-	const removedEntities = [];
+	function EntityManager(){
+		var array = new Array(0);
+		Object.setPrototypeOf( array, EntityManager.prototype );
+		return array; // important!
+	};
 
-	entities.move = function( entity, new_index ){
+	EntityManager.prototype = Object.create(Array.prototype);
+
+	EntityManager.prototype.move = function( entity, new_index ){
 
 		var old_index = this.findIndex(function( item ){
 			return item.id === entity.id;
@@ -108,22 +89,57 @@
 
 	};
 
-	entities.remove = function( _id ){
+	EntityManager.prototype.remove = function(){
+	//	params: {number:entity._id} or {object:entity} 
 
-		var index = this.findIndex(function( item ){
-			return item._id === _id;
-		});
+		if ( arguments.length < 1 ) return;
 
-		if ( index < 0 ) return; // important!
-
-		var removedItems = this.splice(index, 1);
-	//	debugMode && console.log( removedItems );
-
-		while ( removedItems.length ){
-			var removed = removedItems.shift();
-		//	debugMode && console.log( removed );
-			removedEntities.push( removed );
+	//	Get removed _ids.
+		var remove_ids = [];
+		for ( var i in arguments ) {
+			var param = arguments[i];
+			if ( typeof param === "number" ) 
+				remove_ids.unshift( param );     // remove_ids.push( param );
+			else if ( typeof param === "object" && param.isEntity )
+				remove_ids.unshift( param._id ); // remove_ids.push( param._id );
+			else continue;
 		}
 
+		if ( !remove_ids.length ) return;
+		console.log( "remove_ids:", remove_ids );
+
+		var length = remove_ids.length;
+		for ( var j = 0; j < length; j++ ) {
+
+			var _id = remove_ids[ j ];
+
+			//	Find index.
+			var index = this.findIndex(function( item ){
+				return item._id === _id;
+			});
+
+			if ( index < 0 ) return; // important!
+
+			var removedItems = this.splice(index, 1);
+			//	debugMode && console.log( removedItems );
+
+			while ( removedItems.length ){
+				var removed = removedItems.shift();
+				//	debugMode && console.log( removed );
+				removedEntities.push( removed );
+			}
+
+		}
 	};
-*/
+
+	EntityManager.prototype.clear = function(){
+
+		this.length = 0;
+
+	};
+
+	//	Create entities managers.
+
+	const entities = new EntityManager();
+	const removedEntities = new EntityManager();
+

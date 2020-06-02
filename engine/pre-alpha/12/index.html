@@ -2,7 +2,7 @@
 <html lang="en">
 	<head>
 
-		<title>Legacy ECS Engine (pre-alpha 0.12)</title>
+		<title>clone-7 (demo 0.1)</title>
 
 		<meta charset="utf-8">
 		<meta name="generator" content="Three.js Editor">
@@ -11,7 +11,6 @@
 		<link rel="stylesheet" href="/css/joystick.css">
 		<link rel="stylesheet" href="/css/bootstrap.min.css">
 		<link rel="stylesheet" href="/css/bootbox-dialoges.css">
-		<link rel="stylesheet" href="/css/jcrop.css">
 
 		<script src="/js/watch.js"></script>
 		<script src="/js/Objectid.js"></script>
@@ -22,16 +21,14 @@
 		<script src="/js/zangodb.min.js"></script>
 		<script src="/js/bootstrap.min.js"></script>
 		<script src="/js/hold-event.min.js"></script>
-		<script src="/js/jcrop.js"></script>
 
 		<style>
 
 			body {
-				margin: 0px;
-				font-size: 13px;
 				font-family: sans-serif;
-				background-repeat: repeat;
-				background-image: url("https://i.imgur.com/rnZZU0i.png") !important;
+				font-size: 13px;
+				background-color: #000;
+				margin: 0px;
 				overflow: hidden;
 			}
 
@@ -50,7 +47,7 @@
 				left:0;
 				right:0;
 				bottom:0;
-				margin:auto;
+				margin:auto;"
 				position:absolute;
 			}
 
@@ -62,7 +59,6 @@
 				right: calc(105px + 370px);
 			}
 
-			.btn-matcap,
 			.btn-terrain {
 				padding:0;
 				float:left;
@@ -74,8 +70,7 @@
 				margin-bottom:4px;
 				display:inline-block;
 			}
-
-			.btn-matcap + .btn-matcap,
+			
 			.btn-terrain + .btn-terrain {
 				margin-right:4px;
 			}
@@ -94,458 +89,375 @@
 		<script src="/ecs/js/EditorControls.js"></script>
 		<script src="/ecs/js/SubdivisionModifier.js"></script>
 		<script src="/ecs/js/three-pathfinding.umd.js"></script>
+		<script src="/ecs/engine/pre-alpha/Entity.js"></script>
+
 		<script src="/threejs/r96/examples/js/loaders/GLTFLoader.js"></script>
 		<script src="/threejs/r96/examples/js/exporters/GLTFExporter.js"></script>
 		<script src="/threejs/r96/examples/js/exporters/STLExporter.js"></script>
 		<script src="/threejs/r96/examples/js/exporters/OBJExporter.js"></script>
 		<script src="/threejs/r96/examples/js/exporters/ColladaExporter.js"></script>
 
-		<script src="/ecs/js/KeyboardState.js"></script>
-		<script src="/ecs/engine/Enviroment.js"></script>
-		<script src="/ecs/engine/pre-alpha/Entity.js"></script>
-		<script src="/ecs/engine/pre-alpha/EntityManager.js"></script>
-
-		<script>
-/*
-		//	EntityManager.js
-
-		//	Entity Manager: inherits (extends) Array class.
-		//	sources: https://stackoverflow.com/questions/26700164/extending-array-with-es6-classes
-		//	https://stackoverflow.com/questions/11337849/ways-to-extend-array-object-in-javascript
-
-			function EntityManager(){
-				var array = new Array(0);
-				Object.setPrototypeOf( array, EntityManager.prototype );
-				return array; // important!
-			};
-
-			EntityManager.prototype = Object.create(Array.prototype); // important!
-
-			EntityManager.prototype.move = function( entity, new_index ){
-
-				var old_index = this.findIndex(function( item ){
-					return item.id === entity.id;
-				});
-
-				if ( old_index < 0 ) return; // important!
-				if ( old_index == new_index ) return;
-
-				(function( arr, old_index, new_index ){
-
-					if (new_index >= arr.length) {
-						var k = new_index - arr.length + 1;
-						while (k--) {
-							arr.push(undefined);
-						}
-					}
-
-					arr.splice(new_index, 0, arr.splice(old_index, 1)[0]);
-
-				})( this, old_index, new_index);
-
-			};
-
-			EntityManager.prototype.remove = function(){
-			//	params: {number:entity._id} or {object:entity} 
-
-				if ( arguments.length < 1 ) return;
-
-			//	Get removed _ids.
-				var remove_ids = [];
-				for ( var i in arguments ) {
-					var param = arguments[i];
-					if ( typeof param === "number" ) 
-						remove_ids.push( param );
-					else if ( typeof param === "object" && param.isEntity )
-						remove_ids.push( param._id );
-					else continue;
-				}
-
-				if ( !remove_ids.length ) return;
-				console.log( "remove_ids:", remove_ids );
-
-				var length = remove_ids.length;
-				for ( var j = 0; j < length; j++ ) {
-
-					var _id = remove_ids[ j ];
-
-					//	Find index.
-					var index = this.findIndex(function( item ){
-						return item._id === _id;
-					});
-
-					if ( index < 0 ) return; // important!
-
-					var removedItems = this.splice(index, 1);
-					//	debugMode && console.log( removedItems );
-
-					while ( removedItems.length ){
-						var removed = removedItems.shift();
-						//	debugMode && console.log( removed );
-						removedEntities.push( removed );
-					}
-
-				}
-			};
-
-			EntityManager.prototype.clear = function(){
-
-				this.length = 0;
-
-			};
-
-		//	Create entities managers.
-
-			const entities = new EntityManager();
-			const removedEntities = new EntityManager();
-
-
-		//	Testing.
-
-		//	Now entities and removedEntities ARE Arrays...
-			console.log( 
-				"entities, removedEntities, ARE Array...",
-				"Array.isArray(entities, removedEntities):", 
-				Array.isArray(entities),       // true,
-				Array.isArray(removedEntities) // true,
-			);
-		//	Now EntityManager.prototype is NOT Array...
-			console.warn( 
-				"EntityManager.prototype is NOT Array...",
-				"Array.isArray(EntityManager.prototype):", 
-				Array.isArray(Object.getPrototypeOf(entities)) // false,
-			);
-		//	and EntityManager.prototype.__proto__ IS Array!
-			console.log( 
-				"EntityManager.prototype.__proto__ IS Array...",
-				"Array.isArray(EntityManager.prototype.__proto__):", 
-				Array.isArray(Object.getPrototypeOf(EntityManager.prototype)) // true,
-			);
-			console.warn( "read about extending array with ES6 classes at:",
-				"https://stackoverflow.com/questions/26700164/extending-array-with-es6-classes"
-			);
-*/
-		</script>
-
 		<script>
 
-		//	Global helpers.
+			debugMode = true;
+			MW.install( THREE );
 
 			Number.prototype.format = function (){
 				return this.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
 			};
 
-		//	save_file.js
-			function saveString( text, filename ) {
-				save( new Blob( [ text ], { type: "text/plain" } ), filename );
-			}
+		</script>
 
-			function saveArrayBuffer( buffer, filename ) {
-				save( new Blob( [ buffer ], { type: "application/octet-stream" } ), filename );
-			}
+		<script>
 
-			function save( blob, filename ) {
+		//	TabUI.
 
-				var link = document.createElement( "a" );
-				link.href = URL.createObjectURL( blob );
-				link.download = filename || "untitled";
-				link.click();
+			(function(){
 
-			}
+				var sidePanel = createSidePanel();
+				document.body.appendChild( sidePanel );
 
-		//	round.js
-			function round(number, precision) {
-				var shift = function (number, precision, reverseShift) {
-					if (reverseShift) {
-						precision = -precision;
-					}  
-					numArray = ("" + number).split("e");
-					return +(numArray[0] + "e" + (numArray[1] ? (+numArray[1] + precision) : precision));
-				};
-				return shift(Math.round(shift(number, precision, false)), precision, true);
-			}
+				var loginTab = TabUI.add( "Login", "login-tab" );
+				var debugTab = TabUI.add( "Debug", "debug-tab" );
+				var levelTab = TabUI.add( "Levels", "level-tab" );
+				var editorTab = TabUI.add( "Editor", "editor-tab" );
+				var cameraTab = TabUI.add( "Camera", "camera-tab" );
+				var controlTab = TabUI.add( "Controls", "control-tab" );
+				var playersTab = TabUI.add( "Players", "players-tab" );
+				var materialTab = TabUI.add( "Materials", "material-tab" );
+				var animationTab = TabUI.add( "Animations", "animation-tab" );
 
-		//	array_move.js
-			function array_move( arr, old_index, new_index ){
+				TabUI.append("Editor", "Controls", "Camera", "Players", "Animations", "Materials", "Levels", "Debug" );
+				TabUI.Editor.role.classList.add("active");
+				TabUI.Editor.tab.classList.add("in","active");
 
-				if (new_index >= arr.length) {
-					var k = new_index - arr.length + 1;
-					while (k--) {
-						arr.push(undefined);
-					}
-				}
+				TabUI.Editor.tab.textContent = "Shift+V: show/hide world."
+				TabUI.Editor.tab.style.cssText = "font-size:x-large;font-weight:bold;"
 
-				arr.splice(new_index, 0, arr.splice(old_index, 1)[0]);
-			}
-
-		//	deep_copy.js
-			function deepCopy(obj) {
-				if (Object.prototype.toString.call(obj) === "[object Array]") {
-					var out = [], i = 0, len = obj.length;
-					for ( ; i < len; i++ ) {
-						out[i] = arguments.callee(obj[i]);
-					}
-				//	console.log("out:", out);
-					return out;
-				}
-				if (typeof obj === "object") {
-					var out = {}, i;
-					for ( i in obj ) {
-						out[i] = arguments.callee(obj[i]);
-					}
-				//	console.log("out:", out);
-					return out;
-				}
-				return obj;
-			}
-
-			function copyObject(obj) {
-
-			//	1. copy has same prototype as orig
-				var copy = Object.create(Object.getPrototypeOf(obj));
-
-			//	2. copy has all of orig’s properties
-				copyOwnPropertiesFrom(copy, obj);
-
-				return copy; // warning: shallow copy!
-
-			//	The properties are copied from orig to copy via this function:
-
-				function copyOwnPropertiesFrom(target, source) {
-					Object.getOwnPropertyNames(source).forEach(function(propKey) {
-						var desc = Object.getOwnPropertyDescriptor(source, propKey);
-						Object.defineProperty(target, propKey, desc);
-					});
-					return target;
-				};
-
-			}
+			})();
 
 		</script>
 
 		<script>
 
-		//	three-quaternion-from-normal.
-		//	Builds a ThreeJS quaternion from a normal vector.
-		//	This is useful for getting meshes to 'point' in the direction of a vector.
+		//	Scene.
 
-		//	Usage: quat = quaternionFromNormal(normal, [quaternionTarget])
-		//	Builds a quaternion from the normal (a normalized THREE.Vector3), 
-		//	storing the result in quaternionTarget (a THREE.Quaternion) 
-		//	or creating a new quaternion object if no target is specified.
-		//	The quaternion target is returned.
+			scene = new THREE.Scene();
 
-		//	Example:
-		//	Say we want mesh to point from A to B point.
-			//	var A = new THREE.Vector3(1, 0, 0);
-			//	var B = new THREE.Vector3(2, 5,-1);
-		//	Get normal A->B.
-			//	var normal = B.clone().sub(A).normalize();
-		//	Get orientation.
-			//	var quaternion = quaternionFromNormal(normal);
-		//	Apply orientation to mesh.
-			//	mesh.quaternion.copy(quaternion);
+		//	Camera.
 
-			function quaternionFromNormal( normal, quaternion ){
+			(function(){
 
-				return setDirection(normal, quaternion);
+				var aspect = (window.innerWidth - 370) / window.innerHeight;
+				camera = new THREE.PerspectiveCamera( 50, aspect, 1, 10000 );
+				camera.position.set(0, 2, 10);
 
-				function setDirection(normal, quaternion) {
-					quaternion = quaternion || new THREE.Quaternion();
-				//	vector is assumed to be normalized.
-					if (normal.y > 0.99999) {
-						quaternion.set(0, 0, 0, 1);
-					} else if (normal.y < -0.99999) {
-						quaternion.set(1, 0, 0, 0);
-					} else {
-						var axis = new THREE.Vector3();
-						axis.set(normal.z, 0, -normal.x).normalize();
-						var radians = Math.acos(normal.y);
-						quaternion.setFromAxisAngle(axis, radians);
-					}
+			})();
 
-					return quaternion;
-				}
-			}
+		//  Camera Light.
 
-		</script>
+			(function(){
 
-		<script>
+				cameraLight = new THREE.DirectionalLight( 0xdfebff, 0.75 );
+				cameraLight.position.set( 0, 500, 300 );
+				cameraLight.castShadow = true;
+				cameraLight.shadow.mapSize.width  = Math.pow(2, 10); // 2048;
+				cameraLight.shadow.mapSize.height = Math.pow(2, 10); // 2048;
 
-		//	Singals.js
+				var d = 30;
+				cameraLight.shadow.camera.left = - d;
+				cameraLight.shadow.camera.right = d;
+				cameraLight.shadow.camera.top = d;
+				cameraLight.shadow.camera.bottom = - d;
+				cameraLight.shadow.camera.far = 10000;
 
-			const Signal = signals.Signal;
+				shadowHelper = new THREE.CameraHelper(cameraLight.shadow.camera);
+				shadowHelper.visible = false;
 
-		</script>
+				scene.add( cameraLight, shadowHelper  );
 
-		<script>
+				(function update(){
+					requestAnimationFrame( update );
+					cameraLight.position.copy( camera.position );
+				})();
 
-		//	System helpers.
+			})();
 
-			function systemValidator(components){
-				while( components.length ){
-					if ( components.shift() === undefined ) return false;
-				}
-				return true;
-			}
-			
-			function systemCheckLog(_id, system, passed, components){
-				debugMode && console.log("Check:", {
-					"_id": _id,
-					"system": system, 
-					"passed": passed,
-					"components": components
+		//  Renderer.
+
+			(function(){
+
+				renderer = new THREE.WebGLRenderer({
+					antialias: true,
+					preserveDrawingBuffer: true,
 				});
-			}
 
-		//	System debug helpers.
-			
-			function syslogcid( name, array ){ 
-				if (array.length) return name+":["+array.join()+"]"; 
-			}
+				renderer.gammaInput = true;
+				renderer.gammaOutput = true;
+				renderer.shadowMap.enabled = true;
+				renderer.setClearColor( 0x000000 );
+				renderer.setPixelRatio( window.devicePixelRatio );
+				renderer.setSize( (window.innerWidth - 370), window.innerHeight );
+				document.body.appendChild( renderer.domElement );
 
-		</script>
+				window.addEventListener("resize", function onWindowResize() {
+					renderer.setSize( (window.innerWidth - 370), window.innerHeight );
+				});
 
-		<script>
+				window.addEventListener("resize", function onWindowResize() {
+					camera.aspect = renderer.domElement.clientWidth / renderer.domElement.clientHeight;
+					camera.updateProjectionMatrix();
+				});
 
-		//	## Application State Class.
+				mouse = new THREE.Vector2();
 
-			const StateManager = function(){};
+				renderer.domElement.addEventListener("mousemove", function(e) {
+					mouse.x = ( e.clientX / this.clientWidth ) * 2 - 1;
+					mouse.y = - ( e.clientY / this.clientHeight ) * 2 + 1;
+				});
 
-			StateManager.prototype.INIT = true;
-			StateManager.prototype.STOP = false;
-			StateManager.prototype.TEAR = false;
-			StateManager.prototype.START = false;
-			StateManager.prototype.PAUSE = false;
-			StateManager.prototype.UPDATE = false;
+				(function render(){
+					requestAnimationFrame( render );
+					renderer.render( scene, camera );
+				})();
 
-			StateManager.prototype.debugMode = true;
-			StateManager.prototype.editorMode = false;
-			StateManager.prototype.isScaling = false;
-			StateManager.prototype.isRotating = false;
-			StateManager.prototype.isTranslating = false;
+			})();
 
-			StateManager.prototype.update = function(){
-				debugMode = this.debugMode;
-				editorMode = this.editorMode;
-				isScaling = this.isScaling;
-				isRotating = this.isRotating;
-				isTranslating = this.isTranslating;
-			};
+		//	World.
 
-			StateManager.prototype.update(); // init states.
+			(function(){
 
-		</script>
+				world = new MW.World();
 
-		<script>
+				var x = 500, y = 500, z = 500;
+				var min = new THREE.Vector3( -x, -y, -z );
+				var max = new THREE.Vector3(  x,  y,  z );
+				var partition = 5;
 
-		//	## System Manager Class.
+				octree = new MW.Octree( min, max, partition );
+				world.add( octree );
 
-			function SystemManager(){};
+				var clock = new THREE.Clock();
 
-		//	requestFrameId.
-			SystemManager.prototype.requestFrameId = 0;
-			SystemManager.prototype.isSystemManager = true;
+				(function update(){
+					requestAnimationFrame( update );
+					var delta = clock.getDelta();
+					var elapsed = clock.getElapsedTime();
+					world.step( Math.min( delta, 0.02 ) );
+					scene.updateMatrixWorld();
+				})();
 
-		//	Keyboard (KeyboardState).
-			SystemManager.keyboard = new KeyboardState(); // important! (non-prototype)
-			SystemManager.keyboard.frontAngle = 0;
+			})();
 
-			window.addEventListener("keyup", updateKeyboardFrontAngle );
-			window.addEventListener("keydown", updateKeyboardFrontAngle );
-			window.addEventListener("keyup", updateKeyboardVerticalAngle );
-			window.addEventListener("keydown", updateKeyboardVerticalAngle );
+		//	Ground.
 
-			function updateKeyboardFrontAngle(){
+			(function(){
 
-				var rad = Math.PI/4;
-				var keyboard = SystemManager.keyboard; 
-
-				var UP     = keyboard.pressed("W") || keyboard.pressed("up");
-				var LEFT   = keyboard.pressed("A") || keyboard.pressed("left");
-				var DOWN   = keyboard.pressed("S") || keyboard.pressed("down");
-				var RIGHT  = keyboard.pressed("D") || keyboard.pressed("right");
-
-			//	debugMode && console.log( UP, LEFT, DOWN, RIGHT );
-
-					 if (  UP && !LEFT && !DOWN && !RIGHT ) keyboard.frontAngle = 0 * rad; //   0 deg.
-				else if (  UP &&  LEFT && !DOWN && !RIGHT ) keyboard.frontAngle = 1 * rad; //  45 deg.
-				else if ( !UP &&  LEFT && !DOWN && !RIGHT ) keyboard.frontAngle = 2 * rad; //  90 deg.
-				else if ( !UP &&  LEFT &&  DOWN && !RIGHT ) keyboard.frontAngle = 3 * rad; // 135 deg.
-				else if ( !UP && !LEFT &&  DOWN && !RIGHT ) keyboard.frontAngle = 4 * rad; // 180 deg.
-				else if ( !UP && !LEFT &&  DOWN &&  RIGHT ) keyboard.frontAngle = 5 * rad; // 225 deg.
-				else if ( !UP && !LEFT && !DOWN &&  RIGHT ) keyboard.frontAngle = 6 * rad; // 270 deg.
-				else if (  UP && !LEFT && !DOWN &&  RIGHT ) keyboard.frontAngle = 7 * rad; // 315 deg.
-			//	else if ( !UP && !LEFT && !DOWN && !RIGHT ) keyboard.frontAngle = 8 * rad; // 360 deg.
-
-			}
-
-			function updateKeyboardVerticalAngle(){
-
-				var rad = Math.PI/4;
-				var keyboard = SystemManager.keyboard; 
-
-				var ZENITH = keyboard.pressed("E");
-				var NATHIR = keyboard.pressed("Q");
-
-			//	debugMode && console.log( TOP, BOTTOM );
-
-				     if ( !ZENITH && !NATHIR ) keyboard.verticalAngle =  0 * rad; //   0 deg.
-				else if (  ZENITH && !NATHIR ) keyboard.verticalAngle =  2 * rad; //  90 deg.
-				else if ( !ZENITH &&  NATHIR ) keyboard.verticalAngle = -2 * rad; // -90 deg.
-				else if (  ZENITH &&  NATHIR ) keyboard.verticalAngle =  0 * rad; //   0 deg.
-
-			}
-
-		//	Camera Controls system.
-
-			SystemManager.prototype.cameraControls = (function( camera ){
-
-				var object = new THREE.Object3D();
-				
-				var options = {	
-					el: renderer.domElement,
-					offset: new THREE.Vector3( 0, 0, 0 ), // eye height.
-					radius: 2, // default distance of the character to the camera.
-					minRadius: 2,
-					maxRadius: 10,
-					rigidObjects: [],
-				};
-
-				var cameraControls = new MW.TPSCameraControl(
-					camera, 	// three.js camera.
-					object,	    // tracking object.
-					options
+				ground = new THREE.Mesh(
+					new THREE.PlaneGeometry( 1000, 1000, 1, 1 ).rotateX(-Math.PI/2),
+					new THREE.MeshLambertMaterial({ color:0x829ec4, side:2, })
 				);
+
+				octree.importThreeMesh( ground );
+				groundID = ground.geometry.uuid;
+
+			})();
+
+		//	Ground Helper.
+
+			(function(){
+
+				groundHelper = new THREE.GridHelper( 500, 500, 0x444444, 0x444444 );
+				scene.add( groundHelper );
+
+			})();
+
+		</script>
+
+		<script>
+
+		//	localPlayer Controller.
+
+			(function(){
+
+				var radius = 0.5;
+
+			//	local player.
+				localPlayer = (function(){
+					var player = new THREE.Object3D();
+					player.position.set( 0, 0, 0 );
+					player.name = "localPlayer";
+					scene.add( player );
+					return player;
+				})();
+
+			//	Player helper.
+				localPlayerHelper = (function( r ){
+					var sphere = new THREE.SphereGeometry( r, 8, 6 );
+					var geometry = new THREE.EdgesGeometry( sphere );
+					var material = new THREE.LineBasicMaterial( { color: 0x00ff00 } );
+					var segments = new THREE.LineSegments( geometry, material );
+					segments.name = "playerhelper";
+					return segments;
+				})( radius );
+
+				localPlayer.add( localPlayerHelper );
+
+			//	Player controller.
+				localPlayerController = (function( object, radius ){
+					var controller = new MW.CharacterController( object, radius );
+					controller.movementSpeed = 10;
+					controller.maxSlopeGradient = 0.5;
+					controller.center.set(0, 1, 0);
+					return controller;
+				})( localPlayer, radius );
+
+				world.add( localPlayerController );
+
+			//	Take CameraLight control.
+				cameraLight.target = localPlayer;
+
+			//	Update rotation.
+				(function update(){
+					localPlayer.requestFrameID = requestAnimationFrame( update );
+					localPlayer.rotation.y = localPlayerController.direction + Math.PI;
+				})();
+
+			})();
+
+		//	Camera controls.
+
+			(function(){
+
+				cameraControls = new MW.TPSCameraControl(
+					camera, 			// three.js camera.
+					localPlayer,		// tracking object.
+					{	
+						el: renderer.domElement,
+						offset: new THREE.Vector3( 0, 0, 0 ), // eye height.
+						radius: 6, // default distance of the character to the camera.
+						minRadius: 2,
+						maxRadius: +Infinity,
+						rigidObjects: [],
+					}
+				);
+
+				cameraControls.setLatLon(30, 220); // deg.
 
 				(function update(){
 					requestAnimationFrame( update );
 					cameraControls.update();
-					cameraControls.frontAngle = cameraControls.getFrontAngle();
 				})();
 
-				return cameraControls;
+			})();
 
-			})( camera );
+		//	keyInputControls.
 
-		//	Camera Joystick.
+			(function(){
 
-			SystemManager.prototype.cameraJoystick = (function( cameraControls ){
+				keyInputControls = new MW.KeyInputControl();
 
-				var joystickControls = document.createElement( "div" );
-				joystickControls.id = "joystick-controls-1";
-				joystickControls.classList.add("joystick-controls");
-				document.body.appendChild( joystickControls );
+				keyInputControls.addEventListener( "movekeyon", function () { 
+					localPlayerController.isRunning = true; 
+				});
 
-				var joystick = new virtualInput.Joystick( $( "#joystick-controls-1" ), 94, { id: "joystick1" } );
+				keyInputControls.addEventListener( "movekeyoff", function () { 
+					localPlayerController.isRunning = false; 
+				});
 
-				joystick.update = function(){
+				keyInputControls.addEventListener( "jumpkeypress", function () { 
+					localPlayerController.jump(); 
+				});
 
-					if ( joystick.isActive ) {
+			// synch with keybord input and camera control input.
+				keyInputControls.addEventListener( "movekeychange",  function () {
+					var cameraFrontAngle = cameraControls.getFrontAngle();
+					var characterFrontAngle = keyInputControls.frontAngle;
+					localPlayerController.direction = THREE.Math.degToRad( 360 ) - cameraFrontAngle + characterFrontAngle;
+				});
+
+			})();
+
+		//	joystickControls.
+
+			(function(){
+
+				var joystick1, joystick2;
+
+				var joysticControls1 = document.createElement( "div" );
+				joysticControls1.id = "joystick-controls-1";
+				joysticControls1.classList.add("joystick-controls");
+				document.body.appendChild( joysticControls1 );
+
+				var joysticControls2 = document.createElement( "div" );
+				joysticControls2.id = "joystick-controls-2";
+				joysticControls2.classList.add("joystick-controls");
+				document.body.appendChild( joysticControls2 );
+
+				var joystick1Selector  = "#joystick1";
+				var joystick2Selector  = "#joystick2";
+				var jumpButtonSelector = "#jumpButton";
+
+				var joystickControlsSelector  = ".joystick-controls";
+				var joystickControls1Selector = "#joystick-controls-1";
+				var joystickControls2Selector = "#joystick-controls-2";
+
+				joystick1  = new virtualInput.Joystick( $( joystickControls1Selector ), 94, { id: "joystick1" } );
+				joystick2  = new virtualInput.Joystick( $( joystickControls2Selector ), 94, { id: "joystick2" } );
+				jumpButton = new virtualInput.Button(   $( joystickControls1Selector ), 58, { id: "jumpButton", label: "<b>JUMP</b>" } ); // buttonSvgSrc
+
+				joystick2.addEventListener( "active", function onActive() { 
+
+					if (  localPlayerController.isJumping 
+						|| !localPlayerController.isGrounded 
+						|| localPlayerController.isOnSlope ) {
+						return;
+					}
+
+					localPlayerController.isRunning = true;
+
+				});
+
+				joystick2.addEventListener( "disactive", function onDisactive() { 
+
+					if (  localPlayerController.isJumping 
+						|| !localPlayerController.isGrounded 
+						||  localPlayerController.isOnSlope ) {
+						return;
+					}
+
+					localPlayerController.isRunning = false;
+
+				});
+
+				jumpButton.addEventListener( "press", function onPress() { 
+
+					if (  localPlayerController.isJumping 
+						|| !localPlayerController.isGrounded 
+						|| localPlayerController.isOnSlope ) {
+						return;
+					}
+
+					localPlayerController.jump();
+
+				});
+
+				joystick2.update = function(){
+
+					if ( this.isActive ) {
+
+						localPlayerController.direction = (3 * Math.PI/2) - cameraControls.getFrontAngle() + this.angle;
+
+					}
+				};
+
+				joystick1.update = function(){
+
+					if ( this.isActive ) {
 
 						cameraControls.setLatLon(
-							cameraControls.lat + joystick.position.y * 0.5, // deg.
-							cameraControls.lon - joystick.position.x        // deg.
+							cameraControls.lat + this.position.y * 0.5, // deg.
+							cameraControls.lon - this.position.x        // deg.
 						);
 
 					}
@@ -553,1118 +465,181 @@
 
 				(function update(){
 					requestAnimationFrame( update );
-					joystick.update();
+					joystick1.update();
+					joystick2.update();
 				})();
-
-				return joystick;
-
-			})( SystemManager.prototype.cameraControls );
-
-		//	Joystick Controls.
-
-			SystemManager.prototype.joystickControls = (function( cameraControls ){
-
-				var joystickControls = document.createElement( "div" );
-				joystickControls.id = "joystick-controls-2";
-				joystickControls.classList.add("joystick-controls");
-				document.body.appendChild( joystickControls );
-
-				var joystick = new virtualInput.Joystick( $( "#joystick-controls-2" ), 94, { id: "joystick2" } );
-
-			//	Update.
-
-				function updateDirection( entity ){
-					var rad = 3 * Math.PI/2; // 270 deg.
-					var joystickAngle = joystick.angle;
-					var cameraFrontAngle = cameraControls.getFrontAngle();
-					entity.characterController.direction = rad - cameraFrontAngle + joystickAngle;
-				}
-
-				joystick.update = function( entity ){
-					if ( !entity.joystickControls ) return;
-					if ( joystick.isActive ) updateDirection( entity );
-				};
-
-			//	Bind virtualJoystick events.
-
-				function isOnAir( entity ){
-					return ( entity.characterController.isJumping 
-					|| !entity.characterController.isGrounded 
-					|| entity.characterController.isOnSlope );
-				}
-
-				function startRunning( entity ){
-					if ( isOnAir( entity ) ) return;
-					entity.characterController.isRunning = true;
-				}
-
-				function stopRunning(entity){
-					if ( isOnAir( entity ) ) return;
-					entity.characterController.isRunning = false;
-				}
-
-				joystick.addEventListener( "active", function(e) { 
-					this.entities = entities.filter(function( entity ){
-						return !!entity.joystickControls && !!entity.characterController;
-					});
-					for (var i = 0; i < this.entities.length; i++ ){
-						startRunning( this.entities[i] );
-					}
-				});
-
-				joystick.addEventListener( "disactive", function(e) { 
-					this.entities = entities.filter(function( entity ){
-						return !!entity.joystickControls && !!entity.characterController;
-					});
-					for (var i = 0; i < this.entities.length; i++ ){
-						stopRunning( this.entities[i] );
-					}
-				});
-
-				return joystick;
-
-			})( SystemManager.prototype.cameraControls );
-
-		//	Jumb Button.
-
-			SystemManager.prototype.jumpButton = (function(){
-
-				var interval;
-				var button = new virtualInput.Button( $( "#joystick-controls-1" ), 58, { id: "jumpButton", label: "<b>JUMP</b>" } );
-
-			//	Use clearTimeout to event listeners to ensure last event parsing.
-			//	Because "press" event fires twice, we use the clearTimeout method 
-			//	to parse only the last "press" event.
-
-				function startJumping( entity ){
-					entity.characterController.jump();
-				}
-
-				button.addEventListener( "press", function(e) {
-				//	debugMode && console.log(e); // double event.
-
-					clearTimeout( interval );
-					interval = setTimeout(function(){
-					//	debugMode && console.log(e); // single event.
-
-						button.entities = entities.filter(function( entity ){
-							return !!entity.joystickControls && !!entity.characterController;
-						});
-
-						for (var i = 0; i < button.entities.length; i++ ){
-							startJumping( button.entities[i] );
-						}
-
-					});
-				});
-
-				return button;
-
-			})();
-
-		//	Key Input Controls.
-
-			SystemManager.prototype.keyInputControls = (function( cameraControls ){
 				
-				var keyInputControls = new MW.KeyInputControl();
-
-			//	KeyInputControl events.
-
-				function startJumping( entity ){
-					entity.characterController.jump();
-				}
-
-				function startRunning( entity ){
-					entity.characterController.isRunning = true;
-				}
-
-				function stopRunning( entity ){
-					entity.characterController.isRunning = false;
-				}
-
-				function updateDirection( entity ){
-					var rad = 2 * Math.PI; // THREE.Math.degToRad( 360 );
-					var cameraFrontAngle = cameraControls.getFrontAngle();
-					var keyInputFrontAngle = keyInputControls.frontAngle;
-					entity.characterController.direction = rad - cameraFrontAngle + keyInputFrontAngle;
-				}
-
-				keyInputControls.addEventListener( "movekeyon", function (e) { 
-					this.entities = entities.filter(function( entity ){
-						return !!entity.keyInputControls && !!entity.characterController;
-					});
-					for (var i = 0; i < this.entities.length; i++ ){
-						startRunning( this.entities[i] );
-						updateDirection( this.entities[i] );
-					}
-				});
-
-				keyInputControls.addEventListener( "movekeyoff", function (e) { 
-					this.entities = entities.filter(function( entity ){
-						return !!entity.keyInputControls && !!entity.characterController;
-					});
-					for (var i = 0; i < this.entities.length; i++ ){
-						stopRunning( this.entities[i] );
-						updateDirection( this.entities[i] );
-					}
-				});
-
-			//	Synch keyInput and camera controls.
-				keyInputControls.addEventListener( "movekeychange",  function (e) {
-					this.entities = entities.filter(function( entity ){
-						return !!entity.keyInputControls && !!entity.characterController;
-					});
-					for (var i = 0; i < this.entities.length; i++ ){
-						updateDirection( this.entities[i] );
-					}
-				});
-
-				keyInputControls.addEventListener( "jumpkeypress", function (e) { 
-					this.entities = entities.filter(function( entity ){
-						return !!entity.keyInputControls && !!entity.characterController;
-					});
-					for (var i = 0; i < this.entities.length; i++ ){
-						startJumping( this.entities[i] );
-					}
-				});
-
-				return keyInputControls;
-
-			})( SystemManager.prototype.cameraControls );
-
-
-	//	## SYSTEMS.
-
-		//	THREELoadingSystem.
-		//	var FBXLoadingSystem;
-
-			const THREELoadingSystem = function(entity){
-				switch( Object.getPrototypeOf( entity.loader ).constructor.name ){
-
-					case "FBXLoader":
-						FBXLoadingSystem( entity );
-					break;
-
-				}
-			};
-
-		//	Updates.
-
-			SystemManager.prototype.update = function(entities){
-
-			//	Keep self-removed _ids to remove at end of loop-cycle.
-				var toRemoveIds = [];
-
-			//	Define updating systems order.
-				for (var i = 0; i < entities.length; i++ ){
-					var entity = entities[i]; // DO NOT USE .forEach();
-
-				//	THREELoadingSystem:
-					if ( entity.loader ) THREELoadingSystem(entity); // important!
-
-				//	ImportClipToSystem:
-				//	Create self-removed-toCollection new entity to add in "animations".
-					if ( isClip( entity ) ) addtoCollection( entity.clip, animations );
-
-				//	ImportMeshToSystem: 
-				//	Create mesh, skinned, geometry and material entities to import in system.
-					else if ( isMesh( entity ) ) (function( entity ){
-
-						var mesh = entity.mesh; if ( !material ) return;
-
-						var geometry = mesh.geometry;
-						var material = mesh.material;
-
-					//	Create self-removed-toCollection new entity to add in "meshes" or "skinned".
-						if ( mesh.type === "SkinnedMesh" ) addtoCollection( mesh, skinned );
-						else if (  mesh.type === "Mesh"  ) addtoCollection( mesh, meshes );
-
-					//	Create self-removed-toCollection new entity to add in "geometries".
-						if ( geometry ) addtoCollection( geometry, geometries );
-
-					//	Create self-removed-toCollection new entities to add in "materials".
-						if ( material ) {
-							if ( Array.isArray( material ) ) (function( material ){
-								for ( var i=0; i < material.length; i++ ) {
-									addtoCollection( material[i], materials );
-								}
-							})( material );
-
-							else addtoCollection( material, materials );
-						}
-
-					})( entity );
-
-				//	Create self-removed toCollection new entity to add in "geometries".
-					else if ( isGeometry( entity ) ) 
-						addtoCollection( entity.geometry, geometries );
-
-					else if ( isMaterial( entity ) ) (function( entity ){
-						var material = entity.material; if ( !material ) return;
-					//	Create self-removed-toCollection new entity to add in "materials".
-						if ( material ) addtoCollection( material, materials );
-					//	Create self-removed-toCollection new entities to add in "textures".
-						for ( var key in material ) {
-							if ( material[ key ] && material[ key ].isTexture ) {
-								var texture = material[ key ];
-								addtoCollection( texture, textures );
-							}
-						}
-					})( entity );
-
-					else if ( isTexture( entity ) ) (function( entity ){
-						var texture = entity.texture; if ( !texture ) return;
-					//	Create self-removed-toCollection new entities to add in "textures".
-						if ( texture ) addtoCollection( texture, textures );
-					//	Create self-removed-toCollection new entity to add in "images" (optional).
-						if ( texture.image ) (function addtoImages( image ){
-							var entity = new Entity();
-							entity.key = THREE.Math.generateUUID();
-							entity.value = image.src;
-							entity.selfRemoved = true;
-							entity.collection = images;
-							entities.push( entity );
-						})( texture.image );
-					})( entity );
-
-				//	AddToCollection: Add to entity collections system.
-					else if ( toCollection( entity ) ) 
-						entity.collection.add( entity.key, entity.value );
-
-				//	AddOptionSystem: Add option to droplist system.
-					if ( isOption( entity ) ) (function AddOptionSystem( entity ){
-						var name = entity.target.name;
-						var value = entity.target.uuid;
-						var index = entity.collection.length;
-						var option = document.createElement("option");
-						var select = document.querySelector(entity.selector);
-						option.value = value;
-						option.text = index + "." + name;
-						debugMode && console.log( option );
-						select.appendChild( option );
-					})( entity );
-
-
-
-
-				//	Update direction system.
-					if ( entities[i].characterController ) (function(entity){
-						SystemManager.prototype.joystickControls.update( entity );
-					})( entities[i] );
-
-				//	Update rotation.y system.
-					if ( entities[i].characterController ) (function(entity){
-						var object = entity.characterController.object;
-						var controller = entity.characterController;
-						object.rotation.y = controller.direction + Math.PI; // important!
-					})( entities[i] );
-
-				//	Keep object on ground system.
-					if ( entities[i].characterController ) (function(entity){
-						var object = entity.characterController.object;
-						var controller = entity.characterController;
-						object.position.y = controller.center.y - controller.radius;
-					})( entities[i] );
-
-
-				//	SelfRemovedEntity system.
-				//	Prepear to remove selfRemoved entities from queue.
-					if ( entities[i].selfRemoved ) (function(entity){
-					//	entities.remove( entity._id );
-					//	ids to be removed at end of update-cycle.
-						toRemoveIds.push( entity._id ); 
-					})( entities[i] );
-
-				} // end for() loop.
-
-			//	Remove selfRemoved entities from queue (at end to update-cycle).
-				if ( toRemoveIds.length ) (function(){
-					debugMode && console.log( "toRemoveIds:", toRemoveIds );
-					entities.remove.apply(entities, toRemoveIds); // important.
-				})();
-
-			//	helpers.
-
-				function addtoCollection( object, collection ){
-					var entity = new Entity();
-					entity.key = object.uuid;
-					entity.value = object;
-					entity.selfRemoved = true;
-					entity.collection = collection;
-					entities.push( entity );
-				}
-
-				function isClip( entity ){
-					return entity.clip
-						&& entity.uuid
-						&& entity.selfRemoved;
-				}
-
-				function isMesh( entity ){
-					return entity.mesh
-						&& entity.uuid
-						&& entity.selfRemoved;
-				}
-
-				function isGeometry( entity ){
-					return entity.geometry
-						&& entity.uuid
-						&& entity.selfRemoved;
-				}
-
-				function isMaterial( entity ){
-					return entity.material
-						&& entity.uuid
-						&& entity.selfRemoved;
-				}
-
-				function isTexture( entity ){
-					return entity.texture
-						&& entity.uuid
-						&& entity.selfRemoved;
-				}
-
-				function isOption( entity ){
-					return entity.tag 
-						&& entity.target
-						&& entity.selector 
-						&& entity.collection
-						&& entity.tag === "option" 
-						&& document.querySelector(entity.selector);
-				}
-
-				function toCollection( entity ){
-					return entity.key
-						&& entity.value
-						&& entity.collection;
-				}
-
-				function toMeshes( entity ){
-					return toCollection( entity )
-					&& entity.collection === meshes;
-				}
-
-				function toSkinned( entity ){
-					return toCollection( entity )
-					&& entity.collection === skinned;
-				}
-
-				function toGeometries( entity ){
-					return toCollection( entity )
-					&& entity.collection === geometries;
-				}
-
-				function toMaterials( entity ){
-					return toCollection( entity )
-					&& entity.collection === materials;
-				}
-
-				function toTextures( entity ){
-					return toCollection( entity )
-					&& entity.collection === textures;
-				}
-
-				function toAnimations( entity ){
-					return toCollection( entity )
-					&& entity.collection === animations;
-				}
-
-			};
-
-			SystemManager.prototype.init = function(entities){};
-			SystemManager.prototype.start = function(entities){};
-			SystemManager.prototype.pause = function(entities){};
-			SystemManager.prototype.stop = function(entities){};
-			SystemManager.prototype.tear = function(entities){};
-			SystemManager.prototype.render = function(entities){};
-
-		//	Runtime.
-
-			SystemManager.prototype.runtime = function(){
-
-				var INIT = StateManager.prototype.INIT;
-				var TEAR = StateManager.prototype.TEAR;
-				var STOP = StateManager.prototype.STOP;
-				var START = StateManager.prototype.START;
-				var PAUSE = StateManager.prototype.PAUSE;
-				var UPDATE = StateManager.prototype.UPDATE;
-
-				if ( INIT ) {
-					SystemManager.prototype.init(entities);
-					INIT = false; 
-					START = true;
-				} else if ( START ) {
-					SystemManager.prototype.start(entities);
-					START = false; 
-					UPDATE = true;
-				}
-
-
-				(function runtime(){
-
-				//	var dt = clock.getDelta();
-				//	var elapsed = clock.getElapsedTime();
-					SystemManager.prototype.requestFrameId = requestAnimationFrame( runtime );
-
-					if ( START ) { UPDATE = true;  PAUSE = false; STOP  = false; }
-					if ( PAUSE ) { UPDATE = false; START = false; STOP  = false; }
-					if ( STOP  ) { UPDATE = false; PAUSE = false; START = false; }
-					if ( UPDATE) { START  = false; PAUSE = false; STOP  = false  }
-				//	cancelAnimationFrame( SystemManager.prototype.requestFrameId );
-					if ( !INIT && !START && !PAUSE && !STOP && !TEAR ) UPDATE = true;
-
-					if ( UPDATE ) {
-						SystemManager.prototype.update(entities);
-					} else if ( START ) {
-						SystemManager.prototype.start(entities);
-						START = false;
-					} else if ( PAUSE ) {
-						SystemManager.prototype.pause(entities);
-					} else if ( STOP  ) {
-						SystemManager.prototype.stop(entities);
-					} else if ( TEAR ) {
-						SystemManager.prototype.tear(entities);
-					}
-
-				//	remove self-removed entities.
-				//	entities.remove.call();
-
-					StateManager.prototype.update(entities);
-				//	StateManager.prototype.render(entities);
-
-				})();
-			
-			};
-
-		</script>
-
-		<script>
-
-			const keyboard = SystemManager.keyboard;
-
-		//	Selected.
-		//	"selected" component is a boolean flag-component that allow 
-		//	to a system to trigger and operate in entity's components
-		//	data. Selected component is moving from entity to entity
-		//	to represent the current selected entity. Only on multi-
-		//	selecting entities is allowed to exist in more than one  
-		//	entities and must be removed when the entity deselected.
-
-			const Selected = {
-			//	value: always true.
-			//	flag-type boolean component.
-				get get(){ return true; },
-				get value(){ return true; },
-				get valueOf(){ return true; },
-			};
-
-		//	Axies components.
-			const axies = new THREE.Vector3(1,1,1); // component-type.
-			const axisX = new THREE.Vector3(1,0,0); // component-type.
-			const axisY = new THREE.Vector3(0,1,0); // component-type.
-			const axisZ = new THREE.Vector3(0,0,1); // component-type.
-
-		</script>
-
-		<script>
-
-		//	Camera Controls.
-			const cameraControls = SystemManager.prototype.cameraControls;
-
-		//	Camera Virtual Joystick.
-			const cameraJoystick = SystemManager.prototype.cameraJoystick;
-
-		//	Character Virtual Joystick.
-			const joystickControls = SystemManager.prototype.joystickControls;
-
-		//	Jump Button.
-			const jumpButton = SystemManager.prototype.jumpButton;
-
-		//	Key Input Controls.
-			const keyInputControls = SystemManager.prototype.keyInputControls;
-
-		//	Helpers.
-			function takeCameraLight( target ){
-				cameraLight.target = target;
-			}
-
-			function takeCameraControls( target, offset ){
-				cameraControls.trackObject = target;
-				cameraControls.offset.y = offset || 0;
-			}
-
-		</script>
-
-		<script>
-
-
-		//	"animations" is a collection named entity that hold all animation clips.
-		//	const animations = new Entity(); // important!
-		//	collection entities is not important to be added in entities queue.
-		//	entities.push( animations );
-
-		//	Same as "animations" collection entity...
-		//	"textures" is a named collection entity that hold all textures (a texture is component).
-		//	"materials" is a named collection entity that hold all materials (a material is component).
-		//	"geometries" is a named collection entity that hold all geometries (a geometry is component)...
-
-			const images = new EntityCollection();
-			const meshes = new EntityCollection();
-			const skinned = new EntityCollection();
-			const textures = new EntityCollection();
-			const materials = new EntityCollection();
-			const geometries = new EntityCollection();
-			const animations = new EntityCollection(); // important!
-
-		//	collection entities is not important to be added in entities queue.
-		//	entities.push( meshes );
-		//	entities.push( skinned );
-		//	entities.push( textures );
-		//	entities.push( materials );
-		//	entities.push( geometries );
-		//	entities.push( animations );
-
-		</script>
-
-		<script>
-
-		//	TabUI.js
-
-			(function(){
-
-				var sidePanel = createSidePanel();
-				var loginTab = TabUI.add( "Login", "login-tab" );
-				var debugTab = TabUI.add( "Debug", "debug-tab" );
-				var levelTab = TabUI.add( "Levels", "level-tab" );
-				var cameraTab = TabUI.add( "Camera", "camera-tab" );
-				var controlTab = TabUI.add( "Controls", "control-tab" );
-				var materialTab = TabUI.add( "Material", "material-tab" );
-				var animationTab = TabUI.add( "Animations", "animation-tab" );
-				var pathfinderTab = TabUI.add( "Pathfinder", "pathfinder-tab" );
-
-				document.body.appendChild( sidePanel );
-				TabUI.append("Animations", "Debug" );
-				TabUI.Animations.role.classList.add("active");
-				TabUI.Animations.tab.classList.add("in","active");
-
 			})();
 
 		</script>
 
 		<script>
 
-		//	Animation tab.
+		//	Loading system.
+
+		//	Visible system.
+
+
+		//	world.
 
 			(function(){
 
-				var tab = TabUI.Animations.tab;
-				var row = document.createElement("h3");
-				row.textContent = "Animation";
-
-				var select = document.createElement("select");
-				select.id = "animation-droplist";
-				select.style.cssText = "width:180px;color:#000;" // float:left;
-					+ "border:1px solid;border-radius:4px;padding:2px 4px 4px 4px;"
-					+ "font-size:20px;margin-left:10px;";
-
-				row.appendChild( select );
-				tab.appendChild( row );
-
-			})();
-
-			(function(){
-
-			//	Import Animation.
-
-				var tab = TabUI.Animations.tab;
-				var row = document.createElement("div");
-				row.style.cssText = "margin:10px 12px;height:35px;text-align:center;";
-
-				var button1 = IdleButton();
-				var button2 = ImportAnimationButton();
-
-				row.appendChild( button1 );
-				row.appendChild( button2 );
-				tab.appendChild( row );
-
-				function ImportAnimationButton() {
-
-					var button = document.createElement("div");
-					button.id = "import-animaton";
-					button.textContent = "Import animation";
-					button.style.cssText = "min-width:60%;width:180px;float:right;height:40px;font-size:large;";
-					button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
-
-					var input = document.createElement("input");
-					input.type = "file";
-					input.style.display = "none";
-					input.setAttribute("multiple", "");
-
-					var k = 0; // important!
-					input.addEventListener( "change", function(){
-
-						var select = document.getElementById("animation-droplist");
-						if ( !select ) return;
-
-						for ( var i = 0; i < input.files.length; i++ ) {
-							(function( file ){
-
-								var filename = file.name.replace(".fbx", "");
-								var extension = file.name.split( "." ).pop().toLowerCase();
-
-								var reader = new FileReader();
-
-								reader.addEventListener( "progress", function ( e ) {
-									var size = "(" + Math.floor( e.total / 1000 ).format() + " KB)";
-									var progress = Math.floor( ( e.loaded / e.total ) * 100 ) + "%";
-									debugMode && console.log( "Loading", file.name, size, progress );
-								});
-
-								reader.addEventListener( "load", function ( e ) {
-
-									var data = reader.result;
-									var loader = new THREE.FBXLoader();
-									var group = loader.parse( data );
-								//	debugMode && console.log( group );
-
-								//	Add animations.
-									if ( !group.animations.length ) return;
-									debugMode && console.log( group.animations );
-
-								//	Each clip is a component of animations entity.
-									group.animations.forEach( function( clip ){
-									//	Add clip to animations entity.
-										animations[ clip.uuid ] = clip;
-									//	create option.
-										clip.name = filename;
-										var name = ++k+"."+filename;
-										var option = document.createElement("option");
-										option.text = name;
-										option.value = clip.uuid;
-										select.appendChild( option );
-									});
-
-								}, false );
-								reader.readAsArrayBuffer( file );
-
-							})( input.files[i] );
-						}
-
-					});
-
-					button.addEventListener( "click", function(){
-						
-						input.value = "";
-						input.click();
-
-					});
-
-					button.appendChild( input );
-					return button;
-
-				}
-
-				function IdleButton(){
-
-					var button = document.createElement("div");
-					button.id = "idle-animaton";
-					button.textContent = "Pause";
-					button.style.cssText = "max-width:120px;width:100px;float:left;height:40px;font-size:large;";
-					button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
-
-					function playIdling( entity ){
-						if ( entity.animationController.currentMotionName == "idling" ) return;
-						entity.animationController.play( "idling" ); 
-					}
-
-					button.addEventListener( "click", function(){
-						button.entities = entities.filter(function( entity ){
-							return !!entity.characterController && !!entity.animationController;
-						});
-						for (var i = 0; i < button.entities.length; i++ ) {
-							playIdling( button.entities[i] );
-						}
-					});
-
-					return button;
-				}
-
-			})();
-
-		</script>
-
-		<script>
-
-		//	## Local Player "named" entity.
-
-			const localPlayer = new Entity();
-
-		//	localPlayer abstract.
-
-			(function(){
-
-				var radius = 0.85; // radius.
-
-			//	localPlayer has object3d holder.
-				var object = (function(){
-					var object3d = new THREE.Object3D();
-					object3d.position.y = 2;
-					object3d.name = "localPlayer object";
-					scene.add( object3d );
-					return object3d;
-				})();
-
-			//	localPlayer has a bounding sphere helper.
-				var boundingSphere = (function( radius ){
-					var sphere = new THREE.SphereGeometry( radius, 8, 6 );
-					var geometry = new THREE.EdgesGeometry( sphere );
-					var material = new THREE.LineBasicMaterial( { color: 0x00ff00 } );
-					var segments = new THREE.LineSegments( geometry, material );
-					segments.position.y = radius;
-					segments.name = "localPlayer helper";
-				//	Add helper to scene.
-					object.add( segments );
-					return segments;
-				})( radius );
-
-			//	localPlayer has a charecter controller.
-				var characterController = (function(object, radius){
-				//	Create controller.
-					var controller = new MW.CharacterController(object, radius);
-				//	Initialize controller.
-					controller.movementSpeed = 5; // (m/fps)
-					controller.maxSlopeGradient = 0.5; // important!
-				//	synch with 3d model front angle.
-					controller.direction += Math.PI; // important!
-				//	Add controller to world (start controller update).
-					world.add( controller ); // important! updating controller.
-					return controller;
-				})( object, radius );
-
-			//	Take camera controls.
-				takeCameraLight( object );
-				takeCameraControls( object, radius );
-
-			//	And components.
-				localPlayer.holder = object;
-				localPlayer.boundingSphere = boundingSphere;
-				localPlayer.keyInputControls = keyInputControls;
-				localPlayer.joystickControls = joystickControls;
-				localPlayer.characterController = characterController;
-				debugMode && console.log( "localPlayer:", localPlayer );
-
-			//	Add entity to entities.
-				entities.push( localPlayer ); // important!
-
-			})();
-
-		</script>
-
-		<script>
-
-		//	## Synopsis.
-			
-			//	Define component types.
-			//	Create component instances.
-			//	Create entities instances.
-			//	Define entities systems.
-			//	Define systems order in SystemManager methods.
-			//	Define SystemManager methods order in runtime.
-
-		//	## Runtime.
-
-			SystemManager.prototype.runtime();
-
-		</script>
-
-		<script>
-
-		//	DevNote: We should make a loading system where every is loading to be added
-		//	(animations, materials, textures, -geometries?-, meshes, skinned meshes, etc.),
-		//	to corresponding "named" entities. This way we know what is avaliable in
-		//	systems. Everything that loads in runtime should be parsed from this system.
-		//	At the same time, the system will add options to corresponding droplists.
-		//	To do this, we should create an entity that will be parsed from the loading
-		//	system and removed from the entities queue when done.
-		//	Same way, the loading system will create entities of each items that will
-		//	add in entities queue. Each entity will parsed from the "create option" system
-		//	and removed from the queue when done.
-
-			var loader = (function(){
-				var entity = new Entity();
-			//	Create a loader entity and add to entities queue.
-			//	Loading entity will parsed from loading system and remove
-			//	itself when done.
-				entity.url = "/textme/animations/TextMeGirlv2.3_TextOnPhoneT49b.fbx";
-				entity.loader = new THREE.FBXLoader();
-				entity.setScale = 0.000029;
-			//	Self remove component.(removes itself when done).
-				entity.selfRemoved = true;
-				return entity;
-			})();
-
-			debugMode && console.log( "loader:", loader );
-
-
-			function FBXLoadingSystem(entity){
-
-				var url = entity.url;
-				var loader = entity.loader;
-
-			//	FBXLoadingSystem is responible only for:
-
-				//	resetting group scale,
-				//	setting group scale,
-				//	renaming group animations???
-				//	replacing group meshes materials???
-
-				//	adding group animations to "entities",
-				//	adding group (skinned) meshes to "entities".
-
-			//	Internal systems are responsible for:
-
-				//	adding group meshes to "meshes",
-				//	adding group textures to "textures".
-				//	adding group materials to "materials",
-				//	adding group animations to "animations",
-				//	adding group skinned meshes to "skinned".
-
-				loader.load( url, function( group ){
-					fbx = group; // for debugging only.
-
-				//	All children in group have scale 100.
-
-				//	Reset scale.
-					(function resetScale( group ){
-					//	All children in group have scale: 100.
-						group.traverse(function( child ){
-							if ( child.scale !== undefined ) {
-								child.scale.set(1,1,1); // important!
-							}
-						});
-					})( group );
-
-
-				//	Set scale.
-					if ( entity.setScale ) 
-						setScale(entity.setScale);
-					function setScale( s ){
-						group.scale.set(s,s,s);
-					}
-
-				//	Create a composite entity for AddToCollection and
-				//	AddOptionSystem systems so can get correct indexes
-				//	in options.
-				//	if ( group.animations && group.animations.length ) 
-				//	//	Create a self removed entity for each animation clip.
-				//	//	"AddToCollection" system will add to "animations".
-				//	//	"AddOptionSystem" system will add an option element
-				//	//	to animation droplist.
-				//		group.animations.forEach(function( clip ){
-				//			var entity = new Entity();
-				//			entity.tag = "option";
-				//			entity.key = clip.uuid;
-				//			entity.value = clip;
-				//			entity.target = clip;
-				//			entity.selector = "select#animation-droplist";
-				//			entity.collection = animations;
-				//			entity.selfRemoved = true;
-				//			entities.push( entity );
-				//		});
-
-			//
-
-				//	Adding animation clips to "entities".
-
-					debugMode && console.log( 
-						group.animations.map(function( clip ){
-							return clip.name;
-						})
-					);
-
-				//	Create a self removed entity for each animation clip.
-				//	ImportClipToSystem will create new entities to add in
-				//	"animations" collection.
-
-					if ( group.animations && group.animations.length ) {
-						group.animations.forEach(function( clip ){
-							var entity = new Entity();
-							entity.clip = clip;
-							entity.uuid = clip.uuid;
-							entity.selfRemoved = true;
-							entities.push( entity );
-						});
-					}
-
-			//
-
-					group.traverse( function( child ){
-
-						if (child.isMesh) {	
-							child.castShadow = true;	
-							child.receiveShadow = true;	
-						}
-
-						switch ( child.type ) {
-
-							case "Mesh":
-							case "SkinnedMesh":
-
-						//	Create a self removed entity for each mesh.
-						//	ImportMeshToSystem will create new entities for
-						//	mesh geometry and materials to add in collections.
-
-								(function( mesh ){
-									var entity = new Entity();
-									entity.mesh = mesh;
-									entity.uuid = mesh.uuid;
-									entity.selfRemoved = true;
-									entities.push( entity );
-								})( child );
-
-							break;
-
-						}
-
-					});
-
-				//	Remove from entities when done.
-				//	entities.remove( entity._id ); // very important!
-
-					debugMode && console.log( group );
-				});
-			}
-/*
-			(function(){
-
-				var url = "/textme/animations/TextMeGirlv2.3_TextOnPhoneT49b.fbx";
-				var loader = new THREE.FBXLoader();
-
-				loader.load( url, function( group ){
-
-					fbx = group; // for debugging only.
-				//	All children in group have scale 100. Fix it:
-					group.traverse(function( child ){
-						if ( child.scale !== undefined ) {
-							child.scale.set(1,1,1);
-						}
-					});
-
-					var s = 0.000029; 
+				var loader = new THREE.GLTFLoader();
+				loader.load("/clone-7/assets/world.glb", function( object ){
+					debugMode && console.log( "world:", object );
+
+					var s = 0.7;
+					var offset = -10.37;
+					var group = new THREE.Group();
+					group.name = "world";
 					group.scale.set(s,s,s);
+					group.position.y = offset;
+					group.add.apply( group, object.scene.children );
+					group.updateMatrixWorld();
 
-				//	Add group to scene.
-				//	scene.add( group );
-					debugMode && console.log( group );
-				//	localPlayer.holder = group;
-				//	localPlayer.characterController.object = group;
-				//	Take camera controls.
-				//	var radius = 0.85;
-				//	takeCameraLight( group );
-				//	takeCameraControls( group, radius );
-					localPlayer.holder.add( group );
+					scene.add( group );
+					group.visible = false;
 
-					debugMode && console.log( 
-						group.animations.map(function( clip ){
-							return clip.name;
-						})
-					);
-
-				//	Rename animation clips.
-				//	group.animations.forEach(function( clip ){
-				//		clip.name = clip.name.replace("Armature|", "");
-				//	})
-
-				//	Add animation clips to animation entity.
-					(function(){
-						var k = animations.length;
-						var select = document.querySelector("select#animation-droplist");
-						group.animations.forEach( function( clip ){
-						//	Rename animation clips.
-							clip.name = clip.name.replace("Armature|", "");
-						//	Add clip to "animations" entity.
-							animations[ clip.uuid ] = clip;
-						//	create option.
-							var option = document.createElement("option");
-							option.text = ++k+"."+clip.name;
-							option.value = clip.uuid;
-							select.appendChild( option );
-						});
-					})();
-
-				//	localPlayer has an animation controller.
-					var animationController = (function(){ // global for debuggin only.
-
-						var controller = new MW.AnimationController( group );
-						debugMode && console.log( "animations:", Object.keys( controller.motion ).join() );
-
-					//	Start mixer updating immidiatly when animation controller created.
-					//	Not need for an animation updating system to update the animation mixer,
-					//	but need an animation manager to manage which animation is currently playing. 
-					//	Can be done with character controller by adding event listeners?
-
-					//	Start animation controller mixer.
-						var clock = new THREE.Clock(); // needs own clock. Why?
-						(function update(){
-							requestAnimationFrame( update );
-							var delta = clock.getDelta();
-							controller.update( delta );
-						})();
-						
-						return controller;
-					})();
-
-					debugMode && console.log( animationController );
-
-				//	Bind character controller animation events.
-				//	All characters skinned 3d models (avatars) must have at least one "idling" animation.
-					localPlayer.characterController.addEventListener( "startIdling",  function () { 
-						debugMode && console.log( "start Idling" );
-						if ( animationController.motion["idling"] )
-							animationController.play( "idling" );
-					});
-					localPlayer.characterController.addEventListener( "startWalking",  function () { 
-						debugMode && console.log( "start Walking" );
-						if ( animationController.motion["running"] )
-							animationController.play( "running" );
-					});
-					localPlayer.characterController.addEventListener( "startSliding", function () { 
-						debugMode && console.log( "start Sliding" );
-						if ( animationController.motion["wobbling"] )
-							animationController.play( "wobbling" );
-					});
-					localPlayer.characterController.addEventListener( "startFalling", function () { 
-						debugMode && console.log( "start Falling" );
-						if ( animationController.motion["wobbling"] )
-							animationController.play( "wobbling" );
-					});
-					localPlayer.characterController.addEventListener( "startJumping", function() { 
-						debugMode && console.log( "start Jumping" );
-						if ( localPlayer.characterController.isRunning ) {
-							if ( animationController.motion["jumping"] ) {
-								animationController.motion["jumping"].reset(); // important!
-								animationController.play( "jumping" );
-							}
-						} else {
-							if ( animationController.motion["jumpingUp"] ) {
-								animationController.motion["jumpingUp"].reset(); // important!
-								animationController.play( "jumpingUp" );
-							}
+					window.addEventListener("keyup", function(e){
+						if ( e.shiftKey && e.key === "V" ) {
+							group.visible = !group.visible;
+							groundHelper.visible = !group.visible;
 						}
 					});
-
-				//	Add animationController component.
-					localPlayer.animationController = animationController;
-
-				//	Start idling.
-					localPlayer.characterController.dispatchEvent({type:"startIdling"});
 
 				});
 
 			})();
-*/
-		</script>
 
+		//	Boxman.
+
+			(function(){
+
+				var loader = new THREE.GLTFLoader();
+				loader.load("/clone-7/assets/boxman.glb", function( object ){
+					debugMode && console.log( "boxman:", object );
+
+					var animations = object.animations;
+
+					var player = object.scene.children[0];
+					localPlayer.add( player );
+					player.position.y = -0.55;
+
+					localPlayerController.movementSpeed = 3.3;
+
+				//	Animation controller.
+					var mesh = player.children[0];
+					mesh.animations = animations;
+
+					animationController = new MW.AnimationController( mesh );
+					animationController.play("idle");
+
+				//	Bind character controller animation.
+					localPlayerController.addEventListener( "startIdling",  function () { 
+						animationController.play( "idle" );
+					});
+					localPlayerController.addEventListener( "startWalking",  function () { 
+						animationController.play( "run" );
+					});
+					localPlayerController.addEventListener( "startSliding", function () { 
+						animationController.play( "falling" );
+					});
+					localPlayerController.addEventListener( "startFalling", function () { 
+						animationController.play( "falling" );
+					});
+					localPlayerController.addEventListener( "startJumping", function() { 
+						if ( localPlayerController.isRunning ) {
+							animationController.motion["jump_running"].reset();
+							animationController.motion["jump_running"].setDuration(1.1);
+							animationController.play( "jump_running" );
+						} else {
+							animationController.motion["jump_idle"].reset();
+							animationController.motion["jump_idle"].setDuration(1.1);
+							animationController.play( "jump_idle" );
+						}
+					});
+
+				//	Start animation controller.
+					var clock = new THREE.Clock();
+					(function update(){
+						requestAnimationFrame( update );
+						var delta = clock.getDelta();
+						animationController.update( delta );
+					})();
+
+					localPlayerHelper.visible = false;
+				});
+
+			})();
+
+		//	Car.
+
+			(function(){
+
+				var loader = new THREE.GLTFLoader();
+				loader.load("/clone-7/assets/car.glb", function( object ){
+					debugMode && console.log( "car:", object );
+
+					var s = 1;
+					car = new THREE.Object3D();
+					car.name = "car";
+					car.scale.set(s,s,s);
+					car.position.set(0, 0.3, -3);
+					scene.add( car );
+
+					car.add.apply( car, object.scene.children );
+					
+					car.children.forEach(function(child){
+						if ( child.name.includes("Sphere") 
+						  || child.name.includes("Cube") )
+							child.visible = false;
+					});
+
+					(function(r){
+						var geom = new THREE.BoxGeometry(r, r, 2*r);
+						var mesh = new THREE.Mesh(geom);
+						mesh.position.copy( car.position );
+						mesh.position.y = r/2;
+						octree.importThreeMesh( mesh );
+					})( 1.3 );
+
+				//	Car helper.
+					carHelper = (function( r ){
+						var box = new THREE.BoxGeometry(r, r, 2*r);
+						var geometry = new THREE.EdgesGeometry( box );
+						var material = new THREE.LineBasicMaterial( { color: 0x00ff00 } );
+						var segments = new THREE.LineSegments( geometry, material );
+						segments.position.y = 0.3;
+						segments.name = "carhelper";
+						var mesh = new THREE.Mesh(box);
+						mesh.position.copy( car.position );
+						mesh.position.y = r/2;
+						octree.importThreeMesh( mesh );
+						return segments;
+					})( 1.3 );
+
+					car.add( carHelper );
+
+				});
+
+			})();
+
+		//	function takeControls(object, speed){
+		//		cameraLight.target = object;
+		//		cameraControls.trackObject = object;
+		//		localPlayerController.center.copy( object.position );
+		//		localPlayerController.object = object;
+		//		localPlayerController.maxSlopeGradient = 0.5;
+		//		if ( speed != null ) 
+		//			localPlayerController.movementSpeed = speed;
+		//		//	Update rotation.
+		//		(function update(){
+		//			object.requestFrameID = requestAnimationFrame( update );
+		//			object.rotation.y = localPlayerController.direction + Math.PI;
+		//		})();
+		//	};
+
+		</script>
 
 	</body>
 </html>
