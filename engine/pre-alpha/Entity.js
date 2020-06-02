@@ -35,8 +35,8 @@
 		Entity.call( this );
 	};
 
-	EntityCollection.prototype.isEntityCollection: true;
-	EntityCollection.prototype.constructor: EntityCollection;
+	EntityCollection.prototype.isEntityCollection = true;
+	EntityCollection.prototype.constructor = EntityCollection;
 
 //	EntityManager-like implementation (inherits from Entity class).
 
