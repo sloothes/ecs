@@ -267,8 +267,6 @@
 
 			const joystickControls = (function(cameraController, characterController){
 
-				var rad = Math.PI/2;
-
 				var joysticControls1 = document.createElement( "div" );
 				joysticControls1.id = "joystick-controls-1";
 				joysticControls1.classList.add("joystick-controls");
@@ -328,6 +326,8 @@
 				});
 
 			//	updates.
+
+				const rad = Math.PI/2;
 
 				playerJoystick.update = function(){
 

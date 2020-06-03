@@ -1,10 +1,11 @@
 
 	const keyInputControls = (function( characterController, cameraController ){
 
+		const rad = Math.PI/2;
+
 		var keyInputController = new MW.KeyInputControl();
 
 		function syncWithCameraController() {
-			var rad = Math.PI/2;
 			var cameraFrontAngle = cameraController.getFrontAngle();
 			var characterFrontAngle = keyInputController.frontAngle;
 			characterController.direction = (4 * rad) - cameraFrontAngle + characterFrontAngle;
