@@ -13,7 +13,7 @@
 			return player;
 		})();
 
-	//	player helper.
+	//	helper.
 		var helper = (function( r ){
 			var sphere = new THREE.SphereGeometry( r, 8, 6 );
 			var geometry = new THREE.EdgesGeometry( sphere );
@@ -25,8 +25,8 @@
 
 		player.add( helper );
 
-	//	player controller.
-		var characterController = (function( object, radius ){
+	//	controller.
+		player.controller = (function( object, radius ){
 			var controller = new MW.CharacterController( object, radius );
 			controller.movementSpeed = 10;
 			controller.maxSlopeGradient = 0.5;
@@ -34,20 +34,18 @@
 			world.add( controller );
 			(function reset(){
 				player.requestFrameID = requestAnimationFrame( reset );
-				if ( controller.center.y < -10 ) controller.center.set(0, 10, 0);
+				if ( controller.center.y > -1 ) controller.center.set(0, 10, 0);
 			})();
 			return controller;
 		})( player, radius );
 
-		player.controller = characterController;
-
-	//	Update rotation.
+	//	rotation.
 		(function update(){
 			player.requestFrameID = requestAnimationFrame( update );
-			player.rotation.y = characterController.direction + Math.PI;
+			player.rotation.y = player.controller.direction + Math.PI;
 		})();
 
-	//	Take CameraLight control.
+	//	cameraLight control.
 		takeCameraLight( player );
 
 		return player;
