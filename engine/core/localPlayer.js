@@ -32,6 +32,10 @@
 			controller.maxSlopeGradient = 0.5;
 			controller.center.set(0, 1, 0);
 			world.add( controller );
+			(function reset(){
+				player.requestFrameID = requestAnimationFrame( reset );
+				if ( controller.center.y < -10 ) controller.center.set(0, 10, 0);
+			})();
 			return controller;
 		})( player, radius );
 
