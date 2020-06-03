@@ -27,14 +27,15 @@
 
 	//	controller.
 		player.controller = (function( object, radius ){
+			var h = 2*Math.PI;
 			var controller = new MW.CharacterController( object, radius );
 			controller.movementSpeed = 10;
 			controller.maxSlopeGradient = 0.5;
-			controller.center.set(0, 1, 0);
+			controller.center.set(0, h, 0);
 			world.add( controller );
 			(function reset(){
 				player.requestFrameID = requestAnimationFrame( reset );
-				if ( controller.center.y < -1 ) controller.center.set(0, 2*Math.PI, 0);
+				if ( controller.center.y < -1 ) controller.center.set(0, h, 0);
 			})();
 			return controller;
 		})( player, radius );
