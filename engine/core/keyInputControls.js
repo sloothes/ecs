@@ -14,13 +14,13 @@
 		}
 
 		keyInputController.addEventListener( "movekeyon", function () { 
-		//	syncWithCameraController();
-		//	characterController.isRunning = true; 
+			syncWithCameraController();
+			characterController.isRunning = true; 
 		});
 
 		keyInputController.addEventListener( "movekeyoff", function () { 
 		//	syncWithCameraController();
-		//	characterController.isRunning = false; 
+			characterController.isRunning = false; 
 		});
 
 		keyInputController.addEventListener( "jumpkeypress", function () { 
@@ -29,18 +29,8 @@
 
 	//	sync with cameraControls.
 		keyInputController.addEventListener( "movekeychange",  function(){
-		//	syncWithCameraController();
+			syncWithCameraController();
 		});
-
-		(function update(){
-			requestFrameID = requestAnimationFrame( update );
-
-			if ( keyInputController.isMoveKeyHolded ) (function(){
-				var cameraFrontAngle = cameraController.getFrontAngle();
-				characterController.direction = (4 * rad) - cameraFrontAngle + step; // 1 deg.
-			})();
-
-		})();
 
 		return keyInputController;
 
