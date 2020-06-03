@@ -48,6 +48,12 @@
 
 	})();
 
+//	helper.
+
+	function takeCameraLight( target ){
+		cameraLight.target = target;
+	}
+
 
 //  Renderer.
 
@@ -88,6 +94,7 @@
 		mouse.y = - ( e.clientY / this.clientHeight ) * 2 + 1;
 	});
 
+
 //	World - Octree.
 
 	const world = new MW.World();
@@ -110,6 +117,7 @@
 		var elapsed = clock.getElapsedTime();
 		world.step( Math.min( delta, 0.02 ) );
 	})();
+
 
 //	Ground (component).
 
