@@ -36,8 +36,8 @@
 	};
 
 	KeyboardState.prototype._onKeyChange = function(event, pressed){
-	//	debugMode && console.log("onKeyChange", event, pressed, 
-	//	event.keyCode, event.shiftKey, event.ctrlKey, event.altKey, event.metaKey);
+		debugMode && console.log("onKeyChange", event, pressed, 
+		event.keyCode, event.shiftKey, event.ctrlKey, event.altKey, event.metaKey);
 
 	//	update this.keyCodes.
 		var keyCode = event.keyCode;
