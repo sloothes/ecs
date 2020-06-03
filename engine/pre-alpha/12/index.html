@@ -302,12 +302,12 @@
 					if ( !FORWARD && BACKWARD ) 
 						characterController.movementSpeed = -movementSpeed;
 					else characterController.movementSpeed = movementSpeed;
-				//
-					debugMode && console.log( 
-						"update move:", FORWARD, BACKWARD, 
-						characterController.movementSpeed 
-					);
 				}
+
+				//	debugMode && console.log( 
+				//		"update move:", FORWARD, BACKWARD, 
+				//		characterController.movementSpeed 
+				//	);
 
 				function updateControllerDirection( dt ){
 					var left  = keyCodes[37] || keyCodes[68]; // "arrow LEFT"  or "D"
