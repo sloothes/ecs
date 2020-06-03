@@ -14,13 +14,11 @@
 		}
 
 		keyInputController.addEventListener( "movekeyon", function () { 
-			active = true;
 		//	syncWithCameraController();
 		//	characterController.isRunning = true; 
 		});
 
 		keyInputController.addEventListener( "movekeyoff", function () { 
-			active = false;
 		//	syncWithCameraController();
 		//	characterController.isRunning = false; 
 		});
@@ -31,17 +29,16 @@
 
 	//	sync with cameraControls.
 		keyInputController.addEventListener( "movekeychange",  function(){
-			active = true;
 		//	syncWithCameraController();
 		});
 
 		(function update(){
 			requestFrameID = requestAnimationFrame( update );
 
-			if ( !active ) return;
-
-			var cameraFrontAngle = cameraController.getFrontAngle();
-			characterController.direction = (4 * rad) - cameraFrontAngle + step; // 1 deg.
+			if ( keyInputController.isMoveKeyHolded ) (function(){
+				var cameraFrontAngle = cameraController.getFrontAngle();
+				characterController.direction = (4 * rad) - cameraFrontAngle + step; // 1 deg.
+			})();
 
 		})();
 
