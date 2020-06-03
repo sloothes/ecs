@@ -1,25 +1,32 @@
 
-	const keyInputControls = (function( characterController ){
+	const keyInputControls = (function( characterController, cameraController ){
 
-		var keyInputControls = new MW.KeyInputControl();
+		var keyInputController = new MW.KeyInputControl();
 
-		keyInputControls.addEventListener( "movekeyon", function () { 
+		function syncWithCameraController() {
+			var rad = Math.PI/2;
+			var cameraFrontAngle = cameraController.getFrontAngle();
+			var characterFrontAngle = keyInputController.frontAngle;
+			characterController.direction = (4 * rad) - cameraFrontAngle + characterFrontAngle;
+		});
+
+		keyInputController.addEventListener( "movekeyon", function () { 
+			syncWithCameraController();
 			characterController.isRunning = true; 
 		});
 
-		keyInputControls.addEventListener( "movekeyoff", function () { 
+		keyInputController.addEventListener( "movekeyoff", function () { 
+			syncWithCameraController();
 			characterController.isRunning = false; 
 		});
 
-		keyInputControls.addEventListener( "jumpkeypress", function () { 
+		keyInputController.addEventListener( "jumpkeypress", function () { 
 			characterController.jump(); 
 		});
 
-		// synch with keybord input and camera control input.
-		keyInputControls.addEventListener( "movekeychange",  function () {
-			var cameraFrontAngle = cameraControls.getFrontAngle();
-			var characterFrontAngle = keyInputControls.frontAngle;
-			characterController.direction = THREE.Math.degToRad( 360 ) - cameraFrontAngle + characterFrontAngle;
-		});
+	//	sync with cameraControls.
+		keyInputController.addEventListener( "movekeychange",  syncWithCameraController );
+		
+		return keyInputController;
 
-	})( localPlayer.controller );
+	})( localPlayer.controller, cameraControls );
