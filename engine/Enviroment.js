@@ -18,7 +18,7 @@
 	const cameraLight = (function(){
 
 		var cameraLight = new THREE.DirectionalLight( 0xdfebff, 0.75 );
-		cameraLight.position.set( 0, 500, 300 );
+		cameraLight.position.set( 0, 2, 10 );
 		cameraLight.castShadow = true;
 		cameraLight.shadow.mapSize.width  = Math.pow(2, 10); // 2048;
 		cameraLight.shadow.mapSize.height = Math.pow(2, 10); // 2048;
