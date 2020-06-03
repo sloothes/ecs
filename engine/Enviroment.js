@@ -3,15 +3,19 @@
 	MW.install( THREE ); // important!
 
 //	Scene.
+
 	const scene = new THREE.Scene();
 
+
 //	Camera.
+
 	const camera = (function(){
 		var aspect = (window.innerWidth - 370) / window.innerHeight;
 		return new THREE.PerspectiveCamera( 50, aspect, 1, 10000 );
 	})();
 
 	camera.position.set(0, 2, 50);
+
 
 //  Camera Light.
 
@@ -35,13 +39,15 @@
 
 		scene.add( cameraLight, shadowHelper  );
 
+		(function update(){
+			requestFrameID = requestAnimationFrame( update );
+			cameraLight.position.copy( camera.position );
+		})();
+
 		return cameraLight;
+
 	})();
 
-	(function update(){
-		requestAnimationFrame( update );
-		cameraLight.position.copy( camera.position );
-	})();
 
 //  Renderer.
 
@@ -68,11 +74,12 @@
 	});
 
 	(function render(){
-		requestAnimationFrame( render );
+		requestFrameID = requestAnimationFrame( render );
 		renderer.render( scene, camera );
 	})();
 
-//	Mouse (component).
+
+//	Mouse.
 
 	const mouse = new THREE.Vector2();
 
@@ -84,6 +91,7 @@
 //	World - Octree.
 
 	const world = new MW.World();
+
 	const octree = (function(){
 		var x = 150, y = 150, z = 150;
 		var min = new THREE.Vector3( -x, -y, -z );
@@ -97,7 +105,7 @@
 	const clock = new THREE.Clock();
 
 	(function update(){
-		requestAnimationFrame( update );
+		requestFrameID = requestAnimationFrame( update );
 		var delta = clock.getDelta();
 		var elapsed = clock.getElapsedTime();
 		world.step( Math.min( delta, 0.02 ) );
