@@ -102,12 +102,14 @@
 		<script src="/threejs/r96/examples/js/exporters/ColladaExporter.js"></script>
 
 		<script src="/ecs/engine/Enviroment.js"></script>
-	<!-- script src="/ecs/engine/pre-alpha/Entity.js"></script -->
-		<script src="/ecs/entities/localPlayer.js"></script>
+		<script src="/ecs/engine/core/localPlayer.js"></script>
+		<script src="/ecs/engine/core/cameraControls.js"></script>
+		<script src="/ecs/engine/core/keyInputControls.js"></script>
 
 		<script>
 
 			debugMode = true;
+			const Signal = signals.Signal;
 
 		//	Global helpers.
 
@@ -223,13 +225,12 @@
 				}
 			}
 
-		</script>
+		//	Helpers.
 
-		<script>
-
-		//	Singals.js
-
-			const Signal = signals.Signal;
+			function takeCameraControls( target, offset ){
+				cameraControls.trackObject = target;
+				cameraControls.offset.y = offset || 0;
+			}
 
 		</script>
 
@@ -261,64 +262,29 @@
 		</script>
 
 		<script>
-/*
-		//	localPlayer controller.
-			
-			const localPlayer = (function(){
 
-				var radius = 0.85;
 
-			//	local player.
-				var player = (function(){
-					var player = new THREE.Object3D();
-					player.position.set( 0, 0, 0 );
-					player.name = "localPlayer";
-					scene.add( player );
-					return player;
-				})();
 
-			//	Player helper.
-				var helper = (function( r ){
-					var sphere = new THREE.SphereGeometry( r, 8, 6 );
-					var geometry = new THREE.EdgesGeometry( sphere );
-					var material = new THREE.LineBasicMaterial( { color: 0x00ff00 } );
-					var segments = new THREE.LineSegments( geometry, material );
-					segments.name = "playerhelper";
-					return segments;
-				})( radius );
 
-				player.add( helper );
 
-			//	Player controller.
-				var characterController = (function( object, radius ){
-					var controller = new MW.CharacterController( object, radius );
-					controller.movementSpeed = 10;
-					controller.maxSlopeGradient = 0.5;
-					controller.center.set(0, 1, 0);
-					world.add( controller );
-					return controller;
-				})( player, radius );
 
-				player.controller = characterController;
 
-			//	Update rotation.
-				(function update(){
-					player.requestFrameID = requestAnimationFrame( update );
-					player.rotation.y = characterController.direction + Math.PI;
-				})();
 
-			//	Take CameraLight control.
-				takeCameraLight( player );
 
-				return player;
-			})();
-*/
-		//	Helpers.
 
-			function takeCameraControls( target, offset ){
-				cameraControls.trackObject = target;
-				cameraControls.offset.y = offset || 0;
-			}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 		</script>
 
