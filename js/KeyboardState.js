@@ -1,4 +1,4 @@
-
+//	keyboardState.js
 
 	KeyboardState = function(){
 
@@ -17,7 +17,7 @@
 	}
 
 	KeyboardState.prototype.destroy	= function(){
-		//	unbind keyEvents
+	//	unbind keyEvents
 		window.removeEventListener("keydown", this._onKeyDown, false);
 		window.removeEventListener("keyup", this._onKeyUp, false);
 	}
@@ -42,7 +42,7 @@
 		var keyCode = event.keyCode;
 		this.keyCodes[keyCode] = pressed;
 
-		//	update this.modifiers.
+	//	update this.modifiers.
 		this.modifiers['shift'] = event.shiftKey;
 		this.modifiers['ctrl']	= event.ctrlKey;
 		this.modifiers['alt']	= event.altKey;
