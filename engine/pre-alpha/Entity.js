@@ -1,14 +1,15 @@
 //	Entity Class.
 
+	var entityId = 0;
+
 	function Entity(){
 
-		this._id = Entity.prototype._count++;
+		Object.defineProperty( this, "id", { value: entityId ++ } );
 
 	}
 
 	Entity.prototype = {
 
-		_count: 0,
 		isEntity: true,
 		constructor: Entity,
 
