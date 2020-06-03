@@ -8,7 +8,7 @@
 			var cameraFrontAngle = cameraController.getFrontAngle();
 			var characterFrontAngle = keyInputController.frontAngle;
 			characterController.direction = (4 * rad) - cameraFrontAngle + characterFrontAngle;
-		});
+		}
 
 		keyInputController.addEventListener( "movekeyon", function () { 
 			syncWithCameraController();
