@@ -11,7 +11,7 @@
 		return new THREE.PerspectiveCamera( 50, aspect, 1, 10000 );
 	})();
 
-	camera.position.set(0, 20, 50);
+	camera.position.set(0, 2, 50);
 
 //  Camera Light.
 
