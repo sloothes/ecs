@@ -104,7 +104,8 @@
 		<script src="/ecs/engine/Enviroment.js"></script>
 		<script src="/ecs/engine/core/localPlayer.js"></script>
 		<script src="/ecs/engine/core/cameraControls.js"></script>
-		<script src="/ecs/engine/core/keyInputControls.js"></script>
+		<script src="/ecs/engine/core/keyboardState.js"></script>
+	<!-- script src="/ecs/engine/core/keyInputControls.js"></script -->
 
 		<script>
 
@@ -258,6 +259,203 @@
 				TabUI.Editor.tab.classList.add("in","active");
 
 			})();
+
+		</script>
+
+		<script>
+
+			debugMode && (function(){
+				var geometry = new THREE.BoxGeometry();
+				var material = new THREE.MeshLambertMaterial();
+				var cube = new THREE.Mesh(geometry, material);
+				localPlayer.add( cube );
+			})();
+
+			const keyboard = new KeyboardState();
+
+			const keyInputControls = (function( characterController, cameraController ){
+
+				const rad = Math.PI/2;
+				const deg = Math.PI/180;
+				const clock = new THREE.Clock();
+				const keyCodes = keyboard.keyCodes;
+				const keyInputController = new MW.KeyInputControl();
+
+			//	var JUMP     = keyCodes[32]; // "space".
+			//	var UP       = keyCodes[33] || keyCodes[69]; // "page UP"     or "E"
+			//	var DOWN     = keyCodes[34] || keyCodes[81]; // "page DOWN"   or "Q"
+			//	var LEFT     = keyCodes[37] || keyCodes[68]; // "arrow LEFT"  or "D"
+			//	var RIGHT    = keyCodes[39] || keyCodes[65]; // "arrow RIGHT" or "A"
+			//	var FORWARD  = keyCodes[38] || keyCodes[87]; // "arrow UP"    or "W"
+			//	var BACKWARD = keyCodes[40] || keyCodes[83]; // "arrow DOWN"  or "S"
+
+				characterController.movementSpeed = 5; // debug!
+
+				function resetMovementSpeedDirection(){
+					var movementSpeed = Math.abs( characterController.movementSpeed );
+					characterController.movementSpeed = movementSpeed;
+					debugMode && console.log( "reset:", characterController.movementSpeed );
+				}
+
+				function updateMovementSpeedDirection(){
+					var movementSpeed = Math.abs( characterController.movementSpeed );
+					var FORWARD  = keyCodes[38] || keyCodes[87]; // "arrow UP"    or "W"
+					var BACKWARD = keyCodes[40] || keyCodes[83]; // "arrow DOWN"  or "S"
+					if ( !FORWARD &&  BACKWARD ) 
+						characterController.movementSpeed = -movementSpeed;
+					else 
+						characterController.movementSpeed = movementSpeed;
+					debugMode && console.log( "update:", FORWARD, BACKWARD, characterController.movementSpeed );
+
+				}
+
+				function updateControllerDirection( dt ){
+					var LEFT  = keyCodes[37] || keyCodes[68]; // "arrow LEFT"  or "D"
+					var RIGHT = keyCodes[39] || keyCodes[65]; // "arrow RIGHT" or "A"
+					if ( LEFT && !RIGHT ) 
+						characterController.direction -= dt*rad; // step;
+					else if ( RIGHT && !LEFT ) 
+						characterController.direction += dt*rad; // step;
+				}
+
+				function syncWithCameraController() {
+					var cameraFrontAngle = cameraController.getFrontAngle();
+					var characterFrontAngle = keyInputController.frontAngle;
+					characterController.direction = (4 * rad) - cameraFrontAngle + characterFrontAngle;
+				}
+
+				keyInputController.addEventListener( "movekeyon", function() { 
+					updateMovementSpeedDirection();
+					characterController.isRunning = true; 
+				});
+
+				keyInputController.addEventListener( "movekeyoff", function() { 
+					resetMovementSpeedDirection();
+					characterController.isRunning = false; 
+				});
+
+				keyInputController.addEventListener( "jumpkeypress", function() { 
+					characterController.jump(); 
+				});
+
+				keyInputController.addEventListener( "movekeychange", function(){
+				//	syncWithCameraController();
+					updateMovementSpeedDirection();
+				});
+
+				(function update(){
+
+					requestFrameID = requestAnimationFrame( update );
+					if (  keyInputController.isDisabled ) return;
+				//	if ( !keyInputController.isMoveKeyHolded ) return;
+
+					var dt = clock.getDelta();
+					updateControllerDirection( dt );
+
+				})();
+
+				return keyInputController;
+
+			})( localPlayer.controller, cameraControls );
+
+		</script>
+
+		<script>
+
+/*
+			const keyboard = new KeyboardState();
+
+		//	Direction state.
+			var UP = keyboard.pressed("E") || keyboard.pressed("pageup");
+			var DOWN = keyboard.pressed("Q") || keyboard.pressed("pagedown");
+			var LEFT = keyboard.pressed("A") || keyboard.pressed("left");
+			var RIGHT = keyboard.pressed("D") || keyboard.pressed("right");
+			var FORWARD = keyboard.pressed("W") || keyboard.pressed("up");
+			var BACKWARD = keyboard.pressed("S") || keyboard.pressed("down");
+
+			function resetState(){
+				UP = false;
+				DOWN = false;
+				LEFT = false;
+				RIGHT = false;
+				FORWARD = false;
+				BACKWARD = false;
+			}
+
+			function updateState(){
+				UP = keyboard.pressed("E") || keyboard.pressed("pageup");
+				DOWN = keyboard.pressed("Q") || keyboard.pressed("pagedown");
+				LEFT = keyboard.pressed("A") || keyboard.pressed("left");
+				RIGHT = keyboard.pressed("D") || keyboard.pressed("right");
+				FORWARD = keyboard.pressed("W") || keyboard.pressed("up");
+				BACKWARD = keyboard.pressed("S") || keyboard.pressed("down");
+			}
+
+			function updateDirectionState(){
+				resetState(); // important.
+				LEFT = keyInputControls.isLeft;
+				RIGHT = keyInputControls.isRight;
+				FORWARD = keyInputControls.isUp;
+				BACKWARD = keyInputControls.isDown;
+			}
+
+			function reverseMovementSpeed(){
+				localPlayer.controller.movementSpeed = -localPlayer.controller.movementSpeed;
+			}
+
+				function updateState(){
+				//	debugMode && console.log(e);
+
+					if ( keyInputController.isDisabled ) return;
+					if (!keyInputController.isMoveKeyHolded ) return;
+
+					resetState(); // important.
+
+					if ( keyboard.pressed("E") || keyboard.pressed("pageup") )   UP = true;
+					if ( keyboard.pressed("Q") || keyboard.pressed("pagedown") ) DOWN = true;
+					if ( keyboard.pressed("A") || keyboard.pressed("left") )     LEFT = true;
+					if ( keyboard.pressed("D") || keyboard.pressed("right") )    RIGHT = true;
+					if ( keyboard.pressed("W") || keyboard.pressed("up") )       FORWARD = true;
+					if ( keyboard.pressed("S") || keyboard.pressed("down") )     BACKWARD = true;
+
+				//	debugMode && console.log( UP, DOWN, LEFT, RIGHT, FORWARD, BACKWARD );
+				}
+				window.addEventListener( "keydown", function(e){
+				//	update state direction.
+					updateDirectionState(e); // important!
+				//	update movement direction.
+					var movementSpeed = characterController.movementSpeed;
+					if ( FORWARD  && movementSpeed < 0 ) reverseMovementSpeed();
+					if ( BACKWARD && movementSpeed > 0 ) reverseMovementSpeed();
+				});
+
+				window.addEventListener( "keyup", function(e){
+
+				//	if ( keyInputController.isDisabled ) return;
+				//	if (!keyInputController.isMoveKeyHolded ) return;
+
+					updateState(); // important!
+
+				//	update state direction.
+
+				//	reset movement direction/speed.
+					characterController.movementSpeed = Math.abs( characterController.movementSpeed );
+				});
+
+				(function update(){
+
+					requestFrameID = requestAnimationFrame( update );
+					var dt = clock.getDelta(); // important! outside of udate.
+
+					if (  keyInputController.isDisabled ) return;
+					if ( !keyInputController.isMoveKeyHolded ) return;
+
+					if ( LEFT  ) characterController.direction -= dt*rad; // step;
+					if ( RIGHT ) characterController.direction += dt*rad; // step;
+
+				})();
+*/
+
 
 		</script>
 
