@@ -37,9 +37,10 @@
 		cameraLight.shadow.camera.top = d;
 		cameraLight.shadow.camera.bottom = - d;
 		cameraLight.shadow.camera.far = 10000;
+		cameraLight.shadow.camera.name = "shadow camera";
 
 		var shadowHelper = new THREE.CameraHelper(cameraLight.shadow.camera);
-		shadowHelper.name = "shadow helper";
+		shadowHelper.name = "shadow camera helper";
 		shadowHelper.visible = false;
 
 		scene.add( cameraLight, shadowHelper  );
