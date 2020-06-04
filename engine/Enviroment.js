@@ -5,6 +5,7 @@
 //	Scene.
 
 	const scene = new THREE.Scene();
+	scene.name = "scene";
 
 
 //	Camera.
@@ -14,6 +15,7 @@
 		return new THREE.PerspectiveCamera( 50, aspect, 1, 10000 );
 	})();
 
+	camera.name = "camera";
 	camera.position.set(0,1,5);
 
 
@@ -22,10 +24,12 @@
 	const cameraLight = (function(){
 
 		var cameraLight = new THREE.DirectionalLight( 0xdfebff, 0.75 );
-		cameraLight.position.set( 0, 2, 10 );
+		cameraLight.name = "camera light";
 		cameraLight.castShadow = true;
+		cameraLight.position.set( 0, 2, 10 );
 		cameraLight.shadow.mapSize.width  = Math.pow(2, 10); // 2048;
 		cameraLight.shadow.mapSize.height = Math.pow(2, 10); // 2048;
+
 
 		var d = 30;
 		cameraLight.shadow.camera.left = - d;
@@ -35,6 +39,7 @@
 		cameraLight.shadow.camera.far = 10000;
 
 		var shadowHelper = new THREE.CameraHelper(cameraLight.shadow.camera);
+		shadowHelper.name = "shadow helper";
 		shadowHelper.visible = false;
 
 		scene.add( cameraLight, shadowHelper  );
