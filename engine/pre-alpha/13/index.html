@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+
+		<title>Legacy ECS Engine (pre-alpha 0.13)</title>
+
+		<meta charset="utf-8">
+		<meta name="generator" content="Three.js Editor">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+		<link rel="stylesheet" href="/css/joystick.css">
+		<link rel="stylesheet" href="/css/bootstrap.min.css">
+		<link rel="stylesheet" href="/css/bootbox-dialoges.css">
+		<link rel="stylesheet" href="/css/jcrop.css">
+
+		<script src="/js/watch.js"></script>
+		<script src="/js/Objectid.js"></script>
+		<script src="/js/jquery.min.js"></script> 
+		<script src="/js/system.min.js"></script>
+		<script src="/js/signals.min.js"></script>
+		<script src="/js/inflate.min.js"></script>
+		<script src="/js/zangodb.min.js"></script>
+		<script src="/js/bootstrap.min.js"></script>
+		<script src="/js/hold-event.min.js"></script>
+		<script src="/js/jcrop.js"></script>
+
+		<style>
+
+			body {
+				margin: 0px;
+				font-size: 13px;
+				font-family: sans-serif;
+				background-repeat: repeat;
+				background-image: url("https://i.imgur.com/rnZZU0i.png") !important;
+				overflow: hidden;
+			}
+
+			#loading-bar {
+				width:100%;
+				height:100%;
+				top:0; left:0;
+				position:fixed;
+				display:flex;
+				align-items:center;
+				justify-content:center;
+			}
+
+			.middle > * {
+				top:0; 
+				left:0;
+				right:0;
+				bottom:0;
+				margin:auto;
+				position:absolute;
+			}
+
+			#joystick1 {
+				right: calc(40px + 370px);
+			}
+			
+			#jumpButton {
+				right: calc(105px + 370px);
+			}
+
+			.btn-matcap,
+			.btn-terrain {
+				padding:0;
+				float:left;
+				width:55px;
+				height:55px;
+				border:1px solid;
+				border-radius:4px;
+				margin-right:4px;
+				margin-bottom:4px;
+				display:inline-block;
+			}
+
+			.btn-matcap + .btn-matcap,
+			.btn-terrain + .btn-terrain {
+				margin-right:4px;
+			}
+
+		</style>
+	</head>
+
+	<body ontouchstart="">
+
+		<script src="/ecs/js/three.js"></script>
+		<script src="/ecs/js/TabUI.js"></script>
+		<script src="/ecs/js/MeshWalk.js"></script>
+		<script src="/ecs/js/UVsDebug.js"></script>
+		<script src="/ecs/js/FBXLoader.js"></script>
+		<script src="/ecs/js/VirtualInput.js"></script>
+		<script src="/ecs/js/KeyboardState.js"></script>
+		<script src="/ecs/js/EditorControls.js"></script>
+		<script src="/ecs/js/SubdivisionModifier.js"></script>
+		<script src="/ecs/js/three-pathfinding.umd.js"></script>
+		<script src="/threejs/r96/examples/js/loaders/GLTFLoader.js"></script>
+		<script src="/threejs/r96/examples/js/exporters/GLTFExporter.js"></script>
+		<script src="/threejs/r96/examples/js/exporters/STLExporter.js"></script>
+		<script src="/threejs/r96/examples/js/exporters/OBJExporter.js"></script>
+		<script src="/threejs/r96/examples/js/exporters/ColladaExporter.js"></script>
+
+		<script src="/ecs/engine/Enviroment.js"></script>
+		<script src="/ecs/engine/core/localPlayer.js"></script>
+		<script src="/ecs/engine/core/cameraControls.js"></script>
+		<script src="/ecs/engine/core/keyboardState.js"></script>
+		<script src="/ecs/engine/core/keyInputControls.js"></script>
+		<script src="/ecs/engine/core/joystickControls.js"></script>
+
+		<script>
+
+			debugMode = true;
+			const Signal = signals.Signal;
+
+		//	Global helpers.
+
+			Number.prototype.format = function (){
+				return this.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
+			};
+
+		//	save_file.js
+			function saveString( text, filename ) {
+				save( new Blob( [ text ], { type: "text/plain" } ), filename );
+			}
+
+			function saveArrayBuffer( buffer, filename ) {
+				save( new Blob( [ buffer ], { type: "application/octet-stream" } ), filename );
+			}
+
+			function save( blob, filename ) {
+
+				var link = document.createElement( "a" );
+				link.href = URL.createObjectURL( blob );
+				link.download = filename || "untitled";
+				link.click();
+
+			}
+
+		//	round.js
+			function round(number, precision) {
+				var shift = function (number, precision, reverseShift) {
+					if (reverseShift) {
+						precision = -precision;
+					}  
+					numArray = ("" + number).split("e");
+					return +(numArray[0] + "e" + (numArray[1] ? (+numArray[1] + precision) : precision));
+				};
+				return shift(Math.round(shift(number, precision, false)), precision, true);
+			}
+
+		//	array_move.js
+			function array_move( arr, old_index, new_index ){
+
+				if (new_index >= arr.length) {
+					var k = new_index - arr.length + 1;
+					while (k--) {
+						arr.push(undefined);
+					}
+				}
+
+				arr.splice(new_index, 0, arr.splice(old_index, 1)[0]);
+			}
+
+		//	deep_copy.js
+			function deepCopy(obj) {
+				if (Object.prototype.toString.call(obj) === "[object Array]") {
+					var out = [], i = 0, len = obj.length;
+					for ( ; i < len; i++ ) {
+						out[i] = arguments.callee(obj[i]);
+					}
+				//	console.log("out:", out);
+					return out;
+				}
+				if (typeof obj === "object") {
+					var out = {}, i;
+					for ( i in obj ) {
+						out[i] = arguments.callee(obj[i]);
+					}
+				//	console.log("out:", out);
+					return out;
+				}
+				return obj;
+			}
+
+			function copyObject(obj) {
+
+			//	1. copy has same prototype as orig
+				var copy = Object.create(Object.getPrototypeOf(obj));
+
+			//	2. copy has all of orig’s properties
+				copyOwnPropertiesFrom(copy, obj);
+
+				return copy; // warning: shallow copy!
+
+			//	The properties are copied from orig to copy via this function:
+
+				function copyOwnPropertiesFrom(target, source) {
+					Object.getOwnPropertyNames(source).forEach(function(propKey) {
+						var desc = Object.getOwnPropertyDescriptor(source, propKey);
+						Object.defineProperty(target, propKey, desc);
+					});
+					return target;
+				};
+
+			}
+
+			function quaternionFromNormal( normal, quaternion ){
+
+				return setDirection(normal, quaternion);
+
+				function setDirection(normal, quaternion) {
+					quaternion = quaternion || new THREE.Quaternion();
+				//	vector is assumed to be normalized.
+					if (normal.y > 0.99999) {
+						quaternion.set(0, 0, 0, 1);
+					} else if (normal.y < -0.99999) {
+						quaternion.set(1, 0, 0, 0);
+					} else {
+						var axis = new THREE.Vector3();
+						axis.set(normal.z, 0, -normal.x).normalize();
+						var radians = Math.acos(normal.y);
+						quaternion.setFromAxisAngle(axis, radians);
+					}
+
+					return quaternion;
+				}
+			}
+
+		//	Helpers.
+
+			function takeCameraControls( target, offset ){
+				cameraControls.trackObject = target;
+				cameraControls.offset.y = offset || 0;
+			}
+
+		</script>
+
+		<script>
+
+		//	TabUI.
+
+			(function(){
+
+				var sidePanel = createSidePanel();
+				document.body.appendChild( sidePanel );
+
+				var loginTab = TabUI.add( "Login", "login-tab" );
+				var debugTab = TabUI.add( "Debug", "debug-tab" );
+				var levelTab = TabUI.add( "Levels", "level-tab" );
+				var editorTab = TabUI.add( "Editor", "editor-tab" );
+				var cameraTab = TabUI.add( "Camera", "camera-tab" );
+				var controlTab = TabUI.add( "Controls", "control-tab" );
+				var playersTab = TabUI.add( "Players", "players-tab" );
+				var materialTab = TabUI.add( "Materials", "material-tab" );
+				var animationTab = TabUI.add( "Animations", "animation-tab" );
+
+				TabUI.append("Editor", "Controls", "Camera", "Players", "Animations", "Materials", "Levels", "Debug" );
+				TabUI.Editor.role.classList.add("active");
+				TabUI.Editor.tab.classList.add("in","active");
+
+			})();
+
+		</script>
+
+		<script>
+
+			debugMode && (function(){
+				var geometry = new THREE.BoxGeometry();
+				var material = new THREE.MeshLambertMaterial();
+				var cube = new THREE.Mesh(geometry, material);
+				localPlayer.add( cube );
+			})();
+
+		</script>
+
+		<script>
+
+
+		</script>
+
+	</body>
+</html>
