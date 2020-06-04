@@ -21,7 +21,6 @@ const keyInputControls = (function( characterController, cameraController ){
 	function resetMovementSpeedDirection(){
 		var movementSpeed = Math.abs( characterController.movementSpeed );
 		characterController.movementSpeed = movementSpeed;
-		//	debugMode && console.log( "reset:", characterController.movementSpeed );
 	}
 
 	function updateMovementSpeedDirection(FORWARD, BACKWARD){
