@@ -562,8 +562,6 @@
 					var required = object && object.geometry && object.rotation;
 					if ( !required ) return; // important!
 
-				//	if ( !entity.isEditable && !entity.isSelected && !entity.isRotated ) return;
-
 					try {
 
 						var rad = Math.max(dt, 0.02);
@@ -576,10 +574,10 @@
 
 					//	rotation (local coordinates).
 
-						keyCodes[A] && object.rotateOnAxis( axisY,  rad );
-						keyCodes[D] && object.rotateOnAxis( axisY, -rad );
-						keyCodes[W] && object.rotateOnAxis( axisX,  rad );
-						keyCodes[S] && object.rotateOnAxis( axisX, -rad );
+						keyCodes[ UP ]  && object.rotateOnAxis( axisX,  rad );
+						keyCodes[DOWN]  && object.rotateOnAxis( axisX, -rad );
+						keyCodes[LEFT]  && object.rotateOnAxis( axisY, -rad );
+						keyCodes[RIGHT] && object.rotateOnAxis( axisY,  rad );
 
 					//	Reset rotation.
 
@@ -626,7 +624,7 @@
 						var keyCodes = keyboard.keyCodes;
 						var object = scene.getObjectById( entity.id );
 						var LEFT=37, RIGHT=39, UP=38, DOWN=40;
-						var E=69, Q=81, D=68, A=65, W=87, S=83, R=82, F=70;
+						var A=65, D=68, E=69, F=70, Q=81, R=82, S=83, W=87;
 
 					//	var E = keyCodes[69];         var Q = keyCodes[81]; //  key "E",      key "Q"
 					//	var left     = keyCodes[37];  var D = keyCodes[68]; // "arrow LEFT",  key "D"
@@ -653,8 +651,8 @@
 
 					//	Move left/right/forwards/backward
 
-						if (  keyCodes[UP]   || keyCodes[DOWN] 
-						   || keyCodes[LEFT] || keyCodes[RIGHT] ) (function() {
+						if (  keyCodes[W] || keyCodes[A] 
+						   || keyCodes[S] || keyCodes[D] ) (function() {
 
 						//	var rad = 6 * Math.PI/4;  // joystick input.
 							var rad = 8 * Math.PI/4;  // keyboard input.
@@ -662,7 +660,6 @@
 							var cameraFrontAngle = cameraControls.getFrontAngle();
 							var keyboardFrontAngle = keyboard.frontAngle;
 							var direction = rad - cameraFrontAngle + keyboardFrontAngle;
-							debugMode && console.log( direction );
 							var directionOnAxisX = -Math.sin(direction);
 							var directionOnAxisZ = -Math.cos(direction);
 							var x = directionOnAxisX * movementSpeed;
@@ -689,7 +686,6 @@
 				//			var cameraFrontAngle = cameraControls.getFrontAngle();
 				//			var keyboardFrontAngle = keyboard.frontAngle;
 				//			var direction = rad - cameraFrontAngle + keyboardFrontAngle;
-				//			debugMode && console.log( direction );
 				//			var directionOnAxisX = -Math.sin(direction);
 				//			var directionOnAxisZ = -Math.cos(direction);
 				//			var x = directionOnAxisX * movementSpeed;
