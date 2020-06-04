@@ -558,35 +558,17 @@
 						var UP=38, DOWN=40, LEFT=37, RIGHT=39;
 						var D=68, A=65, W=87, S=83, R=82, F=70;
 
-						if ( entity.isTranslated ) {
+					//	var A = keyCodes[65];  var D = keyCodes[68]; //  key "A", key "D"
+					//	var W = keyCodes[87];  var S = keyCodes[83]; //  key "W", key "S"
 
-						//	var A = keyCodes[65];  var D = keyCodes[68]; //  key "A", key "D"
-						//	var W = keyCodes[87];  var S = keyCodes[83]; //  key "W", key "S"
+					//	rotation (local coordinates).
 
-						//	translation (local coordinates).
+						keyCodes[A] && object.rotateOnAxis( axisY,  rad );
+						keyCodes[D] && object.rotateOnAxis( axisY, -rad );
+						keyCodes[W] && object.rotateOnAxis( axisX,  rad );
+						keyCodes[S] && object.rotateOnAxis( axisX, -rad );
 
-							keyCodes[A] && object.rotateOnAxis( axisY,  rad );
-							keyCodes[D] && object.rotateOnAxis( axisY, -rad );
-							keyCodes[W] && object.rotateOnAxis( axisX,  rad );
-							keyCodes[S] && object.rotateOnAxis( axisX, -rad );
-
-						} else { // if ( entity.entity.isRotated )
-
-							var up    = keyCodes[UP]    || keyCodes[W]; // "arrow UP"    or "W"
-							var down  = keyCodes[DOWN]  || keyCodes[S]; // "arrow DOWN"  or "S"
-							var left  = keyCodes[LEFT]  || keyCodes[D]; // "arrow LEFT"  or "D"
-							var right = keyCodes[RIGHT] || keyCodes[A]; // "arrow RIGHT" or "A"
-
-						//	rotation (local coordinates).
-
-							left  && object.rotateOnAxis( axisY,  rad );
-							right && object.rotateOnAxis( axisY, -rad );
-							up    && object.rotateOnAxis( axisX,  rad );
-							down  && object.rotateOnAxis( axisX, -rad );
-
-						}
-
-					//	Reset.
+					//	Reset rotation.
 
 						keyCodes[R] && object.rotation.set(0,0,0);
 						keyCodes[F] && object.setRotationFromQuaternion(camera.quaternion);
@@ -596,6 +578,23 @@
 					};
 
 				}
+
+					//	} else { // if ( entity.entity.isRotated )
+
+					//		var up    = keyCodes[UP]    || keyCodes[W]; // "arrow UP"    or "W"
+					//		var down  = keyCodes[DOWN]  || keyCodes[S]; // "arrow DOWN"  or "S"
+					//		var left  = keyCodes[LEFT]  || keyCodes[D]; // "arrow LEFT"  or "D"
+					//		var right = keyCodes[RIGHT] || keyCodes[A]; // "arrow RIGHT" or "A"
+
+						//	rotation (local coordinates).
+
+					//		left  && object.rotateOnAxis( axisY,  rad );
+					//		right && object.rotateOnAxis( axisY, -rad );
+					//		up    && object.rotateOnAxis( axisX,  rad );
+					//		down  && object.rotateOnAxis( axisX, -rad );
+
+					//	}
+
 
 			//	## EditorTranslationSystem.
 
@@ -641,9 +640,8 @@
 
 					//	Move left/right/forwards/backward
 
-						if ( entity.rotate && ( 
-						keyCodes[UP]   || keyCodes[DOWN] ||
-						keyCodes[LEFT] || keyCodes[RIGHT] ) ) (function() {
+						if (  keyCodes[UP]   || keyCodes[DOWN] 
+						   || keyCodes[LEFT] || keyCodes[RIGHT] ) (function() {
 
 						//	var rad = 6 * Math.PI/4;  // joystick input.
 							var rad = 8 * Math.PI/4;  // keyboard input.
@@ -660,39 +658,36 @@
 							object.position.z += z;
 
 						})();
-
-						else if ( !entity.rotate && ( 
-						keyCodes[A]    || keyCodes[W]    || 
-						keyCodes[S]    || keyCodes[D]    ||
-						keyCodes[UP]   || keyCodes[DOWN] ||
-						keyCodes[LEFT] || keyCodes[RIGHT] ) ) (function() {
-
-						//	var rad = 6 * Math.PI/4;  // joystick input.
-							var rad = 8 * Math.PI/4;  // keyboard input.
-							var movementSpeed = Math.max(dt, 0.05);
-							var cameraFrontAngle = cameraControls.getFrontAngle();
-							var keyboardFrontAngle = keyboard.frontAngle;
-							var direction = rad - cameraFrontAngle + keyboardFrontAngle;
-							debugMode && console.log( direction );
-							var directionOnAxisX = -Math.sin(direction);
-							var directionOnAxisZ = -Math.cos(direction);
-							var x = directionOnAxisX * movementSpeed;
-							var z = directionOnAxisZ * movementSpeed;
-							object.position.x += x; 
-							object.position.z += z;
-
-						})();
-
-					//	Reset.
-
-						if ( keyCodes[R] ) object.rotation.set(0,0,0);
-						if ( keyCodes[F] ) object.setRotationFromQuaternion(camera.quaternion);
 
 					} catch(err){
 						debugMode && console.error( "EditorTranslationError:", err );
 					};
 
 				}
+
+				//		if ( !entity.isRotated && ( 
+				//		keyCodes[A]    || keyCodes[W]    || 
+				//		keyCodes[S]    || keyCodes[D]    ||
+				//		keyCodes[UP]   || keyCodes[DOWN] ||
+				//		keyCodes[LEFT] || keyCodes[RIGHT] ) ) (function() {
+				//		//	var rad = 6 * Math.PI/4;  // joystick input.
+				//			var rad = 8 * Math.PI/4;  // keyboard input.
+				//			var movementSpeed = Math.max(dt, 0.05);
+				//			var cameraFrontAngle = cameraControls.getFrontAngle();
+				//			var keyboardFrontAngle = keyboard.frontAngle;
+				//			var direction = rad - cameraFrontAngle + keyboardFrontAngle;
+				//			debugMode && console.log( direction );
+				//			var directionOnAxisX = -Math.sin(direction);
+				//			var directionOnAxisZ = -Math.cos(direction);
+				//			var x = directionOnAxisX * movementSpeed;
+				//			var z = directionOnAxisZ * movementSpeed;
+				//			object.position.x += x; 
+				//			object.position.z += z;
+				//		})();
+				//
+				//	//	Reset.
+				//		if ( keyCodes[R] ) object.rotation.set(0,0,0);
+				//		if ( keyCodes[F] ) object.setRotationFromQuaternion(camera.quaternion);
 
 			//	## EditorScalarSystem.
 
