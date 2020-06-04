@@ -2140,7 +2140,7 @@
 
 			function translateOnScreenAxis( object ){
 			//	(from MW character controller).
-			//	var rad = 3 * Math.PI/4 // joystick input.
+			//	var rad = 3 * Math.PI/2 // joystick input.
 				var rad = 2 * Math.PI;  // keyboard input.
 				var movementSpeed = 0.05; // (m/fps) => 5cm/fps
 				var cameraFrontAngle = SystemManager.cameraControls.frontAngle;
@@ -2222,7 +2222,7 @@
 					//	Move left/right/forward/backward
 						if ( entity.State.isRotating && ( UP || LEFT || DOWN || RIGHT ) ) {
 
-						//	var rad = 3 * Math.PI/4 // joystick input.
+						//	var rad = 3 * Math.PI/2 // joystick input.
 							var rad = 2 * Math.PI;  // keyboard input.
 							var movementSpeed = Math.max(dt, 0.05);
 							var cameraFrontAngle = SystemManager.cameraControls.frontAngle;
@@ -2239,7 +2239,7 @@
 						} else if ( !entity.State.isRotating 
 							&& ( W || A || S || D || UP || LEFT || DOWN || RIGHT ) ) {
 
-						//	var rad = 3 * Math.PI/4 // joystick input.
+						//	var rad = 3 * Math.PI/2 // joystick input.
 							var rad = 2 * Math.PI;  // keyboard input.
 							var movementSpeed = Math.max(dt, 0.05);
 							var cameraFrontAngle = SystemManager.cameraControls.frontAngle;
