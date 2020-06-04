@@ -306,7 +306,6 @@
 					var geometry = new THREE.EdgesGeometry( box );
 					var segments = new THREE.LineSegments( geometry, material );
 					segments.name = "building 1";
-					entities.push({id: segments.id});
 					scene.add( segments );
 				})();
 
@@ -319,7 +318,6 @@
 					var geometry = new THREE.EdgesGeometry( box );
 					var segments = new THREE.LineSegments( geometry, material );
 					segments.name = "building 2";
-					entities.push({id: segments.id});
 					scene.add( segments );
 				})();
 
@@ -332,7 +330,6 @@
 					var geometry = new THREE.EdgesGeometry( box );
 					var segments = new THREE.LineSegments( geometry, material );
 					segments.name = "building 3";
-					entities.push({id: segments.id});
 					scene.add( segments );
 				})();
 
@@ -358,7 +355,6 @@
 					var geometry = new THREE.EdgesGeometry( box );
 					var segments = new THREE.LineSegments( geometry, material );
 					segments.name = "building 5";
-					entities.push({id: segments.id});
 					scene.add( segments );
 				})();
 
@@ -371,22 +367,17 @@
 					var geometry = new THREE.EdgesGeometry( box );
 					var segments = new THREE.LineSegments( geometry, material );
 					segments.name = "building 6";
-					entities.push({id: segments.id});
 					scene.add( segments );
 				})();
 
 
 			})();
 
-		//	var material = new THREE.MeshLambertMaterial({side:1});
-		//	var mesh = new THREE.Mesh(geometry, material);
-		//	scene.add( mesh );
-
-			(function(){
-				localPlayer.traverse(function( child ){
-					entities.push({id: child.id});
-				});
-			})();
+		//	(function(){
+		//		scene.traverse(function( child ){
+		//			entities.push({id: child.id});
+		//		});
+		//	})();
 
 		</script>
 
@@ -395,6 +386,8 @@
 		//	Editor tab.
 
 			(function(){
+
+			//	Entities droplist.
 
 				var tab = TabUI.Editor.tab;
 				var row = document.createElement("h3");
@@ -406,38 +399,24 @@
 					+ "border:1px solid;border-radius:4px;padding:2px 4px 4px 4px;"
 					+ "font-size:20px;margin-left:10px;margin-right:15px;";
 
-				row.appendChild( select );
-				tab.appendChild( row );
-
-			})();
-
-		//	Create options.
-
-			(function(){
-
-				var select = document.getElementById("entities-droplist");
-
-				scene.traverse(function( object ){
-					var name = object.name;
-					var uuid = object.uuid;
-					var option = document.createElement("option");
-					option.text = name || uuid;
-					option.value = object.id;
-					select.appendChild( option );
+				var obj = {value:select.value};
+				observer = watch(obj, "value", function( property, oldValue, newValue ){
+					console.log(property, oldValue, newValue);
 				});
 
-			})();
-
-			(function(){
-
-				var select = document.getElementById("entities-droplist");
-
 				select.addEventListener("change", function(e){
+					obj.value = this.value; // important!
 
 					var id = parseInt(select.value);
 					var object = scene.getObjectById( id );
 					if ( !object ) return;
 					debugMode && console.log( object );
+
+				//	Disable keyInputControls;
+					if ( select.value ) 
+						keyInputControls.isDisabled = true;
+					else 
+						keyInputControls.isDisabled = false;
 
 				//	take camera controls.
 					if ( object === camera ) return;
@@ -445,7 +424,6 @@
 					else if ( object.name == "shadow helper") return;
 					else if ( object === cameraLight.shadow.camera ) return;
 					else if ( object.name == "shadow camera helper") return;
-
 					else if ( object.geometry && object.geometry.boundingSphere ) {
 						var offset = object.geometry.boundingSphere.center;
 						cameraControls.trackObject = object;
@@ -454,223 +432,289 @@
 					} 
 
 					else  cameraControls.trackObject = object;
-
 				});
 
-			})();
+				row.appendChild( select );
+				tab.appendChild( row );
 
-			//	entities.forEach(function(entity){
-			//		var object = scene.getObjectById( entity.id );
-			//		if ( !object || object.type == "Mesh" ) return;
-			//		var id = object.id;
-			//		var name = object.name;
-			//		var uuid = object.uuid;
-			//		var option = document.createElement("option");
-			//		option.text = name || uuid;
-			//		option.value = object.id;
-			//		select.appendChild( option );
-			//	});
+			})();
 
 		</script>
 
 		<script>
 
-		//	Editor systems.
+		//	Editor system.
 
-			const axisX = new THREE.Vector3(1,0,0);
-			const axisY = new THREE.Vector3(0,1,0);
-			const axisZ = new THREE.Vector3(0,0,1);
-			const keyboard = new KeyboardState();
-			const keyCodes = keyboard.keyCodes;
+		//	(function(){
 
-		//	!!! SOS !!!  VERY IMPORTANT! !!! SOS !!!
+				const axisX = new THREE.Vector3(1,0,0);
+				const axisY = new THREE.Vector3(0,1,0);
+				const axisZ = new THREE.Vector3(0,0,1);
+				const keyboard = new KeyboardState();
+				const keyCodes = keyboard.keyCodes;
+				const entity_droplist = document.getElementById("entities-droplist");
 
-			function translateOnScreenAxis( object ){
-			//	(from MW character controller).
-			//	var rad = 3 * Math.PI/2 // joystick input.
-				var rad = 2 * Math.PI;  // keyboard input.
-				var movementSpeed = 0.05; // (m/fps) => 5cm/fps
-				var cameraFrontAngle = SystemManager.cameraControls.frontAngle;
-				var keyboardFrontAngle = SystemManager.keyboard.frontAngle;
-				var direction = rad - cameraFrontAngle + keyboardFrontAngle;
-				var directionOnAxisX = -Math.sin(direction);
-				var directionOnAxisZ = -Math.cos(direction);
-				var x = directionOnAxisX * movementSpeed;
-				var z = directionOnAxisZ * movementSpeed;
-				var velocity = new THREE.Vector3(x,0,z);
-				object.position.x += velocity.x; 
-				object.position.z += velocity.z;
-			}
+				window.addEventListener("keyup",   function(){ updateKeyboardFrontAngle( keyboard ); });
+				window.addEventListener("keydown", function(){ updateKeyboardFrontAngle( keyboard ); });
 
-		//	var E = keyCodes[69];  var Q = keyCodes[81]; //  key "E",    key "Q"
-		//	var D = keyCodes[68];  var A = keyCodes[65]; //  key "D",    key "A"
-		//	var W = keyCodes[87];  var S = keyCodes[83]; //  key "W",    key "S"
-		//	var R = keyCodes[82];  var F = keyCodes[70]; //  key "R",    key "F"
-		//	var Z = keyCodes[90];  var X = keyCodes[88]; //  key "Z",    key "X"
-		//	var C = keyCodes[67];  var V = keyCodes[86]; //  key "C",    key "V"
+				function updateKeyboardFrontAngle( keyboard ){
 
-		//	var up       = keyCodes[33] || keyCodes[69]; // "page UP"     or "E"
-		//	var down     = keyCodes[34] || keyCodes[81]; // "page DOWN"   or "Q"
-		//	var left     = keyCodes[37] || keyCodes[68]; // "arrow LEFT"  or "D"
-		//	var right    = keyCodes[39] || keyCodes[65]; // "arrow RIGHT" or "A"
-		//	var forwards = keyCodes[38] || keyCodes[87]; // "arrow UP"    or "W"
-		//	var backward = keyCodes[40] || keyCodes[83]; // "arrow DOWN"  or "S"
+					const rad = Math.PI/4;
+					const keyCodes = keyboard.keyCodes;
+					var A=65, D=68, S=83, W=87;
+					var Left=37, Up=38, Right=39, Down=40;
 
-		//	## EditorRotationSystem.
+					var UP    = keyCodes[W] || keyCodes[Up];
+					var LEFT  = keyCodes[A] || keyCodes[Left];
+					var DOWN  = keyCodes[S] || keyCodes[Down];
+					var RIGHT = keyCodes[D] || keyCodes[Right];
 
-			function EditorRotationSystem(dt, entity){
+				//	debugMode && console.log( UP, LEFT, DOWN, RIGHT );
 
-			//	if ( !entity.editMode && !entity.selected && !entity.rotate ) return;
+						 if (  UP && !LEFT && !DOWN && !RIGHT ) keyboard.frontAngle = 0 * rad; //   0 deg.
+					else if (  UP &&  LEFT && !DOWN && !RIGHT ) keyboard.frontAngle = 1 * rad; //  45 deg.
+					else if ( !UP &&  LEFT && !DOWN && !RIGHT ) keyboard.frontAngle = 2 * rad; //  90 deg.
+					else if ( !UP &&  LEFT &&  DOWN && !RIGHT ) keyboard.frontAngle = 3 * rad; // 135 deg.
+					else if ( !UP && !LEFT &&  DOWN && !RIGHT ) keyboard.frontAngle = 4 * rad; // 180 deg.
+					else if ( !UP && !LEFT &&  DOWN &&  RIGHT ) keyboard.frontAngle = 5 * rad; // 225 deg.
+					else if ( !UP && !LEFT && !DOWN &&  RIGHT ) keyboard.frontAngle = 6 * rad; // 270 deg.
+					else if (  UP && !LEFT && !DOWN &&  RIGHT ) keyboard.frontAngle = 7 * rad; // 315 deg.
+				//	else if ( !UP && !LEFT && !DOWN && !RIGHT ) keyboard.frontAngle = 8 * rad; // 360 deg.
 
-				try {
+				}
 
-					var rad = Math.max(dt, 0.02);
-					var keyCodes = keyboard.keyCodes;
-					var object = scene.getObjectById( entity.id );
-					var UP=38, DOWN=40, LEFT=37, RIGHT=39;
-					var D=68, A=65, W=87, S=83, R=82, F=70;
+			//	const clock = new THREE.Clock();
 
-					if ( entity.translate ) {
+				(function update(){
 
-					//	var A = keyCodes[65];  var D = keyCodes[68]; //  key "A", key "D"
-					//	var W = keyCodes[87];  var S = keyCodes[83]; //  key "W", key "S"
+					var dt = clock.getDelta();
+					requestFrameID = requestAnimationFrame( update );
 
-					//	translation (local coordinates).
+					for (var i = 0; i < entities.length; i++){
 
-						object.rotateOnAxis( axisY,  rad * keyCodes[A]);
-						object.rotateOnAxis( axisY, -rad * keyCodes[D]);
-						object.rotateOnAxis( axisX,  rad * keyCodes[W]);
-						object.rotateOnAxis( axisX, -rad * keyCodes[S]);
+						var entity = entities[i];
 
-					} else { // if ( entity.rotate )
-
-						var up    = keyCodes[UP]    || keyCodes[W]; // "arrow UP"    or "W"
-						var down  = keyCodes[DOWN]  || keyCodes[S]; // "arrow DOWN"  or "S"
-						var left  = keyCodes[LEFT]  || keyCodes[D]; // "arrow LEFT"  or "D"
-						var right = keyCodes[RIGHT] || keyCodes[A]; // "arrow RIGHT" or "A"
-
-					//	rotation (local coordinates).
-
-						object.rotateOnAxis( axisY,  rad * left);
-						object.rotateOnAxis( axisY, -rad * right);
-						object.rotateOnAxis( axisX,  rad * up);
-						object.rotateOnAxis( axisX, -rad * down);
+						EditorScalarSystem(dt, entity);
+						EditorRotationSystem(dt, entity);
+						EditorTranslationSystem(dt, entity);
 
 					}
 
-				//	Reset.
+				})();
 
-					if ( keyCodes[R] ) object.rotation.set(0,0,0);
-					if ( keyCodes[F] ) object.setRotationFromQuaternion(camera.quaternion);
 
-				} catch(err){
-					debugMode && console.error( "EditorRotationError:", err );
-				};
 
-			}
+			//	!!! SOS !!!  VERY IMPORTANT! !!! SOS !!!  VERY IMPORTANT! !!! SOS !!!
 
-		//	## EditorTranslationSystem.
+				function translateOnScreenAxis( object ){
+				//	(from MW character controller).
+				//	var rad = 3 * Math.PI/2 // joystick input.
+					var rad = 2 * Math.PI;  // keyboard input.
+					var movementSpeed = 0.05; // (m/fps) => 5cm/fps
+					var cameraFrontAngle = cameraControls.getFrontAngle();
+					var keyboardFrontAngle = keyboard.frontAngle;
+					var direction = rad - cameraFrontAngle + keyboardFrontAngle;
+					var directionOnAxisX = -Math.sin(direction);
+					var directionOnAxisZ = -Math.cos(direction);
+					var x = directionOnAxisX * movementSpeed;
+					var z = directionOnAxisZ * movementSpeed;
+					var velocity = new THREE.Vector3(x,0,z);
+					object.position.x += velocity.x; 
+					object.position.z += velocity.z;
+				}
 
-			function EditorTranslationSystem(dt, entity){
+			//	!!! SOS !!!  VERY IMPORTANT! !!! SOS !!!  VERY IMPORTANT! !!! SOS !!!
 
-			//	if ( !entity.editMode && !entity.selected && !entity.translate ) return;
+				//	var E = keyCodes[69];  var Q = keyCodes[81]; //  key "E",    key "Q"
+				//	var D = keyCodes[68];  var A = keyCodes[65]; //  key "D",    key "A"
+				//	var W = keyCodes[87];  var S = keyCodes[83]; //  key "W",    key "S"
+				//	var R = keyCodes[82];  var F = keyCodes[70]; //  key "R",    key "F"
+				//	var Z = keyCodes[90];  var X = keyCodes[88]; //  key "Z",    key "X"
+				//	var C = keyCodes[67];  var V = keyCodes[86]; //  key "C",    key "V"
 
-				try {
+				//	var up       = keyCodes[33] || keyCodes[69]; // "page UP"     or "E"
+				//	var down     = keyCodes[34] || keyCodes[81]; // "page DOWN"   or "Q"
+				//	var left     = keyCodes[37] || keyCodes[68]; // "arrow LEFT"  or "D"
+				//	var right    = keyCodes[39] || keyCodes[65]; // "arrow RIGHT" or "A"
+				//	var forwards = keyCodes[38] || keyCodes[87]; // "arrow UP"    or "W"
+				//	var backward = keyCodes[40] || keyCodes[83]; // "arrow DOWN"  or "S"
 
-					var keyCodes = keyboard.keyCodes;
+			//	## EditorRotationSystem.
+
+				function EditorRotationSystem(dt, entity){
+
+					if ( entity.id.toString() != entity_droplist.value ) return;
+
 					var object = scene.getObjectById( entity.id );
-					var LEFT=37, RIGHT=39, UP=38, DOWN=40;
-					var E=69, Q=81, D=68, A=65, W=87, S=83, R=82, F=70;
+					var required = object && object.geometry && object.rotation;
+					if ( !required ) return; // important!
 
-				//	var E = keyCodes[69];         var Q = keyCodes[81]; //  key "E",      key "Q"
-				//	var left     = keyCodes[37];  var D = keyCodes[68]; // "arrow LEFT",  key "D"
-				//	var right    = keyCodes[39];  var A = keyCodes[65]; // "arrow RIGHT", key "A"
-				//	var forwards = keyCodes[38];  var W = keyCodes[87]; // "arrow UP",    key "W"
-				//	var backward = keyCodes[40];  var S = keyCodes[83]; // "arrow DOWN",  key "S"
+				//	if ( !entity.isEditable && !entity.isSelected && !entity.isRotated ) return;
 
-				//	Move up/down.
+					try {
 
-					if ( keyCodes[E] || keyCodes[Q] ) (function(up, down){
+						var rad = Math.max(dt, 0.02);
+						var keyCodes = keyboard.keyCodes;
+						var UP=38, DOWN=40, LEFT=37, RIGHT=39;
+						var D=68, A=65, W=87, S=83, R=82, F=70;
 
-						var rad = 0;
-						var movementSpeed = Math.max(dt, 0.05);
-						var cameraFrontAngle = cameraControls.phi;
-						var keyboardFrontAngle = 0;
-						if ( up ) keyboardFrontAngle =  Math.PI/2;
-						if (down) keyboardFrontAngle = -Math.PI/2;
-						var direction = rad - cameraFrontAngle + keyboardFrontAngle;
-						var directionOnAxisY = Math.sin(direction);
-						var y = directionOnAxisY * movementSpeed;
-						object.position.y += y; 
+						if ( entity.isTranslated ) {
 
-					})( keyCodes[E], keyCodes[Q] );
+						//	var A = keyCodes[65];  var D = keyCodes[68]; //  key "A", key "D"
+						//	var W = keyCodes[87];  var S = keyCodes[83]; //  key "W", key "S"
 
-				//	Move left/right/forwards/backward
+						//	translation (local coordinates).
 
-					if ( entity.rotate && ( 
-					keyCodes[UP]   || keyCodes[DOWN] ||
-					keyCodes[LEFT] || keyCodes[RIGHT] ) ) (function() {
+							keyCodes[A] && object.rotateOnAxis( axisY,  rad );
+							keyCodes[D] && object.rotateOnAxis( axisY, -rad );
+							keyCodes[W] && object.rotateOnAxis( axisX,  rad );
+							keyCodes[S] && object.rotateOnAxis( axisX, -rad );
 
-					//	var rad = 6 * Math.PI/4;  // joystick input.
-						var rad = 8 * Math.PI/4;  // keyboard input.
-						var movementSpeed = Math.max(dt, 0.05);
-						var cameraFrontAngle = cameraControls.frontAngle;
-						var keyboardFrontAngle = keyInputControls.frontAngle;
-						var direction = rad - cameraFrontAngle + keyboardFrontAngle;
-						var directionOnAxisX = -Math.sin(direction);
-						var directionOnAxisZ = -Math.cos(direction);
-						var x = directionOnAxisX * movementSpeed;
-						var z = directionOnAxisZ * movementSpeed;
-						object.position.x += x; 
-						object.position.z += z;
+						} else { // if ( entity.entity.isRotated )
 
-					})();
+							var up    = keyCodes[UP]    || keyCodes[W]; // "arrow UP"    or "W"
+							var down  = keyCodes[DOWN]  || keyCodes[S]; // "arrow DOWN"  or "S"
+							var left  = keyCodes[LEFT]  || keyCodes[D]; // "arrow LEFT"  or "D"
+							var right = keyCodes[RIGHT] || keyCodes[A]; // "arrow RIGHT" or "A"
 
-					else if ( !entity.rotate && ( 
-					keyCodes[A]    || keyCodes[W]    || 
-					keyCodes[S]    || keyCodes[D]    ||
-					keyCodes[UP]   || keyCodes[DOWN] ||
-					keyCodes[LEFT] || keyCodes[RIGHT] ) ) (function() {
+						//	rotation (local coordinates).
 
-					//	var rad = 6 * Math.PI/4;  // joystick input.
-						var rad = 8 * Math.PI/4;  // keyboard input.
-						var movementSpeed = Math.max(dt, 0.05);
-						var cameraFrontAngle = cameraControls.frontAngle;
-						var keyboardFrontAngle = keyInputControls.frontAngle;
-						var direction = rad - cameraFrontAngle + keyboardFrontAngle;
-						var directionOnAxisX = -Math.sin(direction);
-						var directionOnAxisZ = -Math.cos(direction);
-						var x = directionOnAxisX * movementSpeed;
-						var z = directionOnAxisZ * movementSpeed;
-						object.position.x += x; 
-						object.position.z += z;
+							left  && object.rotateOnAxis( axisY,  rad );
+							right && object.rotateOnAxis( axisY, -rad );
+							up    && object.rotateOnAxis( axisX,  rad );
+							down  && object.rotateOnAxis( axisX, -rad );
 
-					})();
+						}
 
-				//	Reset.
+					//	Reset.
 
-					if ( keyCodes[R] ) object.rotation.set(0,0,0);
-					if ( keyCodes[F] ) object.setRotationFromQuaternion(camera.quaternion);
+						keyCodes[R] && object.rotation.set(0,0,0);
+						keyCodes[F] && object.setRotationFromQuaternion(camera.quaternion);
 
-				} catch(err){
-					debugMode && console.error( "EditorTranslationError:", err );
-				};
+					} catch(err){
+						debugMode && console.error( "EditorRotationError:", err );
+					};
 
-			}
+				}
 
-		//	## EditorScalarSystem.
+			//	## EditorTranslationSystem.
 
-			function EditorScalarSystem(dt, entity){
+				function EditorTranslationSystem(dt, entity){
 
-			//	if ( !entity.editMode && !entity.selected && !entity.scalar ) return;
+					if ( entity.id.toString() != entity_droplist.value ) return;
 
-				try {
+					var object = scene.getObjectById( entity.id );
+					var required = object && object.geometry && object.position;
+					if ( !required ) return; // important!
 
-				} catch(err){
-					debugMode && console.error( "EditorScalarError:", err );
-				};
+				//	if ( !entity.isEditable && !entity.isSelected && !entity.isTranslated ) return;
 
-			}
+					try {
+
+						var keyCodes = keyboard.keyCodes;
+						var object = scene.getObjectById( entity.id );
+						var LEFT=37, RIGHT=39, UP=38, DOWN=40;
+						var E=69, Q=81, D=68, A=65, W=87, S=83, R=82, F=70;
+
+					//	var E = keyCodes[69];         var Q = keyCodes[81]; //  key "E",      key "Q"
+					//	var left     = keyCodes[37];  var D = keyCodes[68]; // "arrow LEFT",  key "D"
+					//	var right    = keyCodes[39];  var A = keyCodes[65]; // "arrow RIGHT", key "A"
+					//	var forwards = keyCodes[38];  var W = keyCodes[87]; // "arrow UP",    key "W"
+					//	var backward = keyCodes[40];  var S = keyCodes[83]; // "arrow DOWN",  key "S"
+
+					//	Move up/down.
+
+						if ( keyCodes[E] || keyCodes[Q] ) (function(up, down){
+
+							var rad = 0;
+							var movementSpeed = Math.max(dt, 0.05);
+							var cameraFrontAngle = cameraControls.phi;
+							var keyboardFrontAngle = 0;
+							if ( up ) keyboardFrontAngle =  Math.PI/2;
+							if (down) keyboardFrontAngle = -Math.PI/2;
+							var direction = rad - cameraFrontAngle + keyboardFrontAngle;
+							var directionOnAxisY = Math.sin(direction);
+							var y = directionOnAxisY * movementSpeed;
+							object.position.y += y; 
+
+						})( keyCodes[E], keyCodes[Q] );
+
+					//	Move left/right/forwards/backward
+
+						if ( entity.rotate && ( 
+						keyCodes[UP]   || keyCodes[DOWN] ||
+						keyCodes[LEFT] || keyCodes[RIGHT] ) ) (function() {
+
+						//	var rad = 6 * Math.PI/4;  // joystick input.
+							var rad = 8 * Math.PI/4;  // keyboard input.
+							var movementSpeed = Math.max(dt, 0.05);
+							var cameraFrontAngle = cameraControls.getFrontAngle();
+							var keyboardFrontAngle = keyboard.frontAngle;
+							var direction = rad - cameraFrontAngle + keyboardFrontAngle;
+							debugMode && console.log( direction );
+							var directionOnAxisX = -Math.sin(direction);
+							var directionOnAxisZ = -Math.cos(direction);
+							var x = directionOnAxisX * movementSpeed;
+							var z = directionOnAxisZ * movementSpeed;
+							object.position.x += x; 
+							object.position.z += z;
+
+						})();
+
+						else if ( !entity.rotate && ( 
+						keyCodes[A]    || keyCodes[W]    || 
+						keyCodes[S]    || keyCodes[D]    ||
+						keyCodes[UP]   || keyCodes[DOWN] ||
+						keyCodes[LEFT] || keyCodes[RIGHT] ) ) (function() {
+
+						//	var rad = 6 * Math.PI/4;  // joystick input.
+							var rad = 8 * Math.PI/4;  // keyboard input.
+							var movementSpeed = Math.max(dt, 0.05);
+							var cameraFrontAngle = cameraControls.getFrontAngle();
+							var keyboardFrontAngle = keyboard.frontAngle;
+							var direction = rad - cameraFrontAngle + keyboardFrontAngle;
+							debugMode && console.log( direction );
+							var directionOnAxisX = -Math.sin(direction);
+							var directionOnAxisZ = -Math.cos(direction);
+							var x = directionOnAxisX * movementSpeed;
+							var z = directionOnAxisZ * movementSpeed;
+							object.position.x += x; 
+							object.position.z += z;
+
+						})();
+
+					//	Reset.
+
+						if ( keyCodes[R] ) object.rotation.set(0,0,0);
+						if ( keyCodes[F] ) object.setRotationFromQuaternion(camera.quaternion);
+
+					} catch(err){
+						debugMode && console.error( "EditorTranslationError:", err );
+					};
+
+				}
+
+			//	## EditorScalarSystem.
+
+				function EditorScalarSystem(dt, entity){
+
+					if ( entity.id.toString() != entity_droplist.value ) return;
+
+					var object = scene.getObjectById( entity.id );
+					var required = object && object.geometry && object.scale;
+					if ( !required ) return; // important!
+
+				//	if ( !entity.isEditable && !entity.isSelected && !entity.isScaled ) return;
+
+					try {
+
+					} catch(err){
+						debugMode && console.error( "EditorScalarError:", err );
+					};
+
+				}
+
+		//	})();
 
 		</script>
 
@@ -716,6 +760,31 @@
 					debugMode && console.log( entities );
 				});
 			}
+
+		</script>
+
+		<script>
+
+		//	Create options, add entities.
+
+			(function(){
+
+				var select = document.getElementById("entities-droplist");
+
+				scene.traverse(function( object ){
+					var name = object.name;
+					var uuid = object.uuid;
+					var option = document.createElement("option");
+					var text = ""+object.id+"."+object.type+":"+object.name;
+					option.text = text;
+					option.value = object.id;
+					select.appendChild( option );
+					entities.push({id: object.id}); // important!
+				});
+
+				select.value = ""; // important!
+
+			})();
 
 		</script>
 
