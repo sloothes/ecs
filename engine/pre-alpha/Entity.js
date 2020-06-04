@@ -30,27 +30,6 @@
 	};
 
 
-//	EntityCollection: 
-
-	function EntityCollection(){
-		Entity.call( this );
-	};
-
-	EntityCollection.prototype.isEntityCollection = true;
-	EntityCollection.prototype.constructor = EntityCollection;
-
-//	EntityManager-like implementation (inherits from Entity class).
-
-//	function EntityCollection(){
-//		var entity = new Entity();
-//		Object.setPrototypeOf( entity, EntityCollection.prototype );
-//		return entity;
-//	};
-
-//	EntityCollection.prototype = Object.create(Entity.prototype); 
-//	EntityCollection.prototype.isEntityCollection = true; 
-
-
 
 //	Entity Manager class.
 
@@ -139,8 +118,29 @@
 
 	};
 
-	//	Create entities managers.
+//	Create entities managers.
 
 	const entities = new EntityManager();
 	const removedEntities = new EntityManager();
 
+
+
+//	EntityCollection: 
+
+//	function EntityCollection(){
+//		Entity.call( this );
+//	};
+
+//	EntityCollection.prototype.isEntityCollection = true;
+//	EntityCollection.prototype.constructor = EntityCollection;
+
+//	EntityManager-like implementation (inherits from Entity class).
+
+//	function EntityCollection(){
+//		var entity = new Entity();
+//		Object.setPrototypeOf( entity, EntityCollection.prototype );
+//		return entity;
+//	};
+
+//	EntityCollection.prototype = Object.create(Entity.prototype); 
+//	EntityCollection.prototype.isEntityCollection = true; 
