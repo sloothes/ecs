@@ -22,3 +22,10 @@
 		return cameraControls;
 
 	})( camera, localPlayer );
+
+//	Helpers.
+
+	function takeCameraControls( object, offset ){
+		cameraControls.trackObject = object;
+		cameraControls.offset.y = offset || 0;
+	}
