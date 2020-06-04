@@ -313,11 +313,14 @@
 					var w = 10, h = 20;
 					var x = 10, y = h/2, z = -4;
 					var box = new THREE.BoxGeometry(w,h,w);
-					box.translate(x, y, z);
-					octree.importThreeMesh( new THREE.Mesh(box) );
+					box.translate(0, h/2, 0);
+					var mesh = new THREE.Mesh(box);
+					mesh.position.set(x,0,z);
+					octree.importThreeMesh( mesh );
 					var geometry = new THREE.EdgesGeometry( box );
 					var segments = new THREE.LineSegments( geometry, material );
 					segments.name = "building 2";
+					segments.position.copy( mesh.position );
 					scene.add( segments );
 				})();
 
@@ -325,11 +328,14 @@
 					var w = 12, h = 10;
 					var x = 11, y = h/2, z = -10;
 					var box = new THREE.BoxGeometry(w,h,w);
-					box.translate(x, y, z);
-					octree.importThreeMesh( new THREE.Mesh(box) );
+					box.translate(0, h/2, 0);
+					var mesh = new THREE.Mesh(box);
+					mesh.position.set(x,0,z);
+					octree.importThreeMesh( mesh );
 					var geometry = new THREE.EdgesGeometry( box );
 					var segments = new THREE.LineSegments( geometry, material );
 					segments.name = "building 3";
+					segments.position.copy( mesh.position );
 					scene.add( segments );
 				})();
 
@@ -337,12 +343,14 @@
 					var w = 8, h = 10;
 					var x = -10, y = h/2, z = 10;
 					var box = new THREE.BoxGeometry(w,h,w);
-					box.translate(x, y, z);
-					octree.importThreeMesh( new THREE.Mesh(box) );
+					box.translate(0, h/2, 0);
+					var mesh = new THREE.Mesh(box);
+					mesh.position.set(x,0,z);
+					octree.importThreeMesh( mesh );
 					var geometry = new THREE.EdgesGeometry( box );
 					var segments = new THREE.LineSegments( geometry, material );
 					segments.name = "building 4";
-					entities.push({id: segments.id});
+					segments.position.copy( mesh.position );
 					scene.add( segments );
 				})();
 
@@ -350,11 +358,14 @@
 					var w = 12, h = 20, d = 2;
 					var x = -14, y = h/2, z = 10;
 					var box = new THREE.BoxGeometry(w,h,d);
-					box.translate(x, y, z);
-					octree.importThreeMesh( new THREE.Mesh(box) );
+					box.translate(0, h/2, 0);
+					var mesh = new THREE.Mesh(box);
+					mesh.position.set(x,0,z);
+					octree.importThreeMesh( mesh );
 					var geometry = new THREE.EdgesGeometry( box );
 					var segments = new THREE.LineSegments( geometry, material );
 					segments.name = "building 5";
+					segments.position.copy( mesh.position );
 					scene.add( segments );
 				})();
 
@@ -362,14 +373,16 @@
 					var w = 4, h = 20, d = 20;
 					var x = -17, y = h/2, z = 12;
 					var box = new THREE.BoxGeometry(w,h,d);
-					box.translate(x, y, z);
-					octree.importThreeMesh( new THREE.Mesh(box) );
+					box.translate(0, h/2, 0);
+					var mesh = new THREE.Mesh(box);
+					mesh.position.set(x,0,z);
+					octree.importThreeMesh( mesh );
 					var geometry = new THREE.EdgesGeometry( box );
 					var segments = new THREE.LineSegments( geometry, material );
 					segments.name = "building 6";
+					segments.position.copy( mesh.position );
 					scene.add( segments );
 				})();
-
 
 			})();
 
