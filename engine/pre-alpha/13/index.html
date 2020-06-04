@@ -288,6 +288,7 @@
 				var geometry = new THREE.BoxGeometry();
 				var material = new THREE.MeshLambertMaterial();
 				var cube = new THREE.Mesh(geometry, material);
+				cube.name = "local player cube";
 				localPlayer.add( cube );
 			})();
 
@@ -304,6 +305,7 @@
 					octree.importThreeMesh( new THREE.Mesh(box) );
 					var geometry = new THREE.EdgesGeometry( box );
 					var segments = new THREE.LineSegments( geometry, material );
+					segments.name = "building 1";
 					entities.push({id: segments.id});
 					scene.add( segments );
 				})();
@@ -316,6 +318,7 @@
 					octree.importThreeMesh( new THREE.Mesh(box) );
 					var geometry = new THREE.EdgesGeometry( box );
 					var segments = new THREE.LineSegments( geometry, material );
+					segments.name = "building 2";
 					entities.push({id: segments.id});
 					scene.add( segments );
 				})();
@@ -328,6 +331,7 @@
 					octree.importThreeMesh( new THREE.Mesh(box) );
 					var geometry = new THREE.EdgesGeometry( box );
 					var segments = new THREE.LineSegments( geometry, material );
+					segments.name = "building 3";
 					entities.push({id: segments.id});
 					scene.add( segments );
 				})();
@@ -340,6 +344,7 @@
 					octree.importThreeMesh( new THREE.Mesh(box) );
 					var geometry = new THREE.EdgesGeometry( box );
 					var segments = new THREE.LineSegments( geometry, material );
+					segments.name = "building 4";
 					entities.push({id: segments.id});
 					scene.add( segments );
 				})();
@@ -352,6 +357,7 @@
 					octree.importThreeMesh( new THREE.Mesh(box) );
 					var geometry = new THREE.EdgesGeometry( box );
 					var segments = new THREE.LineSegments( geometry, material );
+					segments.name = "building 5";
 					entities.push({id: segments.id});
 					scene.add( segments );
 				})();
@@ -364,6 +370,7 @@
 					octree.importThreeMesh( new THREE.Mesh(box) );
 					var geometry = new THREE.EdgesGeometry( box );
 					var segments = new THREE.LineSegments( geometry, material );
+					segments.name = "building 6";
 					entities.push({id: segments.id});
 					scene.add( segments );
 				})();
@@ -380,6 +387,89 @@
 					entities.push({id: child.id});
 				});
 			})();
+
+		</script>
+
+		<script>
+
+		//	Editor tab.
+
+			(function(){
+
+				var tab = TabUI.Editor.tab;
+				var row = document.createElement("h3");
+				row.textContent = "Entities:";
+
+				var select = document.createElement("select");
+				select.id = "entities-droplist";
+				select.style.cssText = "width:180px;color:#000;float:right;"
+					+ "border:1px solid;border-radius:4px;padding:2px 4px 4px 4px;"
+					+ "font-size:20px;margin-left:10px;margin-right:15px;";
+
+				row.appendChild( select );
+				tab.appendChild( row );
+
+			})();
+
+		//	Create options.
+
+			(function(){
+
+				var select = document.getElementById("entities-droplist");
+
+				scene.traverse(function( object ){
+					var name = object.name;
+					var uuid = object.uuid;
+					var option = document.createElement("option");
+					option.text = name || uuid;
+					option.value = object.id;
+					select.appendChild( option );
+				});
+
+			})();
+
+			(function(){
+
+				var select = document.getElementById("entities-droplist");
+
+				select.addEventListener("change", function(e){
+
+					var id = parseInt(select.value);
+					var object = scene.getObjectById( id );
+					if ( !object ) return;
+					debugMode && console.log( object );
+
+				//	take camera controls.
+					if ( object === camera ) return;
+					else if ( object === cameraLight ) return;
+					else if ( object.name == "shadow helper") return;
+					else if ( object === cameraLight.shadow.camera ) return;
+					else if ( object.name == "shadow camera helper") return;
+
+					else if ( object.geometry && object.geometry.boundingSphere ) {
+						var offset = object.geometry.boundingSphere.center;
+						cameraControls.trackObject = object;
+						cameraControls.offset.copy( offset );
+						cameraControls.offset.y *= 0.5;
+					} 
+
+					else  cameraControls.trackObject = object;
+
+				});
+
+			})();
+
+			//	entities.forEach(function(entity){
+			//		var object = scene.getObjectById( entity.id );
+			//		if ( !object || object.type == "Mesh" ) return;
+			//		var id = object.id;
+			//		var name = object.name;
+			//		var uuid = object.uuid;
+			//		var option = document.createElement("option");
+			//		option.text = name || uuid;
+			//		option.value = object.id;
+			//		select.appendChild( option );
+			//	});
 
 		</script>
 
