@@ -272,10 +272,66 @@
 				localPlayer.add( cube );
 			})();
 
+		//	bod coluction.
+			debugMode && (function(){
+				var box = new THREE.BoxGeometry(10,10,10);
+				octree.importThreeMesh( new THREE.Mesh(box) );
+				var geometry = new THREE.EdgesGeometry( box );
+				var material = new THREE.LineBasicMaterial( { color: 0x00ff00 } );
+				var segments = new THREE.LineSegments( geometry, material );
+				scene.add( segments );
+			})();
+
+		//	var material = new THREE.MeshLambertMaterial({side:1});
+		//	var mesh = new THREE.Mesh(geometry, material);
+		//	scene.add( mesh );
+
 		</script>
 
 		<script>
 
+
+		//	Loading systems.
+
+			function FBXLoader( entity ){
+
+				var s = entity.scale;
+				var url = entity.url;
+				var loader = new THREE.FBXLoader();
+				loader.load( url, function( group ){
+					debugMode && console.log( group );
+
+				//	create entities list.
+					var entities = {};
+					entities[ group.uuid ] = group.id;
+
+				//	All children in group have scale 100.
+					group.traverse(function( child ){
+
+					//	Reset scale.
+						if ( child.scale !== undefined ) {
+							child.scale.set(1,1,1);
+						}
+
+					//	Create child entities.
+						if ( child.type == "Mesh" 
+						  || child.type == "SkinnedMesh" ) {
+							entities[ child.uuid ] = child.id;
+						}
+					});
+
+				//	Set scale.
+					if ( entity.scale ) group.scale.set(s,s,s);
+
+				//	if ( group.animations && group.animations.length ){
+					//	Create clip entities.
+					//	Create animation controller.
+				//	}
+
+				//	Add toRemove flag.
+					entity.toRemove = true;
+				});
+			}
 
 		</script>
 
