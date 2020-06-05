@@ -433,12 +433,12 @@
 
 					(function( value ){
 						var id = parseInt( value );
-						var object = scene.getObjectById( id );
-						if ( !object || !object.isMesh ) return;
-						var uuid = object.geometry.uuid;
+						var mesh = scene.getObjectById( id );
+						if ( !mesh || !mesh.isMesh ) return;
+						var uuid = mesh.geometry.uuid;
 						debugMode && console.log( uuid );
 						octree.removeThreeMesh( uuid );
-						octree.importThreeMesh( object );
+						octree.importThreeMesh( mesh );
 					})( oldValue );
 
 					(function( value ){
@@ -453,11 +453,10 @@
 
 						var id = parseInt( value );
 						var object = scene.getObjectById( id );
+						if ( !object ) return;
 					//	debugMode && console.log( object );
 
-						if ( !object ) return;
 						if ( object === camera ) return;
-						if ( object === localPlayer ) return;
 						if ( object === cameraLight ) return;
 						if ( object.name == "shadow helper") return;
 						if ( object === cameraLight.shadow.camera ) return;
