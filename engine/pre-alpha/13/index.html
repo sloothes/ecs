@@ -301,11 +301,10 @@
 					var w = 10; var h = 5;
 					var box = new THREE.BoxGeometry(w,h,w);
 					box.translate(0, h/2, 0);
-				//	box.rotateX(Math.PI/6);
 					octree.importThreeMesh( new THREE.Mesh(box) );
 					var geometry = new THREE.EdgesGeometry( box );
 					var segments = new THREE.LineSegments( geometry, material );
-					segments.name = "building 1";
+					segments.name = "segments 1";
 					scene.add( segments );
 				})();
 
@@ -315,13 +314,14 @@
 					var box = new THREE.BoxGeometry(w,h,w);
 					box.translate(0, h/2, 0);
 					var mesh = new THREE.Mesh(box);
+					mesh.name = "build 2";
 					mesh.position.set(x,0,z);
 					octree.importThreeMesh( mesh );
 					var geometry = new THREE.EdgesGeometry( box );
 					var segments = new THREE.LineSegments( geometry, material );
-					segments.name = "building 2";
+					segments.name = "segments 2";
 					segments.position.copy( mesh.position );
-					scene.add( segments );
+					scene.add( mesh );
 				})();
 
 				(function(){
@@ -330,13 +330,14 @@
 					var box = new THREE.BoxGeometry(w,h,w);
 					box.translate(0, h/2, 0);
 					var mesh = new THREE.Mesh(box);
+					mesh.name = "build 3";
 					mesh.position.set(x,0,z);
 					octree.importThreeMesh( mesh );
 					var geometry = new THREE.EdgesGeometry( box );
 					var segments = new THREE.LineSegments( geometry, material );
-					segments.name = "building 3";
+					segments.name = "segments 3";
 					segments.position.copy( mesh.position );
-					scene.add( segments );
+					scene.add( mesh );
 				})();
 
 				(function(){
@@ -345,13 +346,14 @@
 					var box = new THREE.BoxGeometry(w,h,w);
 					box.translate(0, h/2, 0);
 					var mesh = new THREE.Mesh(box);
+					mesh.name = "build 4";
 					mesh.position.set(x,0,z);
 					octree.importThreeMesh( mesh );
 					var geometry = new THREE.EdgesGeometry( box );
 					var segments = new THREE.LineSegments( geometry, material );
-					segments.name = "building 4";
+					segments.name = "segments 4";
 					segments.position.copy( mesh.position );
-					scene.add( segments );
+					scene.add( mesh );
 				})();
 
 				(function(){
@@ -360,13 +362,14 @@
 					var box = new THREE.BoxGeometry(w,h,d);
 					box.translate(0, h/2, 0);
 					var mesh = new THREE.Mesh(box);
+					mesh.name = "build 5";
 					mesh.position.set(x,0,z);
 					octree.importThreeMesh( mesh );
 					var geometry = new THREE.EdgesGeometry( box );
 					var segments = new THREE.LineSegments( geometry, material );
-					segments.name = "building 5";
+					segments.name = "segments 5";
 					segments.position.copy( mesh.position );
-					scene.add( segments );
+					scene.add( mesh );
 				})();
 
 				(function(){
@@ -375,13 +378,14 @@
 					var box = new THREE.BoxGeometry(w,h,d);
 					box.translate(0, h/2, 0);
 					var mesh = new THREE.Mesh(box);
+					mesh.name = "build 6";
 					mesh.position.set(x,0,z);
 					octree.importThreeMesh( mesh );
 					var geometry = new THREE.EdgesGeometry( box );
 					var segments = new THREE.LineSegments( geometry, material );
-					segments.name = "building 6";
+					segments.name = "segments 6";
 					segments.position.copy( mesh.position );
-					scene.add( segments );
+					scene.add( mesh );
 				})();
 
 			})();
@@ -412,13 +416,70 @@
 					+ "border:1px solid;border-radius:4px;padding:2px 4px 4px 4px;"
 					+ "font-size:20px;margin-left:10px;margin-right:15px;";
 
-				var obj = {value:select.value};
-				observer = watch(obj, "value", function( property, oldValue, newValue ){
-					console.log(property, oldValue, newValue);
-				});
+				(function(){
+					var option = document.createElement("option");
+					option.value = "";
+					select.appendChild( option );
+				})();
+
+				var watchObj = {value:select.value};
 
 				select.addEventListener("change", function(e){
-					obj.value = this.value; // important!
+					watchObj.value = select.value;
+				});
+
+				var observer = watch(watchObj, "value", function( property, action, newValue, oldValue ){
+					debugMode && console.log(property, action, oldValue, newValue);
+
+					(function( value ){
+						var id = parseInt( value );
+						var mesh = scene.getObjectById( id );
+						if ( !mesh || !mesh.isMesh ) return;
+						var uuid = mesh.geometry.uuid;
+						debugMode && console.log( uuid );
+						octree.removeThreeMesh( uuid );
+						octree.importThreeMesh( mesh );
+					})( oldValue );
+
+					(function( value ){
+						if ( newValue != "" ) return;
+						takeCameraControls( localPlayer );
+						keyInputControls.isDisabled = false;
+					})( newValue );
+
+					(function( value ){
+						if ( newValue == "" ) return;
+						keyInputControls.isDisabled = true;
+
+						var id = parseInt( value );
+						var object = scene.getObjectById( id );
+						if ( !object ) return;
+					//	debugMode && console.log( object );
+
+						if ( object === camera ) return;
+						if ( object === cameraLight ) return;
+						if ( object.name == "shadow helper") return;
+						if ( object === cameraLight.shadow.camera ) return;
+						if ( object.name == "shadow camera helper") return;
+						if ( object.geometry && object.geometry.boundingSphere ) {
+							var offset = object.geometry.boundingSphere.center;
+							cameraControls.trackObject = object;
+							cameraControls.offset.copy( offset );
+							cameraControls.offset.y *= 0.5;
+						} else takeCameraControls( object );
+
+						keyInputControls.isDisabled = true;
+					})( newValue );
+				
+				});
+
+				row.appendChild( select );
+				tab.appendChild( row );
+
+			})();
+
+/*
+				select.addEventListener("change", function(e){
 
 					var id = parseInt(select.value);
 					var object = scene.getObjectById( id );
@@ -442,15 +503,9 @@
 						cameraControls.trackObject = object;
 						cameraControls.offset.copy( offset );
 						cameraControls.offset.y *= 0.5;
-					} 
-
-					else  cameraControls.trackObject = object;
+					} else cameraControls.trackObject = object;
 				});
-
-				row.appendChild( select );
-				tab.appendChild( row );
-
-			})();
+*/
 
 		</script>
 
