@@ -834,6 +834,7 @@
 			const axisZ = new THREE.Vector3(0,0,1);
 			const keyboard = new KeyboardState();
 			const keyCodes = keyboard.keyCodes;
+			const entity_droplist = document.getElementById("entities-droplist"); // important!
 
 			window.addEventListener("keyup",   function(){ updateKeyboardFrontAngle( keyboard ); });
 			window.addEventListener("keydown", function(){ updateKeyboardFrontAngle( keyboard ); });
@@ -901,8 +902,6 @@
 			//	var backward = keyCodes[40] || keyCodes[83]; // "arrow DOWN"  or "S"
 
 		//	## EditorRotationSystem.
-
-			const entity_droplist = document.getElementById("entities-droplist"); // important!
 
 			function EditorRotationSystem(dt, entity){
 
