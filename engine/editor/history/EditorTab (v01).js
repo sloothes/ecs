@@ -222,7 +222,7 @@
 	//	tab.appendChild( row );
 
 	})();
-
+	
 	(function(){
 
 	//	Exit edit mode button.
