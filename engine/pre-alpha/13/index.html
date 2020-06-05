@@ -101,6 +101,33 @@
 		<script src="/threejs/r96/examples/js/exporters/OBJExporter.js"></script>
 		<script src="/threejs/r96/examples/js/exporters/ColladaExporter.js"></script>
 
+		<script>
+
+		//	TabUI.
+
+			(function(){
+
+				var sidePanel = createSidePanel();
+				document.body.appendChild( sidePanel );
+
+				var loginTab = TabUI.add( "Login", "login-tab" );
+				var debugTab = TabUI.add( "Debug", "debug-tab" );
+				var levelTab = TabUI.add( "Levels", "level-tab" );
+				var editorTab = TabUI.add( "Editor", "editor-tab" );
+				var cameraTab = TabUI.add( "Camera", "camera-tab" );
+				var controlTab = TabUI.add( "Controls", "control-tab" );
+				var playersTab = TabUI.add( "Players", "players-tab" );
+				var materialTab = TabUI.add( "Materials", "material-tab" );
+				var animationTab = TabUI.add( "Animations", "animation-tab" );
+
+				TabUI.append("Editor", "Controls", "Camera", "Players", "Animations", "Materials", "Levels", "Debug" );
+				TabUI.Editor.role.classList.add("active");
+				TabUI.Editor.tab.classList.add("in","active");
+
+			})();
+
+		</script>
+
 		<script src="/ecs/engine/Enviroment.js"></script>
 		<script src="/ecs/engine/core/entity.js"></script>
 		<script src="/ecs/engine/core/localPlayer.js"></script>
@@ -108,7 +135,7 @@
 		<script src="/ecs/engine/core/keyboardState.js"></script>
 		<script src="/ecs/engine/core/keyInputControls.js"></script>
 		<script src="/ecs/engine/core/joystickControls.js"></script>
-		<script src="/ecs/engine/editor/EditorTab.js"></script>
+		<!-- script src="/ecs/engine/editor/EditorTab.js"></script -->
 
 		<script>
 
@@ -254,33 +281,6 @@
 
 		<script>
 
-		//	TabUI.
-
-			(function(){
-
-				var sidePanel = createSidePanel();
-				document.body.appendChild( sidePanel );
-
-				var loginTab = TabUI.add( "Login", "login-tab" );
-				var debugTab = TabUI.add( "Debug", "debug-tab" );
-				var levelTab = TabUI.add( "Levels", "level-tab" );
-				var editorTab = TabUI.add( "Editor", "editor-tab" );
-				var cameraTab = TabUI.add( "Camera", "camera-tab" );
-				var controlTab = TabUI.add( "Controls", "control-tab" );
-				var playersTab = TabUI.add( "Players", "players-tab" );
-				var materialTab = TabUI.add( "Materials", "material-tab" );
-				var animationTab = TabUI.add( "Animations", "animation-tab" );
-
-				TabUI.append("Editor", "Controls", "Camera", "Players", "Animations", "Materials", "Levels", "Debug" );
-				TabUI.Editor.role.classList.add("active");
-				TabUI.Editor.tab.classList.add("in","active");
-
-			})();
-
-		</script>
-
-		<script>
-
 			localPlayer.controller.movementSpeed = 10;
 
 		//	Entities.
@@ -403,19 +403,437 @@
 
 		<script>
 
+		//	Editor tab.
+
+		//	Create a Object3D entity 
+		//	to hold editor-tab values.
+
+			const editor = new THREE.Object3D();
+			editor.name = "Editor";
+			entities.push({id: editor.id}); // important!
+
+		//	TabUI.append("Editor");
+		//	TabUI.Editor.role.classList.add("active");
+		//	TabUI.Editor.tab.classList.add("in","active");
+
+			(function(){
+
+			//	Entities droplist.
+			//	When option is selected, switches to EditMode.
+
+				var tab = TabUI.Editor.tab;
+				var row = document.createElement("h3");
+				row.textContent = "Entities:";
+				row.style.cssText = "height:30px;"
+
+				var select = document.createElement("select");
+				select.id = "entities-droplist";
+				select.style.cssText = "width:190px;color:#000;float:right;"
+					+ "border:1px solid;border-radius:4px;padding:2px 4px 4px 4px;"
+					+ "font-size:20px;margin-left:10px;margin-right:15px;";
+
+				(function(){
+					var option = document.createElement("option");
+					option.value = "";
+					select.appendChild( option );
+				})();
+
+				var watchObj = {value:select.value};
+				select.addEventListener("change", function(e){
+					watchObj.value = select.value;
+				});
+
+				var observer = watch(watchObj, "value", function( prop, action, newValue, oldValue ){
+					debugMode && console.log( prop, action, newValue, oldValue );
+
+					(function( value ){
+						var id = parseInt( value );
+						var object = scene.getObjectById( id );
+						if ( !object || !object.isMesh ) return;
+						var uuid = object.geometry.uuid;
+						debugMode && console.log( uuid );
+						octree.removeThreeMesh( uuid );
+						octree.importThreeMesh( object );
+					})( oldValue );
+
+					(function( value ){
+					//	Exit edit mode.
+						if ( newValue != "" ) return;
+						takeCameraControls( localPlayer );
+						keyInputControls.isDisabled = false;
+					})( newValue );
+
+					(function( value ){
+						if ( newValue == "" ) return;
+						keyInputControls.isDisabled = true;
+
+						var id = parseInt( value );
+						var object = scene.getObjectById( id );
+					//	debugMode && console.log( object );
+
+						if ( !object ) return;
+						if ( object === camera ) return;
+						if ( object === cameraLight ) return;
+						if ( object.name == "shadow helper") return;
+						if ( object === cameraLight.shadow.camera ) return;
+						if ( object.name == "shadow camera helper") return;
+						if ( object.geometry && object.geometry.boundingSphere ) {
+							var offset = object.geometry.boundingSphere.center;
+							cameraControls.trackObject = object;
+							cameraControls.offset.copy( offset );
+							cameraControls.offset.y *= 0.5;
+						} else takeCameraControls( object );
+
+						keyInputControls.isDisabled = true;
+					})( newValue );
+
+				});
+
+				row.appendChild( select );
+				tab.appendChild( row );
+
+			})();
+
+			(function(){
+
+			//	Vector mode droplist.
+			//	When option is selected, switches to EditMode.
+
+				var tab = TabUI.Editor.tab;
+				var row = document.createElement("h3");
+				row.textContent = "select:";
+				row.style.cssText = "height:40px;"
+
+				var select = document.createElement("select");
+				select.id = "vector-mode-droplist";
+				select.style.cssText = "width:190px;color:#000;float:right;"
+					+ "border:1px solid;border-radius:4px;padding:2px 4px 4px 4px;"
+					+ "font-size:20px;margin-left:10px;margin-right:15px;";
+
+				var modes = "position,rotation,scale,dimension";
+				modes.split(",").forEach(function( name ){
+					var option = document.createElement("option");
+					option.text = name;
+					option.value = name;
+					select.appendChild( option );
+				});
+
+				var watchObj = {value:select.value};
+				select.addEventListener("change", function(e){
+					watchObj.value = select.value;
+				});
+
+				var observer = watch(watchObj, "value", function( prop, action, newValue, oldValue ){
+					debugMode && console.log( prop, action, newValue, oldValue );
+					var entitydroplist = document.getElementById("entities-droplist");
+				});
+
+				row.appendChild( select );
+				tab.appendChild( row );
+
+			})();
+
+		//	Vector controls.
+
+			(function(){
+
+			//	vector x.
+
+				var tab = TabUI.Editor.tab;
+				var row = document.createElement("h3");
+				row.textContent = "vector x:";
+				row.style.cssText = "margin:10px 15px;height:40px;";
+				
+				var vect = document.createElement("div");
+				vect.style.cssText = "width:150px;height:40px;float:right;";
+
+				var prev = document.createElement("li");
+				prev.innerHTML = "&#9668;";
+				prev.style.display = "inline";
+				prev.classList.add("btn","btn-primary","get-prev-btn","pull-left");
+
+				var next = document.createElement("li");
+				next.innerHTML = "&#9658;";
+				next.style.display = "inline";
+				next.classList.add("btn","btn-primary","get-next-btn","pull-right");
+
+				var input = document.createElement("input");
+				input.id = "input-vector-x";
+				input.setAttribute("placeholder", "x" );
+				input.classList.add("form-control","text-center");
+				input.style.cssText = "color:#fff;border:none;display:inline;width:60px;margin:0px 5px;"
+					+ "text-align:center;font-size:x-large;font-weigth:bold;background:none;";
+
+				vect.appendChild(prev);
+				vect.appendChild(input);
+				vect.appendChild(next);
+				row.appendChild(vect);
+				tab.appendChild( row );
+
+			})();
+
+			(function(){
+
+				var tab = TabUI.Editor.tab;
+				var row = document.createElement("h3");
+				row.textContent = "vector y:";
+				row.style.cssText = "margin:10px 15px;height:40px;";
+				
+				var vect = document.createElement("div");
+				vect.style.cssText = "width:150px;height:40px;float:right;";
+
+				var prev = document.createElement("li");
+				prev.innerHTML = "&#9668;";
+				prev.style.display = "inline";
+				prev.classList.add("btn","btn-primary","get-prev-btn","pull-left");
+
+				var next = document.createElement("li");
+				next.innerHTML = "&#9658;";
+				next.style.display = "inline";
+				next.classList.add("btn","btn-primary","get-next-btn","pull-right");
+
+				var input = document.createElement("input");
+				input.id = "input-vector-y";
+				input.setAttribute("placeholder", "y" );
+				input.classList.add("form-control","text-center");
+				input.style.cssText = "color:#fff;border:none;display:inline;width:60px;margin:0px 5px;"
+					+ "text-align:center;font-size:x-large;font-weigth:bold;background:none;";
+
+				vect.appendChild(prev);
+				vect.appendChild(input);
+				vect.appendChild(next);
+				row.appendChild(vect);
+				tab.appendChild( row );
+
+			})();
+
+			(function(){
+
+				var tab = TabUI.Editor.tab;
+				var row = document.createElement("h3");
+				row.textContent = "vector z:";
+				row.style.cssText = "margin:10px 15px;height:40px;";
+				
+				var vect = document.createElement("div");
+				vect.style.cssText = "width:150px;height:40px;float:right;";
+
+				var prev = document.createElement("li");
+				prev.innerHTML = "&#9668;";
+				prev.style.display = "inline";
+				prev.classList.add("btn","btn-primary","get-prev-btn","pull-left");
+
+				var next = document.createElement("li");
+				next.innerHTML = "&#9658;";
+				next.style.display = "inline";
+				next.classList.add("btn","btn-primary","get-next-btn","pull-right");
+
+				var input = document.createElement("input");
+				input.id = "input-vector-z";
+				input.setAttribute("placeholder", "z" );
+				input.classList.add("form-control","text-center");
+				input.style.cssText = "color:#fff;border:none;display:inline;width:60px;margin:0px 5px;"
+					+ "text-align:center;font-size:x-large;font-weigth:bold;background:none;";
+
+				vect.appendChild(prev);
+				vect.appendChild(input);
+				vect.appendChild(next);
+				row.appendChild(vect);
+				tab.appendChild( row );
+
+			})();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+			(function(){
+
+			//	Geometries droplist (TODO).
+
+				var tab = TabUI.Editor.tab;
+				var row = document.createElement("h3");
+				row.textContent = "Geometry:";
+				row.style.cssText = "height:40px;"
+
+				var select = document.createElement("select");
+				select.id = "geometry-droplist";
+				select.style.cssText = "width:170px;color:#000;float:right;"
+					+ "border:1px solid;border-radius:4px;padding:2px 4px 4px 4px;"
+					+ "font-size:20px;margin-left:10px;margin-right:15px;";
+
+				var watchObj = {value:select.value};
+
+				select.addEventListener("change", function(e){
+					watchObj.value = select.value;
+				});
+
+				(function(){
+
+					var geometries = [
+						"BoxGeometry",
+						"CircleGeometry",
+						"ConeGeometry",
+						"CylinderGeometry",
+						"DodecahedronGeometry",
+						"EdgesGeometry",
+						"ExtrudeGeometry",
+						"IcosahedronGeometry",
+						"LatheGeometry",
+						"OctahedronGeometry",
+						"ParametricGeometry",
+						"PlaneGeometry",
+						"PolyhedronGeometry",
+						"RingGeometry",
+						"ShapeGeometry",
+						"SphereGeometry",
+						"TetrahedronGeometry",
+						"TextGeometry",
+						"TorusGeometry",
+						"TorusKnotGeometry",
+						"TubeGeometry",
+						"WireframeGeometry",
+					];
+
+					geometries.forEach(function( name ){
+						var option = document.createElement("option");
+						option.text = name;
+						option.value = name;
+						select.appendChild( option );
+					});
+
+				})();
+
+				select.value = "BoxGeometry";
+				row.appendChild( select );
+				tab.appendChild( row );
+
+			})();
+
+			(function(){
+
+			//	New box geometry button.
+			//	Creates a mesh box 10x10.
+			//	and switch to EditMode.
+
+				var k = 1;
+				var tab = TabUI.Editor.tab;
+				var row = document.createElement("h3");
+				row.style.cssText = "height:40px;margin-bottom:20px;"
+
+				var button = document.createElement("div");
+				button.id = "new-box-geometry";
+				button.textContent = "Create Box Geometry";
+				button.style.cssText = "width:295px;float:right;height:40px;font-size:large;margin-right:15px;";
+				button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
+
+				button.addEventListener( "click", function(){
+
+					var select = document.getElementById("entities-droplist");
+					var material = new THREE.MeshStandardMaterial();
+
+				//	Create box.
+					var w = 10, h = 10, d = 10;
+					var x = 0, y = h/2, z =  0;
+					var box = new THREE.BoxGeometry(w,h,d);
+					box.translate(0, h/2, 0);
+					var mesh = new THREE.Mesh(box, material);
+					mesh.name = "box "+ k++;
+					mesh.position.set(x,0,z);
+					scene.add( mesh );
+
+				//	Create entity.
+					entities.push({id:mesh.id})
+
+				//	Create option.
+					var name = mesh.name;
+					var uuid = mesh.uuid;
+					var option = document.createElement("option");
+					var text = ""+mesh.id+"."+mesh.type+":"+mesh.name;
+					option.text = text;
+					option.value = mesh.id;
+					select.appendChild( option );
+
+				//	Set new value.
+					select.value = ""+mesh.id;
+					select.dispatchEvent(new Event("change")); // important!
+
+				});
+
+				row.appendChild( button );
+				tab.appendChild( row );
+
+			})();
+
+			(function(){
+
+			//	Add to world octree button.
+
+				var tab = TabUI.Editor.tab;
+				var row = document.createElement("h3");
+				row.style.cssText = "height:40px;margin-bottom:20px;"
+
+				var button = document.createElement("div");
+				button.id = "add-world-octree";
+				button.textContent = "Add to World Octree";
+				button.style.cssText = "width:295px;float:right;height:40px;font-size:large;margin-right:15px;";
+				button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
+				button.addEventListener( "click", function(){
+
+				});
+
+				row.appendChild( button );
+			//	tab.appendChild( row );
+
+			})();
+
+			(function(){
+
+			//	Exit edit mode button.
+
+				var tab = TabUI.Editor.tab;
+				var row = document.createElement("h3");
+				row.style.cssText = "height:40px;margin-bottom:20px;"
+
+				var button = document.createElement("div");
+				button.id = "exit-edit-mode";
+				button.textContent = "Exit Edit Mode";
+				button.style.cssText = "width:295px;float:right;height:40px;font-size:large;margin-right:15px;";
+				button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
+
+				button.addEventListener( "click", function(){
+					var select = document.getElementById("entities-droplist");
+					select.value = "";
+					select.dispatchEvent(new Event("change")); // important!
+				});
+
+				row.appendChild( button );
+				tab.appendChild( row );
+
+			})();
+
 		</script>
 
 		<script>
 
 		//	Editor system.
 
-
 			const axisX = new THREE.Vector3(1,0,0);
 			const axisY = new THREE.Vector3(0,1,0);
 			const axisZ = new THREE.Vector3(0,0,1);
 			const keyboard = new KeyboardState();
 			const keyCodes = keyboard.keyCodes;
-			const entity_droplist = document.getElementById("entities-droplist");
 
 			window.addEventListener("keyup",   function(){ updateKeyboardFrontAngle( keyboard ); });
 			window.addEventListener("keydown", function(){ updateKeyboardFrontAngle( keyboard ); });
@@ -460,7 +878,7 @@
 
 					var entity = entities[i];
 
-					EditorScalarSystem(dt, entity);
+					EditorScalingSystem(dt, entity);
 					EditorRotationSystem(dt, entity);
 					EditorTranslationSystem(dt, entity);
 
@@ -482,35 +900,32 @@
 			//	var forwards = keyCodes[38] || keyCodes[87]; // "arrow UP"    or "W"
 			//	var backward = keyCodes[40] || keyCodes[83]; // "arrow DOWN"  or "S"
 
-			//	## EditorRotationSystem.
+		//	## EditorRotationSystem.
+
+			const entity_droplist = document.getElementById("entities-droplist"); // important!
 
 			function EditorRotationSystem(dt, entity){
 
-				if ( entity.id.toString() != entity_droplist.value ) return;
-
-				var object = scene.getObjectById( entity.id );
-				var required = object && object.geometry && object.rotation;
-				if ( !required ) return; // important!
-
 				try {
+
+					if ( entity.id.toString() != entity_droplist.value ) return;
+
+					var object = scene.getObjectById( entity.id );
+					var required = object && object.geometry && object.rotation;
+					if ( !required ) return; // important!
 
 					var rad = Math.max(dt, 0.02);
 					var keyCodes = keyboard.keyCodes;
 					var UP=38, DOWN=40, LEFT=37, RIGHT=39;
 					var D=68, A=65, W=87, S=83, R=82, F=70;
 
-				//	var A = keyCodes[65];  var D = keyCodes[68]; //  key "A", key "D"
-				//	var W = keyCodes[87];  var S = keyCodes[83]; //  key "W", key "S"
-
 				//	Rotation (local coordinates).
-
 					keyCodes[ UP ]  && object.rotateOnAxis( axisX,  rad );
 					keyCodes[DOWN]  && object.rotateOnAxis( axisX, -rad );
 					keyCodes[LEFT]  && object.rotateOnAxis( axisY, -rad );
 					keyCodes[RIGHT] && object.rotateOnAxis( axisY,  rad );
 
 				//	Reset rotation.
-
 					keyCodes[R] && object.rotation.set(0,0,0);
 					keyCodes[F] && object.setRotationFromQuaternion(camera.quaternion);
 
@@ -537,19 +952,17 @@
 			//	}
 
 
-			//	## EditorTranslationSystem.
+		//	## EditorTranslationSystem.
 
 			function EditorTranslationSystem(dt, entity){
 
-				if ( entity.id.toString() != entity_droplist.value ) return;
-
-				var object = scene.getObjectById( entity.id );
-				var required = object && object.geometry && object.position;
-				if ( !required ) return; // important!
-
-				//	if ( !entity.isEditable && !entity.isSelected && !entity.isTranslated ) return;
-
 				try {
+
+					if ( entity.id.toString() != entity_droplist.value ) return;
+
+					var object = scene.getObjectById( entity.id );
+					var required = object && object.geometry && object.position;
+					if ( !required ) return; // important!
 
 					var keyCodes = keyboard.keyCodes;
 					var object = scene.getObjectById( entity.id );
@@ -569,7 +982,7 @@
 						var rad = 0;
 						var movementSpeed = Math.max(dt, 0.05);
 						var cameraFrontAngle = cameraControls.phi;
-						var keyboardFrontAngle = 0;
+					//	var keyboardFrontAngle = 0;
 						if ( up ) keyboardFrontAngle =  Math.PI/2;
 						if (down) keyboardFrontAngle = -Math.PI/2;
 						var direction = rad - cameraFrontAngle + keyboardFrontAngle;
@@ -628,19 +1041,19 @@
 			//		if ( keyCodes[R] ) object.rotation.set(0,0,0);
 			//		if ( keyCodes[F] ) object.setRotationFromQuaternion(camera.quaternion);
 
-			//	## EditorScalarSystem.
+		//	## EditorScalingSystem.
 
-			function EditorScalarSystem(dt, entity){
-
-				if ( entity.id.toString() != entity_droplist.value ) return;
-
-				var object = scene.getObjectById( entity.id );
-				var required = object && object.geometry && object.scale;
-				if ( !required ) return; // important!
-
-				//	if ( !entity.isEditable && !entity.isSelected && !entity.isScaled ) return;
+			function EditorScalingSystem(dt, entity){
 
 				try {
+
+					if ( entity.id.toString() != entity_droplist.value ) return;
+
+					var object = scene.getObjectById( entity.id );
+					var required = object && object.geometry && object.scale;
+					if ( !required ) return; // important!
+
+					//	TODO.
 
 				} catch(err){
 					debugMode && console.error( "EditorScalarError:", err );
