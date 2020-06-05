@@ -295,7 +295,8 @@
 
 		//	box coluctions.
 			(function(){
-				var material = new THREE.LineBasicMaterial( { color: 0x00ff00 } );
+
+				var material = new THREE.MeshLambertMaterial();
 
 				(function(){
 					var w = 10; var h = 5;
@@ -303,6 +304,7 @@
 					box.translate(0, h/2, 0);
 					octree.importThreeMesh( new THREE.Mesh(box) );
 					var geometry = new THREE.EdgesGeometry( box );
+					var material = new THREE.LineBasicMaterial( { color: 0x00ff00 } );
 					var segments = new THREE.LineSegments( geometry, material );
 					segments.name = "segments 1";
 					scene.add( segments );
@@ -313,7 +315,7 @@
 					var x = 10, y = h/2, z = -4;
 					var box = new THREE.BoxGeometry(w,h,w);
 					box.translate(0, h/2, 0);
-					var mesh = new THREE.Mesh(box);
+					var mesh = new THREE.Mesh(box, material);
 					mesh.name = "build 2";
 					mesh.position.set(x,0,z);
 					octree.importThreeMesh( mesh );
@@ -329,7 +331,7 @@
 					var x = 11, y = h/2, z = -10;
 					var box = new THREE.BoxGeometry(w,h,w);
 					box.translate(0, h/2, 0);
-					var mesh = new THREE.Mesh(box);
+					var mesh = new THREE.Mesh(box, material);
 					mesh.name = "build 3";
 					mesh.position.set(x,0,z);
 					octree.importThreeMesh( mesh );
@@ -345,7 +347,7 @@
 					var x = -10, y = h/2, z = 10;
 					var box = new THREE.BoxGeometry(w,h,w);
 					box.translate(0, h/2, 0);
-					var mesh = new THREE.Mesh(box);
+					var mesh = new THREE.Mesh(box, material);
 					mesh.name = "build 4";
 					mesh.position.set(x,0,z);
 					octree.importThreeMesh( mesh );
@@ -361,7 +363,7 @@
 					var x = -14, y = h/2, z = 10;
 					var box = new THREE.BoxGeometry(w,h,d);
 					box.translate(0, h/2, 0);
-					var mesh = new THREE.Mesh(box);
+					var mesh = new THREE.Mesh(box, material);
 					mesh.name = "build 5";
 					mesh.position.set(x,0,z);
 					octree.importThreeMesh( mesh );
@@ -377,7 +379,7 @@
 					var x = -17, y = h/2, z = 12;
 					var box = new THREE.BoxGeometry(w,h,d);
 					box.translate(0, h/2, 0);
-					var mesh = new THREE.Mesh(box);
+					var mesh = new THREE.Mesh(box, material);
 					mesh.name = "build 6";
 					mesh.position.set(x,0,z);
 					octree.importThreeMesh( mesh );
@@ -409,10 +411,11 @@
 				var tab = TabUI.Editor.tab;
 				var row = document.createElement("h3");
 				row.textContent = "Entities:";
+				row.style.cssText = "height:30px;"
 
 				var select = document.createElement("select");
 				select.id = "entities-droplist";
-				select.style.cssText = "width:180px;color:#000;float:right;"
+				select.style.cssText = "width:190px;color:#000;float:right;"
 					+ "border:1px solid;border-radius:4px;padding:2px 4px 4px 4px;"
 					+ "font-size:20px;margin-left:10px;margin-right:15px;";
 
@@ -479,34 +482,136 @@
 
 			})();
 
-/*
+			(function(){
+
+			//	Geometries droplist.
+
+				var tab = TabUI.Editor.tab;
+				var row = document.createElement("h3");
+				row.textContent = "Geometry:";
+				row.style.cssText = "height:30px;"
+
+				var select = document.createElement("select");
+				select.id = "geometry-droplist";
+				select.style.cssText = "width:170px;color:#000;float:right;"
+					+ "border:1px solid;border-radius:4px;padding:2px 4px 4px 4px;"
+					+ "font-size:20px;margin-left:10px;margin-right:15px;";
+
+				var watchObj = {value:select.value};
+
 				select.addEventListener("change", function(e){
-
-					var id = parseInt(select.value);
-					var object = scene.getObjectById( id );
-					if ( !object ) return;
-					debugMode && console.log( object );
-
-				//	Disable keyInputControls;
-					if ( select.value ) 
-						keyInputControls.isDisabled = true;
-					else 
-						keyInputControls.isDisabled = false;
-
-				//	take camera controls.
-					if ( object === camera ) return;
-					else if ( object === cameraLight ) return;
-					else if ( object.name == "shadow helper") return;
-					else if ( object === cameraLight.shadow.camera ) return;
-					else if ( object.name == "shadow camera helper") return;
-					else if ( object.geometry && object.geometry.boundingSphere ) {
-						var offset = object.geometry.boundingSphere.center;
-						cameraControls.trackObject = object;
-						cameraControls.offset.copy( offset );
-						cameraControls.offset.y *= 0.5;
-					} else cameraControls.trackObject = object;
+					watchObj.value = select.value;
 				});
-*/
+
+				(function(){
+
+					var geometries = [
+						"BoxGeometry",
+						"CircleGeometry",
+						"ConeGeometry",
+						"CylinderGeometry",
+						"DodecahedronGeometry",
+						"EdgesGeometry",
+						"ExtrudeGeometry",
+						"IcosahedronGeometry",
+						"LatheGeometry",
+						"OctahedronGeometry",
+						"ParametricGeometry",
+						"PlaneGeometry",
+						"PolyhedronGeometry",
+						"RingGeometry",
+						"ShapeGeometry",
+						"SphereGeometry",
+						"TetrahedronGeometry",
+						"TextGeometry",
+						"TorusGeometry",
+						"TorusKnotGeometry",
+						"TubeGeometry",
+						"WireframeGeometry",
+					];
+
+					geometries.forEach(function( name ){
+						var option = document.createElement("option");
+						option.text = name;
+						option.value = name;
+						select.appendChild( option );
+					});
+
+				})();
+
+				select.value = "BoxGeometry";
+				row.appendChild( select );
+				tab.appendChild( row );
+
+			})();
+
+			(function(){
+
+			//	New box geometry button.
+
+				var k = 1;
+				var tab = TabUI.Editor.tab;
+				var row = document.createElement("h3");
+				row.style.cssText = "height:40px;margin-bottom:20px;"
+
+				var button = document.createElement("div");
+				button.id = "new-box-geometry";
+				button.textContent = "Create Box Geometry";
+				button.style.cssText = "width:295px;float:right;height:40px;font-size:large;margin-right:15px;";
+				button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
+
+				button.addEventListener( "click", function(){
+
+				//	Create box.
+					var w = 10, h = 10, d = 10;
+					var x = 0, y = h/2, z =  0;
+					var box = new THREE.BoxGeometry(w,h,d);
+					box.translate(0, h/2, 0);
+					var mesh = new THREE.Mesh(box, material);
+					mesh.name = "box "+ k++;
+					mesh.position.set(x,0,z);
+					scene.add( mesh );
+
+				//	Create option.
+					var name = mesh.name;
+					var uuid = mesh.uuid;
+					var option = document.createElement("option");
+					var text = ""+object.id+"."+mesh.type+":"+mesh.name;
+					option.text = text;
+					option.value = object.id;
+					select.appendChild( option );
+
+				//	Create entity.
+					entities.push({id:mesh.id})
+
+				});
+
+				row.appendChild( button );
+				tab.appendChild( row );
+
+			})();
+
+			(function(){
+
+			//	Add to world octree button.
+
+				var tab = TabUI.Editor.tab;
+				var row = document.createElement("h3");
+				row.style.cssText = "height:40px;margin-bottom:20px;"
+
+				var button = document.createElement("div");
+				button.id = "add-world-octree";
+				button.textContent = "Add to World Octree";
+				button.style.cssText = "width:295px;float:right;height:40px;font-size:large;margin-right:15px;";
+				button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
+				button.addEventListener( "click", function(){
+
+				});
+
+				row.appendChild( button );
+				tab.appendChild( row );
+
+			})();
 
 		</script>
 
