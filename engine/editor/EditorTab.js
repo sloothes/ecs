@@ -27,58 +27,180 @@
 			select.appendChild( option );
 		})();
 
-		var watchObj = {value:select.value};
-		select.addEventListener("change", function(e){
-			watchObj.value = select.value;
-		});
+		row.appendChild( select );
+		tab.appendChild( row );
 
-		var observer = watch(watchObj, "value", function( prop, action, newValue, oldValue ){
-			debugMode && console.log( prop, action, newValue, oldValue );
+	})();
 
-			(function( value ){
-				var id = parseInt( value );
-				var object = scene.getObjectById( id );
-				if ( !object || !object.isMesh ) return;
-				var uuid = object.geometry.uuid;
-				debugMode && console.log( uuid );
-				octree.removeThreeMesh( uuid );
-				octree.importThreeMesh( object );
-			})( oldValue );
+	(function(){
 
-			(function( value ){
-			//	Exit edit mode.
-				if ( newValue != "" ) return;
-				takeCameraControls( localPlayer );
-				keyInputControls.isDisabled = false;
-			})( newValue );
+	//	Vector mode droplist.
+	//	When option is selected, switches to EditMode.
 
-			(function( value ){
-				if ( newValue == "" ) return;
-				keyInputControls.isDisabled = true;
+		var tab = TabUI.Editor.tab;
+		var row = document.createElement("h3");
+		row.textContent = "select:";
+		row.style.cssText = "height:40px;"
 
-				var id = parseInt( value );
-				var object = scene.getObjectById( id );
-			//	debugMode && console.log( object );
+		var select = document.createElement("select");
+		select.id = "vector-mode-droplist";
+		select.style.cssText = "width:190px;color:#000;float:right;"
+			+ "border:1px solid;border-radius:4px;padding:2px 4px 4px 4px;"
+			+ "font-size:20px;margin-left:10px;margin-right:15px;";
 
-				if ( !object ) return;
-				if ( object === camera ) return;
-				if ( object === cameraLight ) return;
-				if ( object.name == "shadow helper") return;
-				if ( object === cameraLight.shadow.camera ) return;
-				if ( object.name == "shadow camera helper") return;
-				if ( object.geometry && object.geometry.boundingSphere ) {
-					var offset = object.geometry.boundingSphere.center;
-					cameraControls.trackObject = object;
-					cameraControls.offset.copy( offset );
-					cameraControls.offset.y *= 0.5;
-				} else takeCameraControls( object );
-
-				keyInputControls.isDisabled = true;
-			})( newValue );
-
+		var modes = "position,rotation,scale,quaternion";
+		modes.split(",").forEach(function( name ){
+			var option = document.createElement("option");
+			option.text = name;
+			option.value = name;
+			select.appendChild( option );
 		});
 
 		row.appendChild( select );
+		tab.appendChild( row );
+
+	})();
+
+	//	Vector controls.
+
+	(function(){
+
+	//	vector x.
+
+		var tab = TabUI.Editor.tab;
+		var row = document.createElement("h3");
+		row.textContent = "vector x:";
+		row.style.cssText = "margin:10px 15px;height:40px;";
+
+		var vect = document.createElement("div");
+		vect.style.cssText = "width:170px;height:40px;float:right;";
+
+		var prev = document.createElement("li");
+		prev.innerHTML = "&#9668;";
+		prev.style.display = "inline";
+		prev.classList.add("btn","btn-primary","get-prev-btn","pull-left");
+
+		var next = document.createElement("li");
+		next.innerHTML = "&#9658;";
+		next.style.display = "inline";
+		next.classList.add("btn","btn-primary","get-next-btn","pull-right");
+
+		var input = document.createElement("input");
+		input.id = "input-vector-x";
+		input.setAttribute("placeholder", "x" );
+		input.classList.add("form-control","text-center");
+		input.style.cssText = "color:#000;border:none;display:inline;width:80px;"
+			+ "margin:0px 5px;text-align:center;font-size:large;font-weigth:bold;background:none;";
+
+		vect.appendChild(prev);
+		vect.appendChild(input);
+		vect.appendChild(next);
+		row.appendChild(vect);
+		tab.appendChild( row );
+
+	})();
+
+	(function(){
+
+		var tab = TabUI.Editor.tab;
+		var row = document.createElement("h3");
+		row.textContent = "vector y:";
+		row.style.cssText = "margin:10px 15px;height:40px;";
+
+		var vect = document.createElement("div");
+		vect.style.cssText = "width:170px;height:40px;float:right;";
+
+		var prev = document.createElement("li");
+		prev.innerHTML = "&#9668;";
+		prev.style.display = "inline";
+		prev.classList.add("btn","btn-primary","get-prev-btn","pull-left");
+
+		var next = document.createElement("li");
+		next.innerHTML = "&#9658;";
+		next.style.display = "inline";
+		next.classList.add("btn","btn-primary","get-next-btn","pull-right");
+
+		var input = document.createElement("input");
+		input.id = "input-vector-y";
+		input.setAttribute("placeholder", "y" );
+		input.classList.add("form-control","text-center");
+		input.style.cssText = "color:#000;border:none;display:inline;width:80px;"
+			+ "margin:0px 5px;text-align:center;font-size:large;font-weigth:bold;background:none;";
+
+		vect.appendChild(prev);
+		vect.appendChild(input);
+		vect.appendChild(next);
+		row.appendChild(vect);
+		tab.appendChild( row );
+
+	})();
+
+	(function(){
+
+		var tab = TabUI.Editor.tab;
+		var row = document.createElement("h3");
+		row.textContent = "vector z:";
+		row.style.cssText = "margin:10px 15px;height:40px;";
+
+		var vect = document.createElement("div");
+		vect.style.cssText = "width:170px;height:40px;float:right;";
+
+		var prev = document.createElement("li");
+		prev.innerHTML = "&#9668;";
+		prev.style.display = "inline";
+		prev.classList.add("btn","btn-primary","get-prev-btn","pull-left");
+
+		var next = document.createElement("li");
+		next.innerHTML = "&#9658;";
+		next.style.display = "inline";
+		next.classList.add("btn","btn-primary","get-next-btn","pull-right");
+
+		var input = document.createElement("input");
+		input.id = "input-vector-z";
+		input.setAttribute("placeholder", "z" );
+		input.classList.add("form-control","text-center");
+		input.style.cssText = "color:#000;border:none;display:inline;width:80px;"
+			+ "margin:0px 5px;text-align:center;font-size:large;font-weigth:bold;background:none;";
+
+		vect.appendChild(prev);
+		vect.appendChild(input);
+		vect.appendChild(next);
+		row.appendChild(vect);
+		tab.appendChild( row );
+
+	})();
+
+	(function(){
+
+		var tab = TabUI.Editor.tab;
+		var row = document.createElement("h3");
+		row.textContent = "vector w:";
+		row.style.cssText = "margin:10px 15px;height:40px;";
+
+		var vect = document.createElement("div");
+		vect.style.cssText = "width:170px;height:40px;float:right;";
+
+		var prev = document.createElement("li");
+		prev.innerHTML = "&#9668;";
+		prev.style.display = "inline";
+		prev.classList.add("btn","btn-primary","get-prev-btn","pull-left");
+
+		var next = document.createElement("li");
+		next.innerHTML = "&#9658;";
+		next.style.display = "inline";
+		next.classList.add("btn","btn-primary","get-next-btn","pull-right");
+
+		var input = document.createElement("input");
+		input.id = "input-vector-w";
+		input.setAttribute("placeholder", "z" );
+		input.classList.add("form-control","text-center");
+		input.style.cssText = "color:#000;border:none;display:inline;width:80px;"
+			+ "margin:0px 5px;text-align:center;font-size:large;font-weigth:bold;background:none;";
+
+		vect.appendChild(prev);
+		vect.appendChild(input);
+		vect.appendChild(next);
+		row.appendChild(vect);
 		tab.appendChild( row );
 
 	})();
@@ -90,10 +212,10 @@
 		var tab = TabUI.Editor.tab;
 		var row = document.createElement("h3");
 		row.textContent = "Geometry:";
-		row.style.cssText = "height:30px;"
+		row.style.cssText = "height:40px;"
 
 		var select = document.createElement("select");
-		select.id = "geometry-droplist";
+		select.id = "editor-geometry-droplist";
 		select.style.cssText = "width:170px;color:#000;float:right;"
 			+ "border:1px solid;border-radius:4px;padding:2px 4px 4px 4px;"
 			+ "font-size:20px;margin-left:10px;margin-right:15px;";
@@ -106,32 +228,13 @@
 
 		(function(){
 
-			var geometries = [
-				"BoxGeometry",
-				"CircleGeometry",
-				"ConeGeometry",
-				"CylinderGeometry",
-				"DodecahedronGeometry",
-				"EdgesGeometry",
-				"ExtrudeGeometry",
-				"IcosahedronGeometry",
-				"LatheGeometry",
-				"OctahedronGeometry",
-				"ParametricGeometry",
-				"PlaneGeometry",
-				"PolyhedronGeometry",
-				"RingGeometry",
-				"ShapeGeometry",
-				"SphereGeometry",
-				"TetrahedronGeometry",
-				"TextGeometry",
-				"TorusGeometry",
-				"TorusKnotGeometry",
-				"TubeGeometry",
-				"WireframeGeometry",
-			];
+			var geometries = "BoxGeometry,CircleGeometry,ConeGeometry,CylinderGeometry,"
+			+"DodecahedronGeometry,EdgesGeometry,ExtrudeGeometry,IcosahedronGeometry,LatheGeometry,"
+			+"OctahedronGeometry,ParametricGeometry,PlaneGeometry,PolyhedronGeometry,RingGeometry,"
+			+"ShapeGeometry,SphereGeometry,TetrahedronGeometry,TextGeometry,TorusGeometry,TorusKnotGeometry,"
+			+"TubeGeometry,WireframeGeometry";
 
-			geometries.forEach(function( name ){
+			geometries.split(",").forEach(function( name ){
 				var option = document.createElement("option");
 				option.text = name;
 				option.value = name;
@@ -142,6 +245,28 @@
 
 		select.value = "BoxGeometry";
 		row.appendChild( select );
+		tab.appendChild( row );
+
+	})();
+
+	(function(){
+
+	//	New plane geometry button.
+	//	Creates a mesh plane 10x10.
+	//	and switch to EditMode.
+
+		var k = 1;
+		var tab = TabUI.Editor.tab;
+		var row = document.createElement("h3");
+		row.style.cssText = "height:40px;margin-bottom:20px;"
+
+		var button = document.createElement("div");
+		button.id = "new-plane-geometry";
+		button.textContent = "Create Plane Geometry";
+		button.style.cssText = "width:295px;float:right;height:40px;font-size:large;margin-right:15px;";
+		button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
+
+		row.appendChild( button );
 		tab.appendChild( row );
 
 	})();
@@ -162,39 +287,6 @@
 		button.textContent = "Create Box Geometry";
 		button.style.cssText = "width:295px;float:right;height:40px;font-size:large;margin-right:15px;";
 		button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
-
-		button.addEventListener( "click", function(){
-
-			var select = document.getElementById("entities-droplist");
-			var material = new THREE.MeshStandardMaterial();
-
-		//	Create box.
-			var w = 10, h = 10, d = 10;
-			var x = 0, y = h/2, z =  0;
-			var box = new THREE.BoxGeometry(w,h,d);
-			box.translate(0, h/2, 0);
-			var mesh = new THREE.Mesh(box, material);
-			mesh.name = "box "+ k++;
-			mesh.position.set(x,0,z);
-			scene.add( mesh );
-
-		//	Create entity.
-			entities.push({id:mesh.id})
-
-		//	Create option.
-			var name = mesh.name;
-			var uuid = mesh.uuid;
-			var option = document.createElement("option");
-			var text = ""+mesh.id+"."+mesh.type+":"+mesh.name;
-			option.text = text;
-			option.value = mesh.id;
-			select.appendChild( option );
-
-		//	Set new value.
-			select.value = ""+mesh.id;
-			select.dispatchEvent(new Event("change")); // important!
-
-		});
 
 		row.appendChild( button );
 		tab.appendChild( row );
