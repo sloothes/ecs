@@ -61,7 +61,7 @@
 
 	})();
 
-	//	Vector controls.
+//	Vector controls.
 
 	(function(){
 
@@ -76,11 +76,13 @@
 		vect.style.cssText = "width:170px;height:40px;float:right;";
 
 		var prev = document.createElement("li");
+		prev.id = "vector-x-decrease";
 		prev.innerHTML = "&#9668;";
 		prev.style.display = "inline";
 		prev.classList.add("btn","btn-primary","get-prev-btn","pull-left");
 
 		var next = document.createElement("li");
+		prev.id = "vector-x-increase";
 		next.innerHTML = "&#9658;";
 		next.style.display = "inline";
 		next.classList.add("btn","btn-primary","get-next-btn","pull-right");
@@ -111,11 +113,13 @@
 		vect.style.cssText = "width:170px;height:40px;float:right;";
 
 		var prev = document.createElement("li");
+		prev.id = "vector-y-decrease";
 		prev.innerHTML = "&#9668;";
 		prev.style.display = "inline";
 		prev.classList.add("btn","btn-primary","get-prev-btn","pull-left");
 
 		var next = document.createElement("li");
+		prev.id = "vector-y-increase";
 		next.innerHTML = "&#9658;";
 		next.style.display = "inline";
 		next.classList.add("btn","btn-primary","get-next-btn","pull-right");
@@ -146,11 +150,13 @@
 		vect.style.cssText = "width:170px;height:40px;float:right;";
 
 		var prev = document.createElement("li");
+		prev.id = "vector-z-decrease";
 		prev.innerHTML = "&#9668;";
 		prev.style.display = "inline";
 		prev.classList.add("btn","btn-primary","get-prev-btn","pull-left");
 
 		var next = document.createElement("li");
+		prev.id = "vector-z-increase";
 		next.innerHTML = "&#9658;";
 		next.style.display = "inline";
 		next.classList.add("btn","btn-primary","get-next-btn","pull-right");
@@ -181,11 +187,13 @@
 		vect.style.cssText = "width:170px;height:40px;float:right;";
 
 		var prev = document.createElement("li");
+		prev.id = "vector-w-decrease";
 		prev.innerHTML = "&#9668;";
 		prev.style.display = "inline";
 		prev.classList.add("btn","btn-primary","get-prev-btn","pull-left");
 
 		var next = document.createElement("li");
+		prev.id = "vector-w-increase";
 		next.innerHTML = "&#9658;";
 		next.style.display = "inline";
 		next.classList.add("btn","btn-primary","get-next-btn","pull-right");
