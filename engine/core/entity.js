@@ -86,8 +86,8 @@
 		for ( var i in arguments ) {
 			var param = arguments[i];
 			if ( typeof param === "object" 
-			  && (param.isObject3D || param.isEntity) 
-			  && param.id !== undefined ) {
+			&& (param.isObject3D || param.isEntity) 
+			&& param.id !== undefined ) {
 				added_objs.push( param );    // keep objects to create options;
 				adding_ids.push( param.id ); // adding_ids.unshift( param.id );
 			} else 
@@ -106,7 +106,11 @@
 				return item.id === _id;
 			});
 
-			if ( index > -1 ) continue; // important!
+			if ( index > -1 ) {
+			//	Remove from added_objs.
+				added_objs.splice(j, 1);
+				continue; // important!
+			}
 
 		//	Add entity.
 			this.push({id:_id});
@@ -137,10 +141,11 @@
 		var remove_ids = [];
 		for ( var i in arguments ) {
 			var param = arguments[i];
-			if ( typeof param === "number" ) 
+			if ( typeof param === "number" && param % 1 === 0 ) // integer. 
 				remove_ids.unshift( param );    // remove_ids.push( param );
 			else if ( typeof param === "object" 
-			  && (param.isEntity || param.isObject3D) )
+			&& (param.isEntity || param.isObject3D) 
+			&& param.id !== undefined )
 				remove_ids.unshift( param.id ); // remove_ids.push( param.id );
 			else 
 				continue;
