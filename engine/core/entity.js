@@ -1,5 +1,10 @@
 //	Entity Class.
 
+//	Creates an entity object that accepts components (data).
+//	An entity object does not passed as is in EntityManager.
+//	In EntityManager passed only the id of the entity object.
+//	In other words an entity is a plain object like Object3D.
+
 	var entityId = 0;
 
 	function Entity(){
