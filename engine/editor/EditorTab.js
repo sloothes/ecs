@@ -368,3 +368,22 @@
 	})();
 
 //  =============================================================================== //
+
+	(function(){
+
+	//	Remove entity button.
+
+		var tab = TabUI.Editor.tab;
+		var row = document.createElement("h3");
+		row.style.cssText = "height:40px;margin-bottom:20px;"
+
+		var button = document.createElement("div");
+		button.id = "remove-entity-button";
+		button.textContent = "Remove Geometry Entity";
+		button.style.cssText = "width:295px;float:right;height:40px;font-size:large;margin-right:15px;";
+		button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
+
+		row.appendChild( button );
+		tab.appendChild( row );
+
+	})();
