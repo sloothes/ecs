@@ -286,7 +286,8 @@
 		//	Entities.
 
 			debugMode && (function(){
-				var geometry = new THREE.BoxGeometry();
+				var r = 1;
+				var geometry = new THREE.BoxGeometry(r,r,r);
 				var material = new THREE.MeshLambertMaterial();
 				var cube = new THREE.Mesh(geometry, material);
 				cube.name = "local player cube";
@@ -476,6 +477,7 @@
 
 				const exit_edit_button = document.getElementById("exit-edit-mode");
 				const box_geometry_button = document.getElementById("new-box-geometry");
+				const reset_vectors_button = document.getElementById("reset-vectors-button");
 				const plane_geometry_button = document.getElementById("new-plane-geometry");
 
 				const entitySelect = { value:entity_droplist.value };   // string.
@@ -602,24 +604,6 @@
 						}
 
 					}
-
-					//	if ( button === vect_x_increase ) object.scale.x += step/10; // 0.1 %.
-					//	if ( button === vect_y_increase ) object.scale.y += step/10; // 0.1 %.
-					//	if ( button === vect_z_increase ) object.scale.z += step/10; // 0.1 %.
-					//	if ( button === vect_w_increase ) {
-					//		object.scale.x += step/10; // 0.1 %.
-					//		object.scale.y += step/10; // 0.1 %.
-					//		object.scale.z += step/10; // 0.1 %.
-					//	}
-					//
-					//	if ( button === vect_x_decrease ) object.scale.x -= step/10; // 0.1 %.
-					//	if ( button === vect_y_decrease ) object.scale.y -= step/10; // 0.1 %.
-					//	if ( button === vect_z_decrease ) object.scale.z -= step/10; // 0.1 %.
-					//	if ( button === vect_w_decrease ) {
-					//		object.scale.x -= step/10; // 0.1 %.
-					//		object.scale.y -= step/10; // 0.1 %.
-					//		object.scale.z -= step/10; // 0.1 %.
-					//	}
 
 					function onMouseDown(){ 
 
@@ -810,7 +794,7 @@
 
 				})();
 
-			//	Select.
+			//	Droplists.
 
 				entity_droplist.addEventListener("change", function(){
 					entity_droplist.blur();
@@ -826,6 +810,13 @@
 				geometry_droplist.addEventListener("change", function(){
 					geometry_droplist.blur();
 					geometryType.value = geometry_droplist.value;
+				});
+
+			//	Buttons.
+
+				exit_edit_button.addEventListener( "click", function(){
+					entitySelect.value = entity_droplist.value = "";
+				//	entity_droplist.dispatchEvent(new Event("change"));
 				});
 
 
@@ -955,8 +946,10 @@
 					if ( !object.isMesh ) return;
 					if ( !object.geometry ) return;
 					var uuid = object.geometry.uuid;
-					octree.removeThreeMesh( uuid );
-					octree.importThreeMesh( object );
+					if ( !localPlayer.getObjectById(id) ) {
+						octree.removeThreeMesh( uuid );
+						octree.importThreeMesh( object );
+					}
 				}
 
 				function exitFromEditMode(){
@@ -1072,6 +1065,24 @@
 				});
 
 			})();
+
+			//	if ( button === vect_x_increase ) object.scale.x += step/10; // 0.1 %.
+			//	if ( button === vect_y_increase ) object.scale.y += step/10; // 0.1 %.
+			//	if ( button === vect_z_increase ) object.scale.z += step/10; // 0.1 %.
+			//	if ( button === vect_w_increase ) {
+			//		object.scale.x += step/10; // 0.1 %.
+			//		object.scale.y += step/10; // 0.1 %.
+			//		object.scale.z += step/10; // 0.1 %.
+			//	}
+			//
+			//	if ( button === vect_x_decrease ) object.scale.x -= step/10; // 0.1 %.
+			//	if ( button === vect_y_decrease ) object.scale.y -= step/10; // 0.1 %.
+			//	if ( button === vect_z_decrease ) object.scale.z -= step/10; // 0.1 %.
+			//	if ( button === vect_w_decrease ) {
+			//		object.scale.x -= step/10; // 0.1 %.
+			//		object.scale.y -= step/10; // 0.1 %.
+			//		object.scale.z -= step/10; // 0.1 %.
+			//	}
 
 			//	vect_x_increase.addEventListener("click", function(){
 			//		clearTimeout(interval);
