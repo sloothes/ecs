@@ -69,20 +69,76 @@
 
 	};
 
-	EntityManager.prototype.remove = function(){
-	//	params: {number:entity._id} or {object:entity} 
+	EntityManager.prototype.add = function(){
+	//	params: {object:Object3D} or {object:entity} 
 
 		if ( arguments.length < 1 ) return;
 
-	//	Get removed _ids.
+		var added_objs = [];
+		var adding_ids = [];
+
+	//	Get objects/ids.
+		for ( var i in arguments ) {
+			var param = arguments[i];
+			if ( typeof param === "object" 
+			  && (param.isObject3D || param.isEntity) 
+			  && param.id !== undefined ) {
+				added_objs.push( param );    // keep objects to create options;
+				adding_ids.push( param.id ); // adding_ids.unshift( param.id );
+			} else 
+				continue;
+		}
+
+		if ( !adding_ids.length ) return;
+		console.log( "adding_ids:", adding_ids );
+
+		var length = adding_ids.length;
+		for ( var j = 0; j < length; j++ ) {
+			var _id = adding_ids[ j ];
+
+		//	Find index.
+			var index = this.findIndex(function( item ){
+				return item.id === _id;
+			});
+
+			if ( index > -1 ) continue; // important!
+
+		//	Add entity.
+			this.push({id:_id});
+		}
+
+	//	var entity_droplist = document.getElementById("entities-droplist");
+	//	global const "entity_droplist" will be defined with editor systems;
+		if ( !entity_droplist ) return;
+
+	//	Add options.
+		while ( added_objs.length ) (function(object){
+			var type = "object";
+			var name = object.name;
+			if ( object.type ) type = object.type;
+			var option = document.createElement("option");
+			option.text = ""+object.id+"."+type+":"+name;
+			option.value = object.id;
+			entity_droplist.appendChild( option );
+		})( added_objs.shift() );
+	};
+
+	EntityManager.prototype.remove = function(){
+	//	params: {number:entity.id} or {object:entity} 
+
+		if ( arguments.length < 1 ) return;
+
+	//	Get removed ids.
 		var remove_ids = [];
 		for ( var i in arguments ) {
 			var param = arguments[i];
 			if ( typeof param === "number" ) 
-				remove_ids.unshift( param );     // remove_ids.push( param );
-			else if ( typeof param === "object" && param.isEntity )
-				remove_ids.unshift( param._id ); // remove_ids.push( param._id );
-			else continue;
+				remove_ids.unshift( param );    // remove_ids.push( param );
+			else if ( typeof param === "object" 
+			  && (param.isEntity || param.isObject3D) )
+				remove_ids.unshift( param.id ); // remove_ids.push( param.id );
+			else 
+				continue;
 		}
 
 		if ( !remove_ids.length ) return;
@@ -93,23 +149,34 @@
 
 			var _id = remove_ids[ j ];
 
-			//	Find index.
+		//	Find index.
 			var index = this.findIndex(function( item ){
-				return item._id === _id;
+				return item.id === _id;
 			});
 
-			if ( index < 0 ) return; // important!
+			if ( index < 0 ) continue; // important!
 
 			var removedItems = this.splice(index, 1);
-			//	debugMode && console.log( removedItems );
+		//	debugMode && console.log( removedItems );
 
 			while ( removedItems.length ){
 				var removed = removedItems.shift();
-				//	debugMode && console.log( removed );
+			//	debugMode && console.log( removed );
 				removedEntities.push( removed );
 			}
-
 		}
+
+	//	var entity_droplist = document.getElementById("entities-droplist");
+	//	global const "entity_droplist" will be defined with editor systems;
+		if ( !entity_droplist ) return; 
+
+	//	Remove options.
+		while ( remove_ids.length ) (function(id){
+			var selector = "option[value='" + id.toString() + "']"; console.log( selector );
+			var option = entity_droplist.querySelector( selector ); console.log(  option  );
+			option && option.remove();
+		})( remove_ids.shift() );
+
 	};
 
 	EntityManager.prototype.clear = function(){
@@ -120,7 +187,7 @@
 
 //	Create entity managers.
 
-		const entities = new EntityManager();
-		const HTMLentities = new EntityManager();
-		const removedEntities = new EntityManager();
+	const entities = new EntityManager();
+	const HTMLentities = new EntityManager();
+	const removedEntities = new EntityManager();
 
