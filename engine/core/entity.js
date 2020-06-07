@@ -108,7 +108,7 @@
 		}
 
 	//	var entity_droplist = document.getElementById("entities-droplist");
-	//	global const "entity_droplist" will be defined with editor systems;
+	//	global const "entity_droplist" is defined in EditorTab.js;
 		if ( !entity_droplist ) return;
 
 	//	Add options.
@@ -167,7 +167,7 @@
 		}
 
 	//	var entity_droplist = document.getElementById("entities-droplist");
-	//	global const "entity_droplist" will be defined with editor systems;
+	//	global const "entity_droplist" is defined in EditorTab.js;
 		if ( !entity_droplist ) return; 
 
 	//	Remove options.

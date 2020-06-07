@@ -5,7 +5,7 @@
 //	TabUI.Editor.role.classList.add("active");
 //	TabUI.Editor.tab.classList.add("in","active");
 
-	(function(){
+	const entity_droplist = (function(){
 
 	//	Entities droplist.
 	//	When option is selected, switches to EditMode.
@@ -29,6 +29,8 @@
 
 		row.appendChild( select );
 		tab.appendChild( row );
+
+		return select;
 
 	})();
 
