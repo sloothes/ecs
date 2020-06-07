@@ -260,7 +260,7 @@
 	(function(){
 
 	//	New plane geometry button.
-	//	Creates a mesh plane 10x10.
+	//	Creates a mesh plane 1x1 (m2),
 	//	and switch to EditMode.
 
 		var k = 1;
@@ -282,7 +282,7 @@
 	(function(){
 
 	//	New box geometry button.
-	//	Creates a mesh box 10x10.
+	//	Creates a mesh box 1x1 (m3),
 	//	and switch to EditMode.
 
 		var k = 1;
