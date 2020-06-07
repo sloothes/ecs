@@ -946,8 +946,8 @@
 					if ( !object.isMesh ) return;
 					if ( !object.geometry ) return;
 					var uuid = object.geometry.uuid;
-					if ( !localPlayer.getObjectById(id) ) {
-						octree.removeThreeMesh( uuid );
+					octree.removeThreeMesh( uuid );
+					if ( !localPlayer.getObjectById(object.id) ) {
 						octree.importThreeMesh( object );
 					}
 				}
