@@ -236,10 +236,10 @@
 
 		(function(){
 
-			var geometries = "BoxGeometry,CircleGeometry,ConeGeometry,CylinderGeometry,"
+			var geometries = "PlaneGeometry,BoxGeometry,CircleGeometry,ConeGeometry,CylinderGeometry,"
 			+"DodecahedronGeometry,EdgesGeometry,ExtrudeGeometry,IcosahedronGeometry,LatheGeometry,"
-			+"OctahedronGeometry,ParametricGeometry,PlaneGeometry,PolyhedronGeometry,RingGeometry,"
-			+"ShapeGeometry,SphereGeometry,TetrahedronGeometry,TextGeometry,TorusGeometry,TorusKnotGeometry,"
+			+"OctahedronGeometry,ParametricGeometry,PolyhedronGeometry,RingGeometry,ShapeGeometry,"
+			+"SphereGeometry,TetrahedronGeometry,TextGeometry,TorusGeometry,TorusKnotGeometry,"
 			+"TubeGeometry,WireframeGeometry";
 
 			geometries.split(",").forEach(function( name ){
