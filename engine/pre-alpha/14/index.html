@@ -293,7 +293,7 @@
 				localPlayer.add( cube );
 			})();
 
-
+/*
 		//	box coluctions.
 			(function(){
 
@@ -392,7 +392,7 @@
 				})();
 
 			})();
-
+*/
 		</script>
 
 		<script>
@@ -414,6 +414,7 @@
 			editor.reset = function(){
 
 				editor.copy( new THREE.Object3D() );
+				editor.name = "Editor";
 				debugMode && console.log( "editor reset:", editor );
 
 			};
@@ -422,13 +423,14 @@
 
 				var id = parseInt( value );
 
-				if ( id == NaN ) return;
-				if ( id == scene.id ) return; // important!
-				if ( id == camera.id ) return; // important!
-				if ( id == editor.id ) return; // important!
-				if ( id == cameraLight.id ) return; // important!
-				if ( id == localPlayer.id ) return; // important!
-				if ( id === cameraLight.shadow.camera.id ) return;
+				if ( id === NaN ) return;
+				if ( id === scene.id ) return; // important!
+				if ( id === camera.id ) return; // important!
+				if ( id === editor.id ) return; // important!
+				if ( id === cameraLight.id ) return; // important!
+				if ( id === localPlayer.id ) return; // important!
+				if ( id === shadowCameraHelper.id ) return; // important!
+				if ( id === cameraLight.shadow.camera.id ) return; // important!
 
 				var object = scene.getObjectById(id);
 
@@ -438,8 +440,7 @@
 				if ( object === editor ) return;
 				if ( object === cameraLight ) return;
 				if ( object === localPlayer ) return;
-				if ( object.name == "shadow helper") return;
-				if ( object.name == "shadow camera helper") return;
+				if ( object === shadowCameraHelper ) return;
 				if ( object === cameraLight.shadow.camera ) return;
 
 				object && object.isObject3D && editor.copy( object );
@@ -483,37 +484,534 @@
 
 			//	Editor Tab eventListners.
 
-				vect_x_increase.addEventListener("click", function(){
-					editor[vectorSelect.value] += 0.1;
-				});
+				(function(){
 
-				vect_x_decrease.addEventListener("click", function(){
-					editor[vectorSelect.value] -= 0.1;
-				});
+					var object;
+					var interval;
+
+					const axisX = new THREE.Vector3(1,0,0);
+					const axisY = new THREE.Vector3(0,1,0);
+					const axisZ = new THREE.Vector3(0,0,1);
+
+					watch(entitySelect, function( prop, action, newValue, oldValue ){
+
+						var id = parseInt( newValue );
+						if ( id === NaN ) return object = undefined;
+						if ( id === scene.id ) return object = undefined;
+						if ( id === camera.id ) return object = undefined;
+						if ( id === editor.id ) return object = undefined;
+						if ( id === cameraLight.id ) return object = undefined;
+						if ( id === localPlayer.id ) return object = undefined;
+						if ( id === shadowCameraHelper.id ) return object = undefined;
+						if ( id === cameraLight.shadow.camera.id ) return object = undefined;
+
+						object = scene.getObjectById( id );
+						if ( !object ) return object = undefined;
+						debugMode && console.log( object );
+
+					});
+
+					function update( button ){
+
+						if ( !object ) return;
+
+						var vector = vectorSelect.value;
+
+						if ( vector === "position" ) {
+							var step = 1/100; // 1 cm.
+							if ( button === vect_x_increase ) object.position.x += step/10; // 1 mm.
+							if ( button === vect_y_increase ) object.position.y += step/10; // 1 mm.
+							if ( button === vect_z_increase ) object.position.z += step/10; // 1 mm.
+							if ( button === vect_x_decrease ) object.position.x -= step/10; // 1 mm.
+							if ( button === vect_y_decrease ) object.position.y -= step/10; // 1 mm.
+							if ( button === vect_z_decrease ) object.position.z -= step/10; // 1 mm.
+						}
+
+						else if ( vector === "rotation" ) {
+							var step = Math.PI/180; // 1 deg.
+							if ( button === vect_x_increase ) object.rotateOnAxis( axisX,  step/10 ); // 0.1 deg.
+							if ( button === vect_y_increase ) object.rotateOnAxis( axisY,  step/10 ); // 0.1 deg.
+							if ( button === vect_z_increase ) object.rotateOnAxis( axisZ,  step/10 ); // 0.1 deg.
+							if ( button === vect_x_decrease ) object.rotateOnAxis( axisX, -step/10 ); // 0.1 deg.
+							if ( button === vect_y_decrease ) object.rotateOnAxis( axisY, -step/10 ); // 0.1 deg.
+							if ( button === vect_z_decrease ) object.rotateOnAxis( axisZ, -step/10 ); // 0.1 deg.
+						}
+
+						else if ( vector === "scale" ) {
+
+							var step = 1/100; // 1 %
+
+							if ( button === vect_x_increase ) {
+								object.scale.x += step/10;     // 0.1 %.
+								if ( Math.abs( object.scale.x ) < step/10 ) 
+									object.scale.x = step/10;  // avoid scale.x:0.
+							} else if ( button === vect_y_increase ) {
+								object.scale.y += step/5;      // 0.1 %.
+								if ( Math.abs( object.scale.y ) < step/10 ) 
+									object.scale.y = step/10;  // avoid scale.x:0.
+							} else if ( button === vect_z_increase ) {
+								object.scale.z += step/5;      // 0.1 %.
+								if ( Math.abs( object.scale.z ) < step/10 ) 
+									object.scale.z = step/10;  // avoid scale.x:0.
+							} else if ( button === vect_w_increase ) {
+								object.scale.x += step/10;     // 0.1 %.
+								object.scale.y += step/10;     // 0.1 %.
+								object.scale.z += step/10;     // 0.1 %.
+								if ( Math.abs( object.scale.x ) < step/10 ) 
+									object.scale.x = step/10;  // avoid scale.x:0.
+								if ( Math.abs( object.scale.y ) < step/10 ) 
+									object.scale.y = step/10;  // avoid scale.y:0.
+								if ( Math.abs( object.scale.z ) < step/10 ) 
+									object.scale.z = step/10;  // avoid scale.z:0.
+							} else if ( button === vect_x_decrease ) {
+								object.scale.x -= step/10;     // 0.1 %,
+								if ( Math.abs( object.scale.x ) < step/10 ) 
+									object.scale.x = -step/10; // avoid scale.x:0,
+							} else if ( button === vect_y_decrease ) {
+								object.scale.y -= step/10;     // 0.1 %,
+								if ( Math.abs( object.scale.y ) < step/10 ) 
+									object.scale.y = -step/10; // avoid scale.y:0,
+							} else if ( button === vect_z_decrease ) {
+								object.scale.z -= step/10;     // 0.1 %,
+								if ( Math.abs( object.scale.z ) < step/10 ) 
+									object.scale.z = -step/10; // avoid scale.z:0,
+							} else if ( button === vect_w_decrease ) {
+								object.scale.x -= step/10;     // 0.1 %,
+								object.scale.y -= step/10;     // 0.1 %,
+								object.scale.z -= step/10;     // 0.1 %,
+								if ( Math.abs( object.scale.x ) < step/10 ) 
+									object.scale.x = -step/10; // avoid scale.x:0,
+								if ( Math.abs( object.scale.y ) < step/10 ) 
+									object.scale.y = -step/10; // avoid scale.y:0,
+								if ( Math.abs( object.scale.z ) < step/10 ) 
+									object.scale.z = -step/10; // avoid scale.z:0,
+							}
+						}
+
+						else if ( vector === "quaternion" ) {
+							var step = 1/100;
+							if ( button === vect_x_increase ) object.quaternion.x += step/10; // 0.001
+							if ( button === vect_y_increase ) object.quaternion.y += step/10; // 0.001
+							if ( button === vect_z_increase ) object.quaternion.z += step/10; // 0.001
+							if ( button === vect_w_increase ) object.quaternion.w += step/10; // 0.001
+
+							if ( button === vect_x_decrease ) object.quaternion.x -= step/10; // 0.001
+							if ( button === vect_y_decrease ) object.quaternion.y -= step/10; // 0.001
+							if ( button === vect_z_decrease ) object.quaternion.z -= step/10; // 0.001
+							if ( button === vect_w_decrease ) object.quaternion.w -= step/10; // 0.001
+						}
+
+					}
+
+					//	if ( button === vect_x_increase ) object.scale.x += step/10; // 0.1 %.
+					//	if ( button === vect_y_increase ) object.scale.y += step/10; // 0.1 %.
+					//	if ( button === vect_z_increase ) object.scale.z += step/10; // 0.1 %.
+					//	if ( button === vect_w_increase ) {
+					//		object.scale.x += step/10; // 0.1 %.
+					//		object.scale.y += step/10; // 0.1 %.
+					//		object.scale.z += step/10; // 0.1 %.
+					//	}
+					//
+					//	if ( button === vect_x_decrease ) object.scale.x -= step/10; // 0.1 %.
+					//	if ( button === vect_y_decrease ) object.scale.y -= step/10; // 0.1 %.
+					//	if ( button === vect_z_decrease ) object.scale.z -= step/10; // 0.1 %.
+					//	if ( button === vect_w_decrease ) {
+					//		object.scale.x -= step/10; // 0.1 %.
+					//		object.scale.y -= step/10; // 0.1 %.
+					//		object.scale.z -= step/10; // 0.1 %.
+					//	}
+
+					function onMouseDown(){ 
+
+						if ( !object ) return;
+
+						var button = this;
+						var clock = new THREE.Clock();
+						interval = setTimeout( function onUpdate() {
+							if ( !object ) return;
+							var dt = clock.getDelta();
+							object && update( button );
+							interval = setTimeout( onUpdate, dt );
+						//	debugMode && console.log( "on Update:", interval );
+
+						}, 500);
+					}
+
+					function onMouseClick(){ 
+
+						clearTimeout( interval ); // important!
+
+						if ( !object ) return;
+						object && update( this );
+
+						debugMode && console.log( "on Mouse Click:", interval );
+					}
+
+					vect_x_increase.addEventListener( "mousedown", onMouseDown );
+					vect_y_increase.addEventListener( "mousedown", onMouseDown );
+					vect_z_increase.addEventListener( "mousedown", onMouseDown );
+					vect_w_increase.addEventListener( "mousedown", onMouseDown );
+					vect_x_decrease.addEventListener( "mousedown", onMouseDown );
+					vect_y_decrease.addEventListener( "mousedown", onMouseDown );
+					vect_z_decrease.addEventListener( "mousedown", onMouseDown );
+					vect_w_decrease.addEventListener( "mousedown", onMouseDown );
+
+					window.addEventListener( "mouseup", function (){
+						clearTimeout( interval ); // important!
+					//	debugMode && console.log( "on MouseUp:", interval );
+					});
+
+					vect_x_increase.addEventListener( "click", onMouseClick );
+					vect_y_increase.addEventListener( "click", onMouseClick );
+					vect_z_increase.addEventListener( "click", onMouseClick );
+					vect_w_increase.addEventListener( "click", onMouseClick );
+					vect_x_decrease.addEventListener( "click", onMouseClick );
+					vect_y_decrease.addEventListener( "click", onMouseClick );
+					vect_z_decrease.addEventListener( "click", onMouseClick );
+					vect_w_decrease.addEventListener( "click", onMouseClick );
+
+					vect_x_input.addEventListener( "change", function(){
+
+						this.blur(); // important!
+						var vector = vectorSelect.value;
+						var thisValue = parseFloat( this.value );
+
+						if ( !object ) 
+							return void( this.value = editor[vector].x.toFixed(2) );
+						else if ( vector === "scale" ) {
+							if ( !thisValue ) 
+								return void( object.scale.x = 0.001 ); // avoid scale.x:0/NaN,
+							else object.scale.x = thisValue/100;
+							if ( Math.abs( object.scale.x ) < 0.001 ) object[ vector ].x = 0.001; 
+						} 
+						else if ( thisValue == NaN )
+							return void( this.value = editor[vector].x.toFixed(2) );
+						else if ( vector === "rotation" )
+							object[ vector ].x = DEG2RAD*thisValue;
+						else
+							object[ vector ].x = thisValue;
+					});
+
+					vect_y_input.addEventListener( "change", function(){
+
+						this.blur(); // important!
+						var vector = vectorSelect.value;
+						var thisValue = parseFloat( this.value );
+
+						if ( !object ) 
+							return void( this.value = editor[vector].y.toFixed(2) );
+						else if ( vector === "scale" ) {
+							if ( !thisValue ) 
+								return void( object.scale.y = 0.001 ); // avoid scale.y:0/NaN,
+							else object.scale.y = thisValue/100;
+							if ( Math.abs( object.scale.y ) < 0.001 ) object[ vector ].y = 0.001; 
+						} 
+						else if ( thisValue == NaN )
+							return void( this.value = editor[vector].y.toFixed(2) );
+						else if ( vector === "rotation" )
+							object[vector].y = DEG2RAD*thisValue;
+						else
+							object[vector].y = thisValue;
+					});
+
+					vect_z_input.addEventListener( "change", function(){
+
+						this.blur(); // important!
+						var vector = vectorSelect.value;
+						var thisValue = parseFloat( this.value );
+
+						if ( !object || thisValue == NaN ) 
+							return void( this.value = editor[vector].z.toFixed(2) );
+						else if ( vector === "scale" ) {
+							if ( !thisValue ) 
+								return void( object.scale.z = 0.001 ); // avoid scale.z:0/NaN,
+							else object.scale.z = thisValue/100;
+							if ( Math.abs( object.scale.z ) < 0.001 ) object[ vector ].z = 0.001; 
+						} 
+						else if ( thisValue == NaN )
+							return void( this.value = editor[vector].z.toFixed(2) );
+						else if ( vector === "rotation" )
+							object[vector].z = DEG2RAD*thisValue;
+						else
+							object[vector].z = thisValue;
+					});
+
+					vect_w_input.addEventListener( "change", function(){
+
+						this.blur(); // important!
+						var vector = vectorSelect.value;
+						var thisValue = parseFloat( this.value );
+
+						if ( !object ) {
+							return void( this.value = NaN );
+						} else if ( vector === "rotation" ) {
+							this.value = object.rotation.order;
+						} else if ( vector === "scale" ) {
+							if ( !thisValue ) {
+								object.scale.x = 0.001; // avoid scale.x:0/NaN,
+								object.scale.y = 0.001; // avoid scale.y:0/NaN,
+								object.scale.z = 0.001; // avoid scale.z:0/NaN,
+							//	this.value = 0.1.toFixed(2);
+							} else {
+								object.scale.x = thisValue/100;
+								object.scale.y = thisValue/100;
+								object.scale.z = thisValue/100;
+							}
+							if ( Math.abs( object.scale.x ) < 0.001 ) object.scale.x = 0.001; 
+							if ( Math.abs( object.scale.y ) < 0.001 ) object.scale.y = 0.001; 
+							if ( Math.abs( object.scale.z ) < 0.001 ) object.scale.z = 0.001; 
+						//	this.value = ( 100*(object.scale.x+object.scale.y+object.scale.z)/3 ).toFixed(2)
+						} else if ( thisValue == NaN ) { 
+						//	reset quaternion.
+							object.scale.set(1,1,1);
+							object.rotation.set(0,0,0);
+							object.quaternion.set(0,0,0,1);
+							object.updateMatrixWorld(true); // important?
+							editor.copy( object );          // important?
+						} else if ( vector === "quaternion" ) {
+							object.quaternion.w = thisValue;
+						} else this.value = editor[vector].w;
+					});
+
+				//	Move on axis Y (up/down).
+
+					function translateOnScreenAxisY( dt, object, mode, down ){
+						if ( !object ) return;
+						var rad = 0;
+						var verticalAngle;
+						var movementSpeed = Math.max(dt, 0.01); // step.
+						var cameraFrontAngle = cameraControls.phi;
+						if (down) verticalAngle = -Math.PI/2; // down.
+						else verticalAngle      =  Math.PI/2; // up.
+						var direction = rad - cameraFrontAngle + verticalAngle;
+						var directionOnAxisY = Math.sin(direction);
+						var y = directionOnAxisY * movementSpeed;
+						object[mode].y += y; 
+
+					}
+
+				//	Move on plane XZ (left/right/forwards/backward).
+
+					function translateOnScreenPlaneXZ( dt, object, mode ) {
+						if ( !object ) return;
+						var rad = 2 * Math.PI;  // keyboard input.
+						var movementSpeed = Math.max(dt, 0.01); // step.
+						var cameraFrontAngle = rad + cameraControls.theta;
+					//	var keyboardFrontAngle = keyboard.frontAngle;
+						var direction = rad - cameraFrontAngle; // + keyboard.frontAngle;
+						var directionOnAxisX = -Math.sin(direction);
+						var directionOnAxisZ = -Math.cos(direction);
+						var x = directionOnAxisX * movementSpeed;
+						var z = directionOnAxisZ * movementSpeed;
+						object[mode].x += x; 
+						object[mode].z += z;
+
+					}
+
+				})();
 
 			//	Select.
 
 				entity_droplist.addEventListener("change", function(){
+					entity_droplist.blur();
 					entitySelect.value = entity_droplist.value;
 				});
 
 				vector_droplist.addEventListener("change", function(){
+					vector_droplist.blur();
 					vectorSelect.value = vector_droplist.value;
+
 				});
 
 				geometry_droplist.addEventListener("change", function(){
+					geometry_droplist.blur();
 					geometryType.value = geometry_droplist.value;
 				});
+
+
+			//	Editor Tab watchers.
+
+				watch(vectorSelect, function( prop, action, newValue, oldValue ){
+					debugMode && console.log( "vector droplist:", prop, action, newValue );
+
+				//	Update vectors direct from editor.
+					displayVectorValues( vectorSelect.value );
+
+				});
+
+				watch(entitySelect, function( prop, action, newValue, oldValue ){
+					debugMode && console.log( "entity droplist:", prop, action, newValue  );
+
+					editor.reset(); // important!
+
+				//	Update old octree (first) important!
+					if ( oldValue != "" ) updateOctree( oldValue );
+
+				//	Exit edit mode.
+					if ( newValue == "" ) exitFromEditMode();
+
+				//	Switch to edit mode.
+					if ( newValue != "" ) switchToEditMode( newValue );
+
+				//	Display vectors direct from editor.
+				//	callWatchers(vectorSelect, "value");
+					displayVectorValues( vectorSelect.value );
+
+				});
+
+				function displayVectorValues( vector ){
+
+					if ( vector === "position" ) {
+						vect_x_input.value = ( editor[ vector ].x ).toFixed(3);
+						vect_y_input.value = ( editor[ vector ].y ).toFixed(3);
+						vect_z_input.value = ( editor[ vector ].z ).toFixed(3);
+						vect_w_input.value = NaN;
+					}
+
+					else if ( vector === "rotation" ) {
+						vect_x_input.value = ( RAD2DEG*editor[ vector ].x ).toFixed(2);
+						vect_y_input.value = ( RAD2DEG*editor[ vector ].y ).toFixed(2);
+						vect_z_input.value = ( RAD2DEG*editor[ vector ].z ).toFixed(2);
+						vect_w_input.value = editor[ vector ].order;
+					} 
+
+					else if ( vector === "scale" ) {
+						vect_x_input.value = ( 100*editor[ vector ].x ).toFixed(2);
+						vect_y_input.value = ( 100*editor[ vector ].y ).toFixed(2);
+						vect_z_input.value = ( 100*editor[ vector ].z ).toFixed(2);
+						vect_w_input.value = ( 100*(editor[vector].x + editor[vector].y + editor[vector].z) / 3 ).toFixed(2);
+					}
+
+					else if ( vector === "quaternion" ) {
+						vect_x_input.value = ( editor[ vector ].x ).toFixed(3);
+						vect_y_input.value = ( editor[ vector ].y ).toFixed(3);
+						vect_z_input.value = ( editor[ vector ].z ).toFixed(3);
+						vect_w_input.value = ( editor[ vector ].w ).toFixed(3);
+					}
+
+					else {
+						vect_x_input.value = ( editor[ vector ].x ).toFixed(2);
+						vect_y_input.value = ( editor[ vector ].y ).toFixed(2);
+						vect_z_input.value = ( editor[ vector ].z ).toFixed(2);
+						vect_w_input.value = NaN;
+					}
+
+				}
+
+			//	Editor Object3D watchers.
+
+				watch( editor, "type", function(prop, action, newValue, oldValue){
+					debugMode && console.log( "type:", prop, action, newValue );
+				});
+
+				watch( editor, "visible", function(prop, action, newValue, oldValue){
+					debugMode && console.log( "visible:", prop, action, newValue );
+				});
+
+				watch( editor.position, function(prop, action, newValue, oldValue){
+				//	debugMode && console.log( "position:", prop, action, newValue );
+					if ( newValue === undefined ) return;
+					if ( vectorSelect.value !== "position" ) return;
+					if ( prop === "x" ) vect_x_input.value = newValue.toFixed(3);
+					if ( prop === "y" ) vect_y_input.value = newValue.toFixed(3);
+					if ( prop === "z" ) vect_z_input.value = newValue.toFixed(3);
+				});
+
+				watch( editor.rotation, function(prop, action, newValue, oldValue){
+				//	debugMode && console.log( "rotation:", prop, action, newValue );
+					if ( newValue === undefined ) return;
+					if ( vectorSelect.value !== "rotation" ) return;
+					if ( prop === "_x" ) vect_x_input.value = (RAD2DEG*newValue).toFixed(2);
+					if ( prop === "_y" ) vect_y_input.value = (RAD2DEG*newValue).toFixed(2);
+					if ( prop === "_z" ) vect_z_input.value = (RAD2DEG*newValue).toFixed(2);
+				});
+
+				watch( editor.scale, function(prop, action, newValue, oldValue){
+				//	debugMode && console.log( "scale:", prop, action, newValue );
+					if ( newValue === undefined ) return;
+					if ( vectorSelect.value !== "scale" ) return;
+					if ( prop === "x" ) vect_x_input.value = (100*newValue).toFixed(2);
+					if ( prop === "y" ) vect_y_input.value = (100*newValue).toFixed(2);
+					if ( prop === "z" ) vect_z_input.value = (100*newValue).toFixed(2);
+					vect_w_input.value = (100 * ( ( editor.scale.x+editor.scale.y+editor.scale.z )/3 ) ).toFixed(2);
+				});
+
+				watch( editor.quaternion, function(prop, action, newValue, oldValue){
+				//	debugMode && console.log( "quaternion:", prop, action, newValue );
+					if ( newValue === undefined ) return;
+					if ( vectorSelect.value !== "quaternion" ) return;
+					if ( prop === "_x" ) vect_x_input.value = newValue.toFixed(3);
+					if ( prop === "_y" ) vect_y_input.value = newValue.toFixed(3);
+					if ( prop === "_z" ) vect_z_input.value = newValue.toFixed(3);
+					if ( prop === "_w" ) vect_w_input.value = newValue.toFixed(3);
+
+				});
+
+				function updateOctree( value ){
+					var id = parseInt( value );
+					if ( id === NaN ) return;
+					var object = scene.getObjectById( id );
+					if ( !object ) return;
+					if ( !object.isMesh ) return;
+					if ( !object.geometry ) return;
+					var uuid = object.geometry.uuid;
+					octree.removeThreeMesh( uuid );
+					octree.importThreeMesh( object );
+				}
+
+				function exitFromEditMode(){
+					takeCameraControls( localPlayer );
+					keyInputControls.isDisabled = false;
+					entitySelect.value = entity_droplist.value = "";
+					return void(0);
+				}
+
+				function switchToEditMode( value ){
+
+					var id = parseInt( value );
+					if ( id === NaN ) return exitFromEditMode();
+					if ( id === scene.id ) return exitFromEditMode();
+					if ( id === camera.id ) return exitFromEditMode();
+					if ( id === editor.id ) return exitFromEditMode();
+					if ( id === localPlayer.id ) return exitFromEditMode();
+					if ( id === cameraLight.id ) return exitFromEditMode();
+					if ( id === shadowCameraHelper.id ) exitFromEditMode();
+					if ( id === cameraLight.shadow.camera.id ) exitFromEditMode();
+
+					var object = scene.getObjectById( id );
+					if ( !object ) return exitFromEditMode();
+					if ( object === scene ) return exitFromEditMode();
+					if ( object === camera ) return exitFromEditMode();
+					if ( object === editor ) return exitFromEditMode();
+					if ( object === cameraLight ) return exitFromEditMode();
+					if ( object === localPlayer ) return exitFromEditMode();
+					if ( object === shadowCameraHelper ) exitFromEditMode();
+					if ( object === cameraLight.shadow.camera ) exitFromEditMode();
+
+				//	Take camera controls.
+					if ( object.geometry && object.geometry.boundingSphere ) {
+						var offset = object.geometry.boundingSphere.center;
+						cameraControls.trackObject = object;
+						cameraControls.offset.copy( offset );
+						cameraControls.offset.y *= 0.5;
+					} else takeCameraControls( object );
+
+				//	Update editor object.
+					editor.update( id );
+				//	Disable key input controls.
+					keyInputControls.isDisabled = true;
+
+				}
 
 			//	Geometry.
 
 				plane_geometry_button.addEventListener( "click", function(){
 
-					var select = document.getElementById("entities-droplist");
 					var material = new THREE.MeshStandardMaterial({side:2});
+				//	var entity_droplist = document.getElementById("entities-droplist");
 
 				//	Create plane.
-					var w = 10, h = 10, d = 10;
+					var w = 1, h = 1, d = 1;
 					var x = 0, y = h/2, z =  0;
 					var plane = new THREE.PlaneGeometry(w,h,d);
 					plane.translate(0, h/2, 0);
@@ -536,20 +1034,20 @@
 
 				//	Set new value.
 					entitySelect.value = entity_droplist.value = ""+mesh.id;
-				//	select.dispatchEvent(new Event("change")); // important!
+				//	entity_droplist.dispatchEvent(new Event("change")); // important!
 
 				});
 
 				box_geometry_button.addEventListener( "click", function(){
 
-					var select = document.getElementById("entities-droplist");
 					var material = new THREE.MeshStandardMaterial();
+				//	var entity_droplist = document.getElementById("entities-droplist");
 
 				//	Create box.
-					var w = 10, h = 10, d = 10;
+					var w = 1, h = 1, d = 1;
 					var x = 0, y = h/2, z =  0;
 					var box = new THREE.BoxGeometry(w,h,d);
-					box.translate(0, h/2, 0);
+				//	box.translate(0, h/2, 0);
 					var mesh = new THREE.Mesh(box, material);
 					mesh.name = "box "+ k++;
 					mesh.position.set(x,0,z);
@@ -569,146 +1067,111 @@
 
 				//	Set new value.
 					entitySelect.value = entity_droplist.value = ""+mesh.id;
-				//	select.dispatchEvent(new Event("change")); // important!
+				//	entity_droplist.dispatchEvent(new Event("change")); // important!
 
 				});
-
-			//	Editor Tab watchers.
-
-				watch(entitySelect, function( prop, action, newValue, oldValue ){
-					debugMode && console.log( "entity droplist:", prop, action, newValue  );
-
-					editor.reset(); // important!
-
-				//	Update old octree (first) important!
-					if ( oldValue != "" ) updateOctree( oldValue );
-
-				//	Exit edit mode.
-					if ( newValue == "" ) exitFromEditMode();
-
-				//	Switch to edit mode.
-					if ( newValue != "" ) switchToEditMode( newValue );
-
-				//	Update vectors direct from editor.
-					var vectmode = vectorSelect.value;
-					vect_x_input.value = parseFloat( editor[vectmode].x ).toFixed(2);
-					vect_y_input.value = parseFloat( editor[vectmode].y ).toFixed(2);
-					vect_z_input.value = parseFloat( editor[vectmode].z ).toFixed(2);
-					vect_w_input.value = parseFloat( editor[vectmode].w ).toFixed(2);
-				});
-
-				watch(vectorSelect, function( prop, action, newValue, oldValue ){
-					debugMode && console.log( "vector droplist:", prop, action, newValue );
-				//	Update vectors direct from editor.
-					vect_x_input.value = parseFloat( editor[newValue].x ).toFixed(2);
-					vect_y_input.value = parseFloat( editor[newValue].y ).toFixed(2);
-					vect_z_input.value = parseFloat( editor[newValue].z ).toFixed(2);
-					vect_w_input.value = parseFloat( editor[newValue].w ).toFixed(2);
-				});
-
-			//	Editor Object3D watchers.
-
-				watch( editor, "type", function(prop, action, newValue, oldValue){
-					debugMode && console.log( "type:", prop, action, newValue );
-				});
-
-				watch( editor, "visible", function(prop, action, newValue, oldValue){
-					debugMode && console.log( "visible:", prop, action, newValue );
-				});
-
-				watch( editor.position, function(prop, action, newValue, oldValue){
-					debugMode && console.log( "position:", prop, action, newValue );
-					if ( newValue === undefined ) return;
-					if ( vectorSelect.value !== "position" ) return;
-					if ( prop === "x" ) vect_x_input.value = newValue.toFixed(2);
-					if ( prop === "y" ) vect_y_input.value = newValue.toFixed(2);
-					if ( prop === "z" ) vect_z_input.value = newValue.toFixed(2);
-				});
-
-				watch( editor.rotation, function(prop, action, newValue, oldValue){
-					debugMode && console.log( "rotation:", prop, action, newValue );
-					if ( newValue === undefined ) return;
-					if ( vectorSelect.value !== "rotation" ) return;
-					if ( prop === "_x" ) vect_x_input.value = (RAD2DEG*newValue).toFixed(2);
-					if ( prop === "_y" ) vect_y_input.value = (RAD2DEG*newValue).toFixed(2);
-					if ( prop === "_z" ) vect_z_input.value = (RAD2DEG*newValue).toFixed(2);
-				});
-
-				watch( editor.scale, function(prop, action, newValue, oldValue){
-					debugMode && console.log( "scale:", prop, action, newValue );
-					if ( newValue === undefined ) return;
-					if ( vectorSelect.value !== "scale" ) return;
-					if ( prop === "x" ) vect_x_input.value = newValue.toFixed(2);
-					if ( prop === "y" ) vect_y_input.value = newValue.toFixed(2);
-					if ( prop === "z" ) vect_z_input.value = newValue.toFixed(2);
-				});
-
-				watch( editor.quaternion, function(prop, action, newValue, oldValue){
-					debugMode && console.log( "quaternion:", prop, action, newValue );
-					if ( newValue === undefined ) return;
-					if ( vectorSelect.value !== "quaternion" ) return;
-					if ( prop === "_x" ) vect_x_input.value = newValue.toFixed(2);
-					if ( prop === "_y" ) vect_y_input.value = newValue.toFixed(2);
-					if ( prop === "_z" ) vect_z_input.value = newValue.toFixed(2);
-					if ( prop === "_w" ) vect_w_input.value = newValue.toFixed(2);
-
-				});
-				
-				function updateOctree( value ){
-					var id = parseInt( value );
-					if ( id === NaN ) return;
-					var object = scene.getObjectById( id );
-					if ( !object ) return;
-					if ( !object.isMesh ) return;
-					if ( !object.geometry ) return;
-					var uuid = object.geometry.uuid;
-					octree.removeThreeMesh( uuid );
-					octree.importThreeMesh( object );
-				}
-
-				function switchToEditMode( value ){
-
-					var id = parseInt( value );
-					if ( id === NaN ) return exitFromEditMode();
-					if ( id === scene.id ) return exitFromEditMode();
-					if ( id === camera.id ) return exitFromEditMode();
-					if ( id === editor.id ) return exitFromEditMode();
-					if ( id === cameraLight.id ) return exitFromEditMode();
-					if ( id === localPlayer.id ) return exitFromEditMode();
-					if ( id === cameraLight.shadow.camera.id ) exitFromEditMode();
-
-					var object = scene.getObjectById( id );
-					if ( !object ) return exitFromEditMode();
-					if ( object === scene ) return exitFromEditMode();
-					if ( object === camera ) return exitFromEditMode();
-					if ( object === editor ) return exitFromEditMode();
-					if ( object === cameraLight ) return exitFromEditMode();
-					if ( object === localPlayer ) return exitFromEditMode();
-					if ( object === cameraLight.shadow.camera ) exitFromEditMode();
-
-				//	Take camera controls.
-					if ( object.geometry && object.geometry.boundingSphere ) {
-						var offset = object.geometry.boundingSphere.center;
-						cameraControls.trackObject = object;
-						cameraControls.offset.copy( offset );
-						cameraControls.offset.y *= 0.5;
-					} else takeCameraControls( object );
-
-				//	Update editor object.
-					editor.update( id );
-				//	Disable key input controls.
-					keyInputControls.isDisabled = true;
-
-				}
-
-				function exitFromEditMode(){
-					takeCameraControls( localPlayer );
-					keyInputControls.isDisabled = false;
-					entitySelect.value = entity_droplist.value = "";
-					return void(0);
-				}
 
 			})();
+
+			//	vect_x_increase.addEventListener("click", function(){
+			//		clearTimeout(interval);
+			//		interval = setTimeout(function(){
+			//			vect_x_increase.active = !vect_x_increase.active;
+			//		});
+			//	});
+
+			//	vect_x_decrease.addEventListener("click", function(){
+			//		clearTimeout(interval);
+			//		interval = setTimeout(function(){
+			//			vect_x_decrease.active = !vect_x_decrease.active;
+			//		});
+			//	});
+
+			//	var step = Math.max(dt, 0.01);
+			//	var id = parseInt(entitySelect.value);
+			//	var object = scene.getObjectById( id );
+			//	if ( !(object && object.geometry && object.position) ) return;
+			//	object[vectorSelect.value].x += step;
+
+			//	var step = Math.max(dt, 0.01);
+			//	var id = parseInt(entitySelect.value);
+			//	var object = scene.getObjectById( id );
+			//	if ( !(object && object.geometry && object.position) ) return;
+			//	object[vectorSelect.value].x -= step;
+
+
+			//	const clock = new THREE.Clock();
+			//	(function update(){
+			//		var dt = clock.getDelta();
+			//		requestFrameID = requestAnimationFrame( update );
+			//		if ( !object ) return; // important!
+			//		var step = Math.max(dt, 0.01);
+			//		var mode = vectorSelect.value;
+			//	})();
+
+			//	if ( mode === "position" ) {
+			//
+			//		vect_x_increase.active && translateOnScreenPlaneXZ( dt, object, mode );
+			//		vect_y_increase.active && translateOnScreenAxisY(   dt, object, mode );
+			//		vect_z_increase.active && translateOnScreenPlaneXZ( dt, object, mode );
+			//
+			//		vect_x_decrease.active && translateOnScreenPlaneXZ( dt, object, mode );
+			//		vect_y_decrease.active && translateOnScreenAxisY(   dt, object, mode, true );
+			//		vect_z_decrease.active && translateOnScreenPlaneXZ( dt, object, mode );
+			//	}
+
+			//	else if ( mode === "rotation" ) {
+			//
+			//		vect_x_increase.active && object.rotateOnAxis( axisX,  step );
+			//		vect_y_increase.active && object.rotateOnAxis( axisY,  step );
+			//		vect_z_increase.active && object.rotateOnAxis( axisZ,  step );
+			//
+			//		vect_x_decrease.active && object.rotateOnAxis( axisX, -step );
+			//		vect_y_decrease.active && object.rotateOnAxis( axisY, -step );
+			//		vect_z_decrease.active && object.rotateOnAxis( axisZ, -step );
+			//	}
+
+			//	else if ( mode === "scale" ) {
+			//
+			//		if ( vect_x_increase.active ) translateOnScreenPlaneXZ( dt, object, mode );
+			//		if ( vect_y_increase.active ) translateOnScreenAxisY(   dt, object, mode );
+			//		if ( vect_z_increase.active ) translateOnScreenPlaneXZ( dt, object, mode );
+			//
+			//		if ( vect_x_decrease.active ) translateOnScreenPlaneXZ( dt, object, mode );
+			//		if ( vect_y_decrease.active ) translateOnScreenAxisY(   dt, object, mode, true );
+			//		if ( vect_z_decrease.active ) translateOnScreenPlaneXZ( dt, object, mode );
+			//	}
+
+			//	else if ( mode === "quaternion" ) {
+			//
+			//	//	if ( vect_w_decrease.active ) ...
+			//	//	if ( vect_w_increase.active ) ...
+			//
+			//	}
+
+
+			//	function onMouseUp(){
+			//		clearTimeout( interval );
+			//		vect_x_increase.active = false;
+			//		vect_y_increase.active = false;
+			//		vect_z_increase.active = false;
+			//		vect_w_increase.active = false;
+			//		vect_x_decrease.active = false;
+			//		vect_y_decrease.active = false;
+			//		vect_z_decrease.active = false;
+			//		vect_w_decrease.active = false;
+			//		debugMode && console.log( 
+			//			"on Mouse Up:", 
+			//			vect_x_increase.active && 
+			//			vect_y_increase.active && 
+			//			vect_z_increase.active && 
+			//			vect_w_increase.active && 
+			//			vect_x_decrease.active && 
+			//			vect_y_decrease.active && 
+			//			vect_z_decrease.active && 
+			//			vect_w_decrease,
+			//		);
+			//	});
 
 		</script>
 
@@ -722,6 +1185,20 @@
 			const keyboard = new KeyboardState();
 			const keyCodes = keyboard.keyCodes;
 			const entity_droplist = document.getElementById("entities-droplist"); // important!
+
+			//	var E = keyCodes[69];  var Q = keyCodes[81]; //  key "E",    key "Q"
+			//	var D = keyCodes[68];  var A = keyCodes[65]; //  key "D",    key "A"
+			//	var W = keyCodes[87];  var S = keyCodes[83]; //  key "W",    key "S"
+			//	var R = keyCodes[82];  var F = keyCodes[70]; //  key "R",    key "F"
+			//	var Z = keyCodes[90];  var X = keyCodes[88]; //  key "Z",    key "X"
+			//	var C = keyCodes[67];  var V = keyCodes[86]; //  key "C",    key "V"
+
+			//	var up       = keyCodes[33] || keyCodes[69]; // "page UP"     or "E"
+			//	var down     = keyCodes[34] || keyCodes[81]; // "page DOWN"   or "Q"
+			//	var left     = keyCodes[37] || keyCodes[68]; // "arrow LEFT"  or "D"
+			//	var right    = keyCodes[39] || keyCodes[65]; // "arrow RIGHT" or "A"
+			//	var forwards = keyCodes[38] || keyCodes[87]; // "arrow UP"    or "W"
+			//	var backward = keyCodes[40] || keyCodes[83]; // "arrow DOWN"  or "S"
 
 			window.addEventListener("keyup",   function(){ updateKeyboardFrontAngle( keyboard ); });
 			window.addEventListener("keydown", function(){ updateKeyboardFrontAngle( keyboard ); });
@@ -752,7 +1229,6 @@
 
 			}
 
-
 		//	const clock = new THREE.Clock();
 
 			(function update(){
@@ -769,6 +1245,8 @@
 					if ( entity.id === camera.id ) continue; // important!
 					if ( entity.id === editor.id ) continue; // important!
 					if ( entity.id === localPlayer.id ) continue; // important!
+					if ( entity.id === cameraLight.id ) continue; // important!
+					if ( entity.id === shadowCameraHelper.id ) continue; // important!
 
 					EditorScalingSystem(dt, entity);
 					EditorRotationSystem(dt, entity);
@@ -777,20 +1255,6 @@
 				}
 
 			})();
-
-			//	var E = keyCodes[69];  var Q = keyCodes[81]; //  key "E",    key "Q"
-			//	var D = keyCodes[68];  var A = keyCodes[65]; //  key "D",    key "A"
-			//	var W = keyCodes[87];  var S = keyCodes[83]; //  key "W",    key "S"
-			//	var R = keyCodes[82];  var F = keyCodes[70]; //  key "R",    key "F"
-			//	var Z = keyCodes[90];  var X = keyCodes[88]; //  key "Z",    key "X"
-			//	var C = keyCodes[67];  var V = keyCodes[86]; //  key "C",    key "V"
-
-			//	var up       = keyCodes[33] || keyCodes[69]; // "page UP"     or "E"
-			//	var down     = keyCodes[34] || keyCodes[81]; // "page DOWN"   or "Q"
-			//	var left     = keyCodes[37] || keyCodes[68]; // "arrow LEFT"  or "D"
-			//	var right    = keyCodes[39] || keyCodes[65]; // "arrow RIGHT" or "A"
-			//	var forwards = keyCodes[38] || keyCodes[87]; // "arrow UP"    or "W"
-			//	var backward = keyCodes[40] || keyCodes[83]; // "arrow DOWN"  or "S"
 
 		//	## EditorRotationSystem.
 
@@ -820,30 +1284,13 @@
 					keyCodes[F] && object.setRotationFromQuaternion(camera.quaternion);
 
 				//	Update editor object.
-					object && object.rotation && editor.rotation.copy( object.rotation );
+					object && object.rotation && editor.rotation.copy( object.rotation ); // important!
 
 				} catch(err){
 					debugMode && console.error( "EditorRotationError:", err );
 				};
 
 			}
-
-			//	} else { // if ( entity.entity.isRotated )
-
-			//		var up    = keyCodes[UP]    || keyCodes[W]; // "arrow UP"    or "W"
-			//		var down  = keyCodes[DOWN]  || keyCodes[S]; // "arrow DOWN"  or "S"
-			//		var left  = keyCodes[LEFT]  || keyCodes[D]; // "arrow LEFT"  or "D"
-			//		var right = keyCodes[RIGHT] || keyCodes[A]; // "arrow RIGHT" or "A"
-
-			//	rotation (local coordinates).
-
-			//		left  && object.rotateOnAxis( axisY,  rad );
-			//		right && object.rotateOnAxis( axisY, -rad );
-			//		up    && object.rotateOnAxis( axisX,  rad );
-			//		down  && object.rotateOnAxis( axisX, -rad );
-
-			//	}
-
 
 		//	## EditorTranslationSystem.
 
@@ -862,20 +1309,14 @@
 					var LEFT=37, RIGHT=39, UP=38, DOWN=40;
 					var A=65, D=68, E=69, F=70, Q=81, R=82, S=83, W=87;
 
-					//	var E = keyCodes[69];         var Q = keyCodes[81]; //  key "E",      key "Q"
-					//	var left     = keyCodes[37];  var D = keyCodes[68]; // "arrow LEFT",  key "D"
-					//	var right    = keyCodes[39];  var A = keyCodes[65]; // "arrow RIGHT", key "A"
-					//	var forwards = keyCodes[38];  var W = keyCodes[87]; // "arrow UP",    key "W"
-					//	var backward = keyCodes[40];  var S = keyCodes[83]; // "arrow DOWN",  key "S"
-
 				//	Move up/down.
 
 					if ( keyCodes[E] || keyCodes[Q] ) (function(up, down){
 
 						var rad = 0;
+						var keyboardFrontAngle = 0;
 						var movementSpeed = Math.max(dt, 0.05);
 						var cameraFrontAngle = cameraControls.phi;
-					//	var keyboardFrontAngle = 0;
 						if ( up ) keyboardFrontAngle =  Math.PI/2;
 						if (down) keyboardFrontAngle = -Math.PI/2;
 						var direction = rad - cameraFrontAngle + keyboardFrontAngle;
@@ -906,36 +1347,13 @@
 					})();
 
 				//	Update editor object.
-					object && object.position && editor.position.copy( object.position );
+					object && object.position && editor.position.copy( object.position ); // important!
 
 				} catch(err){
 					debugMode && console.error( "EditorTranslationError:", err );
 				};
 
 			}
-
-			//		if ( !entity.isRotated && ( 
-			//		keyCodes[A]    || keyCodes[W]    || 
-			//		keyCodes[S]    || keyCodes[D]    ||
-			//		keyCodes[UP]   || keyCodes[DOWN] ||
-			//		keyCodes[LEFT] || keyCodes[RIGHT] ) ) (function() {
-			//		//	var rad = 6 * Math.PI/4;  // joystick input.
-			//			var rad = 8 * Math.PI/4;  // keyboard input.
-			//			var movementSpeed = Math.max(dt, 0.05);
-			//			var cameraFrontAngle = cameraControls.getFrontAngle();
-			//			var keyboardFrontAngle = keyboard.frontAngle;
-			//			var direction = rad - cameraFrontAngle + keyboardFrontAngle;
-			//			var directionOnAxisX = -Math.sin(direction);
-			//			var directionOnAxisZ = -Math.cos(direction);
-			//			var x = directionOnAxisX * movementSpeed;
-			//			var z = directionOnAxisZ * movementSpeed;
-			//			object.position.x += x; 
-			//			object.position.z += z;
-			//		})();
-			//
-			//	//	Reset.
-			//		if ( keyCodes[R] ) object.rotation.set(0,0,0);
-			//		if ( keyCodes[F] ) object.setRotationFromQuaternion(camera.quaternion);
 
 		//	## EditorScalingSystem.
 
@@ -952,13 +1370,14 @@
 					//	TODO.
 
 				//	Update editor object.
-					object && object.scale && editor.scale.copy( object.scale );
+					object && object.scale && editor.scale.copy( object.scale ); // important!
 
 				} catch(err){
 					debugMode && console.error( "EditorScalingError:", err );
 				};
 
 			}
+
 
 		//	!!! DEMO !!! VERY IMPORTANT! !!! DEMO !!! VERY IMPORTANT! !!! DEMO !!!
 
@@ -980,6 +1399,29 @@
 			}
 
 		//	!!! DEMO !!! VERY IMPORTANT! !!! DEMO !!! VERY IMPORTANT! !!! DEMO !!!
+
+		//		if ( !entity.isRotated && ( 
+		//		keyCodes[A]    || keyCodes[W]    || 
+		//		keyCodes[S]    || keyCodes[D]    ||
+		//		keyCodes[UP]   || keyCodes[DOWN] ||
+		//		keyCodes[LEFT] || keyCodes[RIGHT] ) ) (function() {
+		//		//	var rad = 6 * Math.PI/4;  // joystick input.
+		//			var rad = 8 * Math.PI/4;  // keyboard input.
+		//			var movementSpeed = Math.max(dt, 0.05);
+		//			var cameraFrontAngle = cameraControls.getFrontAngle();
+		//			var keyboardFrontAngle = keyboard.frontAngle;
+		//			var direction = rad - cameraFrontAngle + keyboardFrontAngle;
+		//			var directionOnAxisX = -Math.sin(direction);
+		//			var directionOnAxisZ = -Math.cos(direction);
+		//			var x = directionOnAxisX * movementSpeed;
+		//			var z = directionOnAxisZ * movementSpeed;
+		//			object.position.x += x; 
+		//			object.position.z += z;
+		//		})();
+		//
+		//	//	Reset.
+		//		if ( keyCodes[R] ) object.rotation.set(0,0,0);
+		//		if ( keyCodes[F] ) object.setRotationFromQuaternion(camera.quaternion);
 
 		</script>
 
