@@ -251,7 +251,7 @@
 
 		})();
 
-		select.value = "BoxGeometry";
+		select.value = "PlaneGeometry";
 		row.appendChild( select );
 		tab.appendChild( row );
 
