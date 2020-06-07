@@ -215,6 +215,26 @@
 
 	(function(){
 
+	//	Reset vectors button.
+	//	Resets vector mode values.
+
+		var tab = TabUI.Editor.tab;
+		var row = document.createElement("h3");
+		row.style.cssText = "height:40px;margin-bottom:20px;"
+
+		var button = document.createElement("div");
+		button.id = "reset-vectors-button";
+		button.textContent = "Reset Vectors";
+		button.style.cssText = "width:295px;float:right;height:40px;font-size:large;margin-right:15px;";
+		button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
+
+		row.appendChild( button );
+		tab.appendChild( row );
+
+	})();
+
+	(function(){
+
 	//	Geometries droplist (TODO).
 
 		var tab = TabUI.Editor.tab;
@@ -263,7 +283,6 @@
 	//	Creates a mesh plane 1x1 (m2),
 	//	and switch to EditMode.
 
-		var k = 1;
 		var tab = TabUI.Editor.tab;
 		var row = document.createElement("h3");
 		row.style.cssText = "height:40px;margin-bottom:20px;"
@@ -285,7 +304,6 @@
 	//	Creates a mesh box 1x1 (m3),
 	//	and switch to EditMode.
 
-		var k = 1;
 		var tab = TabUI.Editor.tab;
 		var row = document.createElement("h3");
 		row.style.cssText = "height:40px;margin-bottom:20px;"
