@@ -291,6 +291,11 @@
 				var material = new THREE.MeshLambertMaterial();
 				var cube = new THREE.Mesh(geometry, material);
 				cube.name = "local player cube";
+				var geometry = new THREE.SphereGeometry(0.7,8,12);
+				var material = new THREE.MeshLambertMaterial();
+				var sphere = new THREE.Mesh(geometry, material);
+				sphere.name = "local player sphere";
+				cube.add( sphere );
 				localPlayer.add( cube );
 			})();
 
@@ -413,18 +418,16 @@
 			entities.push({id: editor.id}); // do not push in entities?
 
 			editor.reset = function(){
-
 				editor.copy( new THREE.Object3D() );
 				editor.name = "Editor";
-				debugMode && console.log( "editor reset:", editor );
-
+				debugMode && console.log( "editor reset!" );
 			};
 			
 			editor.update = function( value ){
 
 				var id = parseInt( value );
 
-				if ( id === NaN ) return;
+				if ( id === NaN ) return; // important!
 				if ( id === scene.id ) return; // important!
 				if ( id === camera.id ) return; // important!
 				if ( id === editor.id ) return; // important!
@@ -445,7 +448,7 @@
 				if ( object === cameraLight.shadow.camera ) return;
 
 				object && object.isObject3D && editor.copy( object );
-				debugMode && console.log( "editor update:", editor );
+				debugMode && console.log( "editor update!", editor );
 			};
 
 		//	Editor watchers.
@@ -506,10 +509,11 @@
 						if ( id === localPlayer.id ) return object = undefined;
 						if ( id === shadowCameraHelper.id ) return object = undefined;
 						if ( id === cameraLight.shadow.camera.id ) return object = undefined;
+						if ( id !== parseInt( entity_droplist.value ) ) return object = undefined;
 
 						object = scene.getObjectById( id );
 						if ( !object ) return object = undefined;
-						debugMode && console.log( object );
+						debugMode && console.log( "entitySelect watch:", object );
 
 					});
 
@@ -771,7 +775,6 @@
 						var directionOnAxisY = Math.sin(direction);
 						var y = directionOnAxisY * movementSpeed;
 						object[mode].y += y; 
-
 					}
 
 				//	Move on plane XZ (left/right/forwards/backward).
@@ -789,7 +792,6 @@
 						var z = directionOnAxisZ * movementSpeed;
 						object[mode].x += x; 
 						object[mode].z += z;
-
 					}
 
 				})();
@@ -814,11 +816,61 @@
 
 			//	Buttons.
 
-				exit_edit_button.addEventListener( "click", function(){
-					entitySelect.value = entity_droplist.value = "";
-				//	entity_droplist.dispatchEvent(new Event("change"));
-				});
+				(function(){
 
+					var interval;
+
+					exit_edit_button.addEventListener( "click", function(){
+						clearTimeout(interval);
+						interval = setTimeout(function(){
+							entitySelect.value = entity_droplist.value = "";
+						//	entity_droplist.dispatchEvent(new Event("change"));
+						}, 250);
+					});
+
+					reset_vectors_button.addEventListener( "click", function(){
+
+						clearTimeout(interval);
+						interval = setTimeout(function(){
+
+							function exit(){ 
+								return editor.reset(); 
+							};
+
+							var id = parseInt( entitySelect.value );
+							if ( id === NaN ) return exit();
+							if ( id === scene.id ) return exit();
+							if ( id === camera.id ) return exit();
+							if ( id === editor.id ) return exit();
+							if ( id === localPlayer.id ) return exit();
+							if ( id === cameraLight.id ) return exit();
+							if ( id === shadowCameraHelper.id ) return exit();
+							if ( id === cameraLight.shadow.camera.id ) return exit();
+							if ( id !== parseInt( entity_droplist.value ) ) return exit();
+
+							var object = scene.getObjectById( id );
+							if ( !object ) return exit();
+							if ( object === scene ) return exit();
+							if ( object === camera ) return exit();
+							if ( object === editor ) return exit();
+							if ( object === localPlayer ) return exit();
+							if ( object === cameraLight ) return exit();
+							if ( object === shadowCameraHelper ) exit();
+							if ( object === cameraLight.shadow.camera ) exit();
+
+							if ( vectorSelect.value == "position" ) 
+								object.position.set(0,0,0);
+							else if ( vectorSelect.value == "rotation" ) 
+								object.rotation.set(0,0,0);
+							else if ( vectorSelect.value == "scale" )
+								object.scale.set(1,1,1);
+							else if ( vectorSelect.value == "quaternion" )
+								object.quaternion.set(0,0,0,1);
+							debugMode && console.log("reset", vectorSelect.value);
+						}, 250);
+					});
+
+				})();
 
 			//	Editor Tab watchers.
 
@@ -831,7 +883,7 @@
 				});
 
 				watch(entitySelect, function( prop, action, newValue, oldValue ){
-					debugMode && console.log( "entity droplist:", prop, action, newValue  );
+					debugMode && console.log( "entity droplist:", prop, action, parseInt(newValue)  );
 
 					editor.reset(); // important!
 
@@ -945,6 +997,7 @@
 					if ( !object ) return;
 					if ( !object.isMesh ) return;
 					if ( !object.geometry ) return;
+					if ( !object.geometry.isGeometry ) return;
 					var uuid = object.geometry.uuid;
 					octree.removeThreeMesh( uuid );
 					if ( !localPlayer.getObjectById(object.id) ) {
@@ -956,7 +1009,7 @@
 					takeCameraControls( localPlayer );
 					keyInputControls.isDisabled = false;
 					entitySelect.value = entity_droplist.value = "";
-					return void(0);
+					return void 0;
 				}
 
 				function switchToEditMode( value ){
@@ -968,8 +1021,9 @@
 					if ( id === editor.id ) return exitFromEditMode();
 					if ( id === localPlayer.id ) return exitFromEditMode();
 					if ( id === cameraLight.id ) return exitFromEditMode();
-					if ( id === shadowCameraHelper.id ) exitFromEditMode();
-					if ( id === cameraLight.shadow.camera.id ) exitFromEditMode();
+					if ( id === shadowCameraHelper.id ) return exitFromEditMode();
+					if ( id === cameraLight.shadow.camera.id ) return exitFromEditMode();
+					if ( id !== parseInt( entity_droplist.value ) ) return exitFromEditMode();
 
 					var object = scene.getObjectById( id );
 					if ( !object ) return exitFromEditMode();
@@ -978,8 +1032,8 @@
 					if ( object === editor ) return exitFromEditMode();
 					if ( object === cameraLight ) return exitFromEditMode();
 					if ( object === localPlayer ) return exitFromEditMode();
-					if ( object === shadowCameraHelper ) exitFromEditMode();
-					if ( object === cameraLight.shadow.camera ) exitFromEditMode();
+					if ( object === shadowCameraHelper ) return exitFromEditMode();
+					if ( object === cameraLight.shadow.camera ) return exitFromEditMode();
 
 				//	Take camera controls.
 					if ( object.geometry && object.geometry.boundingSphere ) {
@@ -1258,6 +1312,8 @@
 					if ( entity.id === localPlayer.id ) continue; // important!
 					if ( entity.id === cameraLight.id ) continue; // important!
 					if ( entity.id === shadowCameraHelper.id ) continue; // important!
+					if ( parseInt( entity_droplist.value ) === NaN ) continue; // important!
+					if ( entity.id !== parseInt( entity_droplist.value ) ) continue; // very important!
 
 					EditorScalingSystem(dt, entity);
 					EditorRotationSystem(dt, entity);
