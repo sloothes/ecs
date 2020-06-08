@@ -415,7 +415,10 @@
 
 			const editor = new THREE.Object3D();
 			editor.name = "Editor";
-			entities.push({id: editor.id}); // do not push in entities?
+		//	entities.push({id: editor.id}); // do not push to entities?
+		//	setTimeout(function(){          // wait to load editor systems!
+			entities.add( editor );         // debug! do not add to entities?
+		//	});
 
 			editor.reset = function(){
 				editor.copy( new THREE.Object3D() );
@@ -479,9 +482,10 @@
 				const geometry_droplist = document.getElementById("editor-geometry-droplist");
 
 				const exit_edit_button = document.getElementById("exit-edit-mode");
-				const box_geometry_button = document.getElementById("new-box-geometry");
 				const reset_vectors_button = document.getElementById("reset-vectors-button");
+				const box_geometry_button = document.getElementById("new-box-geometry");
 				const plane_geometry_button = document.getElementById("new-plane-geometry");
+				const remove_geometry_button = document.getElementById("remove-geometry-button");
 
 				const entitySelect = { value:entity_droplist.value };   // string.
 				const vectorSelect = { value:vector_droplist.value };   // string.
@@ -798,27 +802,93 @@
 
 			//	Droplists.
 
-				entity_droplist.addEventListener("change", function(){
-					entity_droplist.blur();
-					entitySelect.value = entity_droplist.value;
-				});
+				(function(){
 
-				vector_droplist.addEventListener("change", function(){
-					vector_droplist.blur();
-					vectorSelect.value = vector_droplist.value;
+				//	var interval;
 
-				});
+					function checkId( value ){
 
-				geometry_droplist.addEventListener("change", function(){
-					geometry_droplist.blur();
-					geometryType.value = geometry_droplist.value;
-				});
+						var id = parseInt( value );
+
+						function resetValue(){
+							entitySelect.value = entity_droplist.value = "";
+							return false;
+						}
+
+						if ( id === NaN ) return resetValue();
+						if ( id === scene.id ) return resetValue();
+						if ( id === camera.id ) return resetValue();
+						if ( id === editor.id ) return resetValue();
+						if ( id === localPlayer.id ) return resetValue();
+						if ( id === cameraLight.id ) return resetValue();
+						if ( id === shadowCameraHelper.id ) return resetValue();
+						if ( id === cameraLight.shadow.camera.id ) return resetValue();
+						if ( id !== parseInt( entity_droplist.value ) ) return resetValue();
+
+						return true;
+					}
+
+					entity_droplist.addEventListener("change", function(){
+						entity_droplist.blur();
+						var value = entity_droplist.value;
+						if ( checkId( value ) ) entitySelect.value = entity_droplist.value;
+					});
+
+					vector_droplist.addEventListener("change", function(){
+						vector_droplist.blur();
+						var value = entity_droplist.value;
+						if ( checkId( value ) ) vectorSelect.value = vector_droplist.value;
+					});
+
+					geometry_droplist.addEventListener("change", function(){
+						geometry_droplist.blur();
+						geometryType.value = geometry_droplist.value;
+					});
+
+				})();
 
 			//	Buttons.
 
 				(function(){
 
 					var interval;
+
+					function checkId( value ){
+
+						var id = parseInt( value );
+
+						if ( id === NaN ) return false;
+						if ( id === scene.id ) return false;
+						if ( id === camera.id ) return false;
+						if ( id === editor.id ) return false;
+						if ( id === localPlayer.id ) return false;
+						if ( id === cameraLight.id ) return false;
+						if ( id === shadowCameraHelper.id ) return false;
+						if ( id === cameraLight.shadow.camera.id ) return false;
+						if ( id !== parseInt( entity_droplist.value ) ) return false;
+
+						return true;
+					}
+
+					function getObjectByEntityId( id ){
+
+						var object = scene.getObjectById( id );
+
+						if ( !object ) return;
+						if ( object === scene ) return;
+						if ( object === camera ) return;
+						if ( object === editor ) return;
+						if ( object === localPlayer ) return;
+						if ( object === cameraLight ) return;
+						if ( object === shadowCameraHelper ) return;
+						if ( object === cameraLight.shadow.camera ) return;
+
+						return object;
+					}
+
+					function resetEntitySelectValue(){
+						entitySelect.value = entity_droplist.value = "";
+					}
 
 					exit_edit_button.addEventListener( "click", function(){
 						clearTimeout(interval);
@@ -833,30 +903,37 @@
 						clearTimeout(interval);
 						interval = setTimeout(function(){
 
-							function exit(){ 
-								return editor.reset(); 
-							};
+							var value = entitySelect.value;
+							if ( !checkId( value ) return editor.reset(); 
 
 							var id = parseInt( entitySelect.value );
-							if ( id === NaN ) return exit();
-							if ( id === scene.id ) return exit();
-							if ( id === camera.id ) return exit();
-							if ( id === editor.id ) return exit();
-							if ( id === localPlayer.id ) return exit();
-							if ( id === cameraLight.id ) return exit();
-							if ( id === shadowCameraHelper.id ) return exit();
-							if ( id === cameraLight.shadow.camera.id ) return exit();
-							if ( id !== parseInt( entity_droplist.value ) ) return exit();
+							var object = getObjectByEntityId( id );
+							if ( !object ) return editor.reset();
 
-							var object = scene.getObjectById( id );
-							if ( !object ) return exit();
-							if ( object === scene ) return exit();
-							if ( object === camera ) return exit();
-							if ( object === editor ) return exit();
-							if ( object === localPlayer ) return exit();
-							if ( object === cameraLight ) return exit();
-							if ( object === shadowCameraHelper ) exit();
-							if ( object === cameraLight.shadow.camera ) exit();
+						//	var id = parseInt( entitySelect.value );
+						//	if ( id === NaN ) return exit();
+						//	if ( id === scene.id ) return exit();
+						//	if ( id === camera.id ) return exit();
+						//	if ( id === editor.id ) return exit();
+						//	if ( id === localPlayer.id ) return exit();
+						//	if ( id === cameraLight.id ) return exit();
+						//	if ( id === shadowCameraHelper.id ) return exit();
+						//	if ( id === cameraLight.shadow.camera.id ) return exit();
+						//	if ( id !== parseInt( entity_droplist.value ) ) return exit();
+						//
+						//	function exit(){ 
+						//		return editor.reset(); 
+						//	};
+						//
+						//	var object = scene.getObjectById( id );
+						//	if ( !object ) return exit();
+						//	if ( object === scene ) return exit();
+						//	if ( object === camera ) return exit();
+						//	if ( object === editor ) return exit();
+						//	if ( object === localPlayer ) return exit();
+						//	if ( object === cameraLight ) return exit();
+						//	if ( object === shadowCameraHelper ) return exit();
+						//	if ( object === cameraLight.shadow.camera ) return exit();
 
 							if ( vectorSelect.value == "position" ) 
 								object.position.set(0,0,0);
@@ -867,6 +944,26 @@
 							else if ( vectorSelect.value == "quaternion" )
 								object.quaternion.set(0,0,0,1);
 							debugMode && console.log("reset", vectorSelect.value);
+						}, 250);
+					});
+
+					remove_geometry_button.addEventListener( "click", function(){
+						clearTimeout( interval );
+						interval = setTimeout(function(){
+
+							var value = entitySelect.value;
+							if ( !checkId( value ) ) return;
+
+							var id = parseInt( entitySelect.value );
+							var object = getObjectByEntityId( id );
+							if ( !(object && object.parent) ) return;
+
+						//	octree.
+							var uuid;
+							if ( object.geometry ) uuid = object.geometry.uuid
+
+							entitySelect.value = entity_droplist.value = "";
+						//	entity_droplist.dispatchEvent(new Event("change"));
 						}, 250);
 					});
 
@@ -990,7 +1087,21 @@
 
 				});
 
-				function updateOctree( value ){
+				function addtoOctree( value ){
+					var id = parseInt( value );
+					if ( id === NaN ) return;
+					var object = scene.getObjectById( id );
+					if ( !object ) return;
+					if ( !object.isMesh ) return;
+					if ( !object.geometry ) return;
+					if ( !object.geometry.isGeometry ) return;
+					var uuid = object.geometry.uuid;
+					if ( !localPlayer.getObjectById(object.id) )
+						octree.importThreeMesh( object );
+					return object;
+				}
+
+				function removefromOctree( value ){
 					var id = parseInt( value );
 					if ( id === NaN ) return;
 					var object = scene.getObjectById( id );
@@ -1000,9 +1111,30 @@
 					if ( !object.geometry.isGeometry ) return;
 					var uuid = object.geometry.uuid;
 					octree.removeThreeMesh( uuid );
+					return object; // important!
+				}
+
+				function updateOctree( value ){
+					var object = removefromOctree( value );
+					if ( !object ) return;
 					if ( !localPlayer.getObjectById(object.id) ) {
 						octree.importThreeMesh( object );
 					}
+				}
+
+				function octreeIncluded( uuid ){
+					var result;
+					octree.nodes.forEach(function (nodeDepth) {
+						if ( result ) return;
+						nodeDepth.forEach(function (node) {
+							if ( result ) return;
+							node.trianglePool.forEach(function (face) {
+								if ( result ) return;
+								if (face.meshID === uuid) result = true;
+							});
+						});
+					});
+					return result;
 				}
 
 				function exitFromEditMode(){
@@ -1249,7 +1381,8 @@
 			const axisZ = new THREE.Vector3(0,0,1);
 			const keyboard = new KeyboardState();
 			const keyCodes = keyboard.keyCodes;
-			const entity_droplist = document.getElementById("entities-droplist"); // important!
+
+		//	const entity_droplist = document.getElementById("entities-droplist"); // important! defined in EditorTab.js!
 
 			//	var E = keyCodes[69];  var Q = keyCodes[81]; //  key "E",    key "Q"
 			//	var D = keyCodes[68];  var A = keyCodes[65]; //  key "D",    key "A"
@@ -1549,6 +1682,13 @@
 
 		<script>
 
+		//	Add entities.
+
+			scene.traverse(function( object ){
+				entities.add( object );
+			});
+
+/*
 		//	Create options, add entities.
 
 			(function(){
@@ -1569,7 +1709,7 @@
 				select.value = ""; // important!
 
 			})();
-
+*/
 		</script>
 
 	</body>
