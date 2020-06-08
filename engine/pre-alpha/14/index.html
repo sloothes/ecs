@@ -904,7 +904,7 @@
 						interval = setTimeout(function(){
 
 							var value = entitySelect.value;
-							if ( !checkId( value ) return editor.reset(); 
+							if ( !checkId( value ) ) return editor.reset(); 
 
 							var id = parseInt( entitySelect.value );
 							var object = getObjectByEntityId( id );
