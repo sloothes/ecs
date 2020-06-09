@@ -65,11 +65,15 @@ const keyInputControls = (function( characterController, cameraController ){
 		var turnkey = left || right;
 		var movekey = forwards || backward;
 
-		if ( movekey ) {
+		if ( turnkey ) 
+
+			resetMovementSpeedDirection();
+
+		else if ( movekey )
 
 			updateMovementSpeedDirection( backward );
 
-		} else {
+		else {
 
 			syncWithCameraController();
 			resetMovementSpeedDirection();
