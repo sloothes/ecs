@@ -449,7 +449,12 @@
 				//	Create geometry.
 					var geometry = new THREE[ type ]();
 					if ( geometry === undefined ) return;
-					geometry.translate(0, 0.5, 0);
+
+					switch (type) {
+						case "PlaneGeometry":
+							geometry.translate(0, 0.5, 0);
+						break;
+					}
 
 				//	Create mesh.
 					var material = new THREE.MeshLambertMaterial({side:2});
