@@ -491,32 +491,76 @@
 				const vectorSelect = { value:vector_droplist.value };   // string.
 				const geometryType = { value:geometry_droplist.value }; // string.
 
+				function resetEntitySelectValue(){
+					entitySelect.value = entity_droplist.value = "";
+				}
+
+				function checkId( value ){
+
+					var id = parseInt( value );
+
+					if ( id === NaN ) return false;
+					if ( id === scene.id ) return false;
+					if ( id === camera.id ) return false;
+					if ( id === editor.id ) return false;
+					if ( id === localPlayer.id ) return false;
+					if ( id === cameraLight.id ) return false;
+					if ( id === shadowCameraHelper.id ) return false;
+					if ( id === cameraLight.shadow.camera.id ) return false;
+					if ( id !== parseInt( entity_droplist.value ) ) return false;
+				//	if ( localPlayer.getObjectById(id) ) return false; // important!
+					debugMode && console.log( "checkId:", true );
+
+					return true;
+				}
+
+				function getObjectByEntityId( id ){
+
+					var object = scene.getObjectById( id );
+
+					if ( !object ) return undefined;
+					if ( object === scene ) return undefined;
+					if ( object === camera ) return undefined;
+					if ( object === editor ) return undefined;
+					if ( object === localPlayer ) return undefined;
+					if ( object === cameraLight ) return undefined;
+					if ( object === shadowCameraHelper ) return undefined;
+					if ( object === cameraLight.shadow.camera ) return undefined;
+				//	if ( localPlayer.getObjectById(id) ) return undefined;
+					debugMode && console.log( "getObjectByEntityId:", object );
+
+					return object;
+				}
+
 			//	Editor Tab eventListners.
 
 				(function(){
 
-					var object;
+					var object; // important!
 					var interval;
 
 					const axisX = new THREE.Vector3(1,0,0);
 					const axisY = new THREE.Vector3(0,1,0);
 					const axisZ = new THREE.Vector3(0,0,1);
 
+					//	if ( id === NaN ) return object = undefined;
+					//	if ( id === scene.id ) return object = undefined;
+					//	if ( id === camera.id ) return object = undefined;
+					//	if ( id === editor.id ) return object = undefined;
+					//	if ( id === cameraLight.id ) return object = undefined;
+					//	if ( id === localPlayer.id ) return object = undefined;
+					//	if ( id === shadowCameraHelper.id ) return object = undefined;
+					//	if ( id === cameraLight.shadow.camera.id ) return object = undefined;
+					//	if ( id !== parseInt( entity_droplist.value ) ) return object = undefined;
+
 					watch(entitySelect, function( prop, action, newValue, oldValue ){
 
-						var id = parseInt( newValue );
-						if ( id === NaN ) return object = undefined;
-						if ( id === scene.id ) return object = undefined;
-						if ( id === camera.id ) return object = undefined;
-						if ( id === editor.id ) return object = undefined;
-						if ( id === cameraLight.id ) return object = undefined;
-						if ( id === localPlayer.id ) return object = undefined;
-						if ( id === shadowCameraHelper.id ) return object = undefined;
-						if ( id === cameraLight.shadow.camera.id ) return object = undefined;
-						if ( id !== parseInt( entity_droplist.value ) ) return object = undefined;
+						if ( !checkId( newValue ) ) { object = undefined; return; }
 
-						object = scene.getObjectById( id );
-						if ( !object ) return object = undefined;
+						var id = parseInt( newValue );
+						if ( !getObjectByEntityId( id ) ) { object = undefined; return; }
+
+						object = getObjectByEntityId( id );
 						debugMode && console.log( "entitySelect watch:", object );
 
 					});
@@ -806,38 +850,22 @@
 
 				//	var interval;
 
-					function checkId( value ){
-
-						var id = parseInt( value );
-
-						function resetValue(){
-							entitySelect.value = entity_droplist.value = "";
-							return false;
-						}
-
-						if ( id === NaN ) return resetValue();
-						if ( id === scene.id ) return resetValue();
-						if ( id === camera.id ) return resetValue();
-						if ( id === editor.id ) return resetValue();
-						if ( id === localPlayer.id ) return resetValue();
-						if ( id === cameraLight.id ) return resetValue();
-						if ( id === shadowCameraHelper.id ) return resetValue();
-						if ( id === cameraLight.shadow.camera.id ) return resetValue();
-						if ( id !== parseInt( entity_droplist.value ) ) return resetValue();
-
-						return true;
-					}
-
 					entity_droplist.addEventListener("change", function(){
 						entity_droplist.blur();
 						var value = entity_droplist.value;
-						if ( checkId( value ) ) entitySelect.value = entity_droplist.value;
+						if ( checkId( value ) ) 
+							entitySelect.value = entity_droplist.value; // update.
+						else
+							entitySelect.value = entity_droplist.value = ""; // reset.
 					});
 
 					vector_droplist.addEventListener("change", function(){
 						vector_droplist.blur();
 						var value = entity_droplist.value;
-						if ( checkId( value ) ) vectorSelect.value = vector_droplist.value;
+						if ( checkId( value ) ) 
+							vectorSelect.value = vector_droplist.value; // update.
+						else 
+							entitySelect.value = entity_droplist.value = ""; // reset.
 					});
 
 					geometry_droplist.addEventListener("change", function(){
@@ -847,48 +875,29 @@
 
 				})();
 
+				//	function checkId( value ){
+				//		var id = parseInt( value );
+				//		function resetValue(){
+				//			entitySelect.value = entity_droplist.value = "";
+				//			return false;
+				//		}
+				//		if ( id === NaN ) return resetValue();
+				//		if ( id === scene.id ) return resetValue();
+				//		if ( id === camera.id ) return resetValue();
+				//		if ( id === editor.id ) return resetValue();
+				//		if ( id === localPlayer.id ) return resetValue();
+				//		if ( id === cameraLight.id ) return resetValue();
+				//		if ( id === shadowCameraHelper.id ) return resetValue();
+				//		if ( id === cameraLight.shadow.camera.id ) return resetValue();
+				//		if ( id !== parseInt( entity_droplist.value ) ) return resetValue();
+				//		return true;
+				//	}
+
 			//	Buttons.
 
 				(function(){
 
 					var interval;
-
-					function checkId( value ){
-
-						var id = parseInt( value );
-
-						if ( id === NaN ) return false;
-						if ( id === scene.id ) return false;
-						if ( id === camera.id ) return false;
-						if ( id === editor.id ) return false;
-						if ( id === localPlayer.id ) return false;
-						if ( id === cameraLight.id ) return false;
-						if ( id === shadowCameraHelper.id ) return false;
-						if ( id === cameraLight.shadow.camera.id ) return false;
-						if ( id !== parseInt( entity_droplist.value ) ) return false;
-
-						return true;
-					}
-
-					function getObjectByEntityId( id ){
-
-						var object = scene.getObjectById( id );
-
-						if ( !object ) return;
-						if ( object === scene ) return;
-						if ( object === camera ) return;
-						if ( object === editor ) return;
-						if ( object === localPlayer ) return;
-						if ( object === cameraLight ) return;
-						if ( object === shadowCameraHelper ) return;
-						if ( object === cameraLight.shadow.camera ) return;
-
-						return object;
-					}
-
-					function resetEntitySelectValue(){
-						entitySelect.value = entity_droplist.value = "";
-					}
 
 					exit_edit_button.addEventListener( "click", function(){
 						clearTimeout(interval);
@@ -910,31 +919,6 @@
 							var object = getObjectByEntityId( id );
 							if ( !object ) return editor.reset();
 
-						//	var id = parseInt( entitySelect.value );
-						//	if ( id === NaN ) return exit();
-						//	if ( id === scene.id ) return exit();
-						//	if ( id === camera.id ) return exit();
-						//	if ( id === editor.id ) return exit();
-						//	if ( id === localPlayer.id ) return exit();
-						//	if ( id === cameraLight.id ) return exit();
-						//	if ( id === shadowCameraHelper.id ) return exit();
-						//	if ( id === cameraLight.shadow.camera.id ) return exit();
-						//	if ( id !== parseInt( entity_droplist.value ) ) return exit();
-						//
-						//	function exit(){ 
-						//		return editor.reset(); 
-						//	};
-						//
-						//	var object = scene.getObjectById( id );
-						//	if ( !object ) return exit();
-						//	if ( object === scene ) return exit();
-						//	if ( object === camera ) return exit();
-						//	if ( object === editor ) return exit();
-						//	if ( object === localPlayer ) return exit();
-						//	if ( object === cameraLight ) return exit();
-						//	if ( object === shadowCameraHelper ) return exit();
-						//	if ( object === cameraLight.shadow.camera ) return exit();
-
 							if ( vectorSelect.value == "position" ) 
 								object.position.set(0,0,0);
 							else if ( vectorSelect.value == "rotation" ) 
@@ -955,13 +939,25 @@
 							if ( !checkId( value ) ) return;
 
 							var id = parseInt( entitySelect.value );
+							debugMode && console.log("id:", id );
+							if ( localPlayer.getObjectById(id) ) return; // important! child of localPlayer.
+
 							var object = getObjectByEntityId( id );
 							if ( !(object && object.parent) ) return;
 
-						//	octree.
-							var uuid;
-							if ( object.geometry ) uuid = object.geometry.uuid
+						//	remove octree.
+							if ( object.isMesh && object.geometry ) (function(){
+								var uuid = object.geometry.uuid;
+								if ( octreeIncluded( uuid ) ) octree.removeThreeMesh( uuid );
+							})();
 
+						//	remove object.
+							object.parent.remove( object );
+
+						//	remove entity and option.
+							entities.remove( id ); // important!
+
+						//	reset editor.
 							entitySelect.value = entity_droplist.value = "";
 						//	entity_droplist.dispatchEvent(new Event("change"));
 						}, 250);
@@ -1134,6 +1130,7 @@
 							});
 						});
 					});
+					debugMode && console.log( "octreeIncluded:", result );
 					return result;
 				}
 
@@ -1146,26 +1143,11 @@
 
 				function switchToEditMode( value ){
 
-					var id = parseInt( value );
-					if ( id === NaN ) return exitFromEditMode();
-					if ( id === scene.id ) return exitFromEditMode();
-					if ( id === camera.id ) return exitFromEditMode();
-					if ( id === editor.id ) return exitFromEditMode();
-					if ( id === localPlayer.id ) return exitFromEditMode();
-					if ( id === cameraLight.id ) return exitFromEditMode();
-					if ( id === shadowCameraHelper.id ) return exitFromEditMode();
-					if ( id === cameraLight.shadow.camera.id ) return exitFromEditMode();
-					if ( id !== parseInt( entity_droplist.value ) ) return exitFromEditMode();
+					if ( !checkId( value ) ) return exitFromEditMode();
 
-					var object = scene.getObjectById( id );
+					var id = parseInt( value );
+					var object = getObjectByEntityId( id );
 					if ( !object ) return exitFromEditMode();
-					if ( object === scene ) return exitFromEditMode();
-					if ( object === camera ) return exitFromEditMode();
-					if ( object === editor ) return exitFromEditMode();
-					if ( object === cameraLight ) return exitFromEditMode();
-					if ( object === localPlayer ) return exitFromEditMode();
-					if ( object === shadowCameraHelper ) return exitFromEditMode();
-					if ( object === cameraLight.shadow.camera ) return exitFromEditMode();
 
 				//	Take camera controls.
 					if ( object.geometry && object.geometry.boundingSphere ) {
@@ -1251,124 +1233,6 @@
 				});
 
 			})();
-
-			//	if ( button === vect_x_increase ) object.scale.x += step/10; // 0.1 %.
-			//	if ( button === vect_y_increase ) object.scale.y += step/10; // 0.1 %.
-			//	if ( button === vect_z_increase ) object.scale.z += step/10; // 0.1 %.
-			//	if ( button === vect_w_increase ) {
-			//		object.scale.x += step/10; // 0.1 %.
-			//		object.scale.y += step/10; // 0.1 %.
-			//		object.scale.z += step/10; // 0.1 %.
-			//	}
-			//
-			//	if ( button === vect_x_decrease ) object.scale.x -= step/10; // 0.1 %.
-			//	if ( button === vect_y_decrease ) object.scale.y -= step/10; // 0.1 %.
-			//	if ( button === vect_z_decrease ) object.scale.z -= step/10; // 0.1 %.
-			//	if ( button === vect_w_decrease ) {
-			//		object.scale.x -= step/10; // 0.1 %.
-			//		object.scale.y -= step/10; // 0.1 %.
-			//		object.scale.z -= step/10; // 0.1 %.
-			//	}
-
-			//	vect_x_increase.addEventListener("click", function(){
-			//		clearTimeout(interval);
-			//		interval = setTimeout(function(){
-			//			vect_x_increase.active = !vect_x_increase.active;
-			//		});
-			//	});
-
-			//	vect_x_decrease.addEventListener("click", function(){
-			//		clearTimeout(interval);
-			//		interval = setTimeout(function(){
-			//			vect_x_decrease.active = !vect_x_decrease.active;
-			//		});
-			//	});
-
-			//	var step = Math.max(dt, 0.01);
-			//	var id = parseInt(entitySelect.value);
-			//	var object = scene.getObjectById( id );
-			//	if ( !(object && object.geometry && object.position) ) return;
-			//	object[vectorSelect.value].x += step;
-
-			//	var step = Math.max(dt, 0.01);
-			//	var id = parseInt(entitySelect.value);
-			//	var object = scene.getObjectById( id );
-			//	if ( !(object && object.geometry && object.position) ) return;
-			//	object[vectorSelect.value].x -= step;
-
-
-			//	const clock = new THREE.Clock();
-			//	(function update(){
-			//		var dt = clock.getDelta();
-			//		requestFrameID = requestAnimationFrame( update );
-			//		if ( !object ) return; // important!
-			//		var step = Math.max(dt, 0.01);
-			//		var mode = vectorSelect.value;
-			//	})();
-
-			//	if ( mode === "position" ) {
-			//
-			//		vect_x_increase.active && translateOnScreenPlaneXZ( dt, object, mode );
-			//		vect_y_increase.active && translateOnScreenAxisY(   dt, object, mode );
-			//		vect_z_increase.active && translateOnScreenPlaneXZ( dt, object, mode );
-			//
-			//		vect_x_decrease.active && translateOnScreenPlaneXZ( dt, object, mode );
-			//		vect_y_decrease.active && translateOnScreenAxisY(   dt, object, mode, true );
-			//		vect_z_decrease.active && translateOnScreenPlaneXZ( dt, object, mode );
-			//	}
-
-			//	else if ( mode === "rotation" ) {
-			//
-			//		vect_x_increase.active && object.rotateOnAxis( axisX,  step );
-			//		vect_y_increase.active && object.rotateOnAxis( axisY,  step );
-			//		vect_z_increase.active && object.rotateOnAxis( axisZ,  step );
-			//
-			//		vect_x_decrease.active && object.rotateOnAxis( axisX, -step );
-			//		vect_y_decrease.active && object.rotateOnAxis( axisY, -step );
-			//		vect_z_decrease.active && object.rotateOnAxis( axisZ, -step );
-			//	}
-
-			//	else if ( mode === "scale" ) {
-			//
-			//		if ( vect_x_increase.active ) translateOnScreenPlaneXZ( dt, object, mode );
-			//		if ( vect_y_increase.active ) translateOnScreenAxisY(   dt, object, mode );
-			//		if ( vect_z_increase.active ) translateOnScreenPlaneXZ( dt, object, mode );
-			//
-			//		if ( vect_x_decrease.active ) translateOnScreenPlaneXZ( dt, object, mode );
-			//		if ( vect_y_decrease.active ) translateOnScreenAxisY(   dt, object, mode, true );
-			//		if ( vect_z_decrease.active ) translateOnScreenPlaneXZ( dt, object, mode );
-			//	}
-
-			//	else if ( mode === "quaternion" ) {
-			//
-			//	//	if ( vect_w_decrease.active ) ...
-			//	//	if ( vect_w_increase.active ) ...
-			//
-			//	}
-
-
-			//	function onMouseUp(){
-			//		clearTimeout( interval );
-			//		vect_x_increase.active = false;
-			//		vect_y_increase.active = false;
-			//		vect_z_increase.active = false;
-			//		vect_w_increase.active = false;
-			//		vect_x_decrease.active = false;
-			//		vect_y_decrease.active = false;
-			//		vect_z_decrease.active = false;
-			//		vect_w_decrease.active = false;
-			//		debugMode && console.log( 
-			//			"on Mouse Up:", 
-			//			vect_x_increase.active && 
-			//			vect_y_increase.active && 
-			//			vect_z_increase.active && 
-			//			vect_w_increase.active && 
-			//			vect_x_decrease.active && 
-			//			vect_y_decrease.active && 
-			//			vect_z_decrease.active && 
-			//			vect_w_decrease,
-			//		);
-			//	});
 
 		</script>
 
@@ -1688,6 +1552,9 @@
 				entities.add( object );
 			});
 
+		</script>
+
+		<script>
 /*
 		//	Create options, add entities.
 
@@ -1709,6 +1576,126 @@
 				select.value = ""; // important!
 
 			})();
+*/
+
+/*
+			//	if ( button === vect_x_increase ) object.scale.x += step/10; // 0.1 %.
+			//	if ( button === vect_y_increase ) object.scale.y += step/10; // 0.1 %.
+			//	if ( button === vect_z_increase ) object.scale.z += step/10; // 0.1 %.
+			//	if ( button === vect_w_increase ) {
+			//		object.scale.x += step/10; // 0.1 %.
+			//		object.scale.y += step/10; // 0.1 %.
+			//		object.scale.z += step/10; // 0.1 %.
+			//	}
+			//
+			//	if ( button === vect_x_decrease ) object.scale.x -= step/10; // 0.1 %.
+			//	if ( button === vect_y_decrease ) object.scale.y -= step/10; // 0.1 %.
+			//	if ( button === vect_z_decrease ) object.scale.z -= step/10; // 0.1 %.
+			//	if ( button === vect_w_decrease ) {
+			//		object.scale.x -= step/10; // 0.1 %.
+			//		object.scale.y -= step/10; // 0.1 %.
+			//		object.scale.z -= step/10; // 0.1 %.
+			//	}
+
+			//	vect_x_increase.addEventListener("click", function(){
+			//		clearTimeout(interval);
+			//		interval = setTimeout(function(){
+			//			vect_x_increase.active = !vect_x_increase.active;
+			//		});
+			//	});
+
+			//	vect_x_decrease.addEventListener("click", function(){
+			//		clearTimeout(interval);
+			//		interval = setTimeout(function(){
+			//			vect_x_decrease.active = !vect_x_decrease.active;
+			//		});
+			//	});
+
+			//	var step = Math.max(dt, 0.01);
+			//	var id = parseInt(entitySelect.value);
+			//	var object = scene.getObjectById( id );
+			//	if ( !(object && object.geometry && object.position) ) return;
+			//	object[vectorSelect.value].x += step;
+
+			//	var step = Math.max(dt, 0.01);
+			//	var id = parseInt(entitySelect.value);
+			//	var object = scene.getObjectById( id );
+			//	if ( !(object && object.geometry && object.position) ) return;
+			//	object[vectorSelect.value].x -= step;
+
+
+			//	const clock = new THREE.Clock();
+			//	(function update(){
+			//		var dt = clock.getDelta();
+			//		requestFrameID = requestAnimationFrame( update );
+			//		if ( !object ) return; // important!
+			//		var step = Math.max(dt, 0.01);
+			//		var mode = vectorSelect.value;
+			//	})();
+
+			//	if ( mode === "position" ) {
+			//
+			//		vect_x_increase.active && translateOnScreenPlaneXZ( dt, object, mode );
+			//		vect_y_increase.active && translateOnScreenAxisY(   dt, object, mode );
+			//		vect_z_increase.active && translateOnScreenPlaneXZ( dt, object, mode );
+			//
+			//		vect_x_decrease.active && translateOnScreenPlaneXZ( dt, object, mode );
+			//		vect_y_decrease.active && translateOnScreenAxisY(   dt, object, mode, true );
+			//		vect_z_decrease.active && translateOnScreenPlaneXZ( dt, object, mode );
+			//	}
+
+			//	else if ( mode === "rotation" ) {
+			//
+			//		vect_x_increase.active && object.rotateOnAxis( axisX,  step );
+			//		vect_y_increase.active && object.rotateOnAxis( axisY,  step );
+			//		vect_z_increase.active && object.rotateOnAxis( axisZ,  step );
+			//
+			//		vect_x_decrease.active && object.rotateOnAxis( axisX, -step );
+			//		vect_y_decrease.active && object.rotateOnAxis( axisY, -step );
+			//		vect_z_decrease.active && object.rotateOnAxis( axisZ, -step );
+			//	}
+
+			//	else if ( mode === "scale" ) {
+			//
+			//		if ( vect_x_increase.active ) translateOnScreenPlaneXZ( dt, object, mode );
+			//		if ( vect_y_increase.active ) translateOnScreenAxisY(   dt, object, mode );
+			//		if ( vect_z_increase.active ) translateOnScreenPlaneXZ( dt, object, mode );
+			//
+			//		if ( vect_x_decrease.active ) translateOnScreenPlaneXZ( dt, object, mode );
+			//		if ( vect_y_decrease.active ) translateOnScreenAxisY(   dt, object, mode, true );
+			//		if ( vect_z_decrease.active ) translateOnScreenPlaneXZ( dt, object, mode );
+			//	}
+
+			//	else if ( mode === "quaternion" ) {
+			//
+			//	//	if ( vect_w_decrease.active ) ...
+			//	//	if ( vect_w_increase.active ) ...
+			//
+			//	}
+
+
+			//	function onMouseUp(){
+			//		clearTimeout( interval );
+			//		vect_x_increase.active = false;
+			//		vect_y_increase.active = false;
+			//		vect_z_increase.active = false;
+			//		vect_w_increase.active = false;
+			//		vect_x_decrease.active = false;
+			//		vect_y_decrease.active = false;
+			//		vect_z_decrease.active = false;
+			//		vect_w_decrease.active = false;
+			//		debugMode && console.log( 
+			//			"on Mouse Up:", 
+			//			vect_x_increase.active && 
+			//			vect_y_increase.active && 
+			//			vect_z_increase.active && 
+			//			vect_w_increase.active && 
+			//			vect_x_decrease.active && 
+			//			vect_y_decrease.active && 
+			//			vect_z_decrease.active && 
+			//			vect_w_decrease,
+			//		);
+			//	});
 */
 		</script>
 
