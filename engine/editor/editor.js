@@ -110,6 +110,7 @@
 
 		(function(){
 
+			var json; // for reset/undo.
 			var object;
 			var interval;
 			var edgeshelper;
@@ -123,13 +124,18 @@
 			//	Old edges helper.
 				destroyEdgesHelper(); // old edges helper.
 
-				if ( !checkId( newValue ) ) { object = undefined; return; }
+				if ( !checkId( newValue ) ) { 
+					json = undefined; object = undefined; return; 
+				}
 
 				var id = parseInt( newValue );
-				if ( !getObjectByEntityId( id ) ) { object = undefined; return; }
+				if ( !getObjectByEntityId( id ) ) { 
+					json = undefined; object = undefined; return; 
+				}
 
 				object = getObjectByEntityId( id );
-				debugMode && console.log( "entitySelect watch:", object );
+				json = object && object.toJSON(); // for reset/undo.
+				debugMode && console.log( "entitySelect watch:", json, object );
 
 			//	New edges helper.
 				object && createEdgesHelper(); // new edges helper.
