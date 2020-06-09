@@ -67,40 +67,21 @@ const keyInputControls = (function( characterController, cameraController ){
 
 		if (  !movekey && turnkey ) {
 
- 			debugMode && console.log(
- 				"turnkey && !movekey:", turnkey && !movekey, 
- 				"turnkey:", turnkey, "movekey:", movekey
- 			);
-
-		//	resetMovementSpeedDirection();
  			characterController.isRunning = false; 
 
-		} else if ( movekey && turnkey ) {
-
- 			debugMode && console.log(
- 				"movekey && turnkey:", movekey && turnkey, 
- 				"turnkey:", turnkey, "movekey:", movekey
- 			);
+		} else if ( movekey || turnkey ) {
 
 			updateMovementSpeedDirection( backward );
 			characterController.isRunning = true; 
 
-		} else if ( movekey && !turnkey ) {
-
- 			debugMode && console.log(
- 				"movekey && !turnkey:", movekey && turnkey, 
- 				"turnkey:", turnkey, "movekey:", movekey
- 			);
-
-			updateMovementSpeedDirection( backward );
-			characterController.isRunning = true; 
+	//	} else if ( movekey && !turnkey ) {
+	//		updateMovementSpeedDirection( backward );
+	//		characterController.isRunning = true; 
+	//	} else if ( movekey && turnkey ) {
+	//		updateMovementSpeedDirection( backward );
+	//		characterController.isRunning = true; 
 
 		} else if ( !movekey && !turnkey ) {
-
- 			debugMode && console.log(
- 				"!movekey && !turnkey:", !movekey && !turnkey, 
- 				"turnkey:", turnkey, "movekey:", movekey
- 			);
 
 			syncWithCameraController();
 			resetMovementSpeedDirection();
@@ -108,16 +89,12 @@ const keyInputControls = (function( characterController, cameraController ){
 
 		} else {
 
- 			debugMode && console.log(
- 				"turnkey:", turnkey, "movekey:", movekey
+ 			debugMode && console.error( 
+ 				"onMoveKeyChangeExecption:",
+ 				"turnkey:", turnkey, "movekey:", movekey,
  			);
 
 		}
-
-	//	if ( turnkey && !movekey ) 
-	//		characterController.isRunning = false; 
-	//	else 
-	//		characterController.isRunning = true; 
 
 	}
 
