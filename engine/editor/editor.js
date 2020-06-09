@@ -83,6 +83,10 @@
 			entitySelect.value = entity_droplist.value = "";
 		}
 
+		function resetGeometryTypeValue(){
+			geometryType.value = geometry_droplist.value = "";
+		}
+
 		editor.reset = function(){
 			editor.copy( new THREE.Object3D() );
 			editor.name = "Editor";
@@ -433,6 +437,8 @@
 				geometry_droplist.blur();
 				geometryType.value = geometry_droplist.value;
 			});
+
+			geometryType.value = geometry_droplist.value = "BoxGeometry";
 
 		})();
 
