@@ -260,8 +260,6 @@
 
 	})();
 
-//  =============================================================================== //
-
 	(function(){
 
 	//	Geometries droplist (TODO).
@@ -306,6 +304,8 @@
 
 	})();
 
+//  =============================================================================== //
+
 	(function(){
 
 	//	New plane geometry button.
@@ -323,7 +323,7 @@
 		button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
 
 		row.appendChild( button );
-		tab.appendChild( row );
+	//	tab.appendChild( row );
 
 	})();
 
@@ -344,7 +344,7 @@
 		button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
 
 		row.appendChild( button );
-		tab.appendChild( row );
+	//	tab.appendChild( row );
 
 	})();
 
@@ -371,6 +371,27 @@
 
 	(function(){
 
+	//	Create geometry button.
+	//	Creates a mesh geometry
+	//	and switch to EditMode.
+
+		var tab = TabUI.Editor.tab;
+		var row = document.createElement("h3");
+		row.style.cssText = "height:40px;margin-bottom:20px;"
+
+		var button = document.createElement("div");
+		button.id = "create-geometry-entity";
+		button.textContent = "Create Geometry Entity";
+		button.style.cssText = "width:295px;float:right;height:40px;font-size:large;margin-right:15px;";
+		button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
+
+		row.appendChild( button );
+		tab.appendChild( row );
+
+	})();
+
+	(function(){
+
 	//	Remove entity button.
 
 		var tab = TabUI.Editor.tab;
@@ -387,3 +408,5 @@
 		tab.appendChild( row );
 
 	})();
+
+//  =============================================================================== //
