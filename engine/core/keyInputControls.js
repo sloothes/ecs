@@ -92,6 +92,9 @@ const keyInputControls = (function( characterController, cameraController ){
  				"turnkey:", turnkey, "movekey:", movekey
  			);
 
+			updateMovementSpeedDirection( backward );
+			characterController.isRunning = true; 
+
 		} else if ( !movekey && !turnkey ) {
 
  			debugMode && console.log(
