@@ -65,25 +65,28 @@ const keyInputControls = (function( characterController, cameraController ){
 		var turnkey = left || right;
 		var movekey = forwards || backward;
 
-		if ( turnkey ) 
+		if ( turnkey && !movekey ) {
 
 			resetMovementSpeedDirection();
+ 			characterController.isRunning = false; 
 
-		else if ( movekey )
+		} else if ( movekey && turnkey ) {
 
 			updateMovementSpeedDirection( backward );
+			characterController.isRunning = true; 
 
-		else {
+		} else {
 
 			syncWithCameraController();
 			resetMovementSpeedDirection();
+			characterController.isRunning = true; 
 
 		}
 
-		if ( turnkey && !movekey ) 
-			characterController.isRunning = false; 
-		else 
-			characterController.isRunning = true; 
+	//	if ( turnkey && !movekey ) 
+	//		characterController.isRunning = false; 
+	//	else 
+	//		characterController.isRunning = true; 
 
 	}
 
