@@ -150,7 +150,7 @@
 				var geometry = new THREE.EdgesGeometry( object.geometry );
 				var material = new THREE.LineBasicMaterial( { color: 0x00ff00 } );
 				var helper = new THREE.LineSegments( geometry, material );
-			//	helper.scale.copy( object.scale ); // important!
+				helper.scale.copy( object.scale );       // important!
 				helper.position.copy( object.position ); // important!
 				helper.rotation.copy( object.rotation ); // important!
 				helper.name = object.name + ":edgeshelper";
