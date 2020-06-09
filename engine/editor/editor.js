@@ -116,6 +116,9 @@
 
 			watch(entitySelect, function( prop, action, newValue, oldValue ){
 
+			//	Old edges helper.
+				destroyEdgesHelper(); // old edges helper.
+
 				if ( !checkId( newValue ) ) { object = undefined; return; }
 
 				var id = parseInt( newValue );
@@ -124,9 +127,8 @@
 				object = getObjectByEntityId( id );
 				debugMode && console.log( "entitySelect watch:", object );
 
-			//	Edges helper.
-				destroyEdgesHelper(); // old edges helper.
-				object && createEdgesHelper();  // new edges helper.
+			//	New edges helper.
+				object && createEdgesHelper(); // new edges helper.
 
 			});
 
@@ -147,6 +149,9 @@
 				var geometry = new THREE.EdgesGeometry( object.geometry );
 				var material = new THREE.LineBasicMaterial( { color: 0x00ff00 } );
 				var helper = new THREE.LineSegments( geometry, material );
+			//	helper.scale.copy( object.scale ); // important!
+				helper.position.copy( object.position ); // important!
+				helper.rotation.copy( object.rotation ); // important!
 				helper.name = object.name + ":edgeshelper";
 
 				scene.add( helper );
