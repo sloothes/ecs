@@ -135,9 +135,10 @@
 			function destroyEdgesHelper(){
 				if ( !edgeshelper ) return;
 				scene.remove( edgeshelper ); 
+				entities.remove( edgeshelper.id );
 				edgeshelper.geometry.dispose();
 				edgeshelper.material.dispose();
-				entities.remove( edgeshelper.id );
+				edgeshelper = undefined;
 			}
 
 			function createEdgesHelper(){
