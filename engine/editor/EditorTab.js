@@ -283,11 +283,9 @@
 
 		(function(){
 
-			var geometries = "PlaneGeometry,BoxGeometry,CircleGeometry,ConeGeometry,CylinderGeometry,"
-			+"DodecahedronGeometry,EdgesGeometry,ExtrudeGeometry,IcosahedronGeometry,LatheGeometry,"
-			+"OctahedronGeometry,ParametricGeometry,PolyhedronGeometry,RingGeometry,ShapeGeometry,"
-			+"SphereGeometry,TetrahedronGeometry,TextGeometry,TorusGeometry,TorusKnotGeometry,"
-			+"TubeGeometry,WireframeGeometry";
+			var geometries = "PlaneGeometry,BoxGeometry,SphereGeometry,CylinderGeometry,"
+			+"ConeGeometry,DodecahedronGeometry,IcosahedronGeometry,OctahedronGeometry,"
+			+"TetrahedronGeometry,TorusGeometry,TorusKnotGeometry,CircleGeometry,RingGeometry";
 
 			geometries.split(",").forEach(function( name ){
 				var option = document.createElement("option");
