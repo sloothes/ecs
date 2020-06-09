@@ -344,7 +344,7 @@
 
 				(function(){
 					var w = 12, h = 10;
-					var x = 11, y = h/2, z = -10;
+					var x = 5, y = h/2, z = -11;
 					var box = new THREE.BoxGeometry(w,h,w);
 					box.translate(0, h/2, 0);
 					var mesh = new THREE.Mesh(box, material);
@@ -413,12 +413,39 @@
 		<script>
 
 		//	EditorTab.js
+/*
+			(function(){
 
+				//	Create geometry button.
+				//	Creates a mesh box 1x1 (m3),
+				//	and switch to EditMode.
+
+				var tab = TabUI.Editor.tab;
+				var row = document.createElement("h3");
+				row.style.cssText = "height:40px;margin-bottom:20px;"
+
+				var button = document.createElement("div");
+				button.id = "create-geometry-entity";
+				button.textContent = "Create Geometry Entity";
+				button.style.cssText = "width:295px;float:right;height:40px;font-size:large;margin-right:15px;";
+				button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
+
+				row.appendChild( button );
+				tab.appendChild( row );
+
+			})();
+*/
 		</script>
 
 		<script>
 
 		//	Editor.js
+			(function(){
+
+				const geometry_droplist = document.getElementById("editor-geometry-droplist");
+				const geometryType = { value:geometry_droplist.value }; // string.
+
+			})();
 
 		</script>
 
