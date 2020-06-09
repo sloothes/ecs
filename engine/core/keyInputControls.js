@@ -42,9 +42,9 @@ const keyInputControls = (function( characterController, cameraController ){
 	function updateControllerDirection( dt ){
 		var left = keyCodes[LEFT], right = keyCodes[RIGHT];
 		if ( left && !right ) 
-			characterController.direction -= dt*rad; // step;
-		else if ( right && !left ) 
 			characterController.direction += dt*rad; // step;
+		else if ( right && !left ) 
+			characterController.direction -= dt*rad; // step;
 	}
 
 	keyInputController.addEventListener( "movekeyon", onMoveKeyChange);
