@@ -62,10 +62,10 @@ const keyInputControls = (function( characterController, cameraController ){
 		var left  = keyCodes[LEFT],  forwards = keyCodes[UP],
 			right = keyCodes[RIGHT], backward = keyCodes[DOWN];
 
-		var noturnkeys = !left && !right;
-		var movingkeys = forwards || backward;
+		var turnkey = left || right;
+		var movekey = forwards || backward;
 
-		if ( movingkeys ) {
+		if ( movekey ) {
 
 			updateMovementSpeedDirection( backward );
 
@@ -76,10 +76,10 @@ const keyInputControls = (function( characterController, cameraController ){
 
 		}
 
-		if ( noturnkeys ) 
-			characterController.isRunning = true; 
-		else 
+		if ( turnkey && !movekey ) 
 			characterController.isRunning = false; 
+		else 
+			characterController.isRunning = true; 
 
 	}
 
