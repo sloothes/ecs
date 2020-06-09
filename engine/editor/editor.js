@@ -12,6 +12,9 @@
 
 		var k = 0;
 
+		const undo = [];
+		const redo = [];
+
 		const RAD2DEG = THREE.Math.RAD2DEG;
 		const DEG2RAD = THREE.Math.DEG2RAD;
 
@@ -110,7 +113,6 @@
 
 		(function(){
 
-			var json; // for reset/undo.
 			var object;
 			var interval;
 			var edgeshelper;
@@ -124,22 +126,20 @@
 			//	Old edges helper.
 				destroyEdgesHelper(); // old edges helper.
 
-				if ( !checkId( newValue ) ) { 
-					json = undefined; object = undefined; return; 
-				}
+				if ( !checkId( newValue ) ) { object = undefined; return; }
 
 				var id = parseInt( newValue );
-				if ( !getObjectByEntityId( id ) ) { 
-					json = undefined; object = undefined; return; 
-				}
+				if ( !getObjectByEntityId( id ) ) { object = undefined; return; }
 
 				object = getObjectByEntityId( id );
-				json = object && object.toJSON(); // for reset/undo.
-				debugMode && console.log( "entitySelect watch:", json, object );
+				debugMode && console.log( "entitySelect watch:", object );
 
 			//	New edges helper.
 				object && createEdgesHelper(); // new edges helper.
 
+			//	Undo/Redo.
+				undo.length = 0; redo.length = 0;
+				object && undo.unshift( object.toJSON() ); // undo.push(json);
 			});
 
 			function destroyEdgesHelper(){
