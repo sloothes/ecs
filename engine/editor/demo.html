@@ -296,11 +296,11 @@
 				var material = new THREE.MeshLambertMaterial();
 				var cube = new THREE.Mesh(geometry, material);
 				cube.name = "local player cube";
-				var geometry = new THREE.SphereGeometry(0.7,8,12);
-				var material = new THREE.MeshLambertMaterial();
-				var sphere = new THREE.Mesh(geometry, material);
-				sphere.name = "local player sphere";
-				cube.add( sphere );
+			//	var geometry = new THREE.SphereGeometry(0.7,8,12);
+			//	var material = new THREE.MeshLambertMaterial();
+			//	var sphere = new THREE.Mesh(geometry, material);
+			//	sphere.name = "local player sphere";
+			//	cube.add( sphere );
 				localPlayer.add( cube );
 			})();
 
@@ -315,24 +315,12 @@
 				var material = new THREE.MeshLambertMaterial();
 
 				(function(){
-					var w = 10; var h = 5;
-					var box = new THREE.BoxGeometry(w,h,w);
-					box.translate(0, h/2, 0);
-					octree.importThreeMesh( new THREE.Mesh(box) );
-					var geometry = new THREE.EdgesGeometry( box );
-					var material = new THREE.LineBasicMaterial( { color: 0x00ff00 } );
-					var segments = new THREE.LineSegments( geometry, material );
-					segments.name = "segments 1";
-					scene.add( segments );
-				})();
-
-				(function(){
 					var w = 10, h = 20;
 					var x = 10, y = h/2, z = -4;
 					var box = new THREE.BoxGeometry(w,h,w);
 					box.translate(0, h/2, 0);
 					var mesh = new THREE.Mesh(box, material);
-					mesh.name = "build 2";
+					mesh.name = "building 1";
 					mesh.position.set(x,0,z);
 					octree.importThreeMesh( mesh );
 					var geometry = new THREE.EdgesGeometry( box );
@@ -344,11 +332,11 @@
 
 				(function(){
 					var w = 12, h = 10;
-					var x = 11, y = h/2, z = -10;
+					var x = 15, y = h/2, z = -11;
 					var box = new THREE.BoxGeometry(w,h,w);
 					box.translate(0, h/2, 0);
 					var mesh = new THREE.Mesh(box, material);
-					mesh.name = "build 3";
+					mesh.name = "building 2";
 					mesh.position.set(x,0,z);
 					octree.importThreeMesh( mesh );
 					var geometry = new THREE.EdgesGeometry( box );
@@ -364,7 +352,7 @@
 					var box = new THREE.BoxGeometry(w,h,w);
 					box.translate(0, h/2, 0);
 					var mesh = new THREE.Mesh(box, material);
-					mesh.name = "build 4";
+					mesh.name = "building 3";
 					mesh.position.set(x,0,z);
 					octree.importThreeMesh( mesh );
 					var geometry = new THREE.EdgesGeometry( box );
@@ -380,7 +368,7 @@
 					var box = new THREE.BoxGeometry(w,h,d);
 					box.translate(0, h/2, 0);
 					var mesh = new THREE.Mesh(box, material);
-					mesh.name = "build 5";
+					mesh.name = "building 4";
 					mesh.position.set(x,0,z);
 					octree.importThreeMesh( mesh );
 					var geometry = new THREE.EdgesGeometry( box );
@@ -396,7 +384,7 @@
 					var box = new THREE.BoxGeometry(w,h,d);
 					box.translate(0, h/2, 0);
 					var mesh = new THREE.Mesh(box, material);
-					mesh.name = "build 6";
+					mesh.name = "building 5";
 					mesh.position.set(x,0,z);
 					octree.importThreeMesh( mesh );
 					var geometry = new THREE.EdgesGeometry( box );
@@ -407,73 +395,6 @@
 				})();
 
 			})();
-
-		</script>
-
-		<script>
-
-		//	EditorTab.js
-
-		</script>
-
-		<script>
-
-		//	Editor.js
-
-		</script>
-
-		<script>
-
-		//	Loading systems.
-
-			function FBXLoadSystem( entity ){
-
-				var s = entity.scale;
-				var url = entity.url;
-				var loader = new THREE.FBXLoader();
-				loader.load( url, function( group ){
-					debugMode && console.log( group );
-					entities.push({id: group.id});
-
-				//	All children in group have scale 100.
-					group.traverse(function( child ){
-
-					//	Reset scale.
-						if ( child.scale !== undefined ) {
-							child.scale.set(1,1,1);
-						}
-
-					//	Create child entities.
-						if ( child.type == "Mesh" 
-						  || child.type == "SkinnedMesh" ) {
-						//	Add entity.
-							entities.push({id: child.id});
-						//	Create option.
-							(function createOption(){
-								var select = document.getElementById("entities-droplist");
-								if ( !select ) return;
-								var option = document.createElement("option");
-								option.value = child.id;
-								option.text = ""+child.id+"."+child.type+":"+child.name;
-								select.appendChild( option );
-							})();
-						}
-
-					});
-
-				//	Set scale.
-					if ( entity.scale ) group.scale.set(s,s,s);
-
-				//	if ( group.animations && group.animations.length ){
-					//	Create clip entities.
-					//	Create animation controller.
-				//	}
-
-				//	Add removed flag.
-					entity.removed = true;
-
-				});
-			}
 
 		</script>
 
