@@ -67,7 +67,7 @@ const keyInputControls = (function( characterController, cameraController ){
 
 		if ( turnkey && !movekey ) {
 
-			resetMovementSpeedDirection();
+		//	resetMovementSpeedDirection();
  			characterController.isRunning = false; 
 
 		} else if ( movekey && turnkey ) {
