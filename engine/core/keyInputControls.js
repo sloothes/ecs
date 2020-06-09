@@ -54,38 +54,28 @@ const keyInputControls = (function( characterController, cameraController ){
 			characterController.direction += dt*rad; // step;
 	}
 
-	keyInputController.addEventListener( "movekeyon", function() { 
+	keyInputController.addEventListener( "movekeyon", onMoveKeyChange);
+	keyInputController.addEventListener( "movekeychange", onMoveKeyChange);
+
+	function onMoveKeyChange(){
 
 		var forwards = keyCodes[UP];   // || keyCodes[87]; // "arrow UP"    or "W"
 		var backward = keyCodes[DOWN]; // || keyCodes[83]; // "arrow DOWN"  or "S"
 
 		if ( forwards || backward ) {
+
 			updateMovementSpeedDirection( backward );
+			characterController.isRunning = false; 
+
 		} else {
+
 			syncWithCameraController();
 			resetMovementSpeedDirection();
+			characterController.isRunning = true;
+
 		}
 
-		characterController.isRunning = true;
-
-	});
-
-	keyInputController.addEventListener( "movekeychange", function(){
-	//	syncWithCameraController();
-
-		var forwards = keyCodes[UP];   // || keyCodes[87]; // "arrow UP"    or "W"
-		var backward = keyCodes[DOWN]; // || keyCodes[83]; // "arrow DOWN"  or "S"
-
-		if ( forwards || backward ) 
-			updateMovementSpeedDirection( backward );
-		else {
-			syncWithCameraController();
-			resetMovementSpeedDirection();
-		}
-
-		characterController.isRunning = true; 
-
-	});
+	}
 
 	keyInputController.addEventListener( "movekeyoff", function() { 
 		resetMovementSpeedDirection();
