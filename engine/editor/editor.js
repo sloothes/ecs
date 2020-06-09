@@ -37,6 +37,7 @@
 		const reset_vectors_button = document.getElementById("reset-vectors-button");
 		const box_geometry_button = document.getElementById("new-box-geometry");
 		const plane_geometry_button = document.getElementById("new-plane-geometry");
+		const create_geometry_button = document.getElementById("create-geometry-button");
 		const remove_geometry_button = document.getElementById("remove-geometry-button");
 
 		const entitySelect = { value:entity_droplist.value };   // string.
@@ -437,6 +438,35 @@
 				}, 250);
 			});
 
+			create_geometry_button.addEventListener( "click", function(){
+				clearTimeout( interval );
+				interval = setTimeout(function(){
+
+				//	Get type.
+					var type = geometryType.value; // string.
+					if ( type === "" || type === undefined ) return;
+
+				//	Create geometry.
+					var geometry = new THREE[ type ]();
+					if ( geometry === undefined ) return;
+					geometry.translate(0, 0.5, 0);
+
+				//	Create mesh.
+					var material = new THREE.MeshLambertMaterial({side:2});
+					var mesh = new THREE.Mesh(geometry, material);
+					mesh.name = type.replace("Geometry","") + mesh.id;
+					scene.add( mesh );
+
+				//	Add entity.
+					entities.add( mesh );
+
+				//	Enter edit mode.
+					entitySelect.value = entity_droplist.value = mesh.id.toString();
+				//	entity_droplist.dispatchEvent(new Event("change")); // important!
+
+				}, 250);
+			});
+
 			remove_geometry_button.addEventListener( "click", function(){
 				clearTimeout( interval );
 				interval = setTimeout(function(){
@@ -463,7 +493,7 @@
 				//	remove entity and option.
 					entities.remove( id ); // important!
 
-				//	reset editor.
+				//	Exit edit mode.
 					entitySelect.value = entity_droplist.value = "";
 				//	entity_droplist.dispatchEvent(new Event("change"));
 				}, 250);
@@ -683,7 +713,7 @@
 
 		(function(){
 
-			plane_geometry_button.addEventListener( "click", function(){
+			plane_geometry_button && plane_geometry_button.addEventListener( "click", function(){
 
 				var material = new THREE.MeshStandardMaterial({side:2});
 			//	var entity_droplist = document.getElementById("entities-droplist");
@@ -711,12 +741,12 @@
 				entity_droplist.appendChild( option );
 
 			//	Set new value.
-				entitySelect.value = entity_droplist.value = ""+mesh.id;
+				entitySelect.value = entity_droplist.value = mesh.id.toString();
 			//	entity_droplist.dispatchEvent(new Event("change")); // important!
 
 			});
 
-			box_geometry_button.addEventListener( "click", function(){
+			box_geometry_button && box_geometry_button.addEventListener( "click", function(){
 
 				var material = new THREE.MeshStandardMaterial();
 			//	var entity_droplist = document.getElementById("entities-droplist");
@@ -744,7 +774,7 @@
 				entity_droplist.appendChild( option );
 
 			//	Set new value.
-				entitySelect.value = entity_droplist.value = ""+mesh.id;
+				entitySelect.value = entity_droplist.value = mesh.id.toString();
 			//	entity_droplist.dispatchEvent(new Event("change")); // important!
 
 			});
