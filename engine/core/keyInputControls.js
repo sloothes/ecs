@@ -74,13 +74,6 @@ const keyInputControls = (function( characterController, cameraController ){
 			updateMovementSpeedDirection( backward );
 			characterController.isRunning = true; 
 
-	//	} else if ( movekey && !turnkey ) {
-	//		updateMovementSpeedDirection( backward );
-	//		characterController.isRunning = true; 
-	//	} else if ( movekey && turnkey ) {
-	//		updateMovementSpeedDirection( backward );
-	//		characterController.isRunning = true; 
-
 		} else if ( !movekey && !turnkey ) {
 
 			syncWithCameraController();
