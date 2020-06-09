@@ -430,14 +430,14 @@
 
 				var id = parseInt( value );
 
-				if ( id === NaN ) return; // important!
-				if ( id === scene.id ) return; // important!
-				if ( id === camera.id ) return; // important!
-				if ( id === editor.id ) return; // important!
-				if ( id === cameraLight.id ) return; // important!
-				if ( id === localPlayer.id ) return; // important!
-				if ( id === shadowCameraHelper.id ) return; // important!
-				if ( id === cameraLight.shadow.camera.id ) return; // important!
+				if ( id === NaN ) return;
+				if ( id === scene.id ) return;
+				if ( id === camera.id ) return;
+				if ( id === editor.id ) return;
+				if ( id === cameraLight.id ) return;
+				if ( id === localPlayer.id ) return;
+				if ( id === shadowCameraHelper.id ) return;
+				if ( id === cameraLight.shadow.camera.id ) return;
 
 				var object = scene.getObjectById(id);
 
@@ -542,16 +542,6 @@
 					const axisX = new THREE.Vector3(1,0,0);
 					const axisY = new THREE.Vector3(0,1,0);
 					const axisZ = new THREE.Vector3(0,0,1);
-
-					//	if ( id === NaN ) return object = undefined;
-					//	if ( id === scene.id ) return object = undefined;
-					//	if ( id === camera.id ) return object = undefined;
-					//	if ( id === editor.id ) return object = undefined;
-					//	if ( id === cameraLight.id ) return object = undefined;
-					//	if ( id === localPlayer.id ) return object = undefined;
-					//	if ( id === shadowCameraHelper.id ) return object = undefined;
-					//	if ( id === cameraLight.shadow.camera.id ) return object = undefined;
-					//	if ( id !== parseInt( entity_droplist.value ) ) return object = undefined;
 
 					watch(entitySelect, function( prop, action, newValue, oldValue ){
 
@@ -875,24 +865,6 @@
 
 				})();
 
-				//	function checkId( value ){
-				//		var id = parseInt( value );
-				//		function resetValue(){
-				//			entitySelect.value = entity_droplist.value = "";
-				//			return false;
-				//		}
-				//		if ( id === NaN ) return resetValue();
-				//		if ( id === scene.id ) return resetValue();
-				//		if ( id === camera.id ) return resetValue();
-				//		if ( id === editor.id ) return resetValue();
-				//		if ( id === localPlayer.id ) return resetValue();
-				//		if ( id === cameraLight.id ) return resetValue();
-				//		if ( id === shadowCameraHelper.id ) return resetValue();
-				//		if ( id === cameraLight.shadow.camera.id ) return resetValue();
-				//		if ( id !== parseInt( entity_droplist.value ) ) return resetValue();
-				//		return true;
-				//	}
-
 			//	Buttons.
 
 				(function(){
@@ -940,7 +912,7 @@
 
 							var id = parseInt( entitySelect.value );
 							debugMode && console.log("id:", id );
-							if ( localPlayer.getObjectById(id) ) return; // important! child of localPlayer.
+							if ( localPlayer.getObjectById(id) ) return; // is child of localPlayer.
 
 							var object = getObjectByEntityId( id );
 							if ( !(object && object.parent) ) return;
@@ -990,8 +962,8 @@
 					if ( newValue != "" ) switchToEditMode( newValue );
 
 				//	Display vectors direct from editor.
-				//	callWatchers(vectorSelect, "value");
 					displayVectorValues( vectorSelect.value );
+				//	callWatchers(vectorSelect, "value");
 
 				});
 
@@ -1092,6 +1064,7 @@
 					if ( !object.geometry ) return;
 					if ( !object.geometry.isGeometry ) return;
 					var uuid = object.geometry.uuid;
+				//	if not child of localPlayer import to octree.
 					if ( !localPlayer.getObjectById(object.id) )
 						octree.importThreeMesh( object );
 					return object;
@@ -1113,6 +1086,7 @@
 				function updateOctree( value ){
 					var object = removefromOctree( value );
 					if ( !object ) return;
+				//	if not child of localPlayer import to octree.
 					if ( !localPlayer.getObjectById(object.id) ) {
 						octree.importThreeMesh( object );
 					}
