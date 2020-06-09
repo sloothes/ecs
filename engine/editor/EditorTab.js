@@ -380,7 +380,7 @@
 		row.style.cssText = "height:40px;margin-bottom:20px;"
 
 		var button = document.createElement("div");
-		button.id = "create-geometry-entity";
+		button.id = "create-geometry-button";
 		button.textContent = "Create Geometry Entity";
 		button.style.cssText = "width:295px;float:right;height:40px;font-size:large;margin-right:15px;";
 		button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
