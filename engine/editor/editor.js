@@ -145,6 +145,7 @@
 				if ( !object ) return;
 				if ( !object.isMesh ) return;
 				if ( !object.geometry ) return;
+				if ( localPlayer.getObjectById( object.id) ) return; // child of localPlayer.
 
 				var geometry = new THREE.EdgesGeometry( object.geometry );
 				var material = new THREE.LineBasicMaterial( { color: 0x00ff00 } );
