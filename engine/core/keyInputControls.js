@@ -65,21 +65,49 @@ const keyInputControls = (function( characterController, cameraController ){
 		var turnkey = left || right;
 		var movekey = forwards || backward;
 
-		if ( turnkey && !movekey ) {
+		if (  !movekey && turnkey ) {
+
+ 			debugMode && console.log(
+ 				"turnkey && !movekey:", turnkey && !movekey, 
+ 				"turnkey:", turnkey, "movekey:", movekey
+ 			);
 
 		//	resetMovementSpeedDirection();
  			characterController.isRunning = false; 
 
 		} else if ( movekey && turnkey ) {
 
+ 			debugMode && console.log(
+ 				"movekey && turnkey:", movekey && turnkey, 
+ 				"turnkey:", turnkey, "movekey:", movekey
+ 			);
+
 			updateMovementSpeedDirection( backward );
 			characterController.isRunning = true; 
 
-		} else {
+		} else if ( movekey && !turnkey ) {
+
+ 			debugMode && console.log(
+ 				"movekey && !turnkey:", movekey && turnkey, 
+ 				"turnkey:", turnkey, "movekey:", movekey
+ 			);
+
+		} else if ( !movekey && !turnkey ) {
+
+ 			debugMode && console.log(
+ 				"!movekey && !turnkey:", !movekey && !turnkey, 
+ 				"turnkey:", turnkey, "movekey:", movekey
+ 			);
 
 			syncWithCameraController();
 			resetMovementSpeedDirection();
 			characterController.isRunning = true; 
+
+		} else {
+
+ 			debugMode && console.log(
+ 				"turnkey:", turnkey, "movekey:", movekey
+ 			);
 
 		}
 
