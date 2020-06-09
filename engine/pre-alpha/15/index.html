@@ -314,17 +314,17 @@
 
 				var material = new THREE.MeshLambertMaterial();
 
-				(function(){
-					var w = 10; var h = 5;
-					var box = new THREE.BoxGeometry(w,h,w);
-					box.translate(0, h/2, 0);
-					octree.importThreeMesh( new THREE.Mesh(box) );
-					var geometry = new THREE.EdgesGeometry( box );
-					var material = new THREE.LineBasicMaterial( { color: 0x00ff00 } );
-					var segments = new THREE.LineSegments( geometry, material );
-					segments.name = "segments 1";
-					scene.add( segments );
-				})();
+			//	(function(){
+			//		var w = 10; var h = 5;
+			//		var box = new THREE.BoxGeometry(w,h,w);
+			//		box.translate(0, h/2, 0);
+			//		octree.importThreeMesh( new THREE.Mesh(box) );
+			//		var geometry = new THREE.EdgesGeometry( box );
+			//		var material = new THREE.LineBasicMaterial( { color: 0x00ff00 } );
+			//		var segments = new THREE.LineSegments( geometry, material );
+			//		segments.name = "segments 1";
+			//		scene.add( segments );
+			//	})();
 
 				(function(){
 					var w = 10, h = 20;
@@ -332,7 +332,7 @@
 					var box = new THREE.BoxGeometry(w,h,w);
 					box.translate(0, h/2, 0);
 					var mesh = new THREE.Mesh(box, material);
-					mesh.name = "build 2";
+					mesh.name = "building 1";
 					mesh.position.set(x,0,z);
 					octree.importThreeMesh( mesh );
 					var geometry = new THREE.EdgesGeometry( box );
@@ -348,7 +348,7 @@
 					var box = new THREE.BoxGeometry(w,h,w);
 					box.translate(0, h/2, 0);
 					var mesh = new THREE.Mesh(box, material);
-					mesh.name = "build 3";
+					mesh.name = "building 2";
 					mesh.position.set(x,0,z);
 					octree.importThreeMesh( mesh );
 					var geometry = new THREE.EdgesGeometry( box );
@@ -364,7 +364,7 @@
 					var box = new THREE.BoxGeometry(w,h,w);
 					box.translate(0, h/2, 0);
 					var mesh = new THREE.Mesh(box, material);
-					mesh.name = "build 4";
+					mesh.name = "building 3";
 					mesh.position.set(x,0,z);
 					octree.importThreeMesh( mesh );
 					var geometry = new THREE.EdgesGeometry( box );
@@ -380,7 +380,7 @@
 					var box = new THREE.BoxGeometry(w,h,d);
 					box.translate(0, h/2, 0);
 					var mesh = new THREE.Mesh(box, material);
-					mesh.name = "build 5";
+					mesh.name = "building 4";
 					mesh.position.set(x,0,z);
 					octree.importThreeMesh( mesh );
 					var geometry = new THREE.EdgesGeometry( box );
@@ -396,7 +396,7 @@
 					var box = new THREE.BoxGeometry(w,h,d);
 					box.translate(0, h/2, 0);
 					var mesh = new THREE.Mesh(box, material);
-					mesh.name = "build 6";
+					mesh.name = "building 5";
 					mesh.position.set(x,0,z);
 					octree.importThreeMesh( mesh );
 					var geometry = new THREE.EdgesGeometry( box );
@@ -406,6 +406,15 @@
 					scene.add( mesh );
 				})();
 
+				var groupA = new THREE.Object3D();
+				var groupB = new THREE.Object3D();
+
+				groupA.add( scene.getObjectByName("building 1").clone() );
+				groupA.add( scene.getObjectByName("building 2").clone() );
+				groupB.add( scene.getObjectByName("building 3").clone() );
+				groupB.add( scene.getObjectByName("building 4").clone() );
+				groupB.add( scene.getObjectByName("building 5").clone() );
+
 			})();
 
 		</script>
@@ -413,39 +422,12 @@
 		<script>
 
 		//	EditorTab.js
-/*
-			(function(){
 
-				//	Create geometry button.
-				//	Creates a mesh box 1x1 (m3),
-				//	and switch to EditMode.
-
-				var tab = TabUI.Editor.tab;
-				var row = document.createElement("h3");
-				row.style.cssText = "height:40px;margin-bottom:20px;"
-
-				var button = document.createElement("div");
-				button.id = "create-geometry-entity";
-				button.textContent = "Create Geometry Entity";
-				button.style.cssText = "width:295px;float:right;height:40px;font-size:large;margin-right:15px;";
-				button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
-
-				row.appendChild( button );
-				tab.appendChild( row );
-
-			})();
-*/
 		</script>
 
 		<script>
 
 		//	Editor.js
-			(function(){
-
-				const geometry_droplist = document.getElementById("editor-geometry-droplist");
-				const geometryType = { value:geometry_droplist.value }; // string.
-
-			})();
 
 		</script>
 
@@ -453,7 +435,7 @@
 
 		//	Loading systems.
 
-			function FBXLoadSystem( entity ){
+			function FBXLoadingSystem( entity ){
 
 				var s = entity.scale;
 				var url = entity.url;
