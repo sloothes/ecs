@@ -108,6 +108,7 @@
 
 			var object;
 			var interval;
+			var edgeshelper;
 
 		//	const axisX = new THREE.Vector3(1,0,0);
 		//	const axisY = new THREE.Vector3(0,1,0);
@@ -123,7 +124,35 @@
 				object = getObjectByEntityId( id );
 				debugMode && console.log( "entitySelect watch:", object );
 
+			//	Edges helper.
+				destroyEdgesHelper(); // old edges helper.
+				object && createEdgesHelper();  // new edges helper.
+
 			});
+
+			function destroyEdgesHelper(){
+				if ( !edgeshelper ) return;
+				scene.remove( edgeshelper ); 
+				edgeshelper.geometry.dispose();
+				edgeshelper.material.dispose();
+				entities.remove( edgeshelper.id );
+			}
+
+			function createEdgesHelper(){
+
+				if ( !object ) return;
+				if ( !object.isMesh ) return;
+				if ( !object.geometry ) return;
+
+				var geometry = new THREE.EdgesGeometry( object.geometry );
+				var material = new THREE.LineBasicMaterial( { color: 0x00ff00 } );
+				var helper = new THREE.LineSegments( geometry, material );
+				helper.name = object.name + ":edgeshelper";
+
+				scene.add( helper );
+				entities.add( helper ); // ???
+				edgeshelper = helper;
+			}
 
 			function onMouseClick(){ 
 
