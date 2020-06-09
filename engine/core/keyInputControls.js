@@ -39,13 +39,6 @@ const keyInputControls = (function( characterController, cameraController ){
 			characterController.movementSpeed = -movementSpeed;
 	}
 
-//	function updateMovementSpeedDirection(FORWARD, BACKWARD){
-//		var movementSpeed = Math.abs( characterController.movementSpeed );
-//		if ( !FORWARD && BACKWARD ) 
-//			characterController.movementSpeed = -movementSpeed;
-//		else characterController.movementSpeed = movementSpeed;
-//	}
-
 	function updateControllerDirection( dt ){
 		var left = keyCodes[LEFT], right = keyCodes[RIGHT];
 		if ( left && !right ) 
