@@ -8,6 +8,9 @@ const keyInputControls = (function( characterController, cameraController ){
 	const keyCodes = keyboard.keyCodes;
 	const keyInputController = new MW.KeyInputControl();
 
+	var SPACE=32, PAGEUP=33, PAGEDOWN=34;
+	var A=65, D=68, S=83, W=87, LEFT=37, UP=38, RIGHT=39, DOWN=40;
+
 	//	var JUMP     = keyCodes[32]; // "space".
 	//	var UP       = keyCodes[33] || keyCodes[69]; // "page UP"     or "E"
 	//	var DOWN     = keyCodes[34] || keyCodes[81]; // "page DOWN"   or "Q"
@@ -18,38 +21,70 @@ const keyInputControls = (function( characterController, cameraController ){
 
 	characterController.movementSpeed = 5; // debug!
 
-	function resetMovementSpeedDirection(){
-		var movementSpeed = Math.abs( characterController.movementSpeed );
-		characterController.movementSpeed = movementSpeed;
-	}
-
-	function updateMovementSpeedDirection(FORWARD, BACKWARD){
-		var movementSpeed = Math.abs( characterController.movementSpeed );
-		if ( !FORWARD && BACKWARD ) 
-			characterController.movementSpeed = -movementSpeed;
-		else characterController.movementSpeed = movementSpeed;
-	}
-
-	function updateControllerDirection( dt ){
-		var left  = keyCodes[37] || keyCodes[68]; // "arrow LEFT"  or "D"
-		var right = keyCodes[39] || keyCodes[65]; // "arrow RIGHT" or "A"
-		if ( left && !right ) 
-			characterController.direction -= dt*rad; // step;
-		else if ( right && !left ) 
-			characterController.direction += dt*rad; // step;
-	}
-
 	function syncWithCameraController() {
 		var cameraFrontAngle = cameraController.getFrontAngle();
 		var characterFrontAngle = keyInputController.frontAngle;
 		characterController.direction = (4 * rad) - cameraFrontAngle + characterFrontAngle;
 	}
 
+	function resetMovementSpeedDirection(){
+		var movementSpeed = Math.abs( characterController.movementSpeed );
+		characterController.movementSpeed = movementSpeed;
+		return movementSpeed;
+	}
+
+	function updateMovementSpeedDirection( backward ){
+		var movementSpeed = resetMovementSpeedDirection(); 
+		if ( backward ) 
+			characterController.movementSpeed = -movementSpeed;
+	}
+
+//	function updateMovementSpeedDirection(FORWARD, BACKWARD){
+//		var movementSpeed = Math.abs( characterController.movementSpeed );
+//		if ( !FORWARD && BACKWARD ) 
+//			characterController.movementSpeed = -movementSpeed;
+//		else characterController.movementSpeed = movementSpeed;
+//	}
+
+	function updateControllerDirection( dt ){
+		var left = keyCodes[LEFT], right = keyCodes[RIGHT];
+		if ( left && !right ) 
+			characterController.direction -= dt*rad; // step;
+		else if ( right && !left ) 
+			characterController.direction += dt*rad; // step;
+	}
+
 	keyInputController.addEventListener( "movekeyon", function() { 
-		var forwards = keyCodes[38] || keyCodes[87]; // "arrow UP"    or "W"
-		var backward = keyCodes[40] || keyCodes[83]; // "arrow DOWN"  or "S"
-		updateMovementSpeedDirection( forwards, backward );
-		if ( forwards || backward ) characterController.isRunning = true;
+
+		var forwards = keyCodes[UP];   // || keyCodes[87]; // "arrow UP"    or "W"
+		var backward = keyCodes[DOWN]; // || keyCodes[83]; // "arrow DOWN"  or "S"
+
+		if ( forwards || backward ) {
+			updateMovementSpeedDirection( backward );
+		} else {
+			syncWithCameraController();
+			resetMovementSpeedDirection();
+		}
+
+		characterController.isRunning = true;
+
+	});
+
+	keyInputController.addEventListener( "movekeychange", function(){
+	//	syncWithCameraController();
+
+		var forwards = keyCodes[UP];   // || keyCodes[87]; // "arrow UP"    or "W"
+		var backward = keyCodes[DOWN]; // || keyCodes[83]; // "arrow DOWN"  or "S"
+
+		if ( forwards || backward ) 
+			updateMovementSpeedDirection( backward );
+		else {
+			syncWithCameraController();
+			resetMovementSpeedDirection();
+		}
+
+		characterController.isRunning = true; 
+
 	});
 
 	keyInputController.addEventListener( "movekeyoff", function() { 
@@ -59,19 +94,6 @@ const keyInputControls = (function( characterController, cameraController ){
 
 	keyInputController.addEventListener( "jumpkeypress", function() { 
 		characterController.jump(); 
-	});
-
-	keyInputController.addEventListener( "movekeychange", function(){
-	//	syncWithCameraController();
-		var forwards = keyCodes[38] || keyCodes[87]; // "arrow UP"    or "W"
-		var backward = keyCodes[40] || keyCodes[83]; // "arrow DOWN"  or "S"
-		updateMovementSpeedDirection( forwards, backward );
-		(function(){
-			if ( forwards || backward ) 
-				characterController.isRunning = true; 
-			else if ( !forwards && !backward )
-				characterController.isRunning = false; 
-		})();
 	});
 
 	(function update(){
