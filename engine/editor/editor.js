@@ -152,54 +152,48 @@
 			editor.undo = function(){ 
 				if ( !undo.length ) return; // important!
 
-			//	Get object.
-				var id = parseInt( entitySelect.value );
-				var object = scene.getObjectById( id );
-
-			//	Create a redo json.
-			//	object && addToRedo( object );
-
 			//	Get undo json.
 				var json = undo.shift();
-			//	if ( !json ) return;
+				if ( !json ) return;
 
-			//	Copy state (undo).
+			//	Move json to redo.
+				redo.unshift( json );
+
 				clearTimeout( interval );
 				interval = setTimeout( function(){
-					if ( !json ) return;
 
-				//	Create a redo json.
-					object && addToRedo( object );
+				//	Get object.
+					var id = parseInt( entitySelect.value );
+					var object = scene.getObjectById( id );
 
+				//	Copy state (undo).
 					var loader = new THREE.ObjectLoader();
 					object && object.copy( loader.parse( json ) );
+
 				}, 250);
 			};
 
 			editor.redo = function(){
 				if ( !redo.length ) return; // important!
 
-			//	Get object.
-				var id = parseInt( entitySelect.value );
-				var object = scene.getObjectById( id );
-
-			//	Create an undo json.
-			//	object && addToUndo( object );
-
 			//	Get redo json.
 				var json = redo.shift();
-			//	if ( !json ) return;
+				if ( !json ) return;
 
-			//	Copy state (redo).
+			//	Move json to undo.
+				undo.unshift( json );
+
 				clearTimeout( interval );
 				interval = setTimeout( function(){
-					if ( !json ) return;
 
-				//	Create an undo json.
-					object && addToUndo( object );
+				//	Get object.
+					var id = parseInt( entitySelect.value );
+					var object = scene.getObjectById( id );
 
+				//	Copy state (redo).
 					var loader = new THREE.ObjectLoader();
 					object && object.copy( loader.parse( json ) );
+
 				}, 250);
 			};
 
