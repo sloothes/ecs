@@ -845,7 +845,7 @@
 	//	Editor Undo/Redo eventListner.
 
 		editor.undo = function(){ 
-			debugMode && console.log( "undo():", undo.length );
+			debugMode && console.log( "undo:", undo.length );
 			if ( !undo.length ) return; // important!
 
 			var json = undo.shift();
@@ -854,12 +854,14 @@
 		//	...
 
 			json && redo.unshift( json );
+
 			debugMode && console.log( "undo:", undo );
 			debugMode && console.log( "redo:", redo );
+			debugMode && console.log( "undo:", undo.length, "redo:", redo.length );
 		};
 
 		editor.redo = function(){
-			debugMode && console.log( "redo():", redo.length );
+			debugMode && console.log( "redo:", redo.length );
 			if ( !redo.length ) return; // important!
 
 
@@ -869,27 +871,25 @@
 		//	...
 
 			json && undo.unshift( json );
+
 			debugMode && console.log( "undo:", undo );
 			debugMode && console.log( "redo:", redo );
+			debugMode && console.log( "undo:", undo.length, "redo:", redo.length );
 
 		};
 
-		window.addEventListener("keyup", function(){ 
+		window.addEventListener("keyup", function(e){ 
 
+			if ( e.code !== "KeyZ" ) return;
 			if ( !editor.isEditing ) return;
 
-			var Z=90; // SHIFT=16, CTRL=17;
-			var keyCodes = keyboard.keyCodes;
+			var keyZ = e.code === "KeyZ";
+
 			var modifiers = keyboard.modifiers;
-
-			var UNDO = modifiers["ctrl"] &&  modifiers["shift"] && keyCodes[Z];
-			var REDO = modifiers["ctrl"] && !modifiers["shift"] && keyCodes[Z];
-
-			modifiers["ctrl"] && keyCodes[Z] && debugMode 
-			&& console.log( "UNDO:", UNDO, "REDO:", REDO);
+			var UNDO = modifiers["ctrl"] &&  modifiers["shift"] && keyZ;
+			var REDO = modifiers["ctrl"] && !modifiers["shift"] && keyZ;
 
 			( UNDO && editor.undo() ) || ( REDO && editor.redo() ); 
-
 		});
 
 	//	Init editor.
