@@ -247,6 +247,9 @@
 				if ( !object ) return;
 				object && update( this );
 
+			//	Edges helper.
+				object && createEdgesHelper();
+
 				debugMode && console.log( "on Mouse Click:", interval );
 			}
 
@@ -256,7 +259,7 @@
 
 			//	Edges helper.
 				destroyEdgesHelper(); // old edges helper.
-				object && setTimeout( createEdgesHelper );
+			//	object && setTimeout( createEdgesHelper );
 
 			//	Undo/Redo.
 				object && addToUndo( object );
