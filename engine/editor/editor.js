@@ -845,8 +845,11 @@
 	//	Editor Undo/Redo eventListner.
 
 		editor.undo = function(){ 
-			debugMode && console.log( "editor undo!" );
+			debugMode && console.log( "undo():", undo.length );
+			if ( !undo.length ) return; // important!
+
 			var json = undo.shift();
+			if ( !json ) return;
 
 		//	...
 
@@ -856,8 +859,12 @@
 		};
 
 		editor.redo = function(){
-			debugMode && console.log( "editor redo!" );
+			debugMode && console.log( "redo():", redo.length );
+			if ( !redo.length ) return; // important!
+
+
 			var json = redo.shift();
+			if ( !json ) return;
 
 		//	...
 
