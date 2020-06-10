@@ -259,6 +259,46 @@
 				edgeshelper = helper;
 			}
 
+			(function(){
+
+				var interval;
+
+				window.addEventListener( "keyup", function(e){
+
+					clearTimeout( interval );
+
+					if ( !object ) return;
+					if ( !editor.isEditing ) return; // important!
+
+					var keyCodes = keyboard.keyCodes;
+					var modifiers = keyboard.modifiers;
+					var LEFT=37, RIGHT=39, UP=38, DOWN=40;
+					var A=65, D=68, E=69, F=70, Q=81, R=82, S=83, W=87;
+
+				//	if ( !keysNotPressed() ) return;
+
+					interval = setTimeout( function(){
+
+						debugMode && console( "keysNotPressed::", keysNotPressed() );
+
+						if ( !notEditKeys() ) return;
+						if ( !editor.isEditing ) return;
+
+						object && addToUndo( object );
+
+					}, 1000);
+
+					function keysNotPressed(){
+						return !keyCodes[A]  && !keyCodes[D]  && !keyCodes[E]  && !keyCodes[F] 
+							&& !keyCodes[Q]  && !keyCodes[R]  && !keyCodes[S]  && !keyCodes[W] 
+							&& !keyCodes[37] && !keyCodes[38] && !keyCodes[39] && !keyCodes[40]
+							&& !modifiers["alt"] && !modifiers["ctrl"] && !modifiers["shift"];
+					}
+
+				});
+
+			})();
+
 			function onMouseClick(){ 
 
 				clearTimeout( interval ); // important!
@@ -267,7 +307,11 @@
 				object && update( this );
 
 			//	Edges helper.
-				object && createEdgesHelper();
+				destroyEdgesHelper(); // old edges helper.
+				object && setTimeout( createEdgesHelper );
+
+			//	Undo/Redo.
+				object && addToUndo( object );
 
 				debugMode && console.log( "on Mouse Click:", interval );
 			}
@@ -277,11 +321,11 @@
 				if ( !object ) return;
 
 			//	Edges helper.
-				destroyEdgesHelper(); // old edges helper.
+			//	destroyEdgesHelper(); // old edges helper.
 			//	object && setTimeout( createEdgesHelper );
 
 			//	Undo/Redo.
-				object && addToUndo( object );
+			//	object && addToUndo( object );
 
 				var button = this;
 				var clock = new THREE.Clock();
@@ -937,21 +981,28 @@
 
 		})();
 
-	//	Editor Undo/Redo eventListner.
+	//	Editor Undo/Redo eventListners.
 
-		window.addEventListener("keyup", function(e){ 
+		(function(){
 
-			if ( e.code !== "KeyZ" ) return; // important!
-			if ( !editor.isEditing ) return; // important!
+			window.addEventListener( "keyup", onKeyUndoRedo );
+			window.addEventListener( "keypress", onKeyUndoRedo );
 
-			var keyZ = e.code === "KeyZ";    // important!
+			function onKeyUndoRedo(e){ 
 
-			var modifiers = keyboard.modifiers;
-			var REDO = modifiers["ctrl"] &&  modifiers["shift"] && keyZ;
-			var UNDO = modifiers["ctrl"] && !modifiers["shift"] && keyZ;
+				if ( e.code !== "KeyZ" ) return; // important!
+				if ( !editor.isEditing ) return; // important!
 
-			( UNDO && editor.undo() ) || ( REDO && editor.redo() ); 
-		});
+				var keyZ = e.code === "KeyZ";    // important!
+
+				var modifiers = keyboard.modifiers;
+				var REDO = modifiers["ctrl"] &&  modifiers["shift"] && keyZ;
+				var UNDO = modifiers["ctrl"] && !modifiers["shift"] && keyZ;
+
+				( UNDO && editor.undo() ) || ( REDO && editor.redo() ); 
+			}
+
+		})();
 
 
 	//	Init editor.
