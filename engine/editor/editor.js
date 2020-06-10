@@ -92,6 +92,29 @@
 			geometryType.value = geometry_droplist.value = "";
 		}
 
+		function addToUndo( object ){
+			var json = copyObject3dState( object );
+			json && undo.unshift( json );
+		}
+
+		function addToRedo( object ){
+			var json = copyObject3dState( object );
+			json && redo.unshift( json );
+		}
+
+	// 	Copy object state to undo/undo, 
+	//	without copy geometry/materials.
+		function copyObject3dState( object ){
+			if ( !object ) return;
+			if ( !object.isObject3D ) return;
+		//	create a new Object3D, 
+			var object3d = new THREE.Object3D();
+		//	copy object to object3d,
+			object3d.copy( object );
+		//	return json.
+			return object3d.toJSON();
+		}
+
 		editor.reset = function(){
 			editor.copy( new THREE.Object3D() );
 			editor.name = "Editor";
@@ -113,7 +136,7 @@
 			editor.isEditing = !!object;
 
 		//	Undo/Redo.
-			object && undo.unshift( object.toJSON() ); // important!
+			addToUndo( object ); // important!
 
 		//	Copy object.
 			object && object.isObject3D && editor.copy( object );
