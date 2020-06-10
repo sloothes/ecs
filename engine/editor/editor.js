@@ -281,7 +281,7 @@
 
 						debugMode && console.log( "keysNotPressed::", keysNotPressed() );
 
-						if ( !notEditKeys() ) return;
+						if ( !keysNotPressed() ) return;
 						if ( !editor.isEditing ) return;
 
 						object && addToUndo( object );
