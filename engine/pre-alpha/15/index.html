@@ -427,7 +427,179 @@
 
 		<script>
 
-		//	Editor.js
+		//	Editor Undo/Redo.
+
+			const undo = [];
+			const redo = [];
+
+		// ================= for debuging only =================== //
+
+			(function forDebugOnly(){
+
+				function checkId( value ){
+
+					var id = parseInt( value );
+
+					if ( id === NaN ) return false;
+					if ( id === scene.id ) return false;
+					if ( id === camera.id ) return false;
+					if ( id === editor.id ) return false;
+					if ( id === localPlayer.id ) return false;
+					if ( id === cameraLight.id ) return false;
+					if ( id === shadowCameraHelper.id ) return false;
+					if ( id === cameraLight.shadow.camera.id ) return false;
+					if ( id !== parseInt( entity_droplist.value ) ) return false;
+					debugMode && console.log( "checkId:", true );
+
+					return true;
+				}
+
+				function getObjectByEntityId( id ){
+
+					var object = scene.getObjectById( id );
+
+					if ( !object ) return undefined;
+					if ( object === scene ) return undefined;
+					if ( object === camera ) return undefined;
+					if ( object === editor ) return undefined;
+					if ( object === localPlayer ) return undefined;
+					if ( object === cameraLight ) return undefined;
+					if ( object === shadowCameraHelper ) return undefined;
+					if ( object === cameraLight.shadow.camera ) return undefined;
+					debugMode && console.log( "getObjectByEntityId:", object );
+
+					return object;
+				}
+
+			//	Overwrite for debuging.
+				editor.reset = function(){
+					editor.copy( new THREE.Object3D() );
+					editor.name = "Editor";
+					editor.isEditing = false;
+					undo.length = 0; redo.length = 0;
+					debugMode && console.log( "editor reset!" );
+				};
+			//	Overwrite for debuging.
+				editor.update = function( value ){
+					var check = checkId( value );
+					if ( !check ) return;
+					var id = parseInt( value );
+					var object = getObjectByEntityId(id);
+					if ( !object ) return;
+					editor.isEditing = !!object;
+
+				// 	How to store object state. 
+				//	create a new Object3D, 
+				//	var object3d = new THREE.Object3D(); // important!
+				//	copy object to new Object3D,
+				//	object && object3d.copy( object );   // important!
+				//	and store copy to undo array.
+				//	object && undo.unshift( object3d.toJSON() ); // important!
+				//	This way you don't have to copy geometry/materials to json.
+
+					addToUndo( object ); // important!
+
+					object && object.isObject3D && editor.copy( object );
+					debugMode && console.log( "editor update!", editor );
+				};
+
+			})();
+
+		// ================= for debuging only =================== //
+
+
+		// 	Copy object state to undo/undo, 
+		//	without copy geometry/materials.
+			function copyObject3dState( object ){
+				if ( !object ) return;
+				if ( !object.isObject3D ) return;
+			//	create a new Object3D, 
+				var object3d = new THREE.Object3D();
+			//	copy object to Object3D,
+				object3d.copy( object );
+			//	return json.
+				return object3d.toJSON();
+			}
+
+			function addToUndo( object ){
+				var json = copyObject3dState( object );
+				json && undo.unshift( json );
+			}
+			
+			function addToRedo( object ){
+				var json = copyObject3dState( object );
+				json && redo.unshift( json );
+			}
+
+
+			editor.undo = function(){ 
+				debugMode && console.log( "undo:", undo.length );
+				if ( !undo.length ) return; // important!
+
+				var id = parseInt( entity_droplist.value );
+				var object = scene.getObjectById( id );
+
+			//	Create a redo json.
+				object && addToRedo( object );
+
+			//	Get undo json.
+				var json = undo.shift();
+				debugMode && console.log( "undo json:", json );
+				if ( !json ) return;
+
+				var loader = new THREE.ObjectLoader();
+				object && object.copy( loader.parse( json ) );
+
+			//	json && redo.unshift( json );
+			//	debugMode && console.log( "undo:", undo );
+			//	debugMode && console.log( "redo:", redo );
+				debugMode && console.log( "undo:", undo.length, "redo:", redo.length );
+			};
+
+			editor.redo = function(){
+				debugMode && console.log( "redo:", redo.length );
+				if ( !redo.length ) return; // important!
+
+				var id = parseInt( entity_droplist.value );
+				var object = scene.getObjectById( id );
+
+			//	Create an undo json.
+				object && addToUndo( object );
+
+			//	Get redo json.
+				var json = redo.shift();
+				debugMode && console.log( "undo json:", json );
+				if ( !json ) return;
+
+				var loader = new THREE.ObjectLoader();
+				object && object.copy( loader.parse( json ) );
+
+			//	json && undo.unshift( json );
+			//	debugMode && console.log( "undo:", undo );
+			//	debugMode && console.log( "redo:", redo );
+				debugMode && console.log( "redo:", redo.length, "undo:", undo.length );
+			};
+
+		//	Editor Undo/Redo eventListner.
+
+			window.addEventListener("keyup", function(e){ 
+
+				if ( e.code !== "KeyZ" ) return; // important!
+				if ( !editor.isEditing ) return; // important!
+
+				var keyZ = e.code === "KeyZ";    // important!
+
+				var modifiers = keyboard.modifiers;
+				var REDO = modifiers["ctrl"] &&  modifiers["shift"] && keyZ;
+				var UNDO = modifiers["ctrl"] && !modifiers["shift"] && keyZ;
+
+				( UNDO && editor.undo() ) || ( REDO && editor.redo() ); 
+			});
+
+
+
+
+
 
 		</script>
 
