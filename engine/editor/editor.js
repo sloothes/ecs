@@ -848,16 +848,23 @@
 			debugMode && console.log( "editor undo!" );
 			var json = undo.shift();
 
-			redo.unshift( json );
-			debugMode && console.log( "undo:", undo, "redo:", redo );
+		//	...
+
+			json && redo.unshift( json );
+			debugMode && console.log( "undo:", undo );
+			debugMode && console.log( "redo:", redo );
 		};
 
 		editor.redo = function(){
 			debugMode && console.log( "editor redo!" );
 			var json = redo.shift();
 
-			undo.unshift( json );
-			debugMode && console.log( "undo:", undo, "redo:", redo );
+		//	...
+
+			json && undo.unshift( json );
+			debugMode && console.log( "undo:", undo );
+			debugMode && console.log( "redo:", redo );
+
 		};
 
 		window.addEventListener("keyup", function(){ 
