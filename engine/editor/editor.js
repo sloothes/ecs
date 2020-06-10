@@ -95,11 +95,14 @@
 		function addToUndo( object ){
 			var json = copyObject3dState( object );
 			json && undo.unshift( json );
+			debugMode && console.log( "addToUndo!" );
 		}
 
 		function addToRedo( object ){
 			var json = copyObject3dState( object );
 			json && redo.unshift( json );
+			debugMode && console.log( "addToRedo!" );
+
 		}
 
 	// 	Copy object state to undo/undo, 
@@ -275,20 +278,20 @@
 					var LEFT=37, RIGHT=39, UP=38, DOWN=40;
 					var A=65, D=68, E=69, F=70, Q=81, R=82, S=83, W=87;
 
-				//	if ( !keysNotPressed() ) return;
+				//	if ( !nonekeyPressed() ) return;
 
 					interval = setTimeout( function(){
 
-						debugMode && console.log( "keysNotPressed::", keysNotPressed() );
+						debugMode && console.log( "nonekeyPressed::", nonekeyPressed() );
 
-						if ( !keysNotPressed() ) return;
+						if ( !nonekeyPressed() ) return;
 						if ( !editor.isEditing ) return;
 
 						object && addToUndo( object );
 
 					}, 1000);
 
-					function keysNotPressed(){
+					function nonekeyPressed(){
 						return !keyCodes[A]  && !keyCodes[D]  && !keyCodes[E]  && !keyCodes[F] 
 							&& !keyCodes[Q]  && !keyCodes[R]  && !keyCodes[S]  && !keyCodes[W] 
 							&& !keyCodes[37] && !keyCodes[38] && !keyCodes[39] && !keyCodes[40]
