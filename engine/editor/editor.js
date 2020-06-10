@@ -143,43 +143,59 @@
 			debugMode && console.log( "editor update!", editor );
 		};
 
-		editor.undo = function(){ 
-			if ( !undo.length ) return; // important!
+	//	Editor undo/redo.
 
-		//	Get object.
-			var id = parseInt( entitySelect.value );
-			var object = scene.getObjectById( id );
+		(function(){
 
-		//	Create a redo json.
-			object && addToRedo( object );
+			var interval;
 
-		//	Get undo json.
-			var json = undo.shift();
-			if ( !json ) return;
+			editor.undo = function(){ 
+				if ( !undo.length ) return; // important!
 
-		//	Copy state (undo).
-			var loader = new THREE.ObjectLoader();
-			object && object.copy( loader.parse( json ) );
-		};
+			//	Get object.
+				var id = parseInt( entitySelect.value );
+				var object = scene.getObjectById( id );
 
-		editor.redo = function(){
-			if ( !redo.length ) return; // important!
+			//	Create a redo json.
+				object && addToRedo( object );
 
-		//	Get object.
-			var id = parseInt( entitySelect.value );
-			var object = scene.getObjectById( id );
+			//	Get undo json.
+				var json = undo.shift();
+			//	if ( !json ) return;
 
-		//	Create an undo json.
-			object && addToUndo( object );
+			//	Copy state (undo).
+				clearTimeout( interval );
+				interval = setTimeout( function(){
+					if ( !json ) return;
+					var loader = new THREE.ObjectLoader();
+					object && object.copy( loader.parse( json ) );
+				}, 100);
+			};
 
-		//	Get redo json.
-			var json = redo.shift();
-			if ( !json ) return;
+			editor.redo = function(){
+				if ( !redo.length ) return; // important!
 
-		//	Copy state (redo).
-			var loader = new THREE.ObjectLoader();
-			object && object.copy( loader.parse( json ) );
-		};
+			//	Get object.
+				var id = parseInt( entitySelect.value );
+				var object = scene.getObjectById( id );
+
+			//	Create an undo json.
+				object && addToUndo( object );
+
+			//	Get redo json.
+				var json = redo.shift();
+			//	if ( !json ) return;
+
+			//	Copy state (redo).
+				clearTimeout( interval );
+				interval = setTimeout( function(){
+					if ( !json ) return;
+					var loader = new THREE.ObjectLoader();
+					object && object.copy( loader.parse( json ) );
+				}, 100);
+			};
+
+		})();
 
 	//	Editor Tab eventListners.
 
@@ -928,6 +944,7 @@
 
 			( UNDO && editor.undo() ) || ( REDO && editor.redo() ); 
 		});
+
 
 	//	Init editor.
 
