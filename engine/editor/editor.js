@@ -212,6 +212,7 @@
 		//	const axisZ = new THREE.Vector3(0,0,1);
 
 			watch(entitySelect, function( prop, action, newValue, oldValue ){
+				vectorSelect.value = vector_droplist.value; // important!
 
 			//	Old edges helper.
 				destroyEdgesHelper(); // old edges helper.
@@ -520,20 +521,26 @@
 
 			entity_droplist.addEventListener("change", function(){
 				entity_droplist.blur();
+
 				var value = entity_droplist.value;
 				if ( checkId( value ) ) 
 					entitySelect.value = entity_droplist.value; // update.
 				else
 					entitySelect.value = entity_droplist.value = ""; // reset.
+
+				vectorSelect.value = vector_droplist.value;
 			});
 
 			vector_droplist.addEventListener("change", function(){
 				vector_droplist.blur();
+
 				var value = entity_droplist.value;
 				if ( checkId( value ) ) 
-					vectorSelect.value = vector_droplist.value; // update.
+					entitySelect.value = entity_droplist.value; // update.
 				else 
 					entitySelect.value = entity_droplist.value = ""; // reset.
+
+				vectorSelect.value = vector_droplist.value;
 			});
 
 			geometry_droplist.addEventListener("change", function(){
@@ -679,7 +686,6 @@
 
 			//	Display vectors direct from editor.
 				displayVectorValues( vectorSelect.value );
-			//	callWatchers(vectorSelect, "value");
 
 			});
 
