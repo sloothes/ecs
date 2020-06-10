@@ -254,6 +254,13 @@
 
 				if ( !object ) return;
 
+			//	Edges helper.
+				destroyEdgesHelper(); // old edges helper.
+				object && setTimeout( createEdgesHelper );
+
+			//	Undo/Redo.
+				object && addToUndo( object );
+
 				var button = this;
 				var clock = new THREE.Clock();
 				interval = setTimeout( function onUpdate() {
