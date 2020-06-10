@@ -157,7 +157,7 @@
 				var object = scene.getObjectById( id );
 
 			//	Create a redo json.
-				object && addToRedo( object );
+			//	object && addToRedo( object );
 
 			//	Get undo json.
 				var json = undo.shift();
@@ -167,9 +167,13 @@
 				clearTimeout( interval );
 				interval = setTimeout( function(){
 					if ( !json ) return;
+
+				//	Create a redo json.
+					object && addToRedo( object );
+
 					var loader = new THREE.ObjectLoader();
 					object && object.copy( loader.parse( json ) );
-				}, 100);
+				}, 250);
 			};
 
 			editor.redo = function(){
@@ -180,7 +184,7 @@
 				var object = scene.getObjectById( id );
 
 			//	Create an undo json.
-				object && addToUndo( object );
+			//	object && addToUndo( object );
 
 			//	Get redo json.
 				var json = redo.shift();
@@ -190,9 +194,13 @@
 				clearTimeout( interval );
 				interval = setTimeout( function(){
 					if ( !json ) return;
+
+				//	Create an undo json.
+					object && addToUndo( object );
+
 					var loader = new THREE.ObjectLoader();
 					object && object.copy( loader.parse( json ) );
-				}, 100);
+				}, 250);
 			};
 
 		})();
