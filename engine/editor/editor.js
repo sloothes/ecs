@@ -262,6 +262,8 @@
 				edgeshelper = helper;
 			}
 
+		//	keys add to undo/redo eventListner.
+
 			(function(){
 
 				var interval;
@@ -271,27 +273,28 @@
 					clearTimeout( interval );
 
 					if ( !object ) return;
-					if ( !editor.isEditing ) return; // important!
-
-					var keyCodes = keyboard.keyCodes;
-					var modifiers = keyboard.modifiers;
-					var LEFT=37, RIGHT=39, UP=38, DOWN=40;
-					var A=65, D=68, E=69, F=70, Q=81, R=82, S=83, W=87;
-
-				//	if ( !nonekeyPressed() ) return;
+					if ( !editor.isEditing ) return;
+					if ( noneOfKeysPressed() ) return;
 
 					interval = setTimeout( function(){
 
-						debugMode && console.log( "nonekeyPressed::", nonekeyPressed() );
+						debugMode && console.log( "noneOfKeysPressed:", noneOfKeysPressed() );
 
-						if ( !nonekeyPressed() ) return;
+						if ( !object ) return;
 						if ( !editor.isEditing ) return;
+						if ( !noneOfKeysPressed() ) return;
 
 						object && addToUndo( object );
 
 					}, 1000);
 
-					function nonekeyPressed(){
+					function noneOfKeysPressed(){
+
+						var keyCodes = keyboard.keyCodes;
+						var modifiers = keyboard.modifiers;
+						var LEFT=37, RIGHT=39, UP=38, DOWN=40;
+						var A=65, D=68, E=69, F=70, Q=81, R=82, S=83, W=87;
+
 						return !keyCodes[A]  && !keyCodes[D]  && !keyCodes[E]  && !keyCodes[F] 
 							&& !keyCodes[Q]  && !keyCodes[R]  && !keyCodes[S]  && !keyCodes[W] 
 							&& !keyCodes[37] && !keyCodes[38] && !keyCodes[39] && !keyCodes[40]
@@ -301,6 +304,8 @@
 				});
 
 			})();
+
+		//	mouse add to undo/redo eventListners.
 
 			function onMouseClick(){ 
 
