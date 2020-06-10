@@ -3,6 +3,8 @@
 	const axisX = new THREE.Vector3(1,0,0);
 	const axisY = new THREE.Vector3(0,1,0);
 	const axisZ = new THREE.Vector3(0,0,1);
+	const keyboard = new KeyboardState();
+	const keyCodes = keyboard.keyCodes;
 
 //	Create a Object3D entity to hold editor-tab values.
 	const editor = new THREE.Object3D(); //	editor must not added in scene.
@@ -93,6 +95,8 @@
 		editor.reset = function(){
 			editor.copy( new THREE.Object3D() );
 			editor.name = "Editor";
+			editor.isEditing = false;
+			undo.length = 0; redo.length = 0;
 			debugMode && console.log( "editor reset!" );
 		};
 
@@ -105,6 +109,13 @@
 			var object = getObjectByEntityId(id);
 			if ( !object ) return;
 
+		//	Edit mode.
+			editor.isEditing = !!object;
+
+		//	Undo/Redo.
+			object && undo.unshift( object.toJSON() ); // important!
+
+		//	Copy object.
 			object && object.isObject3D && editor.copy( object );
 			debugMode && console.log( "editor update!", editor );
 		};
@@ -137,9 +148,6 @@
 			//	New edges helper.
 				object && createEdgesHelper(); // new edges helper.
 
-			//	Undo/Redo.
-				undo.length = 0; redo.length = 0;
-				object && undo.unshift( object.toJSON() ); // undo.push(json);
 			});
 
 			function destroyEdgesHelper(){
@@ -757,9 +765,9 @@
 
 		//	Update editor object.
 			editor.update( id );
+
 		//	Disable key input controls.
 			keyInputControls.isDisabled = true;
-
 		}
 
 	//	Geometry.
@@ -834,6 +842,44 @@
 
 		})();
 
+	//	Editor Undo/Redo eventListner.
+
+		editor.undo = function(){ 
+			debugMode && console.log( "editor undo!" );
+			var json = undo.shift();
+
+			redo.unshift( json );
+			debugMode && console.log( "undo:", undo, "redo:", redo );
+		};
+
+		editor.redo = function(){
+			debugMode && console.log( "editor redo!" );
+			var json = redo.shift();
+
+			undo.unshift( json );
+			debugMode && console.log( "undo:", undo, "redo:", redo );
+		};
+
+		window.addEventListener("keyup", function(){ 
+
+			if ( !editor.isEditing ) return;
+
+			var Z=90; // SHIFT=16, CTRL=17;
+			var keyCodes = keyboard.keyCodes;
+			var modifiers = keyboard.modifiers;
+
+			var UNDO = modifiers["ctrl"] &&  modifiers["shift"] && keyCodes[Z];
+			var REDO = modifiers["ctrl"] && !modifiers["shift"] && keyCodes[Z];
+
+			modifiers["ctrl"] && keyCodes[Z] && debugMode 
+			&& console.log( "UNDO:", UNDO, "REDO:", REDO);
+
+			( UNDO && editor.undo() ) || ( REDO && editor.redo() ); 
+
+		});
+
+	//	Init editor.
+
 		editor.reset();
 
 	})( editor );
@@ -880,8 +926,8 @@
 //	const axisY = new THREE.Vector3(0,1,0);
 //	const axisZ = new THREE.Vector3(0,0,1);
 
-	const keyboard = new KeyboardState();
-	const keyCodes = keyboard.keyCodes;
+//	const keyboard = new KeyboardState();
+//	const keyCodes = keyboard.keyCodes;
 
 	window.addEventListener("keyup",   function(){ updateKeyboardFrontAngle( keyboard ); });
 	window.addEventListener("keydown", function(){ updateKeyboardFrontAngle( keyboard ); });
@@ -1083,3 +1129,19 @@
 	}
 //	!!! DEMO !!! IMPORTANT! !!! DEMO !!! IMPORTANT! !!! DEMO !!!
 */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
