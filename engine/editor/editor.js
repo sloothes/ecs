@@ -842,8 +842,7 @@
 
 		})();
 
-	//	Editor Undo/Redo eventListner.
-
+/*
 		editor.undo = function(){ 
 			debugMode && console.log( "undo:", undo.length );
 			if ( !undo.length ) return; // important!
@@ -876,6 +875,8 @@
 			debugMode && console.log( "redo:", redo.length, "undo:", undo.length );
 		};
 
+	//	Editor Undo/Redo eventListner.
+
 		window.addEventListener("keyup", function(e){ 
 
 			if ( e.code !== "KeyZ" ) return; // important!
@@ -889,6 +890,7 @@
 
 			( UNDO && editor.undo() ) || ( REDO && editor.redo() ); 
 		});
+*/
 
 	//	Init editor.
 
