@@ -279,7 +279,7 @@
 
 					interval = setTimeout( function(){
 
-						debugMode && console( "keysNotPressed::", keysNotPressed() );
+						debugMode && console.log( "keysNotPressed::", keysNotPressed() );
 
 						if ( !notEditKeys() ) return;
 						if ( !editor.isEditing ) return;
