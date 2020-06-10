@@ -143,6 +143,44 @@
 			debugMode && console.log( "editor update!", editor );
 		};
 
+		editor.undo = function(){ 
+			if ( !undo.length ) return; // important!
+
+		//	Get object.
+			var id = parseInt( entitySelect.value );
+			var object = scene.getObjectById( id );
+
+		//	Create a redo json.
+			object && addToRedo( object );
+
+		//	Get undo json.
+			var json = undo.shift();
+			if ( !json ) return;
+
+		//	Copy state (undo).
+			var loader = new THREE.ObjectLoader();
+			object && object.copy( loader.parse( json ) );
+		};
+
+		editor.redo = function(){
+			if ( !redo.length ) return; // important!
+
+		//	Get object.
+			var id = parseInt( entitySelect.value );
+			var object = scene.getObjectById( id );
+
+		//	Create an undo json.
+			object && addToUndo( object );
+
+		//	Get redo json.
+			var json = redo.shift();
+			if ( !json ) return;
+
+		//	Copy state (redo).
+			var loader = new THREE.ObjectLoader();
+			object && object.copy( loader.parse( json ) );
+		};
+
 	//	Editor Tab eventListners.
 
 		(function(){
@@ -865,39 +903,6 @@
 
 		})();
 
-/*
-		editor.undo = function(){ 
-			debugMode && console.log( "undo:", undo.length );
-			if ( !undo.length ) return; // important!
-
-			var json = undo.shift();
-			if ( !json ) return;
-
-			debugMode && console.log( json );
-
-			json && redo.unshift( json );
-
-		//	debugMode && console.log( "undo:", undo );
-		//	debugMode && console.log( "redo:", redo );
-			debugMode && console.log( "undo:", undo.length, "redo:", redo.length );
-		};
-
-		editor.redo = function(){
-			debugMode && console.log( "redo:", redo.length );
-			if ( !redo.length ) return; // important!
-
-			var json = redo.shift();
-			if ( !json ) return;
-
-			debugMode && console.log( json );
-
-			json && undo.unshift( json );
-
-		//	debugMode && console.log( "undo:", undo );
-		//	debugMode && console.log( "redo:", redo );
-			debugMode && console.log( "redo:", redo.length, "undo:", undo.length );
-		};
-
 	//	Editor Undo/Redo eventListner.
 
 		window.addEventListener("keyup", function(e){ 
@@ -913,7 +918,6 @@
 
 			( UNDO && editor.undo() ) || ( REDO && editor.redo() ); 
 		});
-*/
 
 	//	Init editor.
 
