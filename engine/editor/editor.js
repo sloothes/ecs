@@ -1,16 +1,46 @@
-//	Editor.
+//	keyboard.js
+
+	const keyboard = new KeyboardState();
+	const keyCodes = keyboard.keyCodes;
 
 	const axisX = new THREE.Vector3(1,0,0);
 	const axisY = new THREE.Vector3(0,1,0);
 	const axisZ = new THREE.Vector3(0,0,1);
-	const keyboard = new KeyboardState();
-	const keyCodes = keyboard.keyCodes;
 
-//	Create a Object3D entity to hold editor-tab values.
-	const editor = new THREE.Object3D(); //	editor must not added in scene.
-//	entities.add( editor ); // debug!
 
-	(function( editor ){
+//	keyboard frontAngle eventListeners.
+	window.addEventListener("keyup",   function(){ updateKeyboardFrontAngle( keyboard ); });
+	window.addEventListener("keydown", function(){ updateKeyboardFrontAngle( keyboard ); });
+
+	function updateKeyboardFrontAngle( keyboard ){
+
+		const rad = Math.PI/4;
+		const keyCodes = keyboard.keyCodes;
+		const A=65, D=68, S=83, W=87;
+		const Left=37, Up=38, Right=39, Down=40;
+
+		var UP    = keyCodes[W] || keyCodes[Up];
+		var LEFT  = keyCodes[A] || keyCodes[Left];
+		var DOWN  = keyCodes[S] || keyCodes[Down];
+		var RIGHT = keyCodes[D] || keyCodes[Right];
+
+	//	debugMode && console.log( UP, LEFT, DOWN, RIGHT );
+
+		if (  UP && !LEFT && !DOWN && !RIGHT ) keyboard.frontAngle = 0 * rad; //   0 deg.
+		else if (  UP &&  LEFT && !DOWN && !RIGHT ) keyboard.frontAngle = 1 * rad; //  45 deg.
+		else if ( !UP &&  LEFT && !DOWN && !RIGHT ) keyboard.frontAngle = 2 * rad; //  90 deg.
+		else if ( !UP &&  LEFT &&  DOWN && !RIGHT ) keyboard.frontAngle = 3 * rad; // 135 deg.
+		else if ( !UP && !LEFT &&  DOWN && !RIGHT ) keyboard.frontAngle = 4 * rad; // 180 deg.
+		else if ( !UP && !LEFT &&  DOWN &&  RIGHT ) keyboard.frontAngle = 5 * rad; // 225 deg.
+		else if ( !UP && !LEFT && !DOWN &&  RIGHT ) keyboard.frontAngle = 6 * rad; // 270 deg.
+		else if (  UP && !LEFT && !DOWN &&  RIGHT ) keyboard.frontAngle = 7 * rad; // 315 deg.
+	//	else if ( !UP && !LEFT && !DOWN && !RIGHT ) keyboard.frontAngle = 8 * rad; // 360 deg.
+
+	}
+
+//	editor.js
+//	Create an Object3D to hold editor values.
+	const object3DEditor = (function( editor ){
 
 		var k = 0;
 
@@ -19,6 +49,22 @@
 
 		const RAD2DEG = THREE.Math.RAD2DEG;
 		const DEG2RAD = THREE.Math.DEG2RAD;
+
+	//	Editor helper (debug).
+	//	editor.helper = (function(){
+	//		var sphere = new THREE.SphereGeometry();
+	//		var geometry = new THREE.EdgesGeometry( sphere );
+	//		var material = new THREE.LineBasicMaterial( { color: 0xffff00 } );
+	//		var editorHelper = new THREE.LineSegments( geometry, material );
+	//		editorHelper.name = "Editor Helper";
+	//		(function update(){
+	//			requestAnimationFrame(update);
+	//			editorHelper.scale.copy( editor.scale );
+	//			editorHelper.rotation.copy( editor.rotation );
+	//			editorHelper.position.copy( editor.position );
+	//		})();
+	//		return editorHelper;
+	//	})();
 
 		const vect_x_input = document.getElementById("input-vector-x");
 		const vect_y_input = document.getElementById("input-vector-y");
@@ -38,6 +84,8 @@
 		const vector_droplist = document.getElementById("vector-mode-droplist");
 		const geometry_droplist = document.getElementById("editor-geometry-droplist");
 
+		const redo_button = document.getElementById("editor-redo-button");
+		const undo_button = document.getElementById("editor-undo-button");
 		const exit_edit_button = document.getElementById("exit-edit-mode");
 		const reset_vectors_button = document.getElementById("reset-vectors-button");
 		const box_geometry_button = document.getElementById("new-box-geometry");
@@ -61,27 +109,18 @@
 			if ( id === cameraLight.id ) return false;
 			if ( id === shadowCameraHelper.id ) return false;
 			if ( id === cameraLight.shadow.camera.id ) return false;
-			if ( id !== parseInt( entity_droplist.value ) ) return false;
-			debugMode && console.log( "checkId:", true );
+		//	if ( localPlayer.getObjectById( id ) ) return false; // localPlayer child.
+		//	debugMode && console.log( "checkId:", true );
 
 			return true;
 		}
 
-		function getObjectByEntityId( id ){
+		function getObjectByEntityId( value ){
 
-			var object = scene.getObjectById( id );
-
-			if ( !object ) return undefined;
-			if ( object === scene ) return undefined;
-			if ( object === camera ) return undefined;
-			if ( object === editor ) return undefined;
-			if ( object === localPlayer ) return undefined;
-			if ( object === cameraLight ) return undefined;
-			if ( object === shadowCameraHelper ) return undefined;
-			if ( object === cameraLight.shadow.camera ) return undefined;
-			debugMode && console.log( "getObjectByEntityId:", object );
-
-			return object;
+			var check = checkId( value );
+			if ( !check ) return undefined;
+			var id = parseInt( value );
+			return scene.getObjectById( id );
 		}
 
 		function resetEntitySelectValue(){
@@ -92,58 +131,94 @@
 			geometryType.value = geometry_droplist.value = "";
 		}
 
-		function addToUndo( object ){
-			var json = copyObject3dState( object );
-			json && undo.unshift( json );
-			debugMode && console.log( "addToUndo!" );
+		function updateEntitySelectValue(){
+			entitySelect.value = entity_droplist.value;
 		}
 
-		function addToRedo( object ){
-			var json = copyObject3dState( object );
+		function updateVectorSelectValue(){
+			vectorSelect.value = vector_droplist.value;
+		}
+
+		function addtoCameraRigidObjects( value ){
+			var id = parseInt(value);
+			if ( localPlayer.getObjectById(id) ) return; // localPlayer child.
+			var object = getObjectByEntityId( value );
+			if ( object && cameraControls.rigidObjects.findIndex( 
+				function( item ){ 
+					return item.id === object.id;
+				}) > -1 ) return; // already exists in rigidObjects.
+			object && cameraControls.rigidObjects.push( object );
+		}
+
+		function removefromCameraRigidObjects( value ){
+			var index = cameraControls.rigidObjects
+			.findIndex( function( object ){
+				return object.id === parseInt( value );
+			});
+			if ( index < 0 ) return; // important!
+			cameraControls.rigidObjects.splice( index, 1 );
+		}
+
+		function addToUndo(){
+			redo.length = 0; // important!
+			var json = editor.toJSON();
+			json && undo.unshift( json );
+		//	debugMode && console.log( "addToUndo!" );
+		}
+
+		function addToRedo(){
+			var json = editor.toJSON();
 			json && redo.unshift( json );
 			debugMode && console.log( "addToRedo!" );
-
-		}
-
-	// 	Copy object state to undo/undo, 
-	//	without copy geometry/materials.
-		function copyObject3dState( object ){
-			if ( !object ) return;
-			if ( !object.isObject3D ) return;
-		//	create a new Object3D, 
-			var object3d = new THREE.Object3D();
-		//	copy object to object3d,
-			object3d.copy( object );
-		//	return json.
-			return object3d.toJSON();
 		}
 
 		editor.reset = function(){
 			editor.copy( new THREE.Object3D() );
 			editor.name = "Editor";
-			editor.isEditing = false;
-			undo.length = 0; redo.length = 0;
-			debugMode && console.log( "editor reset!" );
+			editor.isEditing = false; // edit mode off.
+			undo.length = 0; redo.length = 0; // clear undo/redo.
+			cancelAnimationFrame( editor.requestFrameID ); // cancel object update loop, important!
+		//	debugMode && console.log( "editor reset:", editor );
 		};
 
 		editor.update = function( value ){
 
-			var check = checkId( value );
-			if ( !check ) return;
+		//	Reset editor.
+			editor.reset();
 
-			var id = parseInt( value );
-			var object = getObjectByEntityId(id);
-			if ( !object ) return;
+		//	Get new object.
+			var object = getObjectByEntityId( value ); 
+
+			if ( !object ) return false;
+
+		//	Copy object.
+			object && editor.copy( object );
 
 		//	Edit mode.
 			editor.isEditing = !!object;
 
-		//	Undo/Redo.
-			addToUndo( object ); // important!
+		//	object update loop.
+			object && (function update(){
 
-		//	Copy object.
-			object && object.isObject3D && editor.copy( object );
-			debugMode && console.log( "editor update!", editor );
+				if ( object && editor.isEditing ) {
+
+					object.scale.copy( editor.scale );
+					object.rotation.copy( editor.rotation );
+					object.position.copy( editor.position );
+					editor.requestFrameID = requestAnimationFrame(update);
+					return; // important!
+
+				} 
+
+				cancelAnimationFrame( editor.requestFrameID ); // important!
+
+			})();
+
+		//	keep initial state.
+			object && editor.isEditing && addToUndo();
+		//	debugMode && console.log( "editor updated:", object );
+
+			return true;
 		};
 
 	//	Editor undo/redo.
@@ -153,10 +228,12 @@
 			var interval;
 
 			editor.undo = function(){ 
-				if ( !undo.length ) return; // important!
+
+				if ( !undo.length ) return;
 
 			//	Get undo json.
 				var json = undo.shift();
+
 				if ( !json ) return;
 
 			//	Move json to redo.
@@ -165,22 +242,20 @@
 				clearTimeout( interval );
 				interval = setTimeout( function(){
 
-				//	Get object.
-					var id = parseInt( entitySelect.value );
-					var object = scene.getObjectById( id );
-
 				//	Copy state (undo).
 					var loader = new THREE.ObjectLoader();
-					object && object.copy( loader.parse( json ) );
+					editor.copy( loader.parse( json ) );
 
 				}, 250);
 			};
 
 			editor.redo = function(){
-				if ( !redo.length ) return; // important!
+
+				if ( !redo.length ) return;
 
 			//	Get redo json.
 				var json = redo.shift();
+
 				if ( !json ) return;
 
 			//	Move json to undo.
@@ -189,13 +264,9 @@
 				clearTimeout( interval );
 				interval = setTimeout( function(){
 
-				//	Get object.
-					var id = parseInt( entitySelect.value );
-					var object = scene.getObjectById( id );
-
 				//	Copy state (redo).
 					var loader = new THREE.ObjectLoader();
-					object && object.copy( loader.parse( json ) );
+					editor.copy( loader.parse( json ) );
 
 				}, 250);
 			};
@@ -206,32 +277,8 @@
 
 		(function(){
 
-			var object;
 			var interval;
 			var edgeshelper;
-
-		//	const axisX = new THREE.Vector3(1,0,0);
-		//	const axisY = new THREE.Vector3(0,1,0);
-		//	const axisZ = new THREE.Vector3(0,0,1);
-
-			watch(entitySelect, function( prop, action, newValue, oldValue ){
-				vectorSelect.value = vector_droplist.value; // important!
-
-			//	Old edges helper.
-				destroyEdgesHelper(); // old edges helper.
-
-				if ( !checkId( newValue ) ) { object = undefined; return; }
-
-				var id = parseInt( newValue );
-				if ( !getObjectByEntityId( id ) ) { object = undefined; return; }
-
-				object = getObjectByEntityId( id );
-				debugMode && console.log( "entitySelect watch:", object );
-
-			//	New edges helper.
-				object && createEdgesHelper(); // new edges helper.
-
-			});
 
 			function destroyEdgesHelper(){
 				if ( !edgeshelper ) return;
@@ -242,7 +289,7 @@
 				edgeshelper = undefined;
 			}
 
-			function createEdgesHelper(){
+			function createEdgesHelper( object ){
 
 				if ( !object ) return;
 				if ( !object.isMesh ) return;
@@ -258,89 +305,210 @@
 				helper.name = object.name + ":edgeshelper";
 
 				scene.add( helper );
-				entities.add( helper ); // ???
+				entities.add( helper );
 				edgeshelper = helper;
 			}
 
-		//	keys add to undo/redo eventListner.
+		//	edgeshelper watcher.
+
+			watch(entitySelect, function( prop, action, newValue, oldValue ){
+
+			//	vectorSelect.value = vector_droplist.value; // important!
+
+			//	Old edges helper.
+				destroyEdgesHelper(); // old edges helper.
+
+			//	Get object.
+				var object = getObjectByEntityId( newValue );
+
+			//	New edges helper.
+				object && createEdgesHelper( object ); // new edges helper.
+
+			});
+
+		//	keyInput addtoUndo/addtoUndo eventListner.
 
 			(function(){
 
 				var interval;
 
+				var keyCodes = keyboard.keyCodes;
+				var modifiers = keyboard.modifiers;
+				var LEFT=37, UP=38, RIGHT=39, DOWN=40;
+				var A=65, D=68, E=69, F=70, G=71, H=72, Q=81, R=82, S=83, W=87, Z=90;
+
+				function editKeyIsNotDown(){
+					return !keyCodes[A]  && !keyCodes[D]  && !keyCodes[E]  
+						&& !keyCodes[F]  && !keyCodes[Q]  && !keyCodes[R] 
+						&& !keyCodes[S]  && !keyCodes[W]  && !keyCodes[G]  && !keyCodes[H]
+						&& !keyCodes[37] && !keyCodes[38] && !keyCodes[39] && !keyCodes[40];
+				}
+
+				function isEditorKey(event){
+					return event.code === "KeyA"    || event.code === "KeyD"       || event.code === "KeyE"
+						|| event.code === "KeyF"    || event.code === "KeyQ"       || event.code === "KeyR"
+						|| event.code === "KeyS"    || event.code === "KeyW"       || event.code === "KeyG"
+						|| event.code === "KeyH"    || event.code === "ArrowLeft"  
+						|| event.code === "ArrowUp" || event.code === "ArrowRight" || event.code === "ArrowDown";
+				}
+
+				function modifierIsDown(){
+					return modifiers.shift || modifiers.ctrl || modifiers.alt || modifiers.meta;
+				}
+
 				window.addEventListener( "keyup", function(e){
+				//	debugMode && console.log( "isEditKey:", isEditorKey(e) );
 
 					clearTimeout( interval );
 
-					if ( !object ) return;
+					if ( !isEditorKey(e) )   return;
 					if ( !editor.isEditing ) return;
-					if ( noneOfKeysPressed() ) return;
+					if (  modifierIsDown() ) return;
 
-					interval = setTimeout( function(){
+				//	debugMode && console.log( "editKeyIsNotDown:", editKeyIsNotDown() );
 
-						debugMode && console.log( "noneOfKeysPressed:", noneOfKeysPressed() );
-
-						if ( !object ) return;
-						if ( !editor.isEditing ) return;
-						if ( !noneOfKeysPressed() ) return;
-
-						object && addToUndo( object );
-
-					}, 1000);
-
-					function noneOfKeysPressed(){
-
-						var keyCodes = keyboard.keyCodes;
-						var modifiers = keyboard.modifiers;
-						var LEFT=37, RIGHT=39, UP=38, DOWN=40;
-						var A=65, D=68, E=69, F=70, Q=81, R=82, S=83, W=87;
-
-						return !keyCodes[A]  && !keyCodes[D]  && !keyCodes[E]  && !keyCodes[F] 
-							&& !keyCodes[Q]  && !keyCodes[R]  && !keyCodes[S]  && !keyCodes[W] 
-							&& !keyCodes[37] && !keyCodes[38] && !keyCodes[39] && !keyCodes[40]
-							&& !modifiers["alt"] && !modifiers["ctrl"] && !modifiers["shift"];
+					if ( isEditorKey(e) && editKeyIsNotDown() && !modifierIsDown() ) {
+						interval = setTimeout( function(){
+							editor.isEditing && editKeyIsNotDown() && !modifierIsDown() && addToUndo();
+						}, 1000);
 					}
 
 				});
 
 			})();
 
-		//	mouse add to undo/redo eventListners.
+		//	mouse eventListner.
+
+			function updateState( button ){
+
+			//  object become editor.
+			//	update() become updateState().
+			//	update editor state by button click.
+
+				var vector = vectorSelect.value;
+
+				if ( vector === "position" ) {
+					var step = 1/100; // 1 cm.
+					if ( button === vect_x_increase ) editor.position.x += step/10; // 1 mm.
+					if ( button === vect_y_increase ) editor.position.y += step/10; // 1 mm.
+					if ( button === vect_z_increase ) editor.position.z += step/10; // 1 mm.
+					if ( button === vect_x_decrease ) editor.position.x -= step/10; // 1 mm.
+					if ( button === vect_y_decrease ) editor.position.y -= step/10; // 1 mm.
+					if ( button === vect_z_decrease ) editor.position.z -= step/10; // 1 mm.
+				}
+
+				else if ( vector === "rotation" ) {
+					var step = Math.PI/180; // 1 deg.
+					if ( button === vect_x_increase ) editor.rotateOnAxis( axisX,  step/10 ); // 0.1 deg.
+					if ( button === vect_y_increase ) editor.rotateOnAxis( axisY,  step/10 ); // 0.1 deg.
+					if ( button === vect_z_increase ) editor.rotateOnAxis( axisZ,  step/10 ); // 0.1 deg.
+					if ( button === vect_x_decrease ) editor.rotateOnAxis( axisX, -step/10 ); // 0.1 deg.
+					if ( button === vect_y_decrease ) editor.rotateOnAxis( axisY, -step/10 ); // 0.1 deg.
+					if ( button === vect_z_decrease ) editor.rotateOnAxis( axisZ, -step/10 ); // 0.1 deg.
+				}
+
+				else if ( vector === "scale" ) {
+
+					var step = 1/100; // 1 %
+
+					if ( button === vect_x_increase ) {
+						editor.scale.x += step/10;     // 0.1 %.
+						if ( Math.abs( editor.scale.x ) < step/10 ) 
+							editor.scale.x = step/10;  // avoid scale.x:0.
+					} else if ( button === vect_y_increase ) {
+						editor.scale.y += step/5;      // 0.1 %.
+						if ( Math.abs( editor.scale.y ) < step/10 ) 
+							editor.scale.y = step/10;  // avoid scale.x:0.
+					} else if ( button === vect_z_increase ) {
+						editor.scale.z += step/5;      // 0.1 %.
+						if ( Math.abs( editor.scale.z ) < step/10 ) 
+							editor.scale.z = step/10;  // avoid scale.x:0.
+					} else if ( button === vect_w_increase ) {
+						editor.scale.x += step/10;     // 0.1 %.
+						editor.scale.y += step/10;     // 0.1 %.
+						editor.scale.z += step/10;     // 0.1 %.
+						if ( Math.abs( editor.scale.x ) < step/10 ) 
+							editor.scale.x = step/10;  // avoid scale.x:0.
+						if ( Math.abs( editor.scale.y ) < step/10 ) 
+							editor.scale.y = step/10;  // avoid scale.y:0.
+						if ( Math.abs( editor.scale.z ) < step/10 ) 
+							editor.scale.z = step/10;  // avoid scale.z:0.
+					} else if ( button === vect_x_decrease ) {
+						editor.scale.x -= step/10;     // 0.1 %,
+						if ( Math.abs( editor.scale.x ) < step/10 ) 
+							editor.scale.x = -step/10; // avoid scale.x:0,
+					} else if ( button === vect_y_decrease ) {
+						editor.scale.y -= step/10;     // 0.1 %,
+						if ( Math.abs( editor.scale.y ) < step/10 ) 
+							editor.scale.y = -step/10; // avoid scale.y:0,
+					} else if ( button === vect_z_decrease ) {
+						editor.scale.z -= step/10;     // 0.1 %,
+						if ( Math.abs( editor.scale.z ) < step/10 ) 
+							editor.scale.z = -step/10; // avoid scale.z:0,
+					} else if ( button === vect_w_decrease ) {
+						editor.scale.x -= step/10;     // 0.1 %,
+						editor.scale.y -= step/10;     // 0.1 %,
+						editor.scale.z -= step/10;     // 0.1 %,
+						if ( Math.abs( editor.scale.x ) < step/10 ) 
+							editor.scale.x = -step/10; // avoid scale.x:0,
+						if ( Math.abs( editor.scale.y ) < step/10 ) 
+							editor.scale.y = -step/10; // avoid scale.y:0,
+						if ( Math.abs( editor.scale.z ) < step/10 ) 
+							editor.scale.z = -step/10; // avoid scale.z:0,
+					}
+				}
+
+				else if ( vector === "quaternion" ) {
+					var step = 1/100;
+					if ( button === vect_x_increase ) editor.quaternion.x += step/10; // 0.001
+					if ( button === vect_y_increase ) editor.quaternion.y += step/10; // 0.001
+					if ( button === vect_z_increase ) editor.quaternion.z += step/10; // 0.001
+					if ( button === vect_w_increase ) editor.quaternion.w += step/10; // 0.001
+
+					if ( button === vect_x_decrease ) editor.quaternion.x -= step/10; // 0.001
+					if ( button === vect_y_decrease ) editor.quaternion.y -= step/10; // 0.001
+					if ( button === vect_z_decrease ) editor.quaternion.z -= step/10; // 0.001
+					if ( button === vect_w_decrease ) editor.quaternion.w -= step/10; // 0.001
+				}
+
+			}
 
 			function onMouseClick(){ 
 
 				clearTimeout( interval ); // important!
+				if ( !editor.isEditing ) return;
 
-				if ( !object ) return;
-				object && update( this );
+			//	Update button.
+				editor.isEditing && updateState( this );
 
 			//	Edges helper.
 				destroyEdgesHelper(); // old edges helper.
-				object && setTimeout( createEdgesHelper );
+
+				setTimeout( function(){
+					var value = entitySelect.value;
+					var object = getObjectByEntityId( value );
+					object && createEdgesHelper( object );  // new edges helper.
+				});
 
 			//	Undo/Redo.
-				object && addToUndo( object );
+				editor.isEditing && addToUndo();
 
 				debugMode && console.log( "on Mouse Click:", interval );
 			}
 
 			function onMouseDown(){ 
 
-				if ( !object ) return;
-
-			//	Edges helper.
-			//	destroyEdgesHelper(); // old edges helper.
-			//	object && setTimeout( createEdgesHelper );
-
-			//	Undo/Redo.
-			//	object && addToUndo( object );
+				if ( !editor.isEditing ) return;
 
 				var button = this;
 				var clock = new THREE.Clock();
+
 				interval = setTimeout( function onUpdate() {
-					if ( !object ) return;
+					if ( !editor.isEditing ) return;
+
+					editor.isEditing && updateState( button );
+
 					var dt = clock.getDelta();
-					object && update( button );
 					interval = setTimeout( onUpdate, dt );
 				//	debugMode && console.log( "on Update:", interval );
 
@@ -370,26 +538,32 @@
 			vect_z_decrease.addEventListener( "click", onMouseClick );
 			vect_w_decrease.addEventListener( "click", onMouseClick );
 
+		//	input eventListeners.
+
 			vect_x_input.addEventListener( "change", function(){
 
 				this.blur(); // important!
 				var vector = vectorSelect.value;
 				var thisValue = parseFloat( this.value );
 
-				if ( !object ) 
+				if ( !editor.isEditing ) 
 					return void( this.value = editor[vector].x.toFixed(2) );
 				else if ( vector === "scale" ) {
 					if ( !thisValue ) 
-						return void( object.scale.x = 0.001 ); // avoid scale.x:0/NaN,
-					else object.scale.x = thisValue/100;
-					if ( Math.abs( object.scale.x ) < 0.001 ) object[ vector ].x = 0.001; 
+						return void( editor.scale.x = 0.001 ); // avoid scale.x:0/NaN,
+					else editor.scale.x = thisValue/100;
+					if ( Math.abs( editor.scale.x ) < 0.001 ) editor[ vector ].x = 0.001; 
+					addToUndo(); // Add undo state.
 				} 
 				else if ( thisValue == NaN )
 					return void( this.value = editor[vector].x.toFixed(2) );
-				else if ( vector === "rotation" )
-					object[ vector ].x = DEG2RAD*thisValue;
-				else
-					object[ vector ].x = thisValue;
+				else if ( vector === "rotation" ) {
+					editor[ vector ].x = DEG2RAD*thisValue;
+					addToUndo(); // Add undo state.
+				} else {
+					editor[ vector ].x = thisValue;
+					addToUndo(); // Add undo state.
+				}
 			});
 
 			vect_y_input.addEventListener( "change", function(){
@@ -398,20 +572,24 @@
 				var vector = vectorSelect.value;
 				var thisValue = parseFloat( this.value );
 
-				if ( !object ) 
+				if ( !editor.isEditing ) 
 					return void( this.value = editor[vector].y.toFixed(2) );
 				else if ( vector === "scale" ) {
 					if ( !thisValue ) 
-						return void( object.scale.y = 0.001 ); // avoid scale.y:0/NaN,
-					else object.scale.y = thisValue/100;
-					if ( Math.abs( object.scale.y ) < 0.001 ) object[ vector ].y = 0.001; 
+						return void( editor.scale.y = 0.001 ); // avoid scale.y:0/NaN,
+					else editor.scale.y = thisValue/100;
+					if ( Math.abs( editor.scale.y ) < 0.001 ) editor[ vector ].y = 0.001; 
+					addToUndo(); // Add undo state.
 				} 
 				else if ( thisValue == NaN )
 					return void( this.value = editor[vector].y.toFixed(2) );
-				else if ( vector === "rotation" )
-					object[vector].y = DEG2RAD*thisValue;
-				else
-					object[vector].y = thisValue;
+				else if ( vector === "rotation" ) {
+					editor[vector].y = DEG2RAD*thisValue;
+					addToUndo(); // Add undo state.
+				} else {
+					editor[vector].y = thisValue;
+					addToUndo(); // Add undo state.
+				}
 			});
 
 			vect_z_input.addEventListener( "change", function(){
@@ -420,20 +598,24 @@
 				var vector = vectorSelect.value;
 				var thisValue = parseFloat( this.value );
 
-				if ( !object || thisValue == NaN ) 
+				if ( !editor.isEditing || thisValue == NaN ) 
 					return void( this.value = editor[vector].z.toFixed(2) );
 				else if ( vector === "scale" ) {
 					if ( !thisValue ) 
-						return void( object.scale.z = 0.001 ); // avoid scale.z:0/NaN,
-					else object.scale.z = thisValue/100;
-					if ( Math.abs( object.scale.z ) < 0.001 ) object[ vector ].z = 0.001; 
+						return void( editor.scale.z = 0.001 ); // avoid scale.z:0/NaN,
+					else editor.scale.z = thisValue/100;
+					if ( Math.abs( editor.scale.z ) < 0.001 ) editor[ vector ].z = 0.001; 
+					addToUndo(); // Add undo state.
 				} 
 				else if ( thisValue == NaN )
 					return void( this.value = editor[vector].z.toFixed(2) );
-				else if ( vector === "rotation" )
-					object[vector].z = DEG2RAD*thisValue;
-				else
-					object[vector].z = thisValue;
+				else if ( vector === "rotation" ) {
+					editor[vector].z = DEG2RAD*thisValue;
+					addToUndo(); // Add undo state.
+				} else {
+					editor[vector].z = thisValue;
+					addToUndo(); // Add undo state.
+				}
 			});
 
 			vect_w_input.addEventListener( "change", function(){
@@ -442,128 +624,41 @@
 				var vector = vectorSelect.value;
 				var thisValue = parseFloat( this.value );
 
-				if ( !object ) {
+				if ( !editor.isEditing ) {
 					return void( this.value = NaN );
 				} else if ( vector === "rotation" ) {
-					this.value = object.rotation.order;
+					this.value = editor.rotation.order;
 				} else if ( vector === "scale" ) {
+
 					if ( !thisValue ) {
-						object.scale.x = 0.001; // avoid scale.x:0/NaN,
-						object.scale.y = 0.001; // avoid scale.y:0/NaN,
-						object.scale.z = 0.001; // avoid scale.z:0/NaN,
+						editor.scale.x = 0.001; // avoid scale.x:0/NaN,
+						editor.scale.y = 0.001; // avoid scale.y:0/NaN,
+						editor.scale.z = 0.001; // avoid scale.z:0/NaN,
 					//	this.value = 0.1.toFixed(2);
 					} else {
-						object.scale.x = thisValue/100;
-						object.scale.y = thisValue/100;
-						object.scale.z = thisValue/100;
+						editor.scale.x = thisValue/100;
+						editor.scale.y = thisValue/100;
+						editor.scale.z = thisValue/100;
 					}
-					if ( Math.abs( object.scale.x ) < 0.001 ) object.scale.x = 0.001; 
-					if ( Math.abs( object.scale.y ) < 0.001 ) object.scale.y = 0.001; 
-					if ( Math.abs( object.scale.z ) < 0.001 ) object.scale.z = 0.001; 
-				//	this.value = ( 100*(object.scale.x+object.scale.y+object.scale.z)/3 ).toFixed(2)
+
+					if ( Math.abs( editor.scale.x ) < 0.001 ) editor.scale.x = 0.001; 
+					if ( Math.abs( editor.scale.y ) < 0.001 ) editor.scale.y = 0.001; 
+					if ( Math.abs( editor.scale.z ) < 0.001 ) editor.scale.z = 0.001; 
+
+					addToUndo(); //	Add undo state.
+
 				} else if ( thisValue == NaN ) { 
 				//	reset quaternion.
-					object.scale.set(1,1,1);
-					object.rotation.set(0,0,0);
-					object.quaternion.set(0,0,0,1);
-					object.updateMatrixWorld(true); // important?
-					editor.copy( object );          // important?
+					editor.scale.set(1,1,1);
+					editor.rotation.set(0,0,0);
+					editor.quaternion.set(0,0,0,1);
+				//	editor.update( entitySelect.value ); // important?
 				} else if ( vector === "quaternion" ) {
-					object.quaternion.w = thisValue;
+					editor.quaternion.w = thisValue;
+					addToUndo(); //	Add undo state.
 				} else this.value = editor[vector].w;
+
 			});
-
-			function update( button ){
-
-				if ( !object ) return;
-
-				var vector = vectorSelect.value;
-
-				if ( vector === "position" ) {
-					var step = 1/100; // 1 cm.
-					if ( button === vect_x_increase ) object.position.x += step/10; // 1 mm.
-					if ( button === vect_y_increase ) object.position.y += step/10; // 1 mm.
-					if ( button === vect_z_increase ) object.position.z += step/10; // 1 mm.
-					if ( button === vect_x_decrease ) object.position.x -= step/10; // 1 mm.
-					if ( button === vect_y_decrease ) object.position.y -= step/10; // 1 mm.
-					if ( button === vect_z_decrease ) object.position.z -= step/10; // 1 mm.
-				}
-
-				else if ( vector === "rotation" ) {
-					var step = Math.PI/180; // 1 deg.
-					if ( button === vect_x_increase ) object.rotateOnAxis( axisX,  step/10 ); // 0.1 deg.
-					if ( button === vect_y_increase ) object.rotateOnAxis( axisY,  step/10 ); // 0.1 deg.
-					if ( button === vect_z_increase ) object.rotateOnAxis( axisZ,  step/10 ); // 0.1 deg.
-					if ( button === vect_x_decrease ) object.rotateOnAxis( axisX, -step/10 ); // 0.1 deg.
-					if ( button === vect_y_decrease ) object.rotateOnAxis( axisY, -step/10 ); // 0.1 deg.
-					if ( button === vect_z_decrease ) object.rotateOnAxis( axisZ, -step/10 ); // 0.1 deg.
-				}
-
-				else if ( vector === "scale" ) {
-
-					var step = 1/100; // 1 %
-
-					if ( button === vect_x_increase ) {
-						object.scale.x += step/10;     // 0.1 %.
-						if ( Math.abs( object.scale.x ) < step/10 ) 
-							object.scale.x = step/10;  // avoid scale.x:0.
-					} else if ( button === vect_y_increase ) {
-						object.scale.y += step/5;      // 0.1 %.
-						if ( Math.abs( object.scale.y ) < step/10 ) 
-							object.scale.y = step/10;  // avoid scale.x:0.
-					} else if ( button === vect_z_increase ) {
-						object.scale.z += step/5;      // 0.1 %.
-						if ( Math.abs( object.scale.z ) < step/10 ) 
-							object.scale.z = step/10;  // avoid scale.x:0.
-					} else if ( button === vect_w_increase ) {
-						object.scale.x += step/10;     // 0.1 %.
-						object.scale.y += step/10;     // 0.1 %.
-						object.scale.z += step/10;     // 0.1 %.
-						if ( Math.abs( object.scale.x ) < step/10 ) 
-							object.scale.x = step/10;  // avoid scale.x:0.
-						if ( Math.abs( object.scale.y ) < step/10 ) 
-							object.scale.y = step/10;  // avoid scale.y:0.
-						if ( Math.abs( object.scale.z ) < step/10 ) 
-							object.scale.z = step/10;  // avoid scale.z:0.
-					} else if ( button === vect_x_decrease ) {
-						object.scale.x -= step/10;     // 0.1 %,
-						if ( Math.abs( object.scale.x ) < step/10 ) 
-							object.scale.x = -step/10; // avoid scale.x:0,
-					} else if ( button === vect_y_decrease ) {
-						object.scale.y -= step/10;     // 0.1 %,
-						if ( Math.abs( object.scale.y ) < step/10 ) 
-							object.scale.y = -step/10; // avoid scale.y:0,
-					} else if ( button === vect_z_decrease ) {
-						object.scale.z -= step/10;     // 0.1 %,
-						if ( Math.abs( object.scale.z ) < step/10 ) 
-							object.scale.z = -step/10; // avoid scale.z:0,
-					} else if ( button === vect_w_decrease ) {
-						object.scale.x -= step/10;     // 0.1 %,
-						object.scale.y -= step/10;     // 0.1 %,
-						object.scale.z -= step/10;     // 0.1 %,
-						if ( Math.abs( object.scale.x ) < step/10 ) 
-							object.scale.x = -step/10; // avoid scale.x:0,
-						if ( Math.abs( object.scale.y ) < step/10 ) 
-							object.scale.y = -step/10; // avoid scale.y:0,
-						if ( Math.abs( object.scale.z ) < step/10 ) 
-							object.scale.z = -step/10; // avoid scale.z:0,
-					}
-				}
-
-				else if ( vector === "quaternion" ) {
-					var step = 1/100;
-					if ( button === vect_x_increase ) object.quaternion.x += step/10; // 0.001
-					if ( button === vect_y_increase ) object.quaternion.y += step/10; // 0.001
-					if ( button === vect_z_increase ) object.quaternion.z += step/10; // 0.001
-					if ( button === vect_w_increase ) object.quaternion.w += step/10; // 0.001
-
-					if ( button === vect_x_decrease ) object.quaternion.x -= step/10; // 0.001
-					if ( button === vect_y_decrease ) object.quaternion.y -= step/10; // 0.001
-					if ( button === vect_z_decrease ) object.quaternion.z -= step/10; // 0.001
-					if ( button === vect_w_decrease ) object.quaternion.w -= step/10; // 0.001
-				}
-
-			}
 
 		})();
 
@@ -571,29 +666,22 @@
 
 		(function(){
 
-			entity_droplist.addEventListener("change", function(){
+			entity_droplist.addEventListener("change", onChangeSelectValue );
+			vector_droplist.addEventListener("change", onChangeSelectValue );
+
+			function onChangeSelectValue(){
+
 				entity_droplist.blur();
-
-				var value = entity_droplist.value;
-				if ( checkId( value ) ) 
-					entitySelect.value = entity_droplist.value; // update.
-				else
-					entitySelect.value = entity_droplist.value = ""; // reset.
-
-				vectorSelect.value = vector_droplist.value;
-			});
-
-			vector_droplist.addEventListener("change", function(){
 				vector_droplist.blur();
 
 				var value = entity_droplist.value;
 				if ( checkId( value ) ) 
-					entitySelect.value = entity_droplist.value; // update.
-				else 
-					entitySelect.value = entity_droplist.value = ""; // reset.
+					entitySelect.value = entity_droplist.value;      // updateEntitySelectValue();
+				else
+					entitySelect.value = entity_droplist.value = ""; // resetEntitySelectValue();
 
-				vectorSelect.value = vector_droplist.value;
-			});
+				vectorSelect.value = vector_droplist.value;          //	updateVectorSelectValue();
+			}
 
 			geometry_droplist.addEventListener("change", function(){
 				geometry_droplist.blur();
@@ -610,12 +698,12 @@
 
 			var interval;
 
+			redo_button.addEventListener( "click", editor.redo );
+			undo_button.addEventListener( "click", editor.undo );
+
 			exit_edit_button.addEventListener( "click", function(){
 				clearTimeout(interval);
-				interval = setTimeout(function(){
-					entitySelect.value = entity_droplist.value = "";
-				//	entity_droplist.dispatchEvent(new Event("change"));
-				}, 250);
+				interval = setTimeout( resetEntitySelectValue, 250 );
 			});
 
 			reset_vectors_button.addEventListener( "click", function(){
@@ -624,21 +712,19 @@
 				interval = setTimeout(function(){
 
 					var value = entitySelect.value;
-					if ( !checkId( value ) ) return editor.reset(); 
 
-					var id = parseInt( entitySelect.value );
-					var object = getObjectByEntityId( id );
-					if ( !object ) return editor.reset();
+					if ( !checkId( value ) ) return editor.reset(); 
+					if ( !editor.isEditing ) return editor.reset();
 
 					if ( vectorSelect.value == "position" ) 
-						object.position.set(0,0,0);
+						editor.position.set(0,0,0);
 					else if ( vectorSelect.value == "rotation" ) 
-						object.rotation.set(0,0,0);
+						editor.rotation.set(0,0,0);
 					else if ( vectorSelect.value == "scale" )
-						object.scale.set(1,1,1);
+						editor.scale.set(1,1,1);
 					else if ( vectorSelect.value == "quaternion" )
-						object.quaternion.set(0,0,0,1);
-					debugMode && console.log("reset", vectorSelect.value);
+						editor.quaternion.set(0,0,0,1);
+				//	debugMode && console.log("reset", vectorSelect.value);
 				}, 250);
 			});
 
@@ -663,11 +749,14 @@
 				//	Create mesh.
 					var material = new THREE.MeshLambertMaterial({side:2});
 					var mesh = new THREE.Mesh(geometry, material);
-					mesh.name = type.replace("Geometry","") + mesh.id;
+					mesh.name = type.replace("Geometry","") + ":"+mesh.id;
 					scene.add( mesh );
 
 				//	Add entity.
 					entities.add( mesh );
+
+				//	Add to camera rigid objects.
+				//	addtoCameraRigidObjects( mesh.id );
 
 				//	Enter edit mode.
 					entitySelect.value = entity_droplist.value = mesh.id.toString();
@@ -693,7 +782,7 @@
 				//	remove octree.
 					if ( object.isMesh && object.geometry ) (function(){
 						var uuid = object.geometry.uuid;
-						if ( octreeIncluded( uuid ) ) octree.removeThreeMesh( uuid );
+						octreeIncludes( uuid ) && octree.removeThreeMesh( uuid );
 					})();
 
 				//	remove object.
@@ -702,7 +791,10 @@
 				//	remove entity and option.
 					entities.remove( id ); // important!
 
-				//	Exit edit mode.
+				//	Remove from camera rigid objects.
+					removefromCameraRigidObjects( id );
+
+				//	Exit edit mode. // resetEntitySelectValue();
 					entitySelect.value = entity_droplist.value = "";
 				//	entity_droplist.dispatchEvent(new Event("change"));
 				}, 250);
@@ -714,29 +806,28 @@
 
 		(function(){
 
-			watch(vectorSelect, function( prop, action, newValue, oldValue ){
-				debugMode && console.log( "vector droplist:", prop, action, newValue );
+			watch(entitySelect, function( prop, action, newValue, oldValue ){
+			//	debugMode && console.log( "entitySelect watch:", 
+			//	prop, action, "newValue:", newValue, "oldValue:", oldValue  );
 
-			//	Update vectors direct from editor.
+				updateOctree( oldValue ); // first, important!
+
+			//	Add to camera rigid objects.
+				!!oldValue && addtoCameraRigidObjects( oldValue );
+
+				switchToEditMode( newValue ); // important!
+
+			//	Display vectors direct from editor.
+				updateVectorSelectValue();
+			//	vectorSelect.value = vector_droplist.value;
 				displayVectorValues( vectorSelect.value );
 
 			});
 
-			watch(entitySelect, function( prop, action, newValue, oldValue ){
-				debugMode && console.log( "entity droplist:", prop, action, parseInt(newValue)  );
+			watch(vectorSelect, function( prop, action, newValue, oldValue ){
+			//	debugMode && console.log( "vectorSelect watch:", prop, action, newValue );
 
-				editor.reset(); // important!
-
-			//	Update old octree (first) important!
-				if ( oldValue != "" ) updateOctree( oldValue );
-
-			//	Exit edit mode.
-				if ( newValue == "" ) exitFromEditMode();
-
-			//	Switch to edit mode.
-				if ( newValue != "" ) switchToEditMode( newValue );
-
-			//	Display vectors direct from editor.
+			//	Update vectors direct from editor.
 				displayVectorValues( vectorSelect.value );
 
 			});
@@ -756,7 +847,7 @@
 			});
 
 			watch( editor.position, function(prop, action, newValue, oldValue){
-			//	debugMode && console.log( "position:", prop, action, newValue );
+			//	debugMode && console.log( "editor.position:", prop, action, newValue );
 				if ( newValue === undefined ) return;
 				if ( vectorSelect.value !== "position" ) return;
 				if ( prop === "x" ) vect_x_input.value = newValue.toFixed(3);
@@ -765,7 +856,7 @@
 			});
 
 			watch( editor.rotation, function(prop, action, newValue, oldValue){
-			//	debugMode && console.log( "rotation:", prop, action, newValue );
+			//	debugMode && console.log( "editor.rotation:", prop, action, newValue );
 				if ( newValue === undefined ) return;
 				if ( vectorSelect.value !== "rotation" ) return;
 				if ( prop === "_x" ) vect_x_input.value = (RAD2DEG*newValue).toFixed(2);
@@ -774,7 +865,7 @@
 			});
 
 			watch( editor.scale, function(prop, action, newValue, oldValue){
-			//	debugMode && console.log( "scale:", prop, action, newValue );
+			//	debugMode && console.log( "editor.scale:", prop, action, newValue );
 				if ( newValue === undefined ) return;
 				if ( vectorSelect.value !== "scale" ) return;
 				if ( prop === "x" ) vect_x_input.value = (100*newValue).toFixed(2);
@@ -783,17 +874,115 @@
 				vect_w_input.value = (100 * ( ( editor.scale.x+editor.scale.y+editor.scale.z )/3 ) ).toFixed(2);
 			});
 
-			watch( editor.quaternion, function(prop, action, newValue, oldValue){
-			//	debugMode && console.log( "quaternion:", prop, action, newValue );
-				if ( newValue === undefined ) return;
-				if ( vectorSelect.value !== "quaternion" ) return;
-				if ( prop === "_x" ) vect_x_input.value = newValue.toFixed(3);
-				if ( prop === "_y" ) vect_y_input.value = newValue.toFixed(3);
-				if ( prop === "_z" ) vect_z_input.value = newValue.toFixed(3);
-				if ( prop === "_w" ) vect_w_input.value = newValue.toFixed(3);
-			});
+		//	watch( editor.quaternion, function(prop, action, newValue, oldValue){
+		//		debugMode && console.log( "editor.quaternion:", prop, action, newValue );
+		//		if ( newValue === undefined ) return;
+		//		if ( vectorSelect.value !== "quaternion" ) return;
+		//		if ( prop === "_x" ) vect_x_input.value = newValue.toFixed(3);
+		//		if ( prop === "_y" ) vect_y_input.value = newValue.toFixed(3);
+		//		if ( prop === "_z" ) vect_z_input.value = newValue.toFixed(3);
+		//		if ( prop === "_w" ) vect_w_input.value = newValue.toFixed(3);
+		//	});
 
 		})();
+
+		function addtoOctree( value ){
+			var object = getObjectByEntityId( value );
+
+			if ( !object ) return;
+			if ( !object.isMesh ) return;
+			if ( !object.geometry ) return;
+			if ( !object.geometry.isGeometry ) return;
+			if ( localPlayer.getObjectById(object.id) ) return; // child of localPlayer.
+
+		//	Import to octree.
+			octree.importThreeMesh( object );
+			return object; // important!
+		}
+
+		function removefromOctree( value ){
+			var object = getObjectByEntityId( value );
+
+			if ( !object ) return;
+			if ( !object.isMesh ) return;
+			if ( !object.geometry ) return;
+			if ( !object.geometry.isGeometry ) return;
+
+		//	Remove from octree.
+			var uuid = object.geometry.uuid;
+			uuid && octree.removeThreeMesh( uuid );
+			return object; // important!
+		}
+
+		function updateOctree( value ){
+			var object = removefromOctree( value );
+
+			if ( !object ) return;
+			if ( !object.isMesh ) return;
+			if ( !object.geometry ) return;
+			if ( !object.geometry.isGeometry ) return;
+			if ( localPlayer.getObjectById(object.id) ) return; // child of localPlayer.
+
+		//	Import to octree.
+			octree.importThreeMesh( object );
+		}
+
+	//	renamed from "octreeIncluded" to "octreeIncludes".
+		function octreeIncludes( uuid ){
+			var result;
+			octree.nodes.forEach(function (nodeDepth) {
+				if ( result ) return;
+				nodeDepth.forEach(function (node) {
+					if ( result ) return;
+					node.trianglePool.forEach(function (face) {
+						if ( result ) return;
+						if (face.meshID === uuid) result = true;
+					});
+				});
+			});
+			return result;
+		}
+
+		function exitFromEditMode(){
+			editor.reset(); // important!
+			resetEntitySelectValue();
+			takeCameraControls( localPlayer );
+			keyInputControls.isDisabled = false;
+		//	editor.helper && scene.remove( helper ); // debug!
+		//	debugMode && console.log( "exitFromEditMode:", editor );
+			return;
+		}
+
+		function switchToEditMode( value ){
+
+			if ( editor.update( value ) ) {
+
+				var object = getObjectByEntityId( value );
+				if ( !object ) return exitFromEditMode();
+
+			//	camera controls offset.
+				if ( object.geometry && object.geometry.boundingSphere ) {
+					var offset = object.geometry.boundingSphere.center;
+					cameraControls.offset.copy( offset );
+					cameraControls.offset.y *= 0.5;
+				}
+
+			//	Remove from camera rigid objects.
+				removefromCameraRigidObjects( value );
+
+			//	editor take camera controls.
+				cameraControls.trackObject = editor;
+
+			//	Disable key input controls.
+				keyInputControls.isDisabled = true;
+
+			//	debugMode && editor.isEditing && editor.helper && scene.add( helper );
+			//	debugMode && console.log( "switchToEditMode:", object );
+			} 
+
+			else exitFromEditMode();
+
+		}
 
 		function displayVectorValues( vector ){
 
@@ -834,191 +1023,156 @@
 
 		}
 
-		function addtoOctree( value ){
-			var id = parseInt( value );
-			if ( id === NaN ) return;
-			var object = scene.getObjectById( id );
-			if ( !object ) return;
-			if ( !object.isMesh ) return;
-			if ( !object.geometry ) return;
-			if ( !object.geometry.isGeometry ) return;
-			var uuid = object.geometry.uuid;
-		//	if not child of localPlayer import to octree.
-			if ( !localPlayer.getObjectById(object.id) )
-				octree.importThreeMesh( object );
-			return object;
-		}
+	//	Editor Undo/Redo eventListner.
 
-		function removefromOctree( value ){
-			var id = parseInt( value );
-			if ( id === NaN ) return;
-			var object = scene.getObjectById( id );
-			if ( !object ) return;
-			if ( !object.isMesh ) return;
-			if ( !object.geometry ) return;
-			if ( !object.geometry.isGeometry ) return;
-			var uuid = object.geometry.uuid;
-			octree.removeThreeMesh( uuid );
-			return object; // important!
-		}
+		window.addEventListener( "keypress", function(e){ 
 
-		function updateOctree( value ){
-			var object = removefromOctree( value );
-			if ( !object ) return;
-		//	if not child of localPlayer import to octree.
-			if ( !localPlayer.getObjectById(object.id) ) {
-				octree.importThreeMesh( object );
-			}
-		}
+			if ( e.code !== "KeyZ" ) return; // important!
+			if ( !editor.isEditing ) return; // important!
 
-		function octreeIncluded( uuid ){
-			var result;
-			octree.nodes.forEach(function (nodeDepth) {
-				if ( result ) return;
-				nodeDepth.forEach(function (node) {
-					if ( result ) return;
-					node.trianglePool.forEach(function (face) {
-						if ( result ) return;
-						if (face.meshID === uuid) result = true;
-					});
-				});
-			});
-			debugMode && console.log( "octreeIncluded:", result );
-			return result;
-		}
+			var keyZ = e.code === "KeyZ";    // important!
 
-		function exitFromEditMode(){
-			takeCameraControls( localPlayer );
-			keyInputControls.isDisabled = false;
-			entitySelect.value = entity_droplist.value = "";
-			return void 0;
-		}
+			var modifiers = keyboard.modifiers;
+			var REDO = modifiers["ctrl"] &&  modifiers["shift"] && keyZ;
+			var UNDO = modifiers["ctrl"] && !modifiers["shift"] && keyZ;
 
-		function switchToEditMode( value ){
+			( UNDO && editor.undo() ) || ( REDO && editor.redo() ); 
+		});
 
-			if ( !checkId( value ) ) return exitFromEditMode();
-
-			var id = parseInt( value );
-			var object = getObjectByEntityId( id );
-			if ( !object ) return exitFromEditMode();
-
-		//	Take camera controls.
-			if ( object.geometry && object.geometry.boundingSphere ) {
-				var offset = object.geometry.boundingSphere.center;
-				cameraControls.trackObject = object;
-				cameraControls.offset.copy( offset );
-				cameraControls.offset.y *= 0.5;
-			} else takeCameraControls( object );
-
-		//	Update editor object.
-			editor.update( id );
-
-		//	Disable key input controls.
-			keyInputControls.isDisabled = true;
-		}
-
-	//	Geometry.
+	//	Editor keyInput systems.
 
 		(function(){
 
-			plane_geometry_button && plane_geometry_button.addEventListener( "click", function(){
+			const clock = new THREE.Clock();
+			const modifiers = keyboard.modifiers;
+			const UP=38, DOWN=40, LEFT=37, RIGHT=39;
+			const A=65, D=68, E=69, F=70, G=71, H=72, 
+				  Q=81, R=82, S=83, T=84, W=87;
 
-				var material = new THREE.MeshStandardMaterial({side:2});
-			//	var entity_droplist = document.getElementById("entities-droplist");
-
-			//	Create plane.
-				var w = 1, h = 1, d = 1;
-				var x = 0, y = h/2, z =  0;
-				var plane = new THREE.PlaneGeometry(w,h,d);
-				plane.translate(0, h/2, 0);
-				var mesh = new THREE.Mesh(plane, material);
-				mesh.name = "plane "+ k++;
-				mesh.position.set(x,0,z);
-				scene.add( mesh );
-
-			//	Create entity.
-				entities.push({id:mesh.id})
-
-			//	Create option.
-				var name = mesh.name;
-				var uuid = mesh.uuid;
-				var option = document.createElement("option");
-				var text = ""+mesh.id+"."+mesh.type+":"+mesh.name;
-				option.text = text;
-				option.value = mesh.id;
-				entity_droplist.appendChild( option );
-
-			//	Set new value.
-				entitySelect.value = entity_droplist.value = mesh.id.toString();
-			//	entity_droplist.dispatchEvent(new Event("change")); // important!
-
-			});
-
-			box_geometry_button && box_geometry_button.addEventListener( "click", function(){
-
-				var material = new THREE.MeshStandardMaterial();
-			//	var entity_droplist = document.getElementById("entities-droplist");
-
-			//	Create box.
-				var w = 1, h = 1, d = 1;
-				var x = 0, y = h/2, z =  0;
-				var box = new THREE.BoxGeometry(w,h,d);
-			//	box.translate(0, h/2, 0);
-				var mesh = new THREE.Mesh(box, material);
-				mesh.name = "box "+ k++;
-				mesh.position.set(x,0,z);
-				scene.add( mesh );
-
-			//	Create entity.
-				entities.push({id:mesh.id})
-
-			//	Create option.
-				var name = mesh.name;
-				var uuid = mesh.uuid;
-				var option = document.createElement("option");
-				var text = ""+mesh.id+"."+mesh.type+":"+mesh.name;
-				option.text = text;
-				option.value = mesh.id;
-				entity_droplist.appendChild( option );
-
-			//	Set new value.
-				entitySelect.value = entity_droplist.value = mesh.id.toString();
-			//	entity_droplist.dispatchEvent(new Event("change")); // important!
-
-			});
-
-		})();
-
-	//	Editor Undo/Redo eventListners.
-
-		(function(){
-
-			window.addEventListener( "keyup", onKeyUndoRedo );
-			window.addEventListener( "keypress", onKeyUndoRedo );
-
-			function onKeyUndoRedo(e){ 
-
-				if ( e.code !== "KeyZ" ) return; // important!
-				if ( !editor.isEditing ) return; // important!
-
-				var keyZ = e.code === "KeyZ";    // important!
-
-				var modifiers = keyboard.modifiers;
-				var REDO = modifiers["ctrl"] &&  modifiers["shift"] && keyZ;
-				var UNDO = modifiers["ctrl"] && !modifiers["shift"] && keyZ;
-
-				( UNDO && editor.undo() ) || ( REDO && editor.redo() ); 
+			function modifierIsDown(){
+				return modifiers.alt   || modifiers.meta
+					|| modifiers.shift || modifiers.ctrl; 
 			}
 
-		})();
+		//	## EditorScalingSystem.
 
+			function EditorScalingSystem( dt ){
+
+				if ( !editor.isEditing ) return;
+				if (  modifierIsDown() ) return;
+
+				if ( keyCodes[H] ) {
+					editor.scale.x += dt;
+					editor.scale.y += dt;
+					editor.scale.z += dt;
+				}
+
+				else if ( keyCodes[G] ) {
+					editor.scale.x -= dt;
+					editor.scale.y -= dt;
+					editor.scale.z -= dt;
+				} 
+
+			}
+
+		//	## EditorRotationSystem.
+
+			function EditorRotationSystem( dt ){
+
+				if ( !editor.isEditing ) return;
+				if (  modifierIsDown() ) return;
+
+				var rad = Math.max(dt, 0.02);
+
+			//	Rotation (local coordinates).
+				keyCodes[W] && editor.rotateOnAxis( axisX,  rad );
+				keyCodes[S] && editor.rotateOnAxis( axisX, -rad );
+				keyCodes[A] && editor.rotateOnAxis( axisY, -rad );
+				keyCodes[D] && editor.rotateOnAxis( axisY,  rad );
+
+			//	Reset rotation.
+				keyCodes[R] && editor.rotation.set(0,0,0);
+				keyCodes[F] && editor.setRotationFromQuaternion(camera.quaternion);
+
+			}
+
+		//	## EditorTranslationSystem.
+
+			function EditorTranslationSystem( dt ){
+
+				if ( !editor.isEditing ) return;
+				if (  modifierIsDown() ) return;
+
+				var UPDOWN = keyCodes[E] || keyCodes[Q];
+				var ARROWS = keyCodes[37] || keyCodes[38] || keyCodes[39] || keyCodes[40];
+
+			//	Move up/down.
+
+				UPDOWN && (function(up, down){
+
+					var rad = 0;
+					var keyboardFrontAngle = 0;
+					var movementSpeed = Math.max(dt, 0.05);
+					var cameraFrontAngle = cameraControls.phi;
+					if ( up ) keyboardFrontAngle =  Math.PI/2;
+					if (down) keyboardFrontAngle = -Math.PI/2;
+					var direction = rad - cameraFrontAngle + keyboardFrontAngle;
+					var directionOnAxisY = Math.sin(direction);
+					var y = directionOnAxisY * movementSpeed;
+					editor.position.y += y; 
+
+				})( keyCodes[E], keyCodes[Q] );
+
+			//	Move left/right/forwards/backward
+
+				ARROWS && (function() {
+
+					var rad = 8 * Math.PI/4;  // keyboard input.
+					var movementSpeed = Math.max(dt, 0.05);
+					var cameraFrontAngle = cameraControls.getFrontAngle();
+					var keyboardFrontAngle = keyboard.frontAngle;
+					var direction = rad - cameraFrontAngle + keyboardFrontAngle;
+					var directionOnAxisX = -Math.sin(direction);
+					var directionOnAxisZ = -Math.cos(direction);
+					var x = directionOnAxisX * movementSpeed;
+					var z = directionOnAxisZ * movementSpeed;
+					editor.position.x += x; 
+					editor.position.z += z;
+
+				})();
+
+			}
+
+		//	## Editor keyInput loop.
+
+			(function update(){
+
+				var dt = clock.getDelta();
+				requestFrameID = requestAnimationFrame( update );
+
+				if ( !editor.isEditing ) return;
+
+				var SCALE = keyCodes[H] || keyCodes[G];
+				var ROTATE = keyCodes[W] || keyCodes[A] || keyCodes[S] || keyCodes[D] || keyCodes[R] || keyCodes[F];
+				var MOVE = keyCodes[E] || keyCodes[Q] || keyCodes[37] || keyCodes[38] || keyCodes[39] || keyCodes[40];
+
+				SCALE && EditorScalingSystem( dt );
+				ROTATE && EditorRotationSystem( dt );
+				MOVE && EditorTranslationSystem( dt );
+
+			})();
+
+		})();
 
 	//	Init editor.
-
 		editor.reset();
 
-	})( editor );
+	//	Add to scene.
+		scene.add( editor ); // important!
 
+		return editor;
+
+	})( new THREE.Object3D() );
 
 /*
 //	Move on axis Y (up/down).
@@ -1053,198 +1207,8 @@
 		object[mode].x += x; 
 		object[mode].z += z;
 	}
-*/
 
-//	Editor systems.
 
-//	const axisX = new THREE.Vector3(1,0,0);
-//	const axisY = new THREE.Vector3(0,1,0);
-//	const axisZ = new THREE.Vector3(0,0,1);
-
-//	const keyboard = new KeyboardState();
-//	const keyCodes = keyboard.keyCodes;
-
-	window.addEventListener("keyup",   function(){ updateKeyboardFrontAngle( keyboard ); });
-	window.addEventListener("keydown", function(){ updateKeyboardFrontAngle( keyboard ); });
-
-	function updateKeyboardFrontAngle( keyboard ){
-
-		const rad = Math.PI/4;
-		const keyCodes = keyboard.keyCodes;
-		var A=65, D=68, S=83, W=87;
-		var Left=37, Up=38, Right=39, Down=40;
-
-		var UP    = keyCodes[W] || keyCodes[Up];
-		var LEFT  = keyCodes[A] || keyCodes[Left];
-		var DOWN  = keyCodes[S] || keyCodes[Down];
-		var RIGHT = keyCodes[D] || keyCodes[Right];
-
-	//	debugMode && console.log( UP, LEFT, DOWN, RIGHT );
-
-		if (  UP && !LEFT && !DOWN && !RIGHT ) keyboard.frontAngle = 0 * rad; //   0 deg.
-		else if (  UP &&  LEFT && !DOWN && !RIGHT ) keyboard.frontAngle = 1 * rad; //  45 deg.
-		else if ( !UP &&  LEFT && !DOWN && !RIGHT ) keyboard.frontAngle = 2 * rad; //  90 deg.
-		else if ( !UP &&  LEFT &&  DOWN && !RIGHT ) keyboard.frontAngle = 3 * rad; // 135 deg.
-		else if ( !UP && !LEFT &&  DOWN && !RIGHT ) keyboard.frontAngle = 4 * rad; // 180 deg.
-		else if ( !UP && !LEFT &&  DOWN &&  RIGHT ) keyboard.frontAngle = 5 * rad; // 225 deg.
-		else if ( !UP && !LEFT && !DOWN &&  RIGHT ) keyboard.frontAngle = 6 * rad; // 270 deg.
-		else if (  UP && !LEFT && !DOWN &&  RIGHT ) keyboard.frontAngle = 7 * rad; // 315 deg.
-	//	else if ( !UP && !LEFT && !DOWN && !RIGHT ) keyboard.frontAngle = 8 * rad; // 360 deg.
-
-	}
-
-//	## EditorRotationSystem.
-
-	function EditorRotationSystem(dt, entity){
-
-		try {
-
-			if ( entity.id.toString() != entity_droplist.value ) return;
-
-			var object = scene.getObjectById( entity.id );
-			var required = object && object.geometry && object.rotation;
-			if ( !required ) return; // important!
-
-			var rad = Math.max(dt, 0.02);
-			var keyCodes = keyboard.keyCodes;
-			var UP=38, DOWN=40, LEFT=37, RIGHT=39;
-			var D=68, A=65, W=87, S=83, R=82, F=70;
-
-		//	Rotation (local coordinates).
-			keyCodes[ UP ]  && object.rotateOnAxis( axisX,  rad );
-			keyCodes[DOWN]  && object.rotateOnAxis( axisX, -rad );
-			keyCodes[LEFT]  && object.rotateOnAxis( axisY, -rad );
-			keyCodes[RIGHT] && object.rotateOnAxis( axisY,  rad );
-
-		//	Reset rotation.
-			keyCodes[R] && object.rotation.set(0,0,0);
-			keyCodes[F] && object.setRotationFromQuaternion(camera.quaternion);
-
-		//	Update editor object.
-			object && object.rotation && editor.rotation.copy( object.rotation ); // important!
-
-		} catch(err){
-			debugMode && console.error( "EditorRotationError:", err );
-		};
-
-	}
-
-//	## EditorTranslationSystem.
-
-	function EditorTranslationSystem(dt, entity){
-
-		try {
-
-			if ( entity.id.toString() != entity_droplist.value ) return;
-
-			var object = scene.getObjectById( entity.id );
-			var required = object && object.geometry && object.position;
-			if ( !required ) return; // important!
-
-			var keyCodes = keyboard.keyCodes;
-			var object = scene.getObjectById( entity.id );
-			var LEFT=37, RIGHT=39, UP=38, DOWN=40;
-			var A=65, D=68, E=69, F=70, Q=81, R=82, S=83, W=87;
-
-		//	Move up/down.
-
-			if ( keyCodes[E] || keyCodes[Q] ) (function(up, down){
-
-				var rad = 0;
-				var keyboardFrontAngle = 0;
-				var movementSpeed = Math.max(dt, 0.05);
-				var cameraFrontAngle = cameraControls.phi;
-				if ( up ) keyboardFrontAngle =  Math.PI/2;
-				if (down) keyboardFrontAngle = -Math.PI/2;
-				var direction = rad - cameraFrontAngle + keyboardFrontAngle;
-				var directionOnAxisY = Math.sin(direction);
-				var y = directionOnAxisY * movementSpeed;
-				object.position.y += y; 
-
-			})( keyCodes[E], keyCodes[Q] );
-
-		//	Move left/right/forwards/backward
-
-			if (  keyCodes[W] || keyCodes[A] 
-				|| keyCodes[S] || keyCodes[D] ) (function() {
-
-			//	var rad = 6 * Math.PI/4;  // joystick input.
-				var rad = 8 * Math.PI/4;  // keyboard input.
-				var movementSpeed = Math.max(dt, 0.05);
-				var cameraFrontAngle = cameraControls.getFrontAngle();
-				var keyboardFrontAngle = keyboard.frontAngle;
-				var direction = rad - cameraFrontAngle + keyboardFrontAngle;
-				var directionOnAxisX = -Math.sin(direction);
-				var directionOnAxisZ = -Math.cos(direction);
-				var x = directionOnAxisX * movementSpeed;
-				var z = directionOnAxisZ * movementSpeed;
-				object.position.x += x; 
-				object.position.z += z;
-
-			})();
-
-		//	Update editor object.
-			object && object.position && editor.position.copy( object.position ); // important!
-
-		} catch(err){
-			debugMode && console.error( "EditorTranslationError:", err );
-		};
-
-	}
-
-//	## EditorScalingSystem.
-
-	function EditorScalingSystem(dt, entity){
-
-		try {
-
-			if ( entity.id.toString() != entity_droplist.value ) return;
-
-			var object = scene.getObjectById( entity.id );
-			var required = object && object.geometry && object.scale;
-			if ( !required ) return; // important!
-
-			//	TODO.
-
-		//	Update editor object.
-			object && object.scale && editor.scale.copy( object.scale ); // important!
-
-		} catch(err){
-			debugMode && console.error( "EditorScalingError:", err );
-		};
-
-	}
-
-//	const clock = new THREE.Clock();
-
-	(function update(){
-
-	//	EditMode Loop.
-
-		var dt = clock.getDelta();
-		requestFrameID = requestAnimationFrame( update );
-
-		for (var i = 0; i < entities.length; i++){
-
-			var entity = entities[i];
-			if ( entity.id === scene.id ) continue; // important!
-			if ( entity.id === camera.id ) continue; // important!
-			if ( entity.id === editor.id ) continue; // important!
-			if ( entity.id === localPlayer.id ) continue; // important!
-			if ( entity.id === cameraLight.id ) continue; // important!
-			if ( entity.id === shadowCameraHelper.id ) continue; // important!
-			if ( parseInt( entity_droplist.value ) === NaN ) continue; // important!
-			if ( entity.id !== parseInt( entity_droplist.value ) ) continue; // very important!
-
-			EditorScalingSystem(dt, entity);
-			EditorRotationSystem(dt, entity);
-			EditorTranslationSystem(dt, entity);
-
-		}
-
-	})();
-
-/*
 //	!!! DEMO !!! IMPORTANT! !!! DEMO !!! IMPORTANT! !!! DEMO !!!
 	function translateOnScreenAxis( object ){
 	//	(from MW character controller).
