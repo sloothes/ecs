@@ -182,8 +182,8 @@
 
 	//	Remove options.
 		while ( remove_ids.length ) (function(id){
-			var selector = "option[value='" + id.toString() + "']"; console.log( selector );
-			var option = entity_droplist.querySelector( selector ); console.log(  option  );
+			var selector = "option[value='" + id.toString() + "']"; // console.log( selector );
+			var option = entity_droplist.querySelector( selector ); // console.log(  option  );
 			option && option.remove();
 		})( remove_ids.shift() );
 
