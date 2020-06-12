@@ -157,8 +157,38 @@
 			const axisY = new THREE.Vector3(0,1,0);
 			const axisZ = new THREE.Vector3(0,0,1);
 
-		//	Create a Object3D to hold editor-tab values.
+		//	Create an Object3D to hold values.
 			const editor = new THREE.Object3D();
+
+		//	keyboard frontAngle eventListeners.
+			window.addEventListener("keyup",   function(){ updateKeyboardFrontAngle( keyboard ); });
+			window.addEventListener("keydown", function(){ updateKeyboardFrontAngle( keyboard ); });
+
+			function updateKeyboardFrontAngle( keyboard ){
+
+				const rad = Math.PI/4;
+				const keyCodes = keyboard.keyCodes;
+				var A=65, D=68, S=83, W=87;
+				var Left=37, Up=38, Right=39, Down=40;
+
+				var UP    = keyCodes[W] || keyCodes[Up];
+				var LEFT  = keyCodes[A] || keyCodes[Left];
+				var DOWN  = keyCodes[S] || keyCodes[Down];
+				var RIGHT = keyCodes[D] || keyCodes[Right];
+
+			//	debugMode && console.log( UP, LEFT, DOWN, RIGHT );
+
+				if (  UP && !LEFT && !DOWN && !RIGHT ) keyboard.frontAngle = 0 * rad; //   0 deg.
+				else if (  UP &&  LEFT && !DOWN && !RIGHT ) keyboard.frontAngle = 1 * rad; //  45 deg.
+				else if ( !UP &&  LEFT && !DOWN && !RIGHT ) keyboard.frontAngle = 2 * rad; //  90 deg.
+				else if ( !UP &&  LEFT &&  DOWN && !RIGHT ) keyboard.frontAngle = 3 * rad; // 135 deg.
+				else if ( !UP && !LEFT &&  DOWN && !RIGHT ) keyboard.frontAngle = 4 * rad; // 180 deg.
+				else if ( !UP && !LEFT &&  DOWN &&  RIGHT ) keyboard.frontAngle = 5 * rad; // 225 deg.
+				else if ( !UP && !LEFT && !DOWN &&  RIGHT ) keyboard.frontAngle = 6 * rad; // 270 deg.
+				else if (  UP && !LEFT && !DOWN &&  RIGHT ) keyboard.frontAngle = 7 * rad; // 315 deg.
+			//	else if ( !UP && !LEFT && !DOWN && !RIGHT ) keyboard.frontAngle = 8 * rad; // 360 deg.
+
+			}
 
 			(function( editor ){
 
@@ -227,7 +257,7 @@
 					if ( id === cameraLight.id ) return false;
 					if ( id === shadowCameraHelper.id ) return false;
 					if ( id === cameraLight.shadow.camera.id ) return false;
-					if ( id !== parseInt( entity_droplist.value ) ) return false;
+				//	if ( id !== parseInt( entity_droplist.value ) ) return false; // danger!
 					debugMode && console.log( "checkId:", true );
 
 					return true;
@@ -272,16 +302,21 @@
 				editor.reset = function(){
 					editor.copy( new THREE.Object3D() );
 					editor.name = "Editor";
-					editor.isEditing = false;
-					undo.length = 0; redo.length = 0;
-					debugMode && console.log( "editor reset!" );
+					editor.isEditing = false; // edit mode off.
+					undo.length = 0; redo.length = 0; // clear undo/redo.
+					cancelAnimationFrame( editor.requestFrameID ); // cancel object update loop, important!
+					debugMode && console.log( "editor reset:", editor );
 				};
 
 				editor.update = function( value ){
 
-				//	Get object.
+				//	Reset editor.
+					editor.reset();
+
+				//	Get new object.
 					var object = getObjectByEntityId( value ); 
-					if ( !object ) return;
+
+					if ( !object ) return false;
 
 				//	Copy object.
 					object && editor.copy( object );
@@ -289,8 +324,8 @@
 				//	Edit mode.
 					editor.isEditing = !!object;
 
-				//	Update object.
-					(function update(){
+				//	object update loop.
+					object && (function update(){
 
 						if ( object && editor.isEditing ) {
 
@@ -308,8 +343,9 @@
 
 				//	keep initial state.
 					object && editor.isEditing && addToUndo();
-					debugMode && console.log( "editor updated:", editor );
+					debugMode && console.log( "editor updated:", object );
 
+					return true;
 				};
 
 			//	Editor undo/redo.
@@ -337,12 +373,6 @@
 							var loader = new THREE.ObjectLoader();
 							editor.copy( loader.parse( json ) );
 
-						//	var obj3d = loader.parse( json );
-						//	editor.visible = obj3d.visible;
-						//	editor.scale.copy( obj3d.scale );
-						//	editor.rotation.copy( obj3d.rotation );
-						//	editor.position.copy( obj3d.position );
-
 						}, 250);
 					};
 
@@ -364,12 +394,6 @@
 						//	Copy state (redo).
 							var loader = new THREE.ObjectLoader();
 							editor.copy( loader.parse( json ) );
-
-						//	var obj3d = loader.parse( json );
-						//	editor.visible = obj3d.visible;
-						//	editor.scale.copy( obj3d.scale );
-						//	editor.rotation.copy( obj3d.rotation );
-						//	editor.position.copy( obj3d.position );
 
 						}, 250);
 					};
@@ -412,23 +436,24 @@
 						edgeshelper = helper;
 					}
 
+				//	edgeshelper watcher.
+
 					watch(entitySelect, function( prop, action, newValue, oldValue ){
 
-						vectorSelect.value = vector_droplist.value; // important!
+					//	vectorSelect.value = vector_droplist.value; // important!
 
 					//	Old edges helper.
 						destroyEdgesHelper(); // old edges helper.
 
 					//	Get object.
 						var object = getObjectByEntityId( newValue );
-						debugMode && console.log( "entitySelect watch:", object );
 
 					//	New edges helper.
 						object && createEdgesHelper( object ); // new edges helper.
 
 					});
 
-				//	keys addtoUndo/addtoUndo eventListner.
+				//	keyInput addtoUndo/addtoUndo eventListner.
 
 					(function(){
 
@@ -437,19 +462,20 @@
 						var keyCodes = keyboard.keyCodes;
 						var modifiers = keyboard.modifiers;
 						var LEFT=37, UP=38, RIGHT=39, DOWN=40;
-						var A=65, D=68, E=69, F=70, Q=81, R=82, S=83, W=87, Z=90;
+						var A=65, D=68, E=69, F=70, G=71, H=72, Q=81, R=82, S=83, W=87, Z=90;
 
 						function editKeyIsNotDown(){
 							return !keyCodes[A]  && !keyCodes[D]  && !keyCodes[E]  
 								&& !keyCodes[F]  && !keyCodes[Q]  && !keyCodes[R] 
-								&& !keyCodes[S]  && !keyCodes[W]  // !keyCodes[Z]
+								&& !keyCodes[S]  && !keyCodes[W]  && !keyCodes[G]  && !keyCodes[H]
 								&& !keyCodes[37] && !keyCodes[38] && !keyCodes[39] && !keyCodes[40];
 						}
 						
 						function isEditorKey(event){
 							return event.code === "KeyA"    || event.code === "KeyD"       || event.code === "KeyE"
 								|| event.code === "KeyF"    || event.code === "KeyQ"       || event.code === "KeyR"
-								|| event.code === "KeyS"    || event.code === "KeyW"       || event.code === "ArrowLeft"
+								|| event.code === "KeyS"    || event.code === "KeyW"       || event.code === "KeyG"
+								|| event.code === "KeyH"    || event.code === "ArrowLeft"  
 								|| event.code === "ArrowUp" || event.code === "ArrowRight" || event.code === "ArrowDown";
 						}
 						
@@ -901,29 +927,29 @@
 				(function(){
 
 					watch(entitySelect, function( prop, action, newValue, oldValue ){
-						debugMode && console.log( "entity droplist:", prop, action, parseInt(newValue)  );
+						debugMode && console.log( "entitySelect watch:", prop, action, "newValue:", newValue, "oldValue:", oldValue  );
 
-						editor.reset(); // important!
+						updateOctree( oldValue ); // (first) important!
 
-						var oldValue = parseInt(oldValue);
-						var newValue = parseInt(newValue);
+						switchToEditMode( newValue ); // important!
 
+					//	editor.reset(); // important!
 					//	Update old octree (first) important!
-						if ( oldValue != NaN ) updateOctree( oldValue );
-
+					//	if ( oldValue != "" ) updateOctree( oldValue );     // ( oldValue != NaN )
 					//	Exit edit mode.
-						if ( newValue == NaN ) exitFromEditMode();
-
+					//	if ( newValue == "" ) exitFromEditMode();           // ( newValue == NaN )
 					//	Switch to edit mode.
-						if ( newValue != NaN ) switchToEditMode( newValue );
+					//	if ( newValue != "" ) switchToEditMode( newValue ); // ( newValue != NaN )
 
 					//	Display vectors direct from editor.
+						updateVectorSelectValue();
+					//	vectorSelect.value = vector_droplist.value;
 						displayVectorValues( vectorSelect.value );
 
 					});
 
 					watch(vectorSelect, function( prop, action, newValue, oldValue ){
-						debugMode && console.log( "vector droplist:", prop, action, newValue );
+						debugMode && console.log( "vectorSelect watch:", prop, action, newValue );
 
 					//	Update vectors direct from editor.
 						displayVectorValues( vectorSelect.value );
@@ -985,7 +1011,9 @@
 				})();
 
 				function addtoOctree( value ){
+					debugMode && console.log( "addtoOctree value:", value );
 					var object = getObjectByEntityId( value );
+					debugMode && console.log( "addtoOctree object:", object );
 
 					if ( !object ) return;
 					if ( !object.isMesh ) return;
@@ -994,13 +1022,16 @@
 
 				//	if not child of localPlayer import to octree.
 					if ( !localPlayer.getObjectById(object.id) ) {
+						debugMode && console.log( "addtoOctree import:", object );
 						octree.importThreeMesh( object );
+						return object; // important!
 					}
-					return object; // important!
 				}
 
 				function removefromOctree( value ){
+					debugMode && console.log( "removefromOctree value:", value );
 					var object = getObjectByEntityId( value );
+					debugMode && console.log( "removefromOctree object:", object );
 
 					if ( !object ) return;
 					if ( !object.isMesh ) return;
@@ -1008,17 +1039,25 @@
 					if ( !object.geometry.isGeometry ) return;
 
 					var uuid = object.geometry.uuid;
-					octree.removeThreeMesh( uuid );
+					debugMode && console.log( "removefromOctree uuid:", uuid );
+					uuid && octree.removeThreeMesh( uuid );
 					return object; // important!
 				}
 
 				function updateOctree( value ){
+					debugMode && console.log( "updateOctree value:", value );
 					var object = removefromOctree( value );
+					debugMode && console.log( "updateOctree object:", object );
+
 					if ( !object ) return;
+					if ( !object.isMesh ) return;
+					if ( !object.geometry ) return;
+					if ( !object.geometry.isGeometry ) return;
 
 				//	if not child of localPlayer import to octree.
 					if ( !localPlayer.getObjectById(object.id) ) {
 						octree.importThreeMesh( object );
+						debugMode && console.log( "updateOctree import:", object );
 					}
 				}
 
@@ -1040,39 +1079,43 @@
 				}
 
 				function exitFromEditMode(){
+					editor.reset(); // important!
+					resetEntitySelectValue();
 					takeCameraControls( localPlayer );
 					keyInputControls.isDisabled = false;
-					entitySelect.value = entity_droplist.value = ""; // resetEntitySelectValue();
 					helper && scene.remove( helper ); // debug!
-
-					return void 0;
+					debugMode && console.log( "exitFromEditMode:", editor );
+					return;
 				}
 
 				function switchToEditMode( value ){
 
-					if ( !checkId( value ) ) return exitFromEditMode();
+					if ( editor.update( value ) ) {
 
-					var id = parseInt( value );
-					var object = getObjectByEntityId( value );
-					if ( !object ) return exitFromEditMode();
+						var object = getObjectByEntityId( value );
+						if ( !object ) return exitFromEditMode();
 
-				//	camera controls offset.
-					if ( object.geometry && object.geometry.boundingSphere ) {
-						var offset = object.geometry.boundingSphere.center;
-						cameraControls.offset.copy( offset );
-						cameraControls.offset.y *= 0.5;
+					//	camera controls offset.
+						if ( object.geometry && object.geometry.boundingSphere ) {
+							var offset = object.geometry.boundingSphere.center;
+							cameraControls.offset.copy( offset );
+							cameraControls.offset.y *= 0.5;
+						}
+
+					//	editor take camera controls.
+						cameraControls.trackObject = editor;
+
+					//	Disable key input controls.
+						keyInputControls.isDisabled = true;
+
+					//	debugging!
+						debugMode && editor.isEditing && helper && scene.add( helper );
+						debugMode && console.log( "switchToEditMode:", object );
+
 					} 
-				//	editor take camera controls.
-					cameraControls.trackObject = editor;
 
-				//	Update editor object.
-					editor.update( value );
+					else exitFromEditMode();
 
-				//	Disable key input controls.
-					keyInputControls.isDisabled = true;
-
-				//	debugging!
-					debugMode && editor.isEditing && helper && scene.add( helper );
 				}
 
 				function displayVectorValues( vector ){
@@ -1130,34 +1173,155 @@
 					( UNDO && editor.undo() ) || ( REDO && editor.redo() ); 
 				});
 
-
-
 			//	Init editor.
-
 				editor.reset();
-			//	scene.add( editor );
+
+			//	Add to scene.
+				scene.add( editor ); // important!
 
 			})( editor );
 
-		//	Editor systems.
 
+	//	Editor keyInput systems.
 
+		//	const clock = new THREE.Clock();
 
+			(function update(){
 
+			//	Editor keyInput Loop.
 
+				var dt = clock.getDelta();
+				requestFrameID = requestAnimationFrame( update );
 
+				if ( editor.isEditing ){
 
+					EditorScalingSystem( dt );
+					EditorRotationSystem( dt );
+					EditorTranslationSystem( dt );
 
+				}
 
+			})();
 
+		//	## EditorScalingSystem.
 
+			function EditorScalingSystem( dt ){
 
+				if ( !editor.isEditing ) return;
 
+				var keyCodes = keyboard.keyCodes;
+				var modifiers = keyboard.modifiers;
+				var G=71, H=72;
 
+				if ( modifierIsDown() ) return;
+				
+				if ( keyCodes[H] ) {
 
+					editor.scale.x += dt;
+					editor.scale.y += dt;
+					editor.scale.z += dt;
 
+				}
 
+				else if ( keyCodes[G] ) {
 
+					editor.scale.x -= dt;
+					editor.scale.y -= dt;
+					editor.scale.z -= dt;
+
+				} 
+
+				function modifierIsDown(){
+					return modifiers.shift || modifiers.ctrl || modifiers.alt || modifiers.meta;
+				}
+
+			}
+
+		//	## EditorRotationSystem.
+
+			function EditorRotationSystem( dt ){
+
+				if ( !editor.isEditing ) return;
+
+				var rad = Math.max(dt, 0.02);
+				var keyCodes = keyboard.keyCodes;
+				var modifiers = keyboard.modifiers;
+				var UP=38, DOWN=40, LEFT=37, RIGHT=39;
+				var A=65, D=68, E=69, F=70, Q=81, R=82, S=83, T=84, W=87;
+
+				if ( modifierIsDown() ) return;
+
+			//	Rotation (local coordinates).
+				keyCodes[W] && editor.rotateOnAxis( axisX,  rad );
+				keyCodes[S] && editor.rotateOnAxis( axisX, -rad );
+				keyCodes[A] && editor.rotateOnAxis( axisY, -rad );
+				keyCodes[D] && editor.rotateOnAxis( axisY,  rad );
+
+			//	Reset rotation.
+				keyCodes[R] && editor.rotation.set(0,0,0);
+				keyCodes[F] && editor.setRotationFromQuaternion(camera.quaternion);
+
+				function modifierIsDown(){
+					return modifiers.shift || modifiers.ctrl || modifiers.alt || modifiers.meta;
+				}
+
+			}
+
+		//	## EditorTranslationSystem.
+
+			function EditorTranslationSystem( dt ){
+
+				if ( !editor.isEditing ) return;
+
+				var keyCodes = keyboard.keyCodes;
+				var modifiers = keyboard.modifiers;
+				var LEFT=37, UP=38, RIGHT=39, DOWN=40;
+				var A=65, D=68, E=69, F=70, Q=81, R=82, S=83, T=84, W=87;
+
+				if ( modifierIsDown() ) return;
+
+			//	Move up/down.
+
+				if ( keyCodes[E] || keyCodes[Q] ) (function(up, down){
+
+					var rad = 0;
+					var keyboardFrontAngle = 0;
+					var movementSpeed = Math.max(dt, 0.05);
+					var cameraFrontAngle = cameraControls.phi;
+					if ( up ) keyboardFrontAngle =  Math.PI/2;
+					if (down) keyboardFrontAngle = -Math.PI/2;
+					var direction = rad - cameraFrontAngle + keyboardFrontAngle;
+					var directionOnAxisY = Math.sin(direction);
+					var y = directionOnAxisY * movementSpeed;
+					editor.position.y += y; 
+
+				})( keyCodes[E], keyCodes[Q] );
+
+			//	Move left/right/forwards/backward
+
+				if ( keyCodes[37] || keyCodes[38] || keyCodes[39] || keyCodes[40] ) 
+					(function() {
+
+					//	var rad = 6 * Math.PI/4;  // joystick input.
+						var rad = 8 * Math.PI/4;  // keyboard input.
+						var movementSpeed = Math.max(dt, 0.05);
+						var cameraFrontAngle = cameraControls.getFrontAngle();
+						var keyboardFrontAngle = keyboard.frontAngle;
+						var direction = rad - cameraFrontAngle + keyboardFrontAngle;
+						var directionOnAxisX = -Math.sin(direction);
+						var directionOnAxisZ = -Math.cos(direction);
+						var x = directionOnAxisX * movementSpeed;
+						var z = directionOnAxisZ * movementSpeed;
+						editor.position.x += x; 
+						editor.position.z += z;
+
+					})();
+
+				function modifierIsDown(){
+					return modifiers.shift || modifiers.ctrl || modifiers.alt || modifiers.meta;
+				}
+
+			}
 
 		</script>
 
@@ -1195,6 +1359,25 @@
 				object[mode].x += x; 
 				object[mode].z += z;
 			}
+
+		//	!!! DEMO !!! IMPORTANT! !!! DEMO !!! IMPORTANT! !!! DEMO !!!
+			function translateOnScreenAxis( object ){
+			//	(from MW character controller).
+			//	var rad = 3 * Math.PI/2 // joystick input.
+				var rad = 2 * Math.PI;  // keyboard input.
+				var movementSpeed = 0.05; // (m/fps) => 5cm/fps
+				var cameraFrontAngle = cameraControls.getFrontAngle();
+				var keyboardFrontAngle = keyboard.frontAngle;
+				var direction = rad - cameraFrontAngle + keyboardFrontAngle;
+				var directionOnAxisX = -Math.sin(direction);
+				var directionOnAxisZ = -Math.cos(direction);
+				var x = directionOnAxisX * movementSpeed;
+				var z = directionOnAxisZ * movementSpeed;
+				var velocity = new THREE.Vector3(x,0,z);
+				object.position.x += velocity.x; 
+				object.position.z += velocity.z;
+			}
+		//	!!! DEMO !!! IMPORTANT! !!! DEMO !!! IMPORTANT! !!! DEMO !!!
 */
 		</script>
 
