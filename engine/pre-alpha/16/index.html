@@ -124,10 +124,11 @@
 				var cameraTab = TabUI.add( "Camera", "camera-tab" );
 				var controlTab = TabUI.add( "Controls", "control-tab" );
 				var playersTab = TabUI.add( "Players", "players-tab" );
-				var materialTab = TabUI.add( "Materials", "material-tab" );
+				var textureTab = TabUI.add( "Texture", "texture-tab" );
+				var materialTab = TabUI.add( "Material", "material-tab" );
 				var animationTab = TabUI.add( "Animations", "animation-tab" );
 
-				TabUI.append("Editor", "Controls", "Camera", "Players", "Animations", "Materials", "Levels", "Debug" );
+				TabUI.append("Editor", "Material", "Texture", "Controls", "Camera", "Players", "Animations", "Levels", "Debug" );
 				TabUI.Editor.role.classList.add("active");
 				TabUI.Editor.tab.classList.add("in","active");
 
@@ -143,12 +144,13 @@
 		<script src="/ecs/engine/core/keyboardState.js"></script>
 		<script src="/ecs/engine/core/keyInputControls.js"></script>
 		<script src="/ecs/engine/core/joystickControls.js"></script>
+		<script src="/ecs/engine/core/keyboard.js"></script>
 		<script src="/ecs/engine/editor/EditorTab.js"></script>
 	<!-- script src="/ecs/engine/editor/editor.js"></script -->
 
 		<script>
-
-		//	Editor.
+/*
+		//	keyboard.js
 
 			const keyboard = new KeyboardState();
 			const keyCodes = keyboard.keyCodes;
@@ -157,8 +159,6 @@
 			const axisY = new THREE.Vector3(0,1,0);
 			const axisZ = new THREE.Vector3(0,0,1);
 
-		//	Create an Object3D to hold values.
-			const editor = new THREE.Object3D();
 
 		//	keyboard frontAngle eventListeners.
 			window.addEventListener("keyup",   function(){ updateKeyboardFrontAngle( keyboard ); });
@@ -168,8 +168,8 @@
 
 				const rad = Math.PI/4;
 				const keyCodes = keyboard.keyCodes;
-				var A=65, D=68, S=83, W=87;
-				var Left=37, Up=38, Right=39, Down=40;
+				const A=65, D=68, S=83, W=87;
+				const Left=37, Up=38, Right=39, Down=40;
 
 				var UP    = keyCodes[W] || keyCodes[Up];
 				var LEFT  = keyCodes[A] || keyCodes[Left];
@@ -189,32 +189,40 @@
 			//	else if ( !UP && !LEFT && !DOWN && !RIGHT ) keyboard.frontAngle = 8 * rad; // 360 deg.
 
 			}
+*/
+		</script>
 
-			(function( editor ){
+		<script>
+
+		//	editor.js
+		//	const editor = new THREE.Object3D();
+
+		//	Create an Object3D to hold editor values.
+			const object3DEditor = (function( editor ){
 
 				var k = 0;
 
-				undo = []; // const undo = []; debug!
-				redo = []; // const redo = []; debug!
+				const undo = [];
+				const redo = [];
 
 				const RAD2DEG = THREE.Math.RAD2DEG;
 				const DEG2RAD = THREE.Math.DEG2RAD;
 
-			//	Editor helper (debugging).
-				const helper = (function(){
-					var sphere = new THREE.SphereGeometry();
-					var geometry = new THREE.EdgesGeometry( sphere );
-					var material = new THREE.LineBasicMaterial( { color: 0xffff00 } );
-					var editorHelper = new THREE.LineSegments( geometry, material );
-					editorHelper.name = "Editor Helper";
-					(function update(){
-						requestAnimationFrame(update);
-						editorHelper.scale.copy( editor.scale );
-						editorHelper.rotation.copy( editor.rotation );
-						editorHelper.position.copy( editor.position );
-					})();
-					return editorHelper;
-				})();
+			//	Editor helper (debug).
+			//	editor.helper = (function(){
+			//		var sphere = new THREE.SphereGeometry();
+			//		var geometry = new THREE.EdgesGeometry( sphere );
+			//		var material = new THREE.LineBasicMaterial( { color: 0xffff00 } );
+			//		var editorHelper = new THREE.LineSegments( geometry, material );
+			//		editorHelper.name = "Editor Helper";
+			//		(function update(){
+			//			requestAnimationFrame(update);
+			//			editorHelper.scale.copy( editor.scale );
+			//			editorHelper.rotation.copy( editor.rotation );
+			//			editorHelper.position.copy( editor.position );
+			//		})();
+			//		return editorHelper;
+			//	})();
 
 				const vect_x_input = document.getElementById("input-vector-x");
 				const vect_y_input = document.getElementById("input-vector-y");
@@ -234,6 +242,8 @@
 				const vector_droplist = document.getElementById("vector-mode-droplist");
 				const geometry_droplist = document.getElementById("editor-geometry-droplist");
 
+				const redo_button = document.getElementById("editor-redo-button");
+				const undo_button = document.getElementById("editor-undo-button");
 				const exit_edit_button = document.getElementById("exit-edit-mode");
 				const reset_vectors_button = document.getElementById("reset-vectors-button");
 				const box_geometry_button = document.getElementById("new-box-geometry");
@@ -257,8 +267,8 @@
 					if ( id === cameraLight.id ) return false;
 					if ( id === shadowCameraHelper.id ) return false;
 					if ( id === cameraLight.shadow.camera.id ) return false;
-				//	if ( id !== parseInt( entity_droplist.value ) ) return false; // danger!
-					debugMode && console.log( "checkId:", true );
+				//	if ( localPlayer.getObjectById( id ) ) return false; // localPlayer child.
+				//	debugMode && console.log( "checkId:", true );
 
 					return true;
 				}
@@ -287,10 +297,31 @@
 					vectorSelect.value = vector_droplist.value;
 				}
 
+				function addtoCameraRigidObjects( value ){
+					var id = parseInt(value);
+					if ( localPlayer.getObjectById(id) ) return; // localPlayer child.
+					var object = getObjectByEntityId( value );
+					if ( object && cameraControls.rigidObjects.findIndex( 
+						function( item ){ 
+							return item.id === object.id;
+						}) > -1 ) return; // already exists in rigidObjects.
+					object && cameraControls.rigidObjects.push( object );
+				}
+
+				function removefromCameraRigidObjects( value ){
+					var index = cameraControls.rigidObjects
+					.findIndex( function( object ){
+						return object.id === parseInt( value );
+					});
+					if ( index < 0 ) return; // important!
+					cameraControls.rigidObjects.splice( index, 1 );
+				}
+
 				function addToUndo(){
+					redo.length = 0; // important!
 					var json = editor.toJSON();
 					json && undo.unshift( json );
-					debugMode && console.log( "addToUndo!" );
+				//	debugMode && console.log( "addToUndo!" );
 				}
 
 				function addToRedo(){
@@ -305,7 +336,7 @@
 					editor.isEditing = false; // edit mode off.
 					undo.length = 0; redo.length = 0; // clear undo/redo.
 					cancelAnimationFrame( editor.requestFrameID ); // cancel object update loop, important!
-					debugMode && console.log( "editor reset:", editor );
+				//	debugMode && console.log( "editor reset:", editor );
 				};
 
 				editor.update = function( value ){
@@ -343,7 +374,7 @@
 
 				//	keep initial state.
 					object && editor.isEditing && addToUndo();
-					debugMode && console.log( "editor updated:", object );
+				//	debugMode && console.log( "editor updated:", object );
 
 					return true;
 				};
@@ -484,7 +515,7 @@
 						}
 
 						window.addEventListener( "keyup", function(e){
-							debugMode && console.log( "isEditKey:", isEditorKey(e) );
+						//	debugMode && console.log( "isEditKey:", isEditorKey(e) );
 
 							clearTimeout( interval );
 
@@ -492,7 +523,7 @@
 							if ( !editor.isEditing ) return;
 							if (  modifierIsDown() ) return;
 
-							debugMode && console.log( "editKeyIsNotDown:", editKeyIsNotDown() );
+						//	debugMode && console.log( "editKeyIsNotDown:", editKeyIsNotDown() );
 							
 							if ( isEditorKey(e) && editKeyIsNotDown() && !modifierIsDown() ) {
 								interval = setTimeout( function(){
@@ -771,7 +802,6 @@
 							if ( Math.abs( editor.scale.x ) < 0.001 ) editor.scale.x = 0.001; 
 							if ( Math.abs( editor.scale.y ) < 0.001 ) editor.scale.y = 0.001; 
 							if ( Math.abs( editor.scale.z ) < 0.001 ) editor.scale.z = 0.001; 
-						//	this.value = ( 100*(editor.scale.x+editor.scale.y+editor.scale.z)/3 ).toFixed(2);
 
 							addToUndo(); //	Add undo state.
 
@@ -780,7 +810,7 @@
 							editor.scale.set(1,1,1);
 							editor.rotation.set(0,0,0);
 							editor.quaternion.set(0,0,0,1);
-							editor.update( entitySelect.value ); // important?
+						//	editor.update( entitySelect.value ); // important?
 						} else if ( vector === "quaternion" ) {
 							editor.quaternion.w = thisValue;
 							addToUndo(); //	Add undo state.
@@ -826,6 +856,9 @@
 
 					var interval;
 
+					redo_button.addEventListener( "click", editor.redo );
+					undo_button.addEventListener( "click", editor.undo );
+
 					exit_edit_button.addEventListener( "click", function(){
 						clearTimeout(interval);
 						interval = setTimeout( resetEntitySelectValue, 250 );
@@ -837,9 +870,8 @@
 						interval = setTimeout(function(){
 
 							var value = entitySelect.value;
-							if ( !checkId( value ) ) return editor.reset(); 
 
-						//	editor.update( value );
+							if ( !checkId( value ) ) return editor.reset(); 
 							if ( !editor.isEditing ) return editor.reset();
 
 							if ( vectorSelect.value == "position" ) 
@@ -850,7 +882,7 @@
 								editor.scale.set(1,1,1);
 							else if ( vectorSelect.value == "quaternion" )
 								editor.quaternion.set(0,0,0,1);
-							debugMode && console.log("reset", vectorSelect.value);
+						//	debugMode && console.log("reset", vectorSelect.value);
 						}, 250);
 					});
 
@@ -875,11 +907,14 @@
 						//	Create mesh.
 							var material = new THREE.MeshLambertMaterial({side:2});
 							var mesh = new THREE.Mesh(geometry, material);
-							mesh.name = type.replace("Geometry","") + mesh.id;
+							mesh.name = type.replace("Geometry","") + ":"+mesh.id;
 							scene.add( mesh );
 
 						//	Add entity.
 							entities.add( mesh );
+
+						//	Add to camera rigid objects.
+						//	addtoCameraRigidObjects( mesh.id );
 
 						//	Enter edit mode.
 							entitySelect.value = entity_droplist.value = mesh.id.toString();
@@ -914,6 +949,9 @@
 						//	remove entity and option.
 							entities.remove( id ); // important!
 
+						//	Remove from camera rigid objects.
+							removefromCameraRigidObjects( id );
+
 						//	Exit edit mode. // resetEntitySelectValue();
 							entitySelect.value = entity_droplist.value = "";
 						//	entity_droplist.dispatchEvent(new Event("change"));
@@ -927,19 +965,15 @@
 				(function(){
 
 					watch(entitySelect, function( prop, action, newValue, oldValue ){
-						debugMode && console.log( "entitySelect watch:", prop, action, "newValue:", newValue, "oldValue:", oldValue  );
+					//	debugMode && console.log( "entitySelect watch:", 
+					//	prop, action, "newValue:", newValue, "oldValue:", oldValue  );
 
-						updateOctree( oldValue ); // (first) important!
+						updateOctree( oldValue ); // first, important!
+
+					//	Add to camera rigid objects.
+						!!oldValue && addtoCameraRigidObjects( oldValue );
 
 						switchToEditMode( newValue ); // important!
-
-					//	editor.reset(); // important!
-					//	Update old octree (first) important!
-					//	if ( oldValue != "" ) updateOctree( oldValue );     // ( oldValue != NaN )
-					//	Exit edit mode.
-					//	if ( newValue == "" ) exitFromEditMode();           // ( newValue == NaN )
-					//	Switch to edit mode.
-					//	if ( newValue != "" ) switchToEditMode( newValue ); // ( newValue != NaN )
 
 					//	Display vectors direct from editor.
 						updateVectorSelectValue();
@@ -949,7 +983,7 @@
 					});
 
 					watch(vectorSelect, function( prop, action, newValue, oldValue ){
-						debugMode && console.log( "vectorSelect watch:", prop, action, newValue );
+					//	debugMode && console.log( "vectorSelect watch:", prop, action, newValue );
 
 					//	Update vectors direct from editor.
 						displayVectorValues( vectorSelect.value );
@@ -971,7 +1005,7 @@
 					});
 
 					watch( editor.position, function(prop, action, newValue, oldValue){
-						debugMode && console.log( "editor.position:", prop, action, newValue );
+					//	debugMode && console.log( "editor.position:", prop, action, newValue );
 						if ( newValue === undefined ) return;
 						if ( vectorSelect.value !== "position" ) return;
 						if ( prop === "x" ) vect_x_input.value = newValue.toFixed(3);
@@ -980,7 +1014,7 @@
 					});
 
 					watch( editor.rotation, function(prop, action, newValue, oldValue){
-						debugMode && console.log( "editor.rotation:", prop, action, newValue );
+					//	debugMode && console.log( "editor.rotation:", prop, action, newValue );
 						if ( newValue === undefined ) return;
 						if ( vectorSelect.value !== "rotation" ) return;
 						if ( prop === "_x" ) vect_x_input.value = (RAD2DEG*newValue).toFixed(2);
@@ -989,7 +1023,7 @@
 					});
 
 					watch( editor.scale, function(prop, action, newValue, oldValue){
-						debugMode && console.log( "editor.scale:", prop, action, newValue );
+					//	debugMode && console.log( "editor.scale:", prop, action, newValue );
 						if ( newValue === undefined ) return;
 						if ( vectorSelect.value !== "scale" ) return;
 						if ( prop === "x" ) vect_x_input.value = (100*newValue).toFixed(2);
@@ -1011,58 +1045,48 @@
 				})();
 
 				function addtoOctree( value ){
-					debugMode && console.log( "addtoOctree value:", value );
 					var object = getObjectByEntityId( value );
-					debugMode && console.log( "addtoOctree object:", object );
 
 					if ( !object ) return;
 					if ( !object.isMesh ) return;
 					if ( !object.geometry ) return;
 					if ( !object.geometry.isGeometry ) return;
+					if ( localPlayer.getObjectById(object.id) ) return; // child of localPlayer.
 
-				//	if not child of localPlayer import to octree.
-					if ( !localPlayer.getObjectById(object.id) ) {
-						debugMode && console.log( "addtoOctree import:", object );
-						octree.importThreeMesh( object );
-						return object; // important!
-					}
+				//	Import to octree.
+					octree.importThreeMesh( object );
+					return object; // important!
 				}
 
 				function removefromOctree( value ){
-					debugMode && console.log( "removefromOctree value:", value );
 					var object = getObjectByEntityId( value );
-					debugMode && console.log( "removefromOctree object:", object );
 
 					if ( !object ) return;
 					if ( !object.isMesh ) return;
 					if ( !object.geometry ) return;
 					if ( !object.geometry.isGeometry ) return;
 
+				//	Remove from octree.
 					var uuid = object.geometry.uuid;
-					debugMode && console.log( "removefromOctree uuid:", uuid );
 					uuid && octree.removeThreeMesh( uuid );
 					return object; // important!
 				}
 
 				function updateOctree( value ){
-					debugMode && console.log( "updateOctree value:", value );
 					var object = removefromOctree( value );
-					debugMode && console.log( "updateOctree object:", object );
 
 					if ( !object ) return;
 					if ( !object.isMesh ) return;
 					if ( !object.geometry ) return;
 					if ( !object.geometry.isGeometry ) return;
+					if ( localPlayer.getObjectById(object.id) ) return; // child of localPlayer.
 
-				//	if not child of localPlayer import to octree.
-					if ( !localPlayer.getObjectById(object.id) ) {
-						octree.importThreeMesh( object );
-						debugMode && console.log( "updateOctree import:", object );
-					}
+				//	Import to octree.
+					octree.importThreeMesh( object );
 				}
 
+			//	renamed from "octreeIncluded" to "octreeIncludes".
 				function octreeIncludes( uuid ){
-				//	renamed: from "octreeIncluded" to "octreeIncludes".
 					var result;
 					octree.nodes.forEach(function (nodeDepth) {
 						if ( result ) return;
@@ -1074,7 +1098,6 @@
 							});
 						});
 					});
-					debugMode && console.log( "octreeIncludes:", result );
 					return result;
 				}
 
@@ -1083,8 +1106,8 @@
 					resetEntitySelectValue();
 					takeCameraControls( localPlayer );
 					keyInputControls.isDisabled = false;
-					helper && scene.remove( helper ); // debug!
-					debugMode && console.log( "exitFromEditMode:", editor );
+				//	editor.helper && scene.remove( helper ); // debug!
+				//	debugMode && console.log( "exitFromEditMode:", editor );
 					return;
 				}
 
@@ -1102,16 +1125,17 @@
 							cameraControls.offset.y *= 0.5;
 						}
 
+					//	Remove from camera rigid objects.
+						removefromCameraRigidObjects( value );
+
 					//	editor take camera controls.
 						cameraControls.trackObject = editor;
 
 					//	Disable key input controls.
 						keyInputControls.isDisabled = true;
 
-					//	debugging!
-						debugMode && editor.isEditing && helper && scene.add( helper );
-						debugMode && console.log( "switchToEditMode:", object );
-
+					//	debugMode && editor.isEditing && editor.helper && scene.add( helper );
+					//	debugMode && console.log( "switchToEditMode:", object );
 					} 
 
 					else exitFromEditMode();
@@ -1173,15 +1197,201 @@
 					( UNDO && editor.undo() ) || ( REDO && editor.redo() ); 
 				});
 
+			//	Editor keyInput systems.
+
+				(function(){
+
+					const clock = new THREE.Clock();
+					const modifiers = keyboard.modifiers;
+					const UP=38, DOWN=40, LEFT=37, RIGHT=39;
+					const A=65, D=68, E=69, F=70, G=71, H=72, 
+						  Q=81, R=82, S=83, T=84, W=87;
+
+					function modifierIsDown(){
+						return modifiers.alt   || modifiers.meta
+							|| modifiers.shift || modifiers.ctrl; 
+					}
+
+				//	## EditorScalingSystem.
+
+					function EditorScalingSystem( dt ){
+
+						if ( !editor.isEditing ) return;
+						if (  modifierIsDown() ) return;
+
+						if ( keyCodes[H] ) {
+							editor.scale.x += dt;
+							editor.scale.y += dt;
+							editor.scale.z += dt;
+						}
+
+						else if ( keyCodes[G] ) {
+							editor.scale.x -= dt;
+							editor.scale.y -= dt;
+							editor.scale.z -= dt;
+						} 
+
+					}
+
+				//	## EditorRotationSystem.
+
+					function EditorRotationSystem( dt ){
+
+						if ( !editor.isEditing ) return;
+						if (  modifierIsDown() ) return;
+
+						var rad = Math.max(dt, 0.02);
+
+					//	Rotation (local coordinates).
+						keyCodes[W] && editor.rotateOnAxis( axisX,  rad );
+						keyCodes[S] && editor.rotateOnAxis( axisX, -rad );
+						keyCodes[A] && editor.rotateOnAxis( axisY, -rad );
+						keyCodes[D] && editor.rotateOnAxis( axisY,  rad );
+
+					//	Reset rotation.
+						keyCodes[R] && editor.rotation.set(0,0,0);
+						keyCodes[F] && editor.setRotationFromQuaternion(camera.quaternion);
+
+					}
+
+				//	## EditorTranslationSystem.
+
+					function EditorTranslationSystem( dt ){
+
+						if ( !editor.isEditing ) return;
+						if (  modifierIsDown() ) return;
+
+						var UPDOWN = keyCodes[E] || keyCodes[Q];
+						var ARROWS = keyCodes[37] || keyCodes[38] || keyCodes[39] || keyCodes[40];
+
+					//	Move up/down.
+
+						UPDOWN && (function(up, down){
+
+							var rad = 0;
+							var keyboardFrontAngle = 0;
+							var movementSpeed = Math.max(dt, 0.05);
+							var cameraFrontAngle = cameraControls.phi;
+							if ( up ) keyboardFrontAngle =  Math.PI/2;
+							if (down) keyboardFrontAngle = -Math.PI/2;
+							var direction = rad - cameraFrontAngle + keyboardFrontAngle;
+							var directionOnAxisY = Math.sin(direction);
+							var y = directionOnAxisY * movementSpeed;
+							editor.position.y += y; 
+
+						})( keyCodes[E], keyCodes[Q] );
+
+					//	Move left/right/forwards/backward
+
+						ARROWS && (function() {
+
+							var rad = 8 * Math.PI/4;  // keyboard input.
+							var movementSpeed = Math.max(dt, 0.05);
+							var cameraFrontAngle = cameraControls.getFrontAngle();
+							var keyboardFrontAngle = keyboard.frontAngle;
+							var direction = rad - cameraFrontAngle + keyboardFrontAngle;
+							var directionOnAxisX = -Math.sin(direction);
+							var directionOnAxisZ = -Math.cos(direction);
+							var x = directionOnAxisX * movementSpeed;
+							var z = directionOnAxisZ * movementSpeed;
+							editor.position.x += x; 
+							editor.position.z += z;
+
+						})();
+
+					}
+
+				//	## Editor keyInput loop.
+
+					(function update(){
+
+						var dt = clock.getDelta();
+						requestFrameID = requestAnimationFrame( update );
+
+						if ( !editor.isEditing ) return;
+
+						var SCALE = keyCodes[H] || keyCodes[G];
+						var ROTATE = keyCodes[W] || keyCodes[A] || keyCodes[S] || keyCodes[D] || keyCodes[R] || keyCodes[F];
+						var MOVE = keyCodes[E] || keyCodes[Q] || keyCodes[37] || keyCodes[38] || keyCodes[39] || keyCodes[40];
+
+						SCALE && EditorScalingSystem( dt );
+						ROTATE && EditorRotationSystem( dt );
+						MOVE && EditorTranslationSystem( dt );
+
+					})();
+
+				})();
+
 			//	Init editor.
 				editor.reset();
 
 			//	Add to scene.
 				scene.add( editor ); // important!
 
-			})( editor );
+				return editor;
 
+			})( new THREE.Object3D() );
 
+		</script>
+
+		<script>
+/*
+		//	Move on axis Y (up/down).
+
+			function translateOnScreenAxisY( dt, object, mode, down ){
+				if ( !object ) return;
+				var rad = 0;
+				var verticalAngle;
+				var movementSpeed = Math.max(dt, 0.01); // step.
+				var cameraFrontAngle = cameraControls.phi;
+				if (down) verticalAngle = -Math.PI/2; // down.
+				else verticalAngle      =  Math.PI/2; // up.
+				var direction = rad - cameraFrontAngle + verticalAngle;
+				var directionOnAxisY = Math.sin(direction);
+				var y = directionOnAxisY * movementSpeed;
+				object[mode].y += y; 
+			}
+
+		//	Move on plane XZ (left/right/forwards/backward).
+
+			function translateOnScreenPlaneXZ( dt, object, mode ) {
+				if ( !object ) return;
+				var rad = 2 * Math.PI;  // keyboard input.
+				var movementSpeed = Math.max(dt, 0.01); // step.
+				var cameraFrontAngle = rad + cameraControls.theta;
+			//	var keyboardFrontAngle = keyboard.frontAngle;
+				var direction = rad - cameraFrontAngle; // + keyboard.frontAngle;
+				var directionOnAxisX = -Math.sin(direction);
+				var directionOnAxisZ = -Math.cos(direction);
+				var x = directionOnAxisX * movementSpeed;
+				var z = directionOnAxisZ * movementSpeed;
+				object[mode].x += x; 
+				object[mode].z += z;
+			}
+
+		//	!!! DEMO !!! IMPORTANT! !!! DEMO !!! IMPORTANT! !!! DEMO !!!
+			function translateOnScreenAxis( object ){
+			//	(from MW character controller).
+			//	var rad = 3 * Math.PI/2 // joystick input.
+				var rad = 2 * Math.PI;  // keyboard input.
+				var movementSpeed = 0.05; // (m/fps) => 5cm/fps
+				var cameraFrontAngle = cameraControls.getFrontAngle();
+				var keyboardFrontAngle = keyboard.frontAngle;
+				var direction = rad - cameraFrontAngle + keyboardFrontAngle;
+				var directionOnAxisX = -Math.sin(direction);
+				var directionOnAxisZ = -Math.cos(direction);
+				var x = directionOnAxisX * movementSpeed;
+				var z = directionOnAxisZ * movementSpeed;
+				var velocity = new THREE.Vector3(x,0,z);
+				object.position.x += velocity.x; 
+				object.position.z += velocity.z;
+			}
+		//	!!! DEMO !!! IMPORTANT! !!! DEMO !!! IMPORTANT! !!! DEMO !!!
+*/
+		</script>
+
+		<script>
+/*
 	//	Editor keyInput systems.
 
 		//	const clock = new THREE.Clock();
@@ -1322,62 +1532,6 @@
 				}
 
 			}
-
-		</script>
-
-		<script>
-/*
-		//	Move on axis Y (up/down).
-
-			function translateOnScreenAxisY( dt, object, mode, down ){
-				if ( !object ) return;
-				var rad = 0;
-				var verticalAngle;
-				var movementSpeed = Math.max(dt, 0.01); // step.
-				var cameraFrontAngle = cameraControls.phi;
-				if (down) verticalAngle = -Math.PI/2; // down.
-				else verticalAngle      =  Math.PI/2; // up.
-				var direction = rad - cameraFrontAngle + verticalAngle;
-				var directionOnAxisY = Math.sin(direction);
-				var y = directionOnAxisY * movementSpeed;
-				object[mode].y += y; 
-			}
-
-		//	Move on plane XZ (left/right/forwards/backward).
-
-			function translateOnScreenPlaneXZ( dt, object, mode ) {
-				if ( !object ) return;
-				var rad = 2 * Math.PI;  // keyboard input.
-				var movementSpeed = Math.max(dt, 0.01); // step.
-				var cameraFrontAngle = rad + cameraControls.theta;
-			//	var keyboardFrontAngle = keyboard.frontAngle;
-				var direction = rad - cameraFrontAngle; // + keyboard.frontAngle;
-				var directionOnAxisX = -Math.sin(direction);
-				var directionOnAxisZ = -Math.cos(direction);
-				var x = directionOnAxisX * movementSpeed;
-				var z = directionOnAxisZ * movementSpeed;
-				object[mode].x += x; 
-				object[mode].z += z;
-			}
-
-		//	!!! DEMO !!! IMPORTANT! !!! DEMO !!! IMPORTANT! !!! DEMO !!!
-			function translateOnScreenAxis( object ){
-			//	(from MW character controller).
-			//	var rad = 3 * Math.PI/2 // joystick input.
-				var rad = 2 * Math.PI;  // keyboard input.
-				var movementSpeed = 0.05; // (m/fps) => 5cm/fps
-				var cameraFrontAngle = cameraControls.getFrontAngle();
-				var keyboardFrontAngle = keyboard.frontAngle;
-				var direction = rad - cameraFrontAngle + keyboardFrontAngle;
-				var directionOnAxisX = -Math.sin(direction);
-				var directionOnAxisZ = -Math.cos(direction);
-				var x = directionOnAxisX * movementSpeed;
-				var z = directionOnAxisZ * movementSpeed;
-				var velocity = new THREE.Vector3(x,0,z);
-				object.position.x += velocity.x; 
-				object.position.z += velocity.z;
-			}
-		//	!!! DEMO !!! IMPORTANT! !!! DEMO !!! IMPORTANT! !!! DEMO !!!
 */
 		</script>
 
@@ -1436,30 +1590,29 @@
 
 		</script>
 
-
 		<script>
 
 			localPlayer.controller.movementSpeed = 10;
 
 		//	Entities.
 
-			debugMode && (function(){
-				var r = 1;
-				var geometry = new THREE.BoxGeometry(r,r,r);
-				var material = new THREE.MeshLambertMaterial();
-				var cube = new THREE.Mesh(geometry, material);
-				cube.name = "local player cube";
-				var geometry = new THREE.SphereGeometry(0.7,8,12);
-				var material = new THREE.MeshLambertMaterial();
-				var sphere = new THREE.Mesh(geometry, material);
-				sphere.name = "local player sphere";
-			//	cube.add( sphere );
-				localPlayer.add( cube );
-			})();
+		//	debugMode && (function(){
+		//		var r = 1;
+		//		var geometry = new THREE.BoxGeometry(r,r,r);
+		//		var material = new THREE.MeshLambertMaterial();
+		//		var cube = new THREE.Mesh(geometry, material);
+		//		cube.name = "local player cube";
+		//		var geometry = new THREE.SphereGeometry(0.7,8,12);
+		//		var material = new THREE.MeshLambertMaterial();
+		//		var sphere = new THREE.Mesh(geometry, material);
+		//		sphere.name = "local player sphere";
+		//	//	cube.add( sphere );
+		//		localPlayer.add( cube );
+		//	})();
 
 		//	box coluctions.
 
-			(function(){
+			debugMode && (function(){
 
 				var material = new THREE.MeshLambertMaterial();
 
@@ -1489,6 +1642,7 @@
 					segments.name = "segments 2";
 					segments.position.copy( mesh.position );
 					scene.add( mesh );
+					cameraControls.rigidObjects.push( mesh );
 				})();
 
 				(function(){
@@ -1505,6 +1659,7 @@
 					segments.name = "segments 3";
 					segments.position.copy( mesh.position );
 					scene.add( mesh );
+					cameraControls.rigidObjects.push( mesh );
 				})();
 
 				(function(){
@@ -1521,6 +1676,7 @@
 					segments.name = "segments 4";
 					segments.position.copy( mesh.position );
 					scene.add( mesh );
+					cameraControls.rigidObjects.push( mesh );
 				})();
 
 				(function(){
@@ -1537,6 +1693,7 @@
 					segments.name = "segments 5";
 					segments.position.copy( mesh.position );
 					scene.add( mesh );
+					cameraControls.rigidObjects.push( mesh );
 				})();
 
 				(function(){
@@ -1553,16 +1710,17 @@
 					segments.name = "segments 6";
 					segments.position.copy( mesh.position );
 					scene.add( mesh );
+					cameraControls.rigidObjects.push( mesh );
 				})();
 
-				var groupA = new THREE.Object3D();
-				var groupB = new THREE.Object3D();
+			//	var groupA = new THREE.Object3D();
+			//	var groupB = new THREE.Object3D();
 
-				groupA.add( scene.getObjectByName("building 1").clone() );
-				groupA.add( scene.getObjectByName("building 2").clone() );
-				groupB.add( scene.getObjectByName("building 3").clone() );
-				groupB.add( scene.getObjectByName("building 4").clone() );
-				groupB.add( scene.getObjectByName("building 5").clone() );
+			//	groupA.add( scene.getObjectByName("building 1").clone() );
+			//	groupA.add( scene.getObjectByName("building 2").clone() );
+			//	groupB.add( scene.getObjectByName("building 3").clone() );
+			//	groupB.add( scene.getObjectByName("building 4").clone() );
+			//	groupB.add( scene.getObjectByName("building 5").clone() );
 
 			})();
 
