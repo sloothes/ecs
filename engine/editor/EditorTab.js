@@ -217,6 +217,33 @@
 
 	(function(){
 
+	//	Undo/Redo button.
+
+		var tab = TabUI.Editor.tab;
+		var row = document.createElement("h3");
+		row.style.cssText = "height:40px;margin-bottom:20px;"
+
+		var redo = document.createElement("div");
+		redo.id = "editor-redo-button";
+		redo.textContent = "Redo";
+		redo.style.cssText = "width:49%;float:left;height:40px;font-size:large;margin-right:15px;";
+		redo.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
+
+		var undo = document.createElement("div");
+		undo.id = "editor-undo-button";
+		undo.textContent = "Undo";
+		undo.style.cssText = "width:49%;float:right;height:40px;font-size:large;margin-right:15px;";
+		undo.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
+
+		row.appendChild( redo );
+		row.appendChild( undo );
+		tab.appendChild( row );
+
+	})();
+
+
+	(function(){
+
 	//	Reset vectors button.
 	//	Resets vector mode values.
 
