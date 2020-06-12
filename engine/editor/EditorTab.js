@@ -217,6 +217,27 @@
 
 	(function(){
 
+	//	Reset vectors button.
+	//	Resets vector mode values.
+
+		var tab = TabUI.Editor.tab;
+		var row = document.createElement("h3");
+		row.style.cssText = "height:40px;margin-bottom:20px;"
+
+		var button = document.createElement("div");
+		button.id = "reset-vectors-button";
+		button.textContent = "Reset Vectors";
+		button.style.cssText = "width:295px;float:right;height:40px;font-size:large;margin-right:15px;";
+		button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
+
+		row.appendChild( button );
+		tab.appendChild( row );
+
+	})();
+
+
+	(function(){
+
 	//	Undo/Redo button.
 
 		var tab = TabUI.Editor.tab;
@@ -237,27 +258,6 @@
 
 		row.appendChild( redo );
 		row.appendChild( undo );
-		tab.appendChild( row );
-
-	})();
-
-
-	(function(){
-
-	//	Reset vectors button.
-	//	Resets vector mode values.
-
-		var tab = TabUI.Editor.tab;
-		var row = document.createElement("h3");
-		row.style.cssText = "height:40px;margin-bottom:20px;"
-
-		var button = document.createElement("div");
-		button.id = "reset-vectors-button";
-		button.textContent = "Reset Vectors";
-		button.style.cssText = "width:295px;float:right;height:40px;font-size:large;margin-right:15px;";
-		button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
-
-		row.appendChild( button );
 		tab.appendChild( row );
 
 	})();
@@ -294,7 +294,7 @@
 		var tab = TabUI.Editor.tab;
 		var row = document.createElement("h3");
 		row.textContent = "Geometry:";
-		row.style.cssText = "height:40px;"
+		row.style.cssText = "height:40px;margin-top:40px;"
 
 		var select = document.createElement("select");
 		select.id = "editor-geometry-droplist";
@@ -330,7 +330,7 @@
 	})();
 
 //  =============================================================================== //
-
+/*
 	(function(){
 
 	//	New plane geometry button.
@@ -391,7 +391,7 @@
 	//	tab.appendChild( row );
 
 	})();
-
+*/
 //  =============================================================================== //
 
 	(function(){
