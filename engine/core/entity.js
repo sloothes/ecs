@@ -95,7 +95,7 @@
 		}
 
 		if ( !adding_ids.length ) return;
-		console.log( "adding_ids:", adding_ids );
+	//	console.log( "adding_ids:", adding_ids );
 
 		var length = adding_ids.length;
 		for ( var j = 0; j < length; j++ ) {
@@ -152,7 +152,7 @@
 		}
 
 		if ( !remove_ids.length ) return;
-		console.log( "remove_ids:", remove_ids );
+	//	console.log( "remove_ids:", remove_ids );
 
 		var length = remove_ids.length;
 		for ( var j = 0; j < length; j++ ) {
