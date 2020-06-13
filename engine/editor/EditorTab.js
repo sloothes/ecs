@@ -463,6 +463,8 @@
 		const RAD2DEG = THREE.Math.RAD2DEG;
 		const DEG2RAD = THREE.Math.DEG2RAD;
 
+		const rigidObjects = []; // cameraControls.rigidObjects;
+
 		const vect_x_input = document.getElementById("input-vector-x");
 		const vect_y_input = document.getElementById("input-vector-y");
 		const vect_z_input = document.getElementById("input-vector-z");
@@ -537,24 +539,24 @@
 			vectorSelect.value = vector_droplist.value;
 		}
 
-		function addtoCameraRigidObjects( value ){
+		function addtoRigidObjects( value ){
 			var id = parseInt(value);
 			if ( localPlayer.getObjectById(id) ) return; // localPlayer child.
 			var object = getObjectByEntityId( value );
-			if ( object && cameraControls.rigidObjects.findIndex( 
+			if ( object && rigidObjects.findIndex( 
 				function( item ){ 
 					return item.id === object.id;
 				}) > -1 ) return; // already exists in rigidObjects.
-			object && cameraControls.rigidObjects.push( object );
+			object && rigidObjects.push( object );
 		}
 
-		function removefromCameraRigidObjects( value ){
-			var index = cameraControls.rigidObjects
-			.findIndex( function( object ){
-				return object.id === parseInt( value );
-			});
+		function removefromRigidObjects( value ){
+			var index = rigidObjects.findIndex( 
+				function( object ){
+					return object.id === parseInt( value );
+				});
 			if ( index < 0 ) return; // important!
-			cameraControls.rigidObjects.splice( index, 1 );
+			rigidObjects.splice( index, 1 );
 		}
 
 		function addToUndo(){
@@ -1168,7 +1170,7 @@
 					entities.add( mesh );
 
 				//	Add to camera rigid objects.
-				//	addtoCameraRigidObjects( mesh.id );
+				//	addtoRigidObjects( mesh.id );
 
 				//	Enter edit mode.
 					entitySelect.value = entity_droplist.value = mesh.id.toString();
@@ -1237,7 +1239,7 @@
 					entities.remove( id ); // important!
 
 				//	Remove from camera rigid objects.
-					removefromCameraRigidObjects( id );
+					removefromRigidObjects( id );
 
 				//	Exit edit mode. // resetEntitySelectValue();
 					entitySelect.value = entity_droplist.value = "";
@@ -1258,7 +1260,7 @@
 				updateOctree( oldValue ); // first, important!
 
 			//	Add to camera rigid objects.
-				!!oldValue && addtoCameraRigidObjects( oldValue );
+				!!oldValue && addtoRigidObjects( oldValue );
 
 				switchToEditMode( newValue ); // important!
 
@@ -1388,9 +1390,22 @@
 			return result;
 		}
 
+		function enableCameraRigidObjects(){
+			while (rigidObjects.length) {
+				cameraControls.rigidObjects.push( rigidObjects.shift() );
+			}
+		}
+
+		function disableCameraRigidObjects(){
+			while (cameraControls.rigidObjects.length) {
+				rigidObjects.push( cameraControls.rigidObjects.shift() );
+			}
+		}
+
 		function exitFromEditMode(){
 			editor.reset(); // important!
 			resetEntitySelectValue();
+			enableCameraRigidObjects();
 			takeCameraControls( localPlayer );
 			keyInputControls.isDisabled = false;
 		//	editor.helper && scene.remove( helper ); // debug!
@@ -1413,7 +1428,10 @@
 				}
 
 			//	Remove from camera rigid objects.
-				removefromCameraRigidObjects( value );
+			//	removefromRigidObjects( value );
+
+			//	Disable camera rigid objects.
+				disableCameraRigidObjects();
 
 			//	editor take camera controls.
 				cameraControls.trackObject = editor;
