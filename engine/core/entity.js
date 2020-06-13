@@ -199,6 +199,5 @@
 //	Create entity managers.
 
 	const entities = new EntityManager();
-	const HTMLentities = new EntityManager();
 	const removedEntities = new EntityManager();
 
