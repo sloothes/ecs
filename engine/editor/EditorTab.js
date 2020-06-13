@@ -302,12 +302,6 @@
 			+ "border:1px solid;border-radius:4px;padding:2px 4px 4px 4px;"
 			+ "font-size:20px;margin-left:10px;margin-right:15px;";
 
-		var watchObj = {value:select.value};
-
-		select.addEventListener("change", function(e){
-			watchObj.value = select.value;
-		});
-
 		(function(){
 
 			var geometries = "PlaneGeometry,BoxGeometry,SphereGeometry,CylinderGeometry,"
