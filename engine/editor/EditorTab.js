@@ -411,6 +411,28 @@
 
 	(function(){
 
+	//	Clone geometry button.
+	//	Clones selected mesh 
+	//	with the same geometry
+	//	and switch to EditMode.
+
+		var tab = TabUI.Editor.tab;
+		var row = document.createElement("h3");
+		row.style.cssText = "height:40px;margin-bottom:20px;"
+
+		var button = document.createElement("div");
+		button.id = "clone-geometry-button";
+		button.textContent = "Clone Geometry Entity";
+		button.style.cssText = "width:295px;float:right;height:40px;font-size:large;margin-right:15px;";
+		button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
+
+		row.appendChild( button );
+		tab.appendChild( row );
+
+	})();
+
+	(function(){
+
 	//	Remove entity button.
 
 		var tab = TabUI.Editor.tab;
@@ -463,9 +485,10 @@
 		const undo_button = document.getElementById("editor-undo-button");
 		const exit_edit_button = document.getElementById("exit-edit-mode");
 		const reset_vectors_button = document.getElementById("reset-vectors-button");
-		const box_geometry_button = document.getElementById("new-box-geometry");
-		const plane_geometry_button = document.getElementById("new-plane-geometry");
+	//	const box_geometry_button = document.getElementById("new-box-geometry");
+	//	const plane_geometry_button = document.getElementById("new-plane-geometry");
 		const create_geometry_button = document.getElementById("create-geometry-button");
+		const clone_geometry_button  = document.getElementById("clone-geometry-button");
 		const remove_geometry_button = document.getElementById("remove-geometry-button");
 
 		const entitySelect = { value:entity_droplist.value };   // string.
@@ -1138,7 +1161,7 @@
 				//	Create mesh.
 					var material = new THREE.MeshLambertMaterial({side:2});
 					var mesh = new THREE.Mesh(geometry, material);
-					mesh.name = type.replace("Geometry","") + ":"+mesh.id;
+					mesh.name = type.replace("Geometry","") + mesh.id;
 					scene.add( mesh );
 
 				//	Add entity.
@@ -1150,6 +1173,35 @@
 				//	Enter edit mode.
 					entitySelect.value = entity_droplist.value = mesh.id.toString();
 				//	entity_droplist.dispatchEvent(new Event("change")); // important!
+
+				}, 250);
+			});
+
+			clone_geometry_button.addEventListener( "click", function(){
+				clearTimeout( interval );
+				interval = setTimeout(function(){
+
+				//	Get source.
+					var id = parseInt( entitySelect.value );
+					var source = getObjectByEntityId( id );
+					if ( !(source && source.isMesh && source.geometry) ) return;
+
+				//	Clone source.
+					if ( source.isMesh && source.geometry ) {
+					//	Clone.
+						var mesh = source.clone();
+					//	Rename.
+						mesh.name += ":clone"+(source.id - mesh.id);
+					//	Translate.
+						mesh.position.y += 1; // (m)
+					//	Add to scene.
+						scene.add( mesh );
+					//	Add to entities.
+						entities.add( mesh );
+					//	Update entity select value.
+						entitySelect.value = entity_droplist.value = mesh.id.toString();
+					//	entity_droplist.dispatchEvent(new Event("change")); // important!
+					}
 
 				}, 250);
 			});
