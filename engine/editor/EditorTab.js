@@ -1117,6 +1117,7 @@
 					var geometry = new THREE[ type ]();
 					if ( geometry === undefined ) return;
 
+				//	Init params based on type.
 					switch (type) {
 						case "PlaneGeometry":
 							geometry.translate(0, 0.5, 0);
