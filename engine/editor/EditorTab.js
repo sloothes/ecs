@@ -435,11 +435,9 @@
 //	Create an Object3D to hold editor values.
 	const object3DEditor = (function( editor ){
 
-		var k = 0;
+	//	var k = 0;
 
-		const undo = [];
-		const redo = [];
-
+		const undo = [], redo = [];
 		const RAD2DEG = THREE.Math.RAD2DEG;
 		const DEG2RAD = THREE.Math.DEG2RAD;
 
@@ -1165,7 +1163,7 @@
 
 					var id = parseInt( entitySelect.value );
 					debugMode && console.log("id:", id );
-					if ( localPlayer.getObjectById(id) ) return; // is child of localPlayer.
+					if ( localPlayer.getObjectById(id) ) return; // localPlayer child.
 
 					var object = getObjectByEntityId( id );
 					if ( !(object && object.parent) ) return;
