@@ -1359,7 +1359,10 @@
 		//	Import all objects with same geometry to octree.
 		//	READ explanation at removefromOctree() comments.
 			var uuid = object.geometry.uuid;
-			octree.importThreeMesh.call(octree, getObjectsByGeometry(uuid) );
+			var meshes = getObjectsByGeometry(uuid);
+			while ( meshes.length ) {
+				octree.importThreeMesh( meshes.shift() );
+			}
 
 			return object; // important!
 		}
