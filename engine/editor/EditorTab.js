@@ -1179,6 +1179,10 @@
 
 			clone_geometry_button.addEventListener( "click", function(){
 				clearTimeout( interval );
+
+				if ( !editor.isEditing ) return; // some paranoid safety!
+				if ( !entitySelect.value ) return; // more paranoid safety!
+
 				interval = setTimeout(function(){
 
 				//	Get source.
@@ -1188,17 +1192,17 @@
 
 				//	Clone source.
 					if ( source.isMesh && source.geometry ) {
-					//	Clone.
+					//	clone.
 						var mesh = source.clone();
-					//	Rename.
-						mesh.name += ":clone"+(source.id - mesh.id);
-					//	Translate.
+					//	rename.
+						mesh.name = source.name.replace(/:clone/g,"") + ":clone"; // TODO: better renameing.
+					//	translate.
 						mesh.position.y += 1; // (m)
-					//	Add to scene.
+					//	add to scene.
 						scene.add( mesh );
-					//	Add to entities.
+					//	add to entities.
 						entities.add( mesh );
-					//	Update entity select value.
+					//	update entity select value (switch editor target).
 						entitySelect.value = entity_droplist.value = mesh.id.toString();
 					//	entity_droplist.dispatchEvent(new Event("change")); // important!
 					}
