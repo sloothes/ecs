@@ -122,12 +122,12 @@
 
 	//	Add options.
 		while ( added_objs.length ) (function(object){
-			var str =  "";
+			var str =  "", dot = ".", col = ":";
 			var type = "object";
 			var name = object.name;
 			if ( object.type ) type = object.type;
 			var option = document.createElement("option");
-			option.text = str+object.id+"."+type+":"+name;
+			option.text = str+object.id+dot+type+col+name;
 			option.value = object.id;
 			entity_droplist.appendChild( option );
 		})( added_objs.shift() );
