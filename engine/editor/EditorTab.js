@@ -289,7 +289,7 @@
 
 	(function(){
 
-	//	Geometries droplist (TODO).
+	//	Geometries droplist.
 
 		var tab = TabUI.Editor.tab;
 		var row = document.createElement("h3");
