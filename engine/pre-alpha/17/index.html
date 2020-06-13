@@ -100,6 +100,7 @@
 		<script src="/ecs/js/VirtualInput.js"></script>
 		<script src="/ecs/js/KeyboardState.js"></script>
 		<script src="/ecs/js/EditorControls.js"></script>
+		<script src="/ecs/js/camera-controls.js"></script>
 		<script src="/ecs/js/SubdivisionModifier.js"></script>
 		<script src="/ecs/js/three-pathfinding.umd.js"></script>
 		<script src="/threejs/r96/examples/js/loaders/GLTFLoader.js"></script>
@@ -146,7 +147,158 @@
 		<script src="/ecs/engine/core/joystickControls.js"></script>
 		<script src="/ecs/engine/core/keyboard.js"></script>
 		<script src="/ecs/engine/editor/EditorTab.js"></script>
+	<!-- script src="/ecs/engine/editor/MaterialManager.js"></script -->
 	<!-- script src="/ecs/engine/editor/MaterialTab.js"></script -->
+	<!-- script src="/ecs/engine/editor/MaterialEditor.js"></script -->
+
+
+		<script>
+
+		//	Material Manager class.
+
+		//	Material Manager: inherits (extends) Array class.
+		//	sources: https://stackoverflow.com/questions/26700164/extending-array-with-es6-classes
+		//	https://stackoverflow.com/questions/11337849/ways-to-extend-array-object-in-javascript
+
+			function MaterialManager(){
+				var array = new Array(0);
+				Object.setPrototypeOf( array, MaterialManager.prototype );
+				return array; // important!
+			};
+
+			MaterialManager.prototype = Object.create(Array.prototype);
+			MaterialManager.prototype.move = function( entity, new_index ){
+
+				var old_index = this.findIndex(function( item ){
+					return item.id === entity.id;
+				});
+
+				if ( old_index < 0 ) return; // important!
+				if ( old_index == new_index ) return;
+
+				(function( arr, old_index, new_index ){
+
+					if (new_index >= arr.length) {
+						var k = new_index - arr.length + 1;
+						while (k--) {
+							arr.push(undefined);
+						}
+					}
+
+					arr.splice(new_index, 0, arr.splice(old_index, 1)[0]);
+
+				})( this, old_index, new_index);
+
+			};
+
+			MaterialManager.prototype.add = function(){
+			//	params: {object:Material} 
+
+				if ( arguments.length < 1 ) return;
+
+				var materials  = [];
+
+			//	Get materials/ids.
+				for ( var i in arguments ) {
+					var param = arguments[i];
+					if ( typeof param === "object" && param.isMaterial && param.id !== undefined )
+						materials.push( param );  // meterial;
+					else 
+						continue;
+				}
+
+				if ( !materials.length ) return;
+			//	console.log( "materials:", materials );
+
+				var length = materials.length;
+				for ( var j = 0; j < length; j++ ) {
+					this.push( materials[j] );
+				}
+
+			//	var material_droplist = document.getElementById("material-entities-droplist");
+			//	global const "material_droplist" is defined in MaterialTab.js;
+				if ( !material_droplist ) return;
+
+			//	Add options.
+				while ( materials.length ) (function( material ){
+					var str =  "", dot = ".", col = ":";
+					var type = "object";
+					var name = material.name || "mtl"+material.id;
+					if ( material.type ) type = material.type;
+					var option = document.createElement("option");
+					option.text = str+material.id+dot+type+col+name;
+					option.value = material.id;
+					material_droplist.appendChild( option );
+				})( materials.shift() );
+			};
+
+			MaterialManager.prototype.remove = function(){
+			//	params: {number:entity.id} or {object:entity} 
+
+				if ( arguments.length < 1 ) return;
+
+			//	Get removed ids.
+				var remove_ids = [];
+				for ( var i in arguments ) {
+					var param = arguments[i];
+					if ( typeof param === "number" && param % 1 === 0 ) // integer. 
+						remove_ids.unshift( param );    // remove_ids.push( param );
+					else if ( typeof param === "object" && param.isMaterial && param.id !== undefined )
+						remove_ids.unshift( param.id ); // remove_ids.push( param.id );
+					else 
+						continue;
+				}
+
+				if ( !remove_ids.length ) return;
+			//	console.log( "remove_ids:", remove_ids );
+
+				var length = remove_ids.length;
+				for ( var j = 0; j < length; j++ ) {
+
+					var _id = remove_ids[ j ];
+
+				//	Find index.
+					var index = this.findIndex(function( item ){
+						return item.id === _id;
+					});
+
+					if ( index < 0 ) continue; // important!
+
+					var removedItems = this.splice(index, 1);
+				//	debugMode && console.log( removedItems );
+
+					while ( removedItems.length ){
+						var removed = removedItems.shift();
+					//	debugMode && console.log( removed );
+						removed_materials.push( removed );
+					}
+				}
+
+			//	var material_droplist = document.getElementById("material-entities-droplist");
+			//	global const "material_droplist" is defined in MaterialTab.js;
+				if ( !material_droplist ) return;
+
+			//	Remove options.
+				while ( remove_ids.length ) (function( id ){
+					var selector = "option[value='" + id.toString() + "']"; // console.log( selector );
+					var option = material_droplist.querySelector( selector ); // console.log(  option  );
+					option && option.remove();
+				})( remove_ids.shift() );
+
+			};
+
+			MaterialManager.prototype.clear = function(){
+
+				this.length = 0;
+
+			};
+
+		//	Create material managers.
+
+			const material_entities = new MaterialManager(); // material entities array, important!.
+			const removed_materials = new MaterialManager(); // material entities array, important!.
+
+		</script>
 
 		<script>
 
@@ -167,7 +319,7 @@
 				row.style.cssText = "height:30px;"
 
 				var select = document.createElement("select");
-				select.id = "material-entity-droplist";
+				select.id = "material-entities-droplist";
 				select.style.cssText = "width:190px;color:#000;float:right;"
 					+ "border:1px solid;border-radius:4px;padding:2px 4px 4px 4px;"
 					+ "font-size:20px;margin-left:10px;margin-right:15px;";
@@ -251,30 +403,159 @@
 
 			})();
 
+			(function(){
+
+			//	Create material entity button.
+
+				var tab = TabUI.Material.tab;
+				var row = document.createElement("h3");
+				row.style.cssText = "height:40px;margin-bottom:20px;"
+
+				var button = document.createElement("div");
+				button.id = "create-material-button";
+				button.textContent = "Create Material Entity";
+				button.style.cssText = "width:295px;float:right;height:40px;font-size:large;margin-right:15px;";
+				button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
+
+				row.appendChild( button );
+				tab.appendChild( row );
+
+			})();
+
+			(function(){
+
+			//	Remove material entity button.
+
+				var tab = TabUI.Material.tab;
+				var row = document.createElement("h3");
+				row.style.cssText = "height:40px;margin-bottom:20px;"
+
+				var button = document.createElement("div");
+				button.id = "remove-material-button";
+				button.textContent = "Remove Material Entity";
+				button.style.cssText = "width:295px;float:right;height:40px;font-size:large;margin-right:15px;";
+				button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
+
+				row.appendChild( button );
+				tab.appendChild( row );
+
+			})();
+
 		</script>
 
 		<script>
 
 		//	MaterialEditor.js
 
-			const material_entities = new EntityManager(); // material entities array, important!.
-
 		//	Create a Material to hold editor values.
 			const materialEditor = (function( editor ){
 
-				var k = 0;
+			//	var k = 0;
+				const materials = {};
+				const undo = [], redo = [];
 
-				const undo = [];
-				const redo = [];
-
-				const type_droplist = document.getElementById("material-type-droplist");
-				const entity_droplist = document.getElementById("material-entity-droplist");
+				const entity_droplist = document.getElementById("material-entities-droplist");
 				const vector_droplist = document.getElementById("material-vector-droplist");
+				const mltype_droplist = document.getElementById("material-type-droplist");
 
-				const materialType = { value:type_droplist.value };     // string.
+				const create_material_button = document.getElementById("create-material-button");
+				const remove_material_button = document.getElementById("remove-material-button");
+
 				const entitySelect = { value:entity_droplist.value };   // string.
 				const vectorSelect = { value:vector_droplist.value };   // string.
+				const materialType = { value:mltype_droplist.value }; // string.
 
+
+
+			//	Droplists.
+
+				(function(){
+
+					entity_droplist.addEventListener("change", onChangeSelectValue );
+					vector_droplist.addEventListener("change", onChangeSelectValue );
+					mltype_droplist.addEventListener("change", onChangeSelectValue );
+
+					function onChangeSelectValue(){
+
+						entity_droplist.blur();
+						vector_droplist.blur();
+						mltype_droplist.blur();
+
+						entitySelect.value = entity_droplist.value; // updateEntitySelectValue();
+						vectorSelect.value = vector_droplist.value; // updateVectorSelectValue();
+						materialType.value = mltype_droplist.value; // updateMaterialTypeValue();
+
+					}
+
+				})();
+
+			//	Buttons.
+
+				(function(){
+
+					var interval;
+
+					create_material_button.addEventListener( "click", function(){
+						clearTimeout( interval );
+						interval = setTimeout(function(){
+							
+						//	Get type.
+							var type = materialType.value;
+							if ( type === "" || type === undefined ) return;
+
+						//	Init params based on type.
+							switch (type) {
+								//	case "PointsMaterial":
+								//	case "SpriteMaterial":
+								//	case "ShaderMaterial":
+								//	case "ShadowMaterial":
+								//	case "MeshToonMaterial":
+								//	case "MeshBasicMaterial":
+								//	case "MeshPhongMaterial":
+								//	case "MeshDepthMaterial":
+								//	case "MeshNormalMaterial":
+								//	case "MeshLambertMaterial":
+								//	case "MeshStandardMaterial":
+								//	case "MeshPhysicalMaterial":
+								//	case "RawShaderMaterial":
+								//	case "LineBasicMaterial":
+								//	case "LineDashedMaterial":
+								//	break;
+							}
+
+						//	Create.
+							var material = new THREE[ type ]();
+							if ( material === undefined ) return;
+						//	Name it.
+							material.name = "mtl"+material.id;
+						//	Add entity.
+							material_entities.add( material );
+
+						//	Enter edit mode.
+							entitySelect.value = entity_droplist.value = material.id.toString();
+						//	entity_droplist.dispatchEvent(new Event("change")); // important!
+
+						}, 250);
+					});
+
+					remove_material_button.addEventListener( "click", function(){
+						clearTimeout( interval );
+						interval = setTimeout(function(){
+
+							var id = parseInt( entitySelect.value );
+							if ( id === NaN || id === undefined ) return;
+							material_entities.remove( id );
+
+						}, 250);
+					});
+
+				})();
+
+				function getMaterialByEntityId( id ){
+					return material_entities.find( function( material ){
+						return material.id === id;
+					});
+				}
 
 
 
@@ -310,25 +591,26 @@
 
 			debugMode && (function(){
 
-				var material = new THREE.MeshLambertMaterial();
+				var material = new THREE.MeshLambertMaterial({name:"mtl00"});
 
-			//	(function(){
-			//		var w = 10; var h = 5;
-			//		var box = new THREE.BoxGeometry(w,h,w);
-			//		box.translate(0, h/2, 0);
-			//		octree.importThreeMesh( new THREE.Mesh(box) );
-			//		var geometry = new THREE.EdgesGeometry( box );
-			//		var material = new THREE.LineBasicMaterial( { color: 0x00ff00 } );
-			//		var segments = new THREE.LineSegments( geometry, material );
-			//		segments.name = "segments 1";
-			//		scene.add( segments );
-			//	})();
+				(function(){
+					var w = 10; var h = 5;
+					var box = new THREE.BoxGeometry(w,h,w);
+					box.translate(0, h/2, 0);
+					octree.importThreeMesh( new THREE.Mesh(box) );
+					var geometry = new THREE.EdgesGeometry( box );
+					var material = new THREE.LineBasicMaterial( { color: 0x00ff00 } );
+					var segments = new THREE.LineSegments( geometry, material );
+					segments.name = "segments 1";
+					scene.add( segments );
+				})();
 
 				(function(){
 					var w = 10, h = 20;
 					var x = 10, y = h/2, z = -4;
 					var box = new THREE.BoxGeometry(w,h,w);
 					box.translate(0, h/2, 0);
+					var material = new THREE.MeshLambertMaterial();
 					var mesh = new THREE.Mesh(box, material);
 					mesh.name = "building 1";
 					mesh.position.set(x,0,z);
@@ -346,6 +628,7 @@
 					var x = 15, y = h/2, z = -11;
 					var box = new THREE.BoxGeometry(w,h,w);
 					box.translate(0, h/2, 0);
+					var material = new THREE.MeshLambertMaterial();
 					var mesh = new THREE.Mesh(box, material);
 					mesh.name = "building 2";
 					mesh.position.set(x,0,z);
@@ -363,6 +646,7 @@
 					var x = -9, y = h/2, z = 5;
 					var box = new THREE.BoxGeometry(w,h,w);
 					box.translate(0, h/2, 0);
+					var material = new THREE.MeshLambertMaterial();
 					var mesh = new THREE.Mesh(box, material);
 					mesh.name = "building 3";
 					mesh.position.set(x,0,z);
@@ -380,6 +664,7 @@
 					var x = -14, y = h/2, z = 10;
 					var box = new THREE.BoxGeometry(w,h,d);
 					box.translate(0, h/2, 0);
+					var material = new THREE.MeshLambertMaterial();
 					var mesh = new THREE.Mesh(box, material);
 					mesh.name = "building 4";
 					mesh.position.set(x,0,z);
@@ -397,6 +682,7 @@
 					var x = -17, y = h/2, z = 12;
 					var box = new THREE.BoxGeometry(w,h,d);
 					box.translate(0, h/2, 0);
+					var material = new THREE.MeshLambertMaterial();
 					var mesh = new THREE.Mesh(box, material);
 					mesh.name = "building 5";
 					mesh.position.set(x,0,z);
@@ -426,9 +712,61 @@
 
 		//	Add entities.
 
+		//	Add Object3D entities.
 			scene.traverse(function( object ){
 				entities.add( object );
 			});
+
+		//	Add Material entities.
+		//	It looks registered Object3D entities only.
+		//	It looks on top level Object3D, but not the children.
+			entities.forEach( function( entity ){
+				var object = scene.getObjectById( entity.id );
+				if ( !object.material ) return; // important!
+
+				if ( Array.isArray( object.material ) )
+					object.material.forEach( function( material ){
+						rename( material );
+						addEntity( material );
+					});
+
+				else (function( material ){
+					rename( material );
+					addEntity( material );
+				})( object.material );
+
+				function addEntity( material ){
+					var included = material_entities.includes( material );
+					debugMode && console.log( "included:", included );
+					if ( !included ) material_entities.add( material );
+				}
+
+				function rename( material ){
+					if ( material.name ) return;
+					material.name = "mtl"+material.id;;
+				}
+			});
+
+		//	scene.traverse(function( object ){
+		//		object.traverse(function( child ){
+		//			if ( object === scene ) return; // avoid dublicate materials.
+		//			if ( Array.isArray( child.material ) )
+		//				child.material.forEach(function( material ){
+		//					var name = material.name || "mtl"+material.id;
+		//					if ( !material.name ) material.name = name;
+		//					material_entities.add( material );
+		//			});
+		//			else (function( child ){
+		//				var material = child.material;
+		//				var name = material.name || "mtl"+material.id;
+		//				if ( !material.name ) material.name = name;
+		//				material_entities.add( child.material );
+		//			})( child );
+		//		});
+		//	});
+
+			console.log( {"object3DEditor": object3DEditor} ); // debug!
+			console.log( {"materialEditor": materialEditor} ); // debug!
 
 		</script>
 
