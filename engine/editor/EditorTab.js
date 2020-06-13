@@ -430,7 +430,7 @@
 
 //  =============================================================================== //
 
-//	editor.js
+//	object3DEditor.js
 
 //	Create an Object3D to hold editor values.
 	const object3DEditor = (function( editor ){
