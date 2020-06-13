@@ -1122,6 +1122,19 @@
 						case "PlaneGeometry":
 							geometry.translate(0, 0.5, 0);
 						break;
+					//	case "BoxGeometry":
+					//	case "ConeGeometry":
+					//	case "TorusGeometry":
+					//	case "SphereGeometry":
+					//	case "CylinderGeometry":
+					//	case "OctahedronGeometry":
+					//	case "DodecahedronGeometry":
+					//	case "IcosahedronGeometry":
+					//	case "TetrahedronGeometry":
+					//	case "TorusKnotGeometry":
+					//	case "CircleGeometry":
+					//	case "RingGeometry":
+					//	break;
 					}
 
 				//	Create mesh.
