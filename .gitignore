@@ -1,3 +1,4 @@
 
 engine/CharacterScaleSphere(1.7m).obj
 misc/*
+engine/editor/MaterialEditorClass.js
