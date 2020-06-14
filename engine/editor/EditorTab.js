@@ -276,12 +276,6 @@
 		button.style.cssText = "width:295px;float:right;height:40px;font-size:large;margin-right:15px;";
 		button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
 
-	//	button.addEventListener( "click", function(){
-	//		var select = document.getElementById("entities-droplist");
-	//		select.value = "";
-	//		select.dispatchEvent(new Event("change")); // important!
-	//	});
-
 		row.appendChild( button );
 		tab.appendChild( row );
 
