@@ -465,7 +465,25 @@
 				const vectorSelect = { value:vector_droplist.value };   // string.
 				const materialType = { value:mltype_droplist.value }; // string.
 
+			//	helpers.
 
+				function getMaterialByEntityId( id ){
+					return material_entities.find( function( material ){
+						return material.id === id;
+					});
+				}
+
+				function cloneSceneMaterials(){
+				//	Returns an object with all in-scene materials
+				//	keeping material.uuid but new material.id(s).
+					var meta = { 
+						geometries:{}, materials:{}, 
+						textures:{}, images:{}, shapes:{} 
+					}; 
+					scene.toJSON( meta ); // important!
+					var loader = new THREE.ObjectLoader();
+					return loader.parseMaterials( meta.materials );
+				}
 
 			//	Droplists.
 
@@ -550,12 +568,6 @@
 					});
 
 				})();
-
-				function getMaterialByEntityId( id ){
-					return material_entities.find( function( material ){
-						return material.id === id;
-					});
-				}
 
 
 
@@ -718,52 +730,35 @@
 			});
 
 		//	Add Material entities.
-		//	It looks registered Object3D entities only.
-		//	It looks on top level Object3D, but not the children.
 			entities.forEach( function( entity ){
+
+			//	It looks in "entities" manager only.
+			//	It looks the root Object3D, but not children.
+
 				var object = scene.getObjectById( entity.id );
 				if ( !object.material ) return; // important!
 
 				if ( Array.isArray( object.material ) )
-					object.material.forEach( function( material ){
-						rename( material );
-						addEntity( material );
-					});
+					object.material.forEach( addtoManager );
+				else 
+					addtoManager( object.material );
 
-				else (function( material ){
+				function addtoManager( material ){
 					rename( material );
 					addEntity( material );
-				})( object.material );
-
-				function addEntity( material ){
-					var included = material_entities.includes( material );
-					debugMode && console.log( "included:", included );
-					if ( !included ) material_entities.add( material );
 				}
 
 				function rename( material ){
 					if ( material.name ) return;
 					material.name = "mtl"+material.id;;
 				}
-			});
 
-		//	scene.traverse(function( object ){
-		//		object.traverse(function( child ){
-		//			if ( object === scene ) return; // avoid dublicate materials.
-		//			if ( Array.isArray( child.material ) )
-		//				child.material.forEach(function( material ){
-		//					var name = material.name || "mtl"+material.id;
-		//					if ( !material.name ) material.name = name;
-		//					material_entities.add( material );
-		//			});
-		//			else (function( child ){
-		//				var material = child.material;
-		//				var name = material.name || "mtl"+material.id;
-		//				if ( !material.name ) material.name = name;
-		//				material_entities.add( child.material );
-		//			})( child );
-		//		});
-		//	});
+				function addEntity( material ){
+					var included = material_entities.includes( material );
+					debugMode && console.log( "included:", included );
+					if ( !included ) material_entities.add( material );
+				}
+			});
 
 			console.log( {"object3DEditor": object3DEditor} ); // debug!
 			console.log( {"materialEditor": materialEditor} ); // debug!
