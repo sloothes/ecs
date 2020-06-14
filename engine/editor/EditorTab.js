@@ -570,12 +570,12 @@
 		function addToRedo(){
 			var json = editor.toJSON();
 			json && redo.unshift( json );
-			debugMode && console.log( "addToRedo!" );
+		//	debugMode && console.log( "addToRedo!" );
 		}
 
 		editor.reset = function(){
 			editor.copy( new THREE.Object3D() );
-			editor.name = "Editor";
+			editor.name = "object3DEditor";
 			editor.isEditing = false; // edit mode off.
 			undo.length = 0; redo.length = 0; // clear undo/redo.
 			cancelAnimationFrame( editor.requestFrameID ); // cancel object update loop, important!
@@ -590,7 +590,7 @@
 		//	Get new object.
 			var object = getObjectByEntityId( value ); 
 
-			if ( !object ) return false;
+			if ( !object ) return false; // important!
 
 		//	Copy object.
 			object && editor.copy( object );
@@ -619,7 +619,7 @@
 			object && editor.isEditing && addToUndo();
 		//	debugMode && console.log( "editor updated:", object );
 
-			return true;
+			return true; // important!
 		};
 
 	//	Editor undo/redo.
@@ -1513,20 +1513,19 @@
 		}
 
 	//	Editor Undo/Redo eventListner.
-
-		window.addEventListener( "keypress", function(e){ 
-
-			if ( e.code !== "KeyZ" ) return; // important!
-			if ( !editor.isEditing ) return; // important!
-
-			var keyZ = e.code === "KeyZ";    // important!
-
-			var modifiers = keyboard.modifiers;
-			var REDO = modifiers["ctrl"] &&  modifiers["shift"] && keyZ;
-			var UNDO = modifiers["ctrl"] && !modifiers["shift"] && keyZ;
-
-			( UNDO && editor.undo() ) || ( REDO && editor.redo() ); 
-		});
+	//	window.addEventListener( "keypress", function(e){ 
+	//
+	//		if ( e.code !== "KeyZ" ) return; // important!
+	//		if ( !editor.isEditing ) return; // important!
+	//
+	//		var keyZ = e.code === "KeyZ";    // important!
+	//
+	//		var modifiers = keyboard.modifiers;
+	//		var REDO = modifiers["ctrl"] &&  modifiers["shift"] && keyZ;
+	//		var UNDO = modifiers["ctrl"] && !modifiers["shift"] && keyZ;
+	//
+	//		( UNDO && editor.undo() ) || ( REDO && editor.redo() ); 
+	//	});
 
 	//	Editor keyInput systems.
 
