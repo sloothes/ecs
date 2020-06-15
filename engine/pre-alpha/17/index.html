@@ -130,7 +130,7 @@
 				var materialTab = TabUI.add( "Material", "material-tab" );
 				var animationTab = TabUI.add( "Animations", "animation-tab" );
 
-				TabUI.append("Editor", "Geometry", "Material", "Texture", "Controls", "Camera", "Players", "Animations", "Levels", "Debug" );
+				TabUI.append("Editor", "Material", "Texture", "Geometry", "Controls", "Camera", "Players", "Animations", "Levels", "Debug" );
 				TabUI.Material.role.classList.add("active");
 				TabUI.Material.tab.classList.add("in","active");
 
@@ -321,7 +321,7 @@
 
 				var select = document.createElement("select");
 				select.id = "material-entities-droplist";
-				select.style.cssText = "width:190px;color:#000;float:right;"
+				select.style.cssText = "width:170px;color:#000;float:right;"
 					+ "border:1px solid;border-radius:4px;padding:2px 4px 4px 4px;"
 					+ "font-size:20px;margin-left:10px;margin-right:15px;";
 
@@ -349,12 +349,13 @@
 
 				var select = document.createElement("select");
 				select.id = "material-map-droplist";
-				select.style.cssText = "width:190px;color:#000;float:right;"
+				select.style.cssText = "width:170px;color:#000;float:right;"
 					+ "border:1px solid;border-radius:4px;padding:2px 4px 4px 4px;"
 					+ "font-size:20px;margin-left:10px;margin-right:15px;";
 
-				var keys = "map,bumpMap,emissiveMap,metalnessMap,roughnessMap,"
-				  + "displacementMap,alphaMap,normalMap,lightMap,aoMap,envMap";
+				var keys = ",";
+				keys += "map,aoMap,envMap,lightMap,bumpMap,alphaMap,normalMap,"
+				keys += "emissiveMap,metalnessMap,roughnessMap,displacementMap";
 
 				keys.split(",").forEach(function( name ){
 					var option = document.createElement("option");
@@ -370,28 +371,25 @@
 
 			(function( tab ){
 
-			//	Vector mode droplist.
+			//	Import map texture button.
 			//	var tab = TabUI.Material.tab;
 
 				var row = document.createElement("h3");
-				row.textContent = "select:";
-				row.style.cssText = "height:40px;"
+				row.style.cssText = "display:none;height:40px;margin-bottom:20px;"
 
-				var select = document.createElement("select");
-				select.id = "material-vector-droplist";
-				select.style.cssText = "width:190px;color:#000;float:right;"
-					+ "border:1px solid;border-radius:4px;padding:2px 4px 4px 4px;"
-					+ "font-size:20px;margin-left:10px;margin-right:15px;";
+				var button = document.createElement("div");
+				button.id = "material-map-import-button";
+				button.textContent = "Import Texture";
+				button.style.cssText = "width:295px;float:right;height:40px;font-size:large;margin-right:15px;";
+				button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
 
-				var keys = "";
-				keys.split(",").forEach(function( name ){
-					var option = document.createElement("option");
-					option.text = name;
-					option.value = name;
-					select.appendChild( option );
-				});
+				var input = document.createElement("input");
+				input.type = "file";
+				input.id = "material-map-file-input";
+				input.style.cssText = "display:none;";
+				button.appendChild( input );
 
-				row.appendChild( select );
+				row.appendChild( button );
 				tab.appendChild( row );
 
 			})( TabUI.Material.tab );
@@ -407,17 +405,359 @@
 				var redo = document.createElement("div");
 				redo.id = "material-redo-button";
 				redo.textContent = "Redo";
-				redo.style.cssText = "width:45%;float:left;height:40px;font-size:large;margin-right:15px;";
+				redo.style.cssText = "width:44%;float:left;height:40px;font-size:large;margin-right:15px;";
 				redo.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
 
 				var undo = document.createElement("div");
 				undo.id = "material-undo-button";
 				undo.textContent = "Undo";
-				undo.style.cssText = "width:45%;float:right;height:40px;font-size:large;margin-right:15px;";
+				undo.style.cssText = "width:44%;float:right;height:40px;font-size:large;margin-right:15px;";
 				undo.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
 
 				row.appendChild( redo );
 				row.appendChild( undo );
+				tab.appendChild( row );
+
+			})( TabUI.Material.tab );
+
+			(function( tab ){
+
+			//	Property mode droplist.
+			//	var tab = TabUI.Material.tab;
+
+				var row = document.createElement("h3");
+				row.textContent = "property:";
+				row.style.cssText = "height:40px;"
+
+				var select = document.createElement("select");
+				select.id = "material-property-droplist";
+				select.style.cssText = "width:170px;color:#000;float:right;"
+				+ "border:1px solid;border-radius:4px;padding:2px 4px 4px 4px;"
+				+ "font-size:20px;margin-left:10px;margin-right:15px;";
+
+				var keys = ",";
+
+				keys.split(",").forEach(function( name ){
+					var option = document.createElement("option");
+					option.text = name;
+					option.value = name;
+					select.appendChild( option );
+				});
+
+				row.appendChild( select );
+				tab.appendChild( row );
+
+			})( TabUI.Material.tab );
+
+			(function( tab ){
+
+			//	property value.
+			//	var tab = TabUI.Material.tab;
+
+				var row = document.createElement("h3");
+				row.textContent = "value:";
+				row.style.cssText = "margin:10px 15px;height:30px;";
+
+				var vect = document.createElement("div");
+				vect.style.cssText = "width:170px;height:40px;float:right;";
+
+				var prev = document.createElement("li");
+				prev.id = "material-property-value-decrease";
+				prev.innerHTML = "&#9668;";
+				prev.style.display = "inline";
+				prev.classList.add("btn","btn-primary","get-prev-btn","pull-left");
+
+				var next = document.createElement("li");
+				next.id = "material-property-value-increase";
+				next.innerHTML = "&#9658;";
+				next.style.display = "inline";
+				next.classList.add("btn","btn-primary","get-next-btn","pull-right");
+
+				var input = document.createElement("input");
+				input.id = "material-input-property-value";
+				input.setAttribute("placeholder", "v" );
+				input.classList.add("form-control","text-center");
+				input.style.cssText = "color:#000;border:none;display:inline;width:80px;"
+				+ "margin:0px 5px;text-align:center;font-size:large;font-weigth:bold;background:none;";
+
+				vect.appendChild(prev);
+				vect.appendChild(input);
+				vect.appendChild(next);
+				row.appendChild(vect);
+				tab.appendChild( row );
+
+			})( TabUI.Material.tab );
+
+			(function( tab ){
+
+			//	Vector mode droplist.
+			//	var tab = TabUI.Material.tab;
+
+				var row = document.createElement("h3");
+				row.textContent = "scale:";
+				row.style.cssText = "height:40px;"
+
+				var select = document.createElement("select");
+				select.id = "material-vector-droplist";
+				select.style.cssText = "width:170px;color:#000;float:right;"
+					+ "border:1px solid;border-radius:4px;padding:2px 4px 4px 4px;"
+					+ "font-size:20px;margin-left:10px;margin-right:15px;";
+
+				var keys = ",";
+				keys += "normalScale,displacementScale"; // bumpScale,
+
+				keys.split(",").forEach(function( name ){
+					var option = document.createElement("option");
+					option.text = name;
+					option.value = name;
+					select.appendChild( option );
+				});
+
+				row.appendChild( select );
+				tab.appendChild( row );
+
+			})( TabUI.Material.tab );
+
+			(function( tab ){
+
+			//	vector x.
+			//	var tab = TabUI.Material.tab;
+
+				var row = document.createElement("h3");
+				row.textContent = "vect x:";
+				row.style.cssText = "margin:10px 15px;height:40px;";
+
+				var vect = document.createElement("div");
+				vect.style.cssText = "width:170px;height:40px;float:right;";
+
+				var prev = document.createElement("li");
+				prev.id = "material-vector-x-decrease";
+				prev.innerHTML = "&#9668;";
+				prev.style.display = "inline";
+				prev.classList.add("btn","btn-primary","get-prev-btn","pull-left");
+
+				var next = document.createElement("li");
+				next.id = "material-vector-x-increase";
+				next.innerHTML = "&#9658;";
+				next.style.display = "inline";
+				next.classList.add("btn","btn-primary","get-next-btn","pull-right");
+
+				var input = document.createElement("input");
+				input.id = "material-input-vector-x";
+				input.setAttribute("placeholder", "x" );
+				input.classList.add("form-control","text-center");
+				input.style.cssText = "color:#000;border:none;display:inline;width:80px;"
+					+ "margin:0px 5px;text-align:center;font-size:large;font-weigth:bold;background:none;";
+
+				vect.appendChild(prev);
+				vect.appendChild(input);
+				vect.appendChild(next);
+				row.appendChild(vect);
+				tab.appendChild( row );
+
+			})( TabUI.Material.tab );
+
+			(function( tab ){
+
+			//	vector y.
+			//	var tab = TabUI.Material.tab;
+
+				var row = document.createElement("h3");
+				row.textContent = "vect y:";
+				row.style.cssText = "margin:10px 15px;height:40px;";
+
+				var vect = document.createElement("div");
+				vect.style.cssText = "width:170px;height:40px;float:right;";
+
+				var prev = document.createElement("li");
+				prev.id = "material-vector-y-decrease";
+				prev.innerHTML = "&#9668;";
+				prev.style.display = "inline";
+				prev.classList.add("btn","btn-primary","get-prev-btn","pull-left");
+
+				var next = document.createElement("li");
+				next.id = "material-vector-y-increase";
+				next.innerHTML = "&#9658;";
+				next.style.display = "inline";
+				next.classList.add("btn","btn-primary","get-next-btn","pull-right");
+
+				var input = document.createElement("input");
+				input.id = "material-input-vector-y";
+				input.setAttribute("placeholder", "y" );
+				input.classList.add("form-control","text-center");
+				input.style.cssText = "color:#000;border:none;display:inline;width:80px;"
+					+ "margin:0px 5px;text-align:center;font-size:large;font-weigth:bold;background:none;";
+
+				vect.appendChild(prev);
+				vect.appendChild(input);
+				vect.appendChild(next);
+				row.appendChild(vect);
+				tab.appendChild( row );
+
+			})( TabUI.Material.tab );
+
+			(function( tab ){
+
+			//	Color mode droplist.
+			//	var tab = TabUI.Material.tab;
+
+				var row = document.createElement("h3");
+				row.textContent = "color:";
+				row.style.cssText = "height:40px;"
+
+				var select = document.createElement("select");
+				select.id = "material-color-droplist";
+				select.style.cssText = "width:170px;color:#000;float:right;"
+					+ "border:1px solid;border-radius:4px;padding:2px 4px 4px 4px;"
+					+ "font-size:20px;margin-left:10px;margin-right:15px;";
+
+				var keys = "";
+				keys += "color,emissive,specular";
+
+				keys.split(",").forEach(function( name ){
+					var option = document.createElement("option");
+					option.text = name;
+					option.value = name;
+					select.appendChild( option );
+				});
+
+				row.appendChild( select );
+				tab.appendChild( row );
+
+			})( TabUI.Material.tab );
+
+			(function( tab ){
+
+			//	color red (r).
+			//	var tab = TabUI.Material.tab;
+
+				var row = document.createElement("h3");
+				row.textContent = "red:";
+				row.style.cssText = "margin:10px 15px;height:40px;";
+
+				var vect = document.createElement("div");
+				vect.style.cssText = "width:170px;height:40px;float:right;";
+
+				var prev = document.createElement("li");
+				prev.id = "color-vector-r-decrease";
+				prev.innerHTML = "&#9668;";
+				prev.style.display = "inline";
+				prev.classList.add("btn","btn-primary","get-prev-btn","pull-left");
+
+				var next = document.createElement("li");
+				next.id = "color-vector-r-increase";
+				next.innerHTML = "&#9658;";
+				next.style.display = "inline";
+				next.classList.add("btn","btn-primary","get-next-btn","pull-right");
+
+				var input = document.createElement("input");
+				input.id = "color-input-vector-r";
+				input.setAttribute("placeholder", "r" );
+				input.classList.add("form-control","text-center");
+				input.style.cssText = "color:#000;border:none;display:inline;width:80px;"
+					+ "margin:0px 5px;text-align:center;font-size:large;font-weigth:bold;background:none;";
+
+				vect.appendChild(prev);
+				vect.appendChild(input);
+				vect.appendChild(next);
+				row.appendChild(vect);
+				tab.appendChild( row );
+
+			})( TabUI.Material.tab );
+
+			(function( tab ){
+
+			//	color green (g).
+			//	var tab = TabUI.Material.tab;
+
+				var row = document.createElement("h3");
+				row.textContent = "green:";
+				row.style.cssText = "margin:10px 15px;height:40px;";
+
+				var vect = document.createElement("div");
+				vect.style.cssText = "width:170px;height:40px;float:right;";
+
+				var prev = document.createElement("li");
+				prev.id = "color-vector-g-decrease";
+				prev.innerHTML = "&#9668;";
+				prev.style.display = "inline";
+				prev.classList.add("btn","btn-primary","get-prev-btn","pull-left");
+
+				var next = document.createElement("li");
+				next.id = "color-vector-g-increase";
+				next.innerHTML = "&#9658;";
+				next.style.display = "inline";
+				next.classList.add("btn","btn-primary","get-next-btn","pull-right");
+
+				var input = document.createElement("input");
+				input.id = "color-input-vector-g";
+				input.setAttribute("placeholder", "g" );
+				input.classList.add("form-control","text-center");
+				input.style.cssText = "color:#000;border:none;display:inline;width:80px;"
+					+ "margin:0px 5px;text-align:center;font-size:large;font-weigth:bold;background:none;";
+
+				vect.appendChild(prev);
+				vect.appendChild(input);
+				vect.appendChild(next);
+				row.appendChild(vect);
+				tab.appendChild( row );
+
+			})( TabUI.Material.tab );
+
+			(function( tab ){
+
+			//	color blue (b).
+			//	var tab = TabUI.Material.tab;
+
+				var row = document.createElement("h3");
+				row.textContent = "blue:";
+				row.style.cssText = "margin:10px 15px;height:40px;";
+
+				var vect = document.createElement("div");
+				vect.style.cssText = "width:170px;height:40px;float:right;";
+
+				var prev = document.createElement("li");
+				prev.id = "color-vector-b-decrease";
+				prev.innerHTML = "&#9668;";
+				prev.style.display = "inline";
+				prev.classList.add("btn","btn-primary","get-prev-btn","pull-left");
+
+				var next = document.createElement("li");
+				next.id = "color-vector-b-increase";
+				next.innerHTML = "&#9658;";
+				next.style.display = "inline";
+				next.classList.add("btn","btn-primary","get-next-btn","pull-right");
+
+				var input = document.createElement("input");
+				input.id = "color-input-vector-b";
+				input.setAttribute("placeholder", "b" );
+				input.classList.add("form-control","text-center");
+				input.style.cssText = "color:#000;border:none;display:inline;width:80px;"
+					+ "margin:0px 5px;text-align:center;font-size:large;font-weigth:bold;background:none;";
+
+				vect.appendChild(prev);
+				vect.appendChild(input);
+				vect.appendChild(next);
+				row.appendChild(vect);
+				tab.appendChild( row );
+
+			})( TabUI.Material.tab );
+
+			(function( tab ){
+
+			//	Clone material button.
+			//	var tab = TabUI.Material.tab;
+
+				var row = document.createElement("h3");
+				row.style.cssText = "height:40px;margin-bottom:20px;"
+
+				var button = document.createElement("div");
+				button.id = "material-clone-button";
+				button.textContent = "Clone Material";
+				button.style.cssText = "width:295px;float:right;height:40px;font-size:large;margin-right:15px;";
+				button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
+
+				row.appendChild( button );
 				tab.appendChild( row );
 
 			})( TabUI.Material.tab );
@@ -441,6 +781,10 @@
 
 			})( TabUI.Material.tab );
 
+		</script>
+
+		<script>
+
 			(function( tab ){
 
 			//	Material Type droplist.
@@ -448,19 +792,20 @@
 
 				var row = document.createElement("h3");
 				row.textContent = "Material:";
-				row.style.cssText = "height:40px;margin-top:40px;"
+				row.style.cssText = "display:none;height:40px;margin-top:40px;"
 
 				var select = document.createElement("select");
 				select.id = "material-type-droplist";
-				select.style.cssText = "width:190px;color:#000;float:right;"
+				select.style.cssText = "width:170px;color:#000;float:right;"
 					+ "border:1px solid;border-radius:4px;padding:2px 4px 4px 4px;"
 					+ "font-size:20px;margin-left:10px;margin-right:15px;";
 
 				(function(){
 
-					var materials = "MeshBasicMaterial,MeshStandardMaterial,MeshLambertMaterial,MeshPhongMaterial,"
-						+ "MeshDepthMaterial,MeshNormalMaterial,MeshToonMaterial,MeshPhysicalMaterial,PointsMaterial,"
-						+ "LineBasicMaterial,LineDashedMaterial,RawShaderMaterial,ShaderMaterial,ShadowMaterial,SpriteMaterial";
+					var materials = "";
+					materials += "MeshBasicMaterial,MeshStandardMaterial,MeshLambertMaterial,MeshPhongMaterial,"
+					materials += "MeshDepthMaterial,MeshNormalMaterial,MeshToonMaterial,MeshPhysicalMaterial,PointsMaterial,"
+					materials += "LineBasicMaterial,LineDashedMaterial,RawShaderMaterial,ShaderMaterial,ShadowMaterial,SpriteMaterial";
 
 					materials.split(",").forEach(function( name ){
 						var option = document.createElement("option");
@@ -483,7 +828,7 @@
 			//	var tab = TabUI.Material.tab;
 
 				var row = document.createElement("h3");
-				row.style.cssText = "height:40px;margin-bottom:20px;"
+				row.style.cssText = "display:none;height:40px;margin-bottom:20px;"
 
 				var button = document.createElement("div");
 				button.id = "create-material-button";
@@ -502,11 +847,11 @@
 			//	var tab = TabUI.Material.tab;
 
 				var row = document.createElement("h3");
-				row.style.cssText = "height:40px;margin-bottom:20px;"
+				row.style.cssText = "display:none;height:40px;margin-bottom:20px;"
 
 				var button = document.createElement("div");
 				button.id = "clone-material-button";
-				button.textContent = "Clone Geometry Entity";
+				button.textContent = "Clone Material Entity";
 				button.style.cssText = "width:295px;float:right;height:40px;font-size:large;margin-right:15px;";
 				button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
 
@@ -521,7 +866,7 @@
 			//	var tab = TabUI.Material.tab;
 
 				var row = document.createElement("h3");
-				row.style.cssText = "height:40px;margin-bottom:20px;"
+				row.style.cssText = "display:none;height:40px;margin-bottom:20px;"
 
 				var button = document.createElement("div");
 				button.id = "remove-material-button";
@@ -547,11 +892,15 @@
 			//	const materials = {};
 				const undo = [], redo = [];
 
+			//	droplists.
 				const entity_droplist = document.getElementById("material-entities-droplist");
-				const vector_droplist = document.getElementById("material-vector-droplist");
 				const texture_droplist = document.getElementById("material-map-droplist");
+				const vector_droplist = document.getElementById("material-vector-droplist");
+				const color_droplist = document.getElementById("material-color-droplist");
+				const property_droplist = document.getElementById("material-property-droplist");
 				const material_droplist = document.getElementById("material-type-droplist");
 
+			//	buttons.
 				const redo_button = document.getElementById("material-redo-button");
 				const undo_button = document.getElementById("material-undo-button");
 				const exit_edit_button = document.getElementById("material-exit-mode");
@@ -559,10 +908,13 @@
 				const clone_material_button = document.getElementById("clone-material-button");
 				const remove_material_button = document.getElementById("remove-material-button");
 
-				const entitySelect = { value:entity_droplist.value };   // string.
-				const vectorSelect = { value:vector_droplist.value };   // string.
-				const textureSelect = { value:texture_droplist.value }; // string.
-				const materialType = { value:material_droplist.value }; // string.
+			//	values.
+				const entitySelect  = { value:entity_droplist.value };    // string.
+				const textureSelect = { value:texture_droplist.value };   // string.
+				const vectorSelect  = { value:vector_droplist.value };    // string.
+				const colorSelect   = { value:color_droplist.value };     // string.
+				const materialType  = { value:material_droplist.value };  // string.
+				const propertySelect = { value:property_droplist.value }; // string.
 
 			//	editor helpers.
 
@@ -601,17 +953,6 @@
 					});
 				}
 
-				function exitFromEditMode(){
-					editor.reset(); // important!
-					resetEntitySelectValue();
-					return;
-				}
-
-				function switchToEditMode( value ){
-					if ( !editor.update( value ) ) 
-						exitFromEditMode();
-				}
-
 				function addToUndo(){
 					redo.length = 0; // important!
 					var json = editor.toJSON();
@@ -623,6 +964,17 @@
 					var json = editor.toJSON();
 					json && redo.unshift( json );
 				//	debugMode && console.log( arguments.callee.name+"!" );
+				}
+
+				function exitFromEditMode(){
+					editor.reset(); // important!
+					resetEntitySelectValue();
+					return;
+				}
+
+				function switchToEditMode( value ){
+					if ( !editor.update( value ) ) 
+						exitFromEditMode();
 				}
 
 			//	IMPORTANT !!! IMPORTANT !!! IMPORTANT !!! IMPORTANT !!!
@@ -723,8 +1075,8 @@
 
 						keys += "map,aoMap,envMap,bumpMap,alphaMap,lightMap,normalMap,";
 						keys += "emissiveMap,metalnessMap,roughnessMap,displacementMap,";
-						keys += "metalness,roughness,bumpScale,reflectivity,normalMapType,";
-						keys += "refractionRatio,displacementBias,displacementScale,";
+						keys += "metalness,roughness,bumpScale,reflectivity,";
+						keys += "refractionRatio,displacementBias,displacementScale,,normalMapType,";
 						keys += "aoMapIntensity,envMapIntensity,emissiveIntensity,lightMapIntensity,";
 						keys += "wireframe,wireframeLinecap,wireframeLinejoin,wireframeLinewidth,";
 						keys += "skinning,morphTargets,morphNormals,combine,shininess,specularMap,";
@@ -829,21 +1181,27 @@
 				(function(){
 
 					entity_droplist.addEventListener("change", onChangeSelectValue );
-					vector_droplist.addEventListener("change", onChangeSelectValue );
 					texture_droplist.addEventListener("change", onChangeSelectValue );
+					vector_droplist.addEventListener("change", onChangeSelectValue );
+					color_droplist.addEventListener("change", onChangeSelectValue );
 					material_droplist.addEventListener("change", onChangeSelectValue );
+					property_droplist.addEventListener("change", onChangeSelectValue );
 
 					function onChangeSelectValue(){
 
 						entity_droplist.blur();
-						vector_droplist.blur();
 						texture_droplist.blur();
+						vector_droplist.blur();
+						color_droplist.blur();
 						material_droplist.blur();
+						property_droplist.blur();
 
 						entitySelect.value = entity_droplist.value; // updateEntitySelectValue();
-						vectorSelect.value = vector_droplist.value; // updateVectorSelectValue();
-						materialType.value = material_droplist.value; // updateMaterialTypeValue();
 						textureSelect.value = texture_droplist.value; // updateTextureSelectValue()
+						vectorSelect.value = vector_droplist.value; // updateVectorSelectValue();
+						colorSelect.value = color_droplist.value; // updateColorSelectValue();
+						materialType.value = material_droplist.value; // updateMaterialTypeValue();
+						propertySelect.value = property_droplist.value; // updatePropertySelectValue();
 
 					}
 
@@ -956,6 +1314,14 @@
 
 					});
 
+					watch(textureSelect, function( prop, action, newValue, oldValue ){
+					//	debugMode && console.log( "vectorSelect watch:", prop, action, newValue );
+
+					//	Update texture direct from editor.
+					//	displayVectorValues( vectorSelect.value );
+
+					});
+
 					watch(vectorSelect, function( prop, action, newValue, oldValue ){
 					//	debugMode && console.log( "vectorSelect watch:", prop, action, newValue );
 
@@ -964,10 +1330,10 @@
 
 					});
 
-					watch(textureSelect, function( prop, action, newValue, oldValue ){
-					//	debugMode && console.log( "vectorSelect watch:", prop, action, newValue );
+					watch(colorSelect, function( prop, action, newValue, oldValue ){
+					//	debugMode && console.log( "colorSelect watch:", prop, action, newValue );
 
-					//	Update texture direct from editor.
+					//	Update vectors direct from editor.
 					//	displayVectorValues( vectorSelect.value );
 
 					});
