@@ -1425,13 +1425,15 @@
 
 		function enableCameraRigidObjects(){
 			while (rigidObjects.length) {
-				cameraControls.rigidObjects.push( rigidObjects.shift() );
+				var object = rigidObjects.shift();
+				object.isMesh && cameraControls.rigidObjects.push( object ); // cleanup.
 			}
 		}
 
 		function disableCameraRigidObjects(){
 			while (cameraControls.rigidObjects.length) {
-				rigidObjects.push( cameraControls.rigidObjects.shift() );
+				var object = cameraControls.rigidObjects.shift()
+				object.isMesh && rigidObjects.push( object ); // cleanup.
 			}
 		}
 
