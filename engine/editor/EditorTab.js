@@ -17,7 +17,7 @@
 
 		var select = document.createElement("select");
 		select.id = "entities-droplist";
-		select.style.cssText = "width:190px;color:#000;float:right;"
+		select.style.cssText = "width:170px;color:#000;float:right;"
 			+ "border:1px solid;border-radius:4px;padding:2px 4px 4px 4px;"
 			+ "font-size:20px;margin-left:10px;margin-right:15px;";
 
@@ -36,6 +36,32 @@
 
 	(function(){
 
+	//	Undo/Redo button.
+
+		var tab = TabUI.Editor.tab;
+		var row = document.createElement("h3");
+		row.style.cssText = "height:40px;margin-bottom:20px;"
+
+		var redo = document.createElement("div");
+		redo.id = "editor-redo-button";
+		redo.textContent = "Redo";
+		redo.style.cssText = "width:45%;float:left;height:40px;font-size:large;margin-right:15px;";
+		redo.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
+
+		var undo = document.createElement("div");
+		undo.id = "editor-undo-button";
+		undo.textContent = "Undo";
+		undo.style.cssText = "width:45%;float:right;height:40px;font-size:large;margin-right:15px;";
+		undo.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
+
+		row.appendChild( redo );
+		row.appendChild( undo );
+		tab.appendChild( row );
+
+	})();
+
+	(function(){
+
 	//	Vector mode droplist.
 	//	When option is selected, switches to EditMode.
 
@@ -46,7 +72,7 @@
 
 		var select = document.createElement("select");
 		select.id = "vector-mode-droplist";
-		select.style.cssText = "width:190px;color:#000;float:right;"
+		select.style.cssText = "width:170px;color:#000;float:right;"
 			+ "border:1px solid;border-radius:4px;padding:2px 4px 4px 4px;"
 			+ "font-size:20px;margin-left:10px;margin-right:15px;";
 
@@ -106,6 +132,8 @@
 
 	(function(){
 
+	//	vector y.
+
 		var tab = TabUI.Editor.tab;
 		var row = document.createElement("h3");
 		row.textContent = "vector y:";
@@ -143,6 +171,8 @@
 
 	(function(){
 
+	//	vector z.
+
 		var tab = TabUI.Editor.tab;
 		var row = document.createElement("h3");
 		row.textContent = "vector z:";
@@ -179,6 +209,8 @@
 	})();
 
 	(function(){
+
+	//	vector w.
 
 		var tab = TabUI.Editor.tab;
 		var row = document.createElement("h3");
@@ -235,33 +267,6 @@
 
 	})();
 
-
-	(function(){
-
-	//	Undo/Redo button.
-
-		var tab = TabUI.Editor.tab;
-		var row = document.createElement("h3");
-		row.style.cssText = "height:40px;margin-bottom:20px;"
-
-		var redo = document.createElement("div");
-		redo.id = "editor-redo-button";
-		redo.textContent = "Redo";
-		redo.style.cssText = "width:45%;float:left;height:40px;font-size:large;margin-right:15px;";
-		redo.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
-
-		var undo = document.createElement("div");
-		undo.id = "editor-undo-button";
-		undo.textContent = "Undo";
-		undo.style.cssText = "width:45%;float:right;height:40px;font-size:large;margin-right:15px;";
-		undo.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
-
-		row.appendChild( redo );
-		row.appendChild( undo );
-		tab.appendChild( row );
-
-	})();
-
 	(function(){
 
 	//	Exit edit mode button.
@@ -292,7 +297,7 @@
 
 		var select = document.createElement("select");
 		select.id = "editor-geometry-droplist";
-		select.style.cssText = "width:170px;color:#000;float:right;"
+		select.style.cssText = "width:150px;color:#000;float:right;"
 			+ "border:1px solid;border-radius:4px;padding:2px 4px 4px 4px;"
 			+ "font-size:20px;margin-left:10px;margin-right:15px;";
 
