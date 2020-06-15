@@ -214,7 +214,7 @@
 
 		var tab = TabUI.Editor.tab;
 		var row = document.createElement("h3");
-		row.textContent = "vector w:";
+		row.textContent = "vect w:";
 		row.style.cssText = "margin:10px 15px;height:40px;";
 
 		var vect = document.createElement("div");
