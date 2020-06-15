@@ -531,10 +531,12 @@
 
 		function resetEntitySelectValue(){
 			entitySelect.value = entity_droplist.value = "";
+			entity_droplist.dispatchEvent( new Event("change") );
 		}
 
 		function resetGeometryTypeValue(){
 			geometryType.value = geometry_droplist.value = "";
+			geometryType.dispatchEvent( new Event("change") );
 		}
 
 		function updateEntitySelectValue(){
