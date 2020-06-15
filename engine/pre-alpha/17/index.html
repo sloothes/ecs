@@ -749,7 +749,7 @@
 				//	editor.name = "materialEditor";
 
 					undo.length = 0; redo.length = 0; // clear undo/redo.
-					debugMode && console.log( "materialEditor.reset:", editor );
+				//	debugMode && console.log( "material editor reset:", editor );
 				};
 
 				editor.update = function( value ){
@@ -767,7 +767,7 @@
 
 				//	keep initial state.
 					material && addToUndo();
-				//	debugMode && console.log( "editor material updated:", material );
+					debugMode && console.log( "material editor updated:", editor );
 
 					return true; // important!
 				};
@@ -945,8 +945,8 @@
 				(function(){
 
 					watch(entitySelect, function( prop, action, newValue, oldValue ){
-						debugMode && console.log( "entitySelect watch:", 
-						prop, action, "newValue:", newValue, "oldValue:", oldValue  );
+					//	debugMode && console.log( "entitySelect watch:", 
+					//	prop, action, "newValue:", newValue, "oldValue:", oldValue  );
 
 						switchToEditMode( newValue ); // important!
 
