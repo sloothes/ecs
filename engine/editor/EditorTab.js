@@ -549,13 +549,13 @@
 
 		function addtoRigidObjects( value ){
 			var id = parseInt(value);
+			if ( !checkId( value ) ) return;
 			if ( localPlayer.getObjectById(id) ) return; // localPlayer child.
 			var object = getObjectByEntityId( value );
-			if ( object && rigidObjects.findIndex( 
-				function( item ){ 
-					return item.id === object.id;
-				}) > -1 ) return; // already exists in rigidObjects.
-			object && rigidObjects.push( object );
+			if ( object && rigidObjects.findIndex( function( item ){ 
+				return item.id === object.id;
+			}) > -1 ) return; // already exists in rigidObjects.
+			object && object.isMesh && rigidObjects.push( object );
 		}
 
 		function removefromRigidObjects( value ){
