@@ -234,7 +234,7 @@
 
 		var input = document.createElement("input");
 		input.id = "input-vector-w";
-		input.setAttribute("placeholder", "z" );
+		input.setAttribute("placeholder", "w" );
 		input.classList.add("form-control","text-center");
 		input.style.cssText = "color:#000;border:none;display:inline;width:80px;"
 			+ "margin:0px 5px;text-align:center;font-size:large;font-weigth:bold;background:none;";
