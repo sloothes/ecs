@@ -97,7 +97,7 @@
 
 		var tab = TabUI.Editor.tab;
 		var row = document.createElement("h3");
-		row.textContent = "vector x:";
+		row.textContent = "vect x:";
 		row.style.cssText = "margin:10px 15px;height:40px;";
 
 		var vect = document.createElement("div");
@@ -136,7 +136,7 @@
 
 		var tab = TabUI.Editor.tab;
 		var row = document.createElement("h3");
-		row.textContent = "vector y:";
+		row.textContent = "vect y:";
 		row.style.cssText = "margin:10px 15px;height:40px;";
 
 		var vect = document.createElement("div");
@@ -175,7 +175,7 @@
 
 		var tab = TabUI.Editor.tab;
 		var row = document.createElement("h3");
-		row.textContent = "vector z:";
+		row.textContent = "vect z:";
 		row.style.cssText = "margin:10px 15px;height:40px;";
 
 		var vect = document.createElement("div");
