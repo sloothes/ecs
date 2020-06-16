@@ -1008,7 +1008,7 @@
 				const undo = [], redo = [];
 
 			//	Editor tab.
-				const editorTabSelect  = { value:"" };
+				const editorTabSelect = { value:"" };
 				(function( selector ){
 					TabUI.Editor.tab.querySelector(selector).addEventListener("change", function(){
 						editorTabSelect.value = this.value;  // string.
@@ -1387,7 +1387,7 @@
 						}
 					});
 				};
-				
+
 			//	editor update.
 
 				editor.update = function( value ){
@@ -2254,7 +2254,10 @@
 
 			})( new THREE.Material() );
 
+		</script>
 
+		<script>
+/*
 		//	helper.
 
 			function cloneSceneMaterials(){
@@ -2268,7 +2271,7 @@
 				var loader = new THREE.ObjectLoader();
 				return loader.parseMaterials( meta.materials );
 			}
-
+*/
 		</script>
 
 		<script>
