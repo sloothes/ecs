@@ -1501,6 +1501,24 @@
 
 				})();
 
+			//	buttons.
+
+				(function(){
+
+					var interval;
+
+					redo_button.addEventListener( "click", editor.redo );
+					undo_button.addEventListener( "click", editor.undo );
+
+					exit_edit_button.addEventListener( "click",  function(){
+						clearTimeout( interval );
+						interval = setTimeout(function(){
+							resetEntitySelectValue(); // exit from edit mode.
+						}, 250);
+					});
+
+				})();
+
 			//	droplists.
 
 				(function(){
@@ -1530,6 +1548,10 @@
 				//	color_droplist.addEventListener("change", onChangeSelectValue );
 				//	type_droplist.addEventListener("change", onChangeSelectValue );
 
+				//	DO NOT USE exitFromEditMode(); stack overflow!
+				//	DO NOT USE resetEntitySelectValue(); stack overflow!
+				//	DO NOT USE updateEntitySelectValue(); stack overflow!
+
 					function blur_droplists(){
 						type_droplist.blur();
 						param_droplist.blur();
@@ -1538,10 +1560,6 @@
 						entity_droplist.blur();
 						texture_droplist.blur();
 					};
-
-				//	DO NOT USE exitFromEditMode(); stack overflow!
-				//	DO NOT USE resetEntitySelectValue(); stack overflow!
-				//	DO NOT USE updateEntitySelectValue(); stack overflow!
 
 					entity_droplist.addEventListener("change", function(){
 
@@ -1649,24 +1667,6 @@
 							colorSelect.value = color_droplist.value = ""; // reset.
 					});
 
-
-				})();
-
-			//	buttons.
-
-				(function(){
-
-					var interval;
-
-					redo_button.addEventListener( "click", editor.redo );
-					undo_button.addEventListener( "click", editor.undo );
-
-					exit_edit_button.addEventListener( "click",  function(){
-						clearTimeout( interval );
-						interval = setTimeout(function(){
-							resetEntitySelectValue(); // exit from edit mode.
-						}, 250);
-					});
 
 				})();
 
@@ -2023,6 +2023,149 @@
 
 						displayVectorValues( colorSelect.value );
 					}
+
+				})();
+
+			//	DEMO - param inputs (TEMPORARY IMPLEMATATION - DEMO).
+			//	!!! TODO: cases based on paramSelect.value, IMPORTANT !!!
+
+				(function(){
+
+					var interval;
+
+					const param_value_input = document.getElementById("material-param-value-input");
+					const param_value_increase = document.getElementById("material-param-value-increase");
+					const param_value_decrease = document.getElementById("material-param-value-decrease");
+
+					param_value_input.addEventListener( "change", onInputChange );
+					param_value_increase.addEventListener( "click", onMouseClick );
+					param_value_decrease.addEventListener( "click", onMouseClick );
+
+					function onMouseClick(){
+
+						var key = paramSelect.value;
+
+					//	is boolean.
+
+						if ( typeof editor[ key ] === "boolean" ) {
+							editor[ key ] = !editor[ key ]; // update.
+							param_value_input.value = editor[ key ]; // display.
+							return;
+						}
+
+					//	is number (demo).
+
+						if ( typeof editor[ key ] === "number" ) {
+
+						//	var max = 100, min = -max;
+						//	var step = 1 // for integer.
+							var step = 1/100; // for float.
+
+							if ( this === param_value_increase ) param_value_input.value = ( editor[ key ] += step ).toFixed(2); // update, display.
+							if ( this === param_value_decrease ) param_value_input.value = ( editor[ key ] -= step ).toFixed(2); // update, display.
+
+							return;
+						}
+
+					}
+
+					function onInputChange(){
+
+						this.blur(); // important!
+
+						var step = 1/100;
+
+					//	demo!
+
+						if ( !(entitySelect.value && paramSelect.value) ) 
+
+							return resetValue();
+
+						if ( entitySelect.value && paramSelect.value ) {
+
+						//	Update.
+							updateValue( this );
+
+						//	Undo/Redo.
+							addToUndo();
+
+						}
+
+					//	demo!
+
+						function resetValue(){
+
+							param_value_input.value = "";
+
+							return;
+						}
+
+					//	demo!
+
+						function displayValue(){
+
+							if ( !paramSelect.value ) return resetValue();
+
+							var key = paramSelect.value;
+
+							if ( editor[ key ] === undefined ) 
+								return resetValue();
+							else 
+								param_value_input.value = editor[ key ];
+
+							return;
+						}
+
+					//	demo!
+
+						function updateValue(){
+
+							if ( !paramSelect.value ) return resetValue();
+
+							var key = paramSelect.value;
+
+							if ( editor[ key ] === undefined ) return resetValue();
+
+						//	is string.
+
+							if ( typeof editor[ key ] === "string" ) {
+								editor[ key ] = param_value_input.value; return;
+							}
+
+						//	is boolean.
+
+							else if ( typeof editor[ key ] === "boolean" ) {
+								editor[ key ] = Boolean( param_value_input.value ); return;
+							}
+
+						//	is number.
+
+							else if ( typeof editor[ key ] === "number" && editor[ key ] !== NaN ) {
+								if ( parseFloat( param_value_input.value ) !== NaN ) {
+
+								//	float && float.
+									if ( editor[ key ] % 1 !== 0 && parseFloat( param_value_input.value ) % 1 !== 0	) {
+										editor[ key ] = parseFloat( param_value_input.value ); return;
+									}
+
+								//	float && integer.
+									if ( ( editor[ key ] % 1 !== 0 && parseFloat( param_value_input.value ) % 1 === 0 ) 
+										|| ( editor[ key ] % 1 === 0 && parseFloat( param_value_input.value ) % 1 !== 0 ) ) {
+										editor[ key ] = parseFloat( param_value_input.value ); return;
+									}
+
+								//	integer && integer.
+									if ( editor[ key ] % 1 === 0 && parseFloat( param_value_input.value ) % 1 === 0 ) {
+										editor[ key ] = parseInt( param_value_input.value ); return;
+									}
+
+								} else return resetValue();
+
+							} else return resetValue();
+
+						} // end updateValue().
+
+					} // onInputChange().
 
 				})();
 
