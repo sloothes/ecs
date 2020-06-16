@@ -1384,7 +1384,7 @@
 								editor[ key ] = material[ key ];
 							}
 						} catch(err){
-							debugMode && console.warn(err);
+						//	debugMode && console.warn(err);
 						}
 					});
 				};
@@ -1530,17 +1530,37 @@
 				//	color_droplist.addEventListener("change", onChangeSelectValue );
 				//	type_droplist.addEventListener("change", onChangeSelectValue );
 
+					function blur_droplists(){
+						type_droplist.blur();
+						param_droplist.blur();
+						scale_droplist.blur();
+						color_droplist.blur();
+						entity_droplist.blur();
+						texture_droplist.blur();
+					};
+
+				//	DO NOT USE exitFromEditMode(); stack overflow!
+				//	DO NOT USE resetEntitySelectValue(); stack overflow!
+				//	DO NOT USE updateEntitySelectValue(); stack overflow!
+
 					entity_droplist.addEventListener("change", function(){
 
-						entity_droplist.blur(); // important!
+						blur_droplists(); // important!
 
 					//	update editor.
-.
+
 						entitySelect.value = entity_droplist.value; // update editor.
+
+					//	reset texture/param/scale.
+
+						paramSelect.value = param_droplist.value = ""; // reset.
+						scaleSelect.value = scale_droplist.value = ""; // reset.
+						textureSelect.value = texture_droplist.value = ""; // reset.
+
+					//	update color.
 
 						if ( entitySelect.value ) {
 
-						//	update color.
 							if ( editor.color ) updateColorSelectValue("color");
 							else if ( editor.emissive ) updateColorSelectValue("emissive");
 							else if ( editor.specular ) updateColorSelectValue("specular");
@@ -1549,46 +1569,28 @@
 
 					});
 
-					//	DO NOT USE exitFromEditMode(); stack overflow!
-					//	DO NOT USE resetEntitySelectValue(); stack overflow!
-					//	DO NOT USE updateEntitySelectValue(); stack overflow!
+					param_droplist.addEventListener("change", function(){
 
-					/*
-						if ( entity_droplist.value ) {
-
-							entitySelect.value = entity_droplist.value; // update.
-
-						} else {
-
-							entitySelect.value = entity_droplist.value = ""; // reset.
-
-							resetTextureSelectValue();
-							resetParamSelectValue();
-							resetScaleSelectValue();
-							resetColorSelectValue();
-							resetParamInputValues();
-							resetColorInputValues();
-							resetScaleInputValues();
-
-						}
-
-					//	color droplist.
+						blur_droplists(); // important!
 
 						if ( entitySelect.value ) {
 
-						//	update color.
-							if ( editor.color ) updateColorSelectValue("color");
-							else if ( editor.emissive ) updateColorSelectValue("emissive");
-							else if ( editor.specular ) updateColorSelectValue("specular");
+							var key = param_droplist.value;
+						//	TODO: cases depended on texture droplist?
 
-						}
+							if ( editor[ key ] !== undefined )
+								paramSelect.value = param_droplist.value; // update.
+							else
+								paramSelect.value = param_droplist.value = ""; // reset.
+						} 
+						
+						else paramSelect.value = param_droplist.value = ""; // reset.
 
-						else colorSelect.value = color_droplist.value = ""; // reset.
-					*/
+					});
 
 					texture_droplist.addEventListener("change", function(){
 
-						texture_droplist.blur(); // important!
+						blur_droplists(); // important!
 
 					//	DO NOT USE resetTextureSelectValue(); stack overflow!
 					//	DO NOT USE updateTextureSelectValue(); stack overflow!
@@ -1618,7 +1620,7 @@
 
 					scale_droplist.addEventListener("change", function(){
 
-						scale_droplist.blur(); // important!
+						blur_droplists(); // important!
 
 					//	DO NOT USE resetScaleSelectValue(); stack overflow!
 					//	DO NOT USE updateScaleSelectValue(); stack overflow!
@@ -1634,7 +1636,7 @@
 
 					color_droplist.addEventListener("change", function(){
 
-						color_droplist.blur(); // important!
+						blur_droplists(); // important!
 
 					//	DO NOT USE resetColorSelectValue(); stack overflow!
 					//	DO NOT USE updateColorSelectValue(); stack overflow!
