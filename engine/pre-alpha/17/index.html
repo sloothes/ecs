@@ -515,7 +515,7 @@
 				+ "border:1px solid;border-radius:4px;padding:2px 4px 4px 4px;"
 				+ "font-size:20px;margin-left:10px;margin-right:15px;";
 
-				var keys = ",";
+				var keys = "";
 				keys += "normalScale,displacementScale";
 
 				keys.split(",").forEach(function( name ){
@@ -1146,22 +1146,22 @@
 
 			//	display vector values.
 
-				function displayVectorValues( key ){
+				function displayVectorValues( value ){
 
-					switch ( key ){
+					switch ( value ){
 						case "color":
 						case "emissive":
 						case "specular":
-							updateColorInputValues( key );
+							updateColorInputValues( value );
 						break;
 
 						case "normalScale":
 						case "displacementScale":
-							updateScaleInputValues( key );
+							updateScaleInputValues( value );
 						break;
 						
 						default:
-							updateParamInputValues( key );
+							updateParamInputValues( value );
 						break;
 					}
 
@@ -1284,7 +1284,7 @@
 					//	reset.
 
 						var keys = "";
-						keys += "color,emissive,specular,normalScale,";
+						keys += "color,emissive,specular,normalScale,displacementScale,";
 						keys += "name,type,uuid,side,opacity,alphaTest,transparent,premultipliedAlpha,";
 						keys += "fog,lights,visible,overdraw,dithering,precision,colorWrite,flatShading,vertexColors,";
 						keys += "blending,blendSrc,blendDst,blendEquation,blendSrcAlpha,blendDstAlpha,blendEquationAlpha,";
@@ -1293,7 +1293,7 @@
 						keys += "map,aoMap,envMap,bumpMap,alphaMap,lightMap,normalMap,specularMap,";
 						keys += "gradientMap,emissiveMap,metalnessMap,roughnessMap,displacementMap,";
 						keys += "metalness,roughness,bumpScale,reflectivity,";
-						keys += "refractionRatio,displacementBias,displacementScale,normalMapType,";
+						keys += "refractionRatio,displacementBias,normalMapType,";
 						keys += "aoMapIntensity,envMapIntensity,emissiveIntensity,lightMapIntensity,";
 						keys += "wireframe,wireframeLinecap,wireframeLinejoin,wireframeLinewidth,";
 						keys += "skinning,morphTargets,morphNormals,combine,shininess,";
@@ -1309,7 +1309,7 @@
 								break;
 
 								case "color":
-									if ( editor[ key ] ===  undefined )
+									if ( editor[ key ] === undefined )
 										editor[ key ] = new THREE.Color(1,1,1);
 									else
 										editor[ key ].setRGB(1,1,1);
@@ -1317,14 +1317,15 @@
 
 								case "emissive":
 								case "specular":
-									if ( editor[ key ] ===  undefined )
+									if ( editor[ key ] === undefined )
 										editor[ key ] = new THREE.Color(1,1,1);
 									else
 										editor[ key ].setRGB(0,0,0);
 								break;
 
 								case "normalScale":
-									if ( editor[ key ] ===  undefined )
+								case "displacementScale":
+									if ( editor[ key ] === undefined )
 										editor[ key ] = new THREE.Vector2(1,1);
 									else
 										editor[ key ].set(1,1);
@@ -1368,6 +1369,26 @@
 
 				})();
 
+			//	editor copy (overwrite).
+
+				editor.copy = function( material ){
+					Object.keys( material ).filter( function( key ){
+						return typeof material[ key ] != "function";
+					}).forEach( function( key ){
+						try {
+							if ( typeof material[ key ] === "object" ) {
+								for ( var k in material[ key ] ){
+									editor[ key ][ k ] = material[ key ][ k ];
+								}
+							} else {
+								editor[ key ] = material[ key ];
+							}
+						} catch(err){
+							debugMode && console.warn(err);
+						}
+					});
+				};
+				
 			//	editor update.
 
 				editor.update = function( value ){
@@ -1378,10 +1399,29 @@
 				//	Get new material.
 					var material = getMaterialByEntityId( value ); 
 
-					if ( !material ) return false; // important!
+					if ( !material ) {
+						debugMode && console.log( false );
+						return false; // important!
+					}
 
 				//	Copy material.
 					material && editor.copy( material );
+
+				//	Object.keys( material ).filter( function( key ){
+				//		return typeof material[ key ] != "function";
+				//	}).forEach( function( key ){
+				//		try {
+				//			if ( typeof material[ key ] === "object" ) {
+				//				for ( var k in material[ key ] ){
+				//					editor[ key ][ k ] = material[ key ][ k ];
+				//				}
+				//			} else {
+				//				editor[ key ] = material[ key ];
+				//			}
+				//		} catch(err){
+				//			debugMode && console.warn(err);
+				//		}
+				//	});
 
 					editor.type = material.type; // important!
 					editor.name = material.name; // important!
@@ -1391,6 +1431,7 @@
 					material && addToUndo();
 					debugMode && console.log( "material editor updated:", editor );
 
+					debugMode && console.log( true );
 					return true; // important!
 				};
 
@@ -1464,30 +1505,148 @@
 
 				(function(){
 
-					entity_droplist.addEventListener("change", onChangeSelectValue );
-					texture_droplist.addEventListener("change", onChangeSelectValue );
-					param_droplist.addEventListener("change", onChangeSelectValue );
-					scale_droplist.addEventListener("change", onChangeSelectValue );
-					color_droplist.addEventListener("change", onChangeSelectValue );
-					type_droplist.addEventListener("change", onChangeSelectValue );
+				//	function onChangeSelectValue(){
 
-					function onChangeSelectValue(){
+					//	entity_droplist.blur();
+					//	texture_droplist.blur();
+					//	param_droplist.blur();
+					//	scale_droplist.blur();
+					//	color_droplist.blur();
+					//	type_droplist.blur();
 
-						entity_droplist.blur();
-						texture_droplist.blur();
-						param_droplist.blur();
-						scale_droplist.blur();
-						color_droplist.blur();
-						type_droplist.blur();
+					//	updateEntitySelectValue();
+					//	updateTextureSelectValue();
+					//	updateParamSelectValue();
+					//	updateScaleSelectValue();
+					//	updateColorSelectValue();
+					//	updateMaterialTypeValue();
 
-						updateEntitySelectValue();
-						updateTextureSelectValue();
-						updateParamSelectValue();
-						updateScaleSelectValue();
-						updateColorSelectValue();
-						updateMaterialTypeValue();
+				//	}
 
-					}
+				//	entity_droplist.addEventListener("change", onChangeSelectValue );
+				//	texture_droplist.addEventListener("change", onChangeSelectValue );
+				//	param_droplist.addEventListener("change", onChangeSelectValue );
+				//	scale_droplist.addEventListener("change", onChangeSelectValue );
+				//	color_droplist.addEventListener("change", onChangeSelectValue );
+				//	type_droplist.addEventListener("change", onChangeSelectValue );
+
+					entity_droplist.addEventListener("change", function(){
+
+						entity_droplist.blur(); // important!
+
+					//	update editor.
+.
+						entitySelect.value = entity_droplist.value; // update editor.
+
+						if ( entitySelect.value ) {
+
+						//	update color.
+							if ( editor.color ) updateColorSelectValue("color");
+							else if ( editor.emissive ) updateColorSelectValue("emissive");
+							else if ( editor.specular ) updateColorSelectValue("specular");
+
+						}
+
+					});
+
+					//	DO NOT USE exitFromEditMode(); stack overflow!
+					//	DO NOT USE resetEntitySelectValue(); stack overflow!
+					//	DO NOT USE updateEntitySelectValue(); stack overflow!
+
+					/*
+						if ( entity_droplist.value ) {
+
+							entitySelect.value = entity_droplist.value; // update.
+
+						} else {
+
+							entitySelect.value = entity_droplist.value = ""; // reset.
+
+							resetTextureSelectValue();
+							resetParamSelectValue();
+							resetScaleSelectValue();
+							resetColorSelectValue();
+							resetParamInputValues();
+							resetColorInputValues();
+							resetScaleInputValues();
+
+						}
+
+					//	color droplist.
+
+						if ( entitySelect.value ) {
+
+						//	update color.
+							if ( editor.color ) updateColorSelectValue("color");
+							else if ( editor.emissive ) updateColorSelectValue("emissive");
+							else if ( editor.specular ) updateColorSelectValue("specular");
+
+						}
+
+						else colorSelect.value = color_droplist.value = ""; // reset.
+					*/
+
+					texture_droplist.addEventListener("change", function(){
+
+						texture_droplist.blur(); // important!
+
+					//	DO NOT USE resetTextureSelectValue(); stack overflow!
+					//	DO NOT USE updateTextureSelectValue(); stack overflow!
+
+						if ( entitySelect.value && texture_droplist.value ) {
+
+							textureSelect.value = texture_droplist.value; // update.
+
+							if ( textureSelect.value === "normalMap"
+							&& editor.normalMap && editor.normalScale ) {
+								updateScaleSelectValue( "normalScale" ); // update.
+							} 
+						
+							else if ( textureSelect.value === "displacementMap"
+							&& editor.displacementMap && editor.displacementScale ) {
+								updateScaleSelectValue( "displacementScale" ); // update.
+							} 
+
+							else scaleSelect.value = scale_droplist.value = ""; // reset.
+
+						} else {
+
+							scaleSelect.value = scale_droplist.value = "";     // reset.
+							textureSelect.value = texture_droplist.value = ""; // reset.
+						}
+					});
+
+					scale_droplist.addEventListener("change", function(){
+
+						scale_droplist.blur(); // important!
+
+					//	DO NOT USE resetScaleSelectValue(); stack overflow!
+					//	DO NOT USE updateScaleSelectValue(); stack overflow!
+
+						if ( entitySelect.value && textureSelect.value && ( 
+							( textureSelect.value === "normalMap" && editor.normalMap && editor.normalScale ) ||
+							( textureSelect.value === "displacementMap" && editor.displacementMap && editor.displacementScale ) 
+						) ) 
+							scaleSelect.value = scale_droplist.value; // update.
+						else 
+							scaleSelect.value = scale_droplist.value = ""; // reset.
+					});
+
+					color_droplist.addEventListener("change", function(){
+
+						color_droplist.blur(); // important!
+
+					//	DO NOT USE resetColorSelectValue(); stack overflow!
+					//	DO NOT USE updateColorSelectValue(); stack overflow!
+
+						if ( entitySelect.value && ( 
+							editor.color || editor.emissive || editor.specular 
+						) )
+							colorSelect.value = color_droplist.value; // update.
+						else 
+							colorSelect.value = color_droplist.value = ""; // reset.
+					});
+
 
 				})();
 
@@ -1506,6 +1665,201 @@
 							resetEntitySelectValue(); // exit from edit mode.
 						}, 250);
 					});
+
+				})();
+
+			//	scale inputs.
+
+				(function(){
+
+					var interval;
+
+					const scale_x_input = document.getElementById("material-scale-x-input");
+					const scale_y_input = document.getElementById("material-scale-y-input");
+
+					const scale_x_increase = document.getElementById("material-scale-x-increase");
+					const scale_y_increase = document.getElementById("material-scale-y-increase");
+					const scale_x_decrease = document.getElementById("material-scale-x-decrease");
+					const scale_y_decrease = document.getElementById("material-scale-y-decrease");
+
+					function onInputChange(){
+
+						var step = 1/100;
+						this.blur(); // important!
+
+						if ( !(entitySelect.value && scaleSelect.value) ) 
+
+							return resetValues();
+
+						if ( entitySelect.value && scaleSelect.value ) {
+
+						//	Update.
+							updateScale( this );
+
+						//	Undo/Redo.
+							addToUndo();
+
+						}
+
+						function resetValues(){
+							
+							if ( textureSelect.value !== "bumpMap" || textureSelect.value !== "displacementMap" ) {
+								scale_x_input.value = scale_y_input.value = ""; return;
+							} 
+
+							if ( editor.bumpMap === undefined || editor.displacementMap === undefined ) {
+								scale_x_input.value = scale_y_input.value = ""; return;
+							} 
+
+							if ( !scaleSelect.value ) {
+								scale_x_input.value = scale_y_input.value = ""; return;
+							} 
+
+							var value = 1;
+							scale_x_input.value = value.toFixed(2); // string.
+							scale_y_input.value = value.toFixed(2); // string.
+							return;
+						}
+
+						function displayValue( input ){
+
+							if ( textureSelect.value !== "bumpMap" || textureSelect.value !== "displacementMap" ) 
+								return resetValues();
+							if ( editor.bumpMap === undefined || editor.displacementMap === undefined ) 
+								return resetValues();
+							if ( !input || !scaleSelect.value ) return resetValues();
+
+							var key = scaleSelect.value;
+							if ( input === scale_x_input ) input.value = parseFloat( editor[ key ].x ).toFixed(2); // string.
+							if ( input === scale_y_input ) input.value = parseFloat( editor[ key ].y ).toFixed(2); // string.
+							return;
+						}
+
+						function updateScale( input ){
+
+							if ( textureSelect.value !== "bumpMap" || textureSelect.value !== "displacementMap" ) 
+								return resetValues();
+							if ( editor.bumpMap === undefined || editor.displacementMap === undefined ) 
+								return resetValues();
+							if ( !input || !scaleSelect.value ) return resetValues();
+
+							var max = 10, min = -max;
+							var key = scaleSelect.value;
+							var value = THREE.Math.clamp( parseFloat( input.value ) % max, min, max );
+
+							if ( input === scale_x_input ) editor[ key ].x = value;
+							if ( input === scale_y_input ) editor[ key ].y = value;
+
+							return displayValue( input );
+						}
+
+					}
+
+					scale_x_input.addEventListener( "change", onInputChange );
+					scale_y_input.addEventListener( "change", onInputChange );
+
+					function onMouseClick(){
+
+					//	clearTimeout( interval ); // important!
+
+						if ( !scaleSelect.value ) return; // !editor.isEditing;
+						if ( !entitySelect.value ) return; // !editor.isEditing;
+
+						var material = getMaterialByEntityId( entitySelect.value );
+
+						if ( !material ) return;
+						if ( !material.normalMap || !material.displacementMap ) return;
+						if ( !material.normalScale || !material.displacementScale ) return;
+
+						if ( !editor.normalMap || !editor.displacementMap ) return;
+						if ( !editor.normalScale || !editor.displacementScale ) return;
+
+					//	Update editor.
+						entitySelect.value && scaleSelect.value && updateScale( this ); // editor.isEditing;
+
+					//	Update material.
+						material.normalScale && editor.normalScale && material.normalScale.copy( editor.normalScale );
+						material.displacementScale && editor.displacementScale && material.displacementScale.copy( editor.displacementScale );
+
+					//	Undo/Redo.
+						entitySelect.value && addToUndo();
+
+						debugMode && console.log( "on Mouse Click:", interval );
+
+					}
+
+					function onMouseDown(){ 
+
+						clearTimeout( interval ); // important!
+
+						if ( !scaleSelect.value ) return; // !editor.isEditing;
+						if ( !entitySelect.value ) return; // !editor.isEditing;
+
+						var material = getMaterialByEntityId( entitySelect.value );
+
+						if ( !material ) return;
+						if ( !material.normalMap || !material.displacementMap ) return;
+						if ( !material.normalScale || !material.displacementScale ) return;
+
+						if ( !editor.normalMap || !editor.displacementMap ) return;
+						if ( !editor.normalScale || !editor.displacementScale ) return;
+
+						var button = this;
+						var clock = new THREE.Clock();
+
+						interval = setTimeout( function onUpdate() {
+
+							if ( !material ) return;
+							if ( !scaleSelect.value ) return;
+							if ( !entitySelect.value ) return;
+
+						//	Update editor.
+							entitySelect.value && scaleSelect.value && updateScale( button ); // editor.isEditing;
+
+						//	Update material.
+							material.normalScale && editor.normalScale && material.normalScale.copy( editor.normalScale );
+							material.displacementScale && editor.displacementScale && material.displacementScale.copy( editor.displacementScale );
+
+							var dt = clock.getDelta();
+							interval = setTimeout( onUpdate, dt );
+						//	debugMode && console.log( "on Update:", interval );
+
+						}, 500);
+					}
+
+					scale_x_increase.addEventListener( "mousedown", onMouseDown );
+					scale_y_increase.addEventListener( "mousedown", onMouseDown );
+					scale_x_decrease.addEventListener( "mousedown", onMouseDown );
+					scale_y_decrease.addEventListener( "mousedown", onMouseDown );
+
+					window.addEventListener( "mouseup", function (){
+						clearTimeout( interval ); // important!
+					//	debugMode && console.log( "on MouseUp:", interval );
+					});
+
+					scale_x_increase.addEventListener( "click", onMouseClick );
+					scale_y_increase.addEventListener( "click", onMouseClick );
+					scale_x_decrease.addEventListener( "click", onMouseClick );
+					scale_y_decrease.addEventListener( "click", onMouseClick );
+
+					function updateScale( button ){
+
+						if ( !( button && scaleSelect.value) ) return;
+
+						var step = 1/100;
+						var max = 10, min = -max;
+						var key = scaleSelect.value;
+
+						var x = editor[key].x; 
+						var y = editor[key].y; 
+
+						if ( button === scale_x_increase ) editor[ key ].x = Math.min(max, x + step);
+						if ( button === scale_y_increase ) editor[ key ].y = Math.min(max, y + step);
+						if ( button === scale_x_decrease ) editor[ key ].x = Math.max(min, x - step);
+						if ( button === scale_y_decrease ) editor[ key ].y = Math.max(min, y - step);
+
+						displayVectorValues( scaleSelect.value );
+					}
 
 				})();
 
@@ -1533,9 +1887,10 @@
 						this.blur(); // important!
 
 						if ( !(entitySelect.value && colorSelect.value) ) 
+
 							return resetValues();
 
-						else if ( entitySelect.value && colorSelect.value ) {
+						if ( entitySelect.value && colorSelect.value ) {
 
 						//	Update.
 							updateColor( this );
@@ -1649,28 +2004,23 @@
 					function updateColor( button ){
 
 						var step = 1/255;
+						var max = 1, min = 0;
 						var key = colorSelect.value;
 
 						var r = editor[key].r; 
 						var g = editor[key].g; 
 						var b = editor[key].b;
 
-						if ( button === color_r_increase ) editor[ key ].r = Math.min(1, step + r);
-						if ( button === color_g_increase ) editor[ key ].g = Math.min(1, step + g);
-						if ( button === color_b_increase ) editor[ key ].b = Math.min(1, step + b);
+						if ( button === color_r_increase ) editor[ key ].r = Math.min(max, r + step);
+						if ( button === color_g_increase ) editor[ key ].g = Math.min(max, g + step);
+						if ( button === color_b_increase ) editor[ key ].b = Math.min(max, b + step);
 
-						if ( button === color_r_decrease ) editor[ key ].r = Math.max(0, r - step);
-						if ( button === color_g_decrease ) editor[ key ].g = Math.max(0, g - step);
-						if ( button === color_b_decrease ) editor[ key ].b = Math.max(0, b - step);
+						if ( button === color_r_decrease ) editor[ key ].r = Math.max(min, r - step);
+						if ( button === color_g_decrease ) editor[ key ].g = Math.max(min, g - step);
+						if ( button === color_b_decrease ) editor[ key ].b = Math.max(min, b - step);
 
 						displayVectorValues( colorSelect.value );
 					}
-
-				})();
-
-				(function(){
-
-
 
 				})();
 
@@ -1734,7 +2084,7 @@
 						debugMode && console.log( "paramSelect watch:", prop, action, newValue );
 
 					//	Update vectors direct from editor.
-						displayVectorValues( paramSelect.value );
+						displayVectorValues( newValue );
 
 					});
 
@@ -1742,7 +2092,7 @@
 						debugMode && console.log( "scaleSelect watch:", prop, action, newValue );
 
 					//	Update vectors direct from editor.
-						displayVectorValues( scaleSelect.value );
+						displayVectorValues( newValue );
 
 					});
 
@@ -1750,56 +2100,30 @@
 						debugMode && console.log( "colorSelect watch:", prop, action, newValue );
 
 					//	Update vectors direct from editor.
-						displayVectorValues( colorSelect.value );
+						displayVectorValues( newValue );
 
 					});
 
 				})();
 
-				function cloneSceneMaterials(){
-				//	Returns an object with all in-scene materials
-				//	keeping material.uuid but new material.id(s).
-					var meta = { 
-						geometries:{}, materials:{}, 
-						textures:{}, images:{}, shapes:{} 
-					}; 
-					scene.toJSON( meta ); // important!
-					var loader = new THREE.ObjectLoader();
-					return loader.parseMaterials( meta.materials );
-				}
-
 				return editor;
 
 			})( new THREE.Material() );
 
-			//	if ( vector === "color" ) {}
-			//	if ( vector === "emissive" ) {}
-			//	if ( vector === "specular" ) {}
 
-			//	if ( vector === "metalness" ) {}
-			//	if ( vector === "roughness" ) {}
-			//	if ( vector === "shininess" ) {}
+		//	helper.
 
-			//	if ( vector === "bumpScale" ) {}
-			//	if ( vector === "normalScale" ) {}
-
-			//	if ( vector === "side" ) {}
-			//	if ( vector === "opacity" ) {}
-			//	if ( vector === "blending" ) {}
-			//	if ( vector === "alphaTest" ) {}
-
-			//	if ( vector === "aoMapIntensity" ) {}
-			//	if ( vector === "displacementBias" ) {}
-			//	if ( vector === "displacementScale" ) {}
-			//	if ( vector === "emissiveIntensity" ) {}
-			//	if ( vector === "envMapIntensity" ) {}
-			//	if ( vector === "lightMapIntensity" ) {}
-
-			//	if ( vector === "polygonOffsetFactor" ) {}
-			//	if ( vector === "polygonOffsetUnits" ) {}
-
-			//	if ( vector === "refractionRatio" ) {}
-			//	if ( vector === "wireframeLinewidth" ) {}
+			function cloneSceneMaterials(){
+			//	Returns an object with all in-scene materials
+			//	keeping material.uuid but new material.id(s).
+				var meta = { 
+					geometries:{}, materials:{}, 
+					textures:{}, images:{}, shapes:{} 
+				}; 
+				scene.toJSON( meta ); // important!
+				var loader = new THREE.ObjectLoader();
+				return loader.parseMaterials( meta.materials );
+			}
 
 		</script>
 
@@ -1854,7 +2178,7 @@
 
 				(function( editor ){
 
-					var keys = "color,emissive,specular,normalScale,";
+					var keys = "color,emissive,specular,normalScale,displacementScale,";
 
 					keys.split(",").forEach(function( key ){
 
@@ -1863,8 +2187,9 @@
 						else if ( source[ key ] && editor[ key ] === undefined ) {
 							switch ( key ){
 								case "normalScale":
+								case "displacementScale":
 									editor[ key ] = new THREE.Vector2();
-									break;
+								break;
 								default:
 									editor[ key ] = new THREE.Color();
 									break;
@@ -1886,8 +2211,9 @@
 										editor[ key ].setRGB(0,0,0);
 										break;
 									case "normalScale":
+									case "displacementScale":
 										editor[ key ].set(1,1);
-										break;
+									break;
 								} // end switch(key).
 							} // end catch(err).
 						} // end if.
@@ -1905,7 +2231,7 @@
 					keys += "map,aoMap,envMap,bumpMap,alphaMap,lightMap,normalMap,specularMap,";
 					keys += "gradientMap,emissiveMap,metalnessMap,roughnessMap,displacementMap,";
 					keys += "metalness,roughness,bumpScale,reflectivity,";
-					keys += "refractionRatio,displacementBias,displacementScale,normalMapType,";
+					keys += "refractionRatio,displacementBias,normalMapType,";
 					keys += "aoMapIntensity,envMapIntensity,emissiveIntensity,lightMapIntensity,";
 					keys += "wireframe,wireframeLinecap,wireframeLinejoin,wireframeLinewidth,";
 					keys += "skinning,morphTargets,morphNormals,combine,shininess,";
