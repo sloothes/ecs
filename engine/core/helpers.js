@@ -134,3 +134,18 @@
 		}
 	}
 
+//	Returns an object with all in-scene materials
+//	keeping material.uuid but new material.id(s).
+
+	function cloneSceneMaterials(){
+
+		var meta = { 
+			geometries:{}, materials:{}, 
+			textures:{}, images:{}, shapes:{} 
+		}; 
+
+		scene.toJSON( meta );
+
+		var loader = new THREE.ObjectLoader();
+		return loader.parseMaterials( meta.materials );
+	}
