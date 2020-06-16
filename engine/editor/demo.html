@@ -173,13 +173,14 @@
 
 			debugMode && (function(){
 
-				var material = new THREE.MeshLambertMaterial();
+			//	var material = new THREE.MeshLambertMaterial();
 
 				(function(){
 					var w = 10, h = 20;
 					var x = 10, y = h/2, z = -4;
 					var box = new THREE.BoxGeometry(w,h,w);
 					box.translate(0, h/2, 0);
+					var material = new THREE.MeshLambertMaterial();
 					var mesh = new THREE.Mesh(box, material);
 					mesh.name = "building 1";
 					mesh.position.set(x,0,z);
@@ -197,6 +198,7 @@
 					var x = 15, y = h/2, z = -11;
 					var box = new THREE.BoxGeometry(w,h,w);
 					box.translate(0, h/2, 0);
+					var material = new THREE.MeshLambertMaterial();
 					var mesh = new THREE.Mesh(box, material);
 					mesh.name = "building 2";
 					mesh.position.set(x,0,z);
@@ -213,6 +215,7 @@
 					var x = -9, y = h/2, z = 5;
 					var box = new THREE.BoxGeometry(w,h,w);
 					box.translate(0, h/2, 0);
+					var material = new THREE.MeshLambertMaterial();
 					var mesh = new THREE.Mesh(box, material);
 					mesh.name = "building 3";
 					mesh.position.set(x,0,z);
@@ -230,6 +233,7 @@
 					var x = -14, y = h/2, z = 10;
 					var box = new THREE.BoxGeometry(w,h,d);
 					box.translate(0, h/2, 0);
+					var material = new THREE.MeshLambertMaterial();
 					var mesh = new THREE.Mesh(box, material);
 					mesh.name = "building 4";
 					mesh.position.set(x,0,z);
@@ -247,6 +251,7 @@
 					var x = -17, y = h/2, z = 12;
 					var box = new THREE.BoxGeometry(w,h,d);
 					box.translate(0, h/2, 0);
+					var material = new THREE.MeshLambertMaterial();
 					var mesh = new THREE.Mesh(box, material);
 					mesh.name = "building 5";
 					mesh.position.set(x,0,z);
