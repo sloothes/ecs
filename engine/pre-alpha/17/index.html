@@ -1381,7 +1381,11 @@
 					if ( !material ) return false; // important!
 
 				//	Copy material.
-					material && editor.copy( material ); // overwrites material.copy();
+					material && editor.copy( material );
+
+					editor.type = material.type; // important!
+					editor.name = material.name; // important!
+					editor.uuid = material.uuid; //	important!
 
 				//	keep initial state.
 					material && addToUndo();
@@ -1405,6 +1409,8 @@
 
 						if ( !json ) return;
 
+						debugMode && console.log( json ); // debug!
+
 					//	Move json to redo.
 						redo.unshift( json );
 
@@ -1413,7 +1419,9 @@
 
 						//	Copy state (undo).
 							var loader = new THREE.MaterialLoader();
-							editor.copy( loader.parse( json ) );
+							var material = loader.parse( json ); // problem - error!!!
+							debugMode && console.log( material );
+							editor.copy( material );
 
 							debugMode && console.log( "undo:", 
 							undo.length, "redo:", redo.length );
@@ -1430,6 +1438,8 @@
 
 						if ( !json ) return;
 
+						debugMode && console.log( json ); // debug!
+
 					//	Move json to undo.
 						undo.unshift( json );
 
@@ -1438,7 +1448,9 @@
 
 						//	Copy state (redo).
 							var loader = new THREE.MaterialLoader();
-							editor.copy( loader.parse( json ) );
+							var material = loader.parse( json ); // problem - error!!!
+							debugMode && console.log( material );
+						//	editor.copy( material );
 
 							debugMode && console.log( "undo:", 
 							undo.length, "redo:", redo.length );
@@ -1515,9 +1527,62 @@
 					const color_g_decrease = document.getElementById("material-color-g-decrease");
 					const color_b_decrease = document.getElementById("material-color-b-decrease");
 
+					function onInputChange(){
+
+						var step = 1/255;
+						this.blur(); // important!
+
+						if ( !(entitySelect.value && colorSelect.value) ) 
+							return resetValues();
+
+						else if ( entitySelect.value && colorSelect.value ) {
+
+						//	Update.
+							updateColor( this );
+
+						//	Undo/Redo.
+							addToUndo();
+
+						}
+
+						function resetValues(){
+							color_r_input.value = parseInt( 255 * editor.color.r ).toFixed(0); // string.
+							color_g_input.value = parseInt( 255 * editor.color.g ).toFixed(0); // string.
+							color_b_input.value = parseInt( 255 * editor.color.b ).toFixed(0); // string.
+							return;
+						}
+
+						function displayValue( input ){
+							if ( !(input && colorSelect.value) ) return resetValues();
+
+							var key = colorSelect.value;
+							if ( input === color_r_input ) input.value = parseInt( 255 * editor[ key ].r ).toFixed(0); // string.
+							if ( input === color_g_input ) input.value = parseInt( 255 * editor[ key ].g ).toFixed(0); // string.
+							if ( input === color_b_input ) input.value = parseInt( 255 * editor[ key ].b ).toFixed(0); // string.
+							return;
+						}
+
+						function updateColor( input ){
+							if ( !(input && colorSelect.value) ) return resetValues();
+
+							var key = colorSelect.value;
+							var value = step * Math.abs( parseInt( input.value ) % 255 );
+							if ( input === color_r_input ) editor[ key ].r = value;
+							if ( input === color_g_input ) editor[ key ].g = value;
+							if ( input === color_b_input ) editor[ key ].b = value;
+
+							return displayValue( input );
+						}
+
+					}
+
+					color_r_input.addEventListener( "change", onInputChange );
+					color_g_input.addEventListener( "change", onInputChange );
+					color_b_input.addEventListener( "change", onInputChange );
+
 					function onMouseClick(){
 
-						clearTimeout( interval ); // important!
+					//	clearTimeout( interval ); // important!
 
 						if ( !entitySelect.value ) return;
 
@@ -1533,16 +1598,27 @@
 
 					function onMouseDown(){ 
 
-						if ( !entitySelect.value ) return;
+						clearTimeout( interval ); // important!
+
+						if ( !entitySelect.value ) return; // !editor.isEditing;
+						var material = getMaterialByEntityId( entitySelect.value );
+
+						if ( !material ) return;
 
 						var button = this;
 						var clock = new THREE.Clock();
 
 						interval = setTimeout( function onUpdate() {
 
+							if ( !material ) return;
 							if ( !entitySelect.value ) return;
 
-							entitySelect.value && updateColor( button );
+							entitySelect.value && updateColor( button ); // editor.isEditing;
+
+						//	update material.
+							material.color && editor.color && material.color.copy( editor.color );
+							material.emissive && editor.emissive && material.emissive.copy( editor.emissive );
+							material.specular && editor.specular && material.specular.copy( editor.specular );
 
 							var dt = clock.getDelta();
 							interval = setTimeout( onUpdate, dt );
@@ -1550,6 +1626,25 @@
 
 						}, 500);
 					}
+
+					color_r_increase.addEventListener( "mousedown", onMouseDown );
+					color_g_increase.addEventListener( "mousedown", onMouseDown );
+					color_b_increase.addEventListener( "mousedown", onMouseDown );
+					color_r_decrease.addEventListener( "mousedown", onMouseDown );
+					color_g_decrease.addEventListener( "mousedown", onMouseDown );
+					color_b_decrease.addEventListener( "mousedown", onMouseDown );
+
+					window.addEventListener( "mouseup", function (){
+						clearTimeout( interval ); // important!
+					//	debugMode && console.log( "on MouseUp:", interval );
+					});
+
+					color_r_increase.addEventListener( "click", onMouseClick );
+					color_g_increase.addEventListener( "click", onMouseClick );
+					color_b_increase.addEventListener( "click", onMouseClick );
+					color_r_decrease.addEventListener( "click", onMouseClick );
+					color_g_decrease.addEventListener( "click", onMouseClick );
+					color_b_decrease.addEventListener( "click", onMouseClick );
 
 					function updateColor( button ){
 
@@ -1568,41 +1663,14 @@
 						if ( button === color_g_decrease ) editor[ key ].g = Math.max(0, g - step);
 						if ( button === color_b_decrease ) editor[ key ].b = Math.max(0, b - step);
 
+						displayVectorValues( colorSelect.value );
 					}
 
-					color_r_increase.addEventListener( "mousedown", onMouseDown );
-					color_g_increase.addEventListener( "mousedown", onMouseDown );
-					color_b_increase.addEventListener( "mousedown", onMouseDown );
-					color_r_decrease.addEventListener( "mousedown", onMouseDown );
-					color_g_decrease.addEventListener( "mousedown", onMouseDown );
-					color_b_decrease.addEventListener( "mousedown", onMouseDown );
+				})();
 
-					window.addEventListener( "mouseup", function (){
-						clearTimeout( interval ); // important!
-						debugMode && console.log( "on MouseUp:", interval );
-					});
+				(function(){
 
-					color_r_increase.addEventListener( "click", onMouseDown );
-					color_g_increase.addEventListener( "click", onMouseDown );
-					color_b_increase.addEventListener( "click", onMouseDown );
-					color_r_decrease.addEventListener( "click", onMouseDown );
-					color_g_decrease.addEventListener( "click", onMouseDown );
-					color_b_decrease.addEventListener( "click", onMouseDown );
 
-					watch(editor.color, function( prop, action, newValue, oldValue ){
-						debugMode && console.log( "editor color:", prop, action, newValue );
-
-					});
-
-					watch(editor.emissive, function( prop, action, newValue, oldValue ){
-						debugMode && console.log( "editor emissive:", prop, action, newValue );
-
-					});
-
-					watch(editor.specular, function( prop, action, newValue, oldValue ){
-						debugMode && console.log( "editor specular:", prop, action, newValue );
-
-					});
 
 				})();
 
