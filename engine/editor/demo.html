@@ -2,7 +2,7 @@
 <html lang="en">
 	<head>
 
-		<title>Editor Tab demo (pre-alpha 0.16)</title>
+		<title>Editor Tab demo (pre-alpha 0.17)</title>
 
 		<meta charset="utf-8">
 		<meta name="generator" content="Three.js Editor">
@@ -268,6 +268,40 @@
 			scene.traverse(function( object ){
 				entities.add( object );
 			});
+/*
+		//	Add Material entities.
+			entities.forEach( function( entity ){
+
+			//	It looks in "entities" manager only.
+			//	It looks the root Object3D, but not children.
+
+				var object = scene.getObjectById( entity.id );
+				if ( !object.material ) return; // important!
+
+				if ( Array.isArray( object.material ) )
+					object.material.forEach( addtoManager );
+				else 
+					addtoManager( object.material );
+
+				function addtoManager( material ){
+					rename( material );
+					addEntity( material );
+				}
+
+				function rename( material ){
+					if ( material.name ) return;
+					material.name = "mtl"+material.id;;
+				}
+
+				function addEntity( material ){
+					var included = material_entities.includes( material );
+					debugMode && console.log( "included:", included );
+					if ( !included ) material_entities.add( material );
+				}
+			});
+*/
+			console.log( {"object3DEditor": object3DEditor} ); // debug!
+			console.log( {"materialEditor": materialEditor} ); // debug!
 
 		</script>
 
