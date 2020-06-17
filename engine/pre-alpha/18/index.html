@@ -314,6 +314,26 @@
 
 			(function( tab ){
 
+			//	Text input.
+			//	var tab = TabUI.Texture.tab;
+
+				var row = document.createElement("h3");
+				row.style.cssText = "margin-right:20px;height:30px;";
+
+				var input = document.createElement("input");
+				input.id = "texture-text-input";
+				input.setAttribute("placeholder", "text input" );
+				input.classList.add("form-control","text-center");
+				input.style.cssText = "color:#000;display:inline;width:100%;"
+				+ "margin:0px 5px;text-align:center;font-size:large;font-weigth:bold;background:none;";
+
+				row.appendChild(input);
+				tab.appendChild( row );
+
+			})( TabUI.Texture.tab );
+
+			(function( tab ){
+
 			//	Keys droplist.
 			//	var tab = TabUI.Texture.tab;
 
@@ -344,7 +364,7 @@
 
 			(function( tab ){
 
-			//	Key/Value.
+			//	Value input.
 			//	var tab = TabUI.Texture.tab;
 
 				var row = document.createElement("h3");
@@ -368,7 +388,7 @@
 
 				var input = document.createElement("input");
 				input.id = "texture-value-input";
-				input.setAttribute("placeholder", "v" );
+				input.setAttribute("placeholder", "value" );
 				input.classList.add("form-control","text-center");
 				input.style.cssText = "color:#000;border:none;display:inline;width:80px;"
 				+ "margin:0px 5px;text-align:center;font-size:large;font-weigth:bold;background:none;";
@@ -700,15 +720,31 @@
 				const images = {};
 				const undo = [], redo = [];
 
+			//	droplists.
+
+				const keySelect    = {value:""}; // string.
+				const entitySelect = {value:""}; // string.
+				const vectorSelect = {value:""}; // string.
+
+				const keys_droplist   = document.getElementById("texture-keys-droplist");
 				const entity_droplist = document.getElementById("texture-entities-droplist");
-				const parmas_droplist = document.getElementById("texture-param-droplist");
 				const vector_droplist = document.getElementById("texture-vector-droplist");
 
+			//	inputs.
 
+				const text_input  = document.getElementById("texture-text-input");
+				const value_input = document.getElementById("texture-value-input");
+				const vector_x_input = document.getElementById("texture-vector-x-input");
+				const vector_y_input = document.getElementById("texture-vector-y-input");
 
+			//	input buttons.
 
-
-
+				const value_increase_button = document.getElementById("texture-value-increase");
+				const value_decrease_button = document.getElementById("texture-value-decrease");
+				const vector_x_increase_button = document.getElementById("texture-vector-x-increase");
+				const vector_x_decrease_button = document.getElementById("texture-vector-x-decrease");
+				const vector_y_increase_button = document.getElementById("texture-vector-y-increase");
+				const vector_y_decrease_button = document.getElementById("texture-vector-y-decrease");
 
 
 
