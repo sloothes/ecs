@@ -472,8 +472,6 @@
 
 				if ( !json ) return;
 
-				debugMode && console.log( json ); // debug!
-
 			//	Move json to undo.
 				undo.unshift( json );
 
