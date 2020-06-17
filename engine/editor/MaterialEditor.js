@@ -20,19 +20,19 @@
 
 	//	droplists.
 
-		const entity_droplist = document.getElementById("material-entities-droplist");
-		const texture_droplist = document.getElementById("material-map-droplist");
-		const param_droplist = document.getElementById("material-param-droplist");
-		const scale_droplist = document.getElementById("material-scale-droplist");
-		const color_droplist = document.getElementById("material-color-droplist");
-		const type_droplist = document.getElementById("material-type-droplist");
-
-		const entitySelect  = { value:"" }; // string.
-		const textureSelect = { value:"" }; // string.
-		const paramSelect   = { value:"" }; // string.
+		const keySelect     = { value:"" }; // string.
 		const scaleSelect   = { value:"" }; // string.
 		const colorSelect   = { value:"" }; // string.
 		const materialType  = { value:"" }; // string.
+		const entitySelect  = { value:"" }; // string.
+		const textureSelect = { value:"" }; // string.
+
+		const entity_droplist = document.getElementById("material-entities-droplist");
+		const texture_droplist = document.getElementById("material-map-droplist");
+		const keys_droplist = document.getElementById("material-keys-droplist");
+		const scale_droplist = document.getElementById("material-scale-droplist");
+		const color_droplist = document.getElementById("material-color-droplist");
+		const type_droplist = document.getElementById("material-type-droplist");
 
 	//	buttons.
 
@@ -43,11 +43,11 @@
 		const clone_material_button = document.getElementById("clone-material-button");
 		const remove_material_button = document.getElementById("remove-material-button");
 
-	//	param input buttons.
+	//	key input buttons.
 
-		const material_param_input = document.getElementById("material-param-value-input");
-		const increase_param_v_button = document.getElementById("material-param-value-increase");
-		const decrease_param_v_button = document.getElementById("material-param-value-decrease");
+		const material_value_input = document.getElementById("material-value-input");
+		const increase_value_button = document.getElementById("material-value-increase");
+		const decrease_value_button = document.getElementById("material-value-decrease");
 
 	//	scale input buttons.
 
@@ -112,8 +112,8 @@
 
 	//	reset input values.
 
-		function resetParamInputValues(){ 
-			material_param_input.value = ""; 
+		function resetKeyInputValues(){ 
+			material_value_input.value = ""; 
 			return;
 		}
 
@@ -132,9 +132,9 @@
 
 	//	update input values.
 
-		function updateParamInputValues( key ){
-			if ( editor[ key ] === undefined ) return resetParamInputValues();
-			material_param_input.value = editor[ key ];
+		function updateKeyInputValues( key ){
+			if ( editor[ key ] === undefined ) return resetKeyInputValues();
+			material_value_input.value = editor[ key ];
 		}
 
 		function updateScaleInputValues( key ){
@@ -167,7 +167,7 @@
 				break;
 
 				default:
-					updateParamInputValues( value );
+					updateKeyInputValues( value );
 				break;
 			}
 
@@ -183,9 +183,9 @@
 			textureSelect.value = texture_droplist.value = ""; 
 			texture_droplist.dispatchEvent( new Event("change") );
 		}
-		function resetParamSelectValue(){ 
-			paramSelect.value = param_droplist.value = ""; 
-			param_droplist.dispatchEvent( new Event("change") );
+		function resetKeySelectValue(){ 
+			keySelect.value = keys_droplist.value = ""; 
+			keys_droplist.dispatchEvent( new Event("change") );
 		}
 		function resetScaleSelectValue(){ 
 			scaleSelect.value = scale_droplist.value = ""; 
@@ -220,12 +220,12 @@
 			}
 		}
 
-		function updateParamSelectValue( value ){ 
+		function updateKeySelectValue( value ){ 
 			if ( value === undefined ) {
-				paramSelect.value = param_droplist.value; 
+				keySelect.value = keys_droplist.value; 
 			} else {
-				paramSelect.value = param_droplist.value = value;
-				param_droplist.dispatchEvent( new Event("change") );
+				keySelect.value = keys_droplist.value = value;
+				keys_droplist.dispatchEvent( new Event("change") );
 			}
 		}
 
@@ -262,10 +262,10 @@
 			editor.reset(); // important!
 			resetEntitySelectValue();
 			resetTextureSelectValue();
-			resetParamSelectValue();
+			resetKeySelectValue();
 			resetScaleSelectValue();
 			resetColorSelectValue();
-			resetParamInputValues();
+			resetKeyInputValues();
 			resetColorInputValues();
 			resetScaleInputValues();
 			debugMode && console.log( arguments.callee.name, editor );
@@ -513,7 +513,7 @@
 
 			function blur_droplists(){
 				type_droplist.blur();
-				param_droplist.blur();
+				keys_droplist.blur();
 				scale_droplist.blur();
 				color_droplist.blur();
 				entity_droplist.blur();
@@ -528,9 +528,9 @@
 
 				entitySelect.value = entity_droplist.value; // update editor.
 
-			//	reset texture/param/scale.
+			//	reset texture/keys/scale.
 
-				paramSelect.value = param_droplist.value = ""; // reset.
+				keySelect.value = keys_droplist.value = ""; // reset.
 				scaleSelect.value = scale_droplist.value = ""; // reset.
 				textureSelect.value = texture_droplist.value = ""; // reset.
 
@@ -546,23 +546,23 @@
 
 			});
 
-			param_droplist.addEventListener("change", function(){
+			keys_droplist.addEventListener("change", function(){
 
 				blur_droplists();
 
 				if ( entitySelect.value ) {
 
-					var key = param_droplist.value;
+					var key = keys_droplist.value;
 
 				//	TODO: cases depended on texture select value?
 
 					if ( editor[ key ] !== undefined )
-						paramSelect.value = param_droplist.value; // update.
+						keySelect.value = keys_droplist.value; // update.
 					else
-						paramSelect.value = param_droplist.value = ""; // reset.
+						keySelect.value = keys_droplist.value = ""; // reset.
 				} 
 
-				else paramSelect.value = param_droplist.value = ""; // reset.
+				else keySelect.value = keys_droplist.value = ""; // reset.
 
 			});
 
@@ -1020,41 +1020,41 @@
 
 		})();
 
-	//	param inputs.
+	//	key inputs.
 
 		(function(){
 
 			var interval;
 
-			const param_value_input = document.getElementById("material-param-value-input");
-			const param_value_increase = document.getElementById("material-param-value-increase");
-			const param_value_decrease = document.getElementById("material-param-value-decrease");
+			const material_value_input = document.getElementById("material-value-input");
+			const material_value_increase = document.getElementById("material-value-increase");
+			const material_value_decrease = document.getElementById("material-value-decrease");
 
 			window.addEventListener( "mouseup", function (){
 				clearTimeout( interval ); // important!
 			//	debugMode && console.log( "on MouseUp:", interval );
 			});
 
-			param_value_input.addEventListener( "change", onInputChange );
-			param_value_increase.addEventListener( "click", onMouseClick );
-			param_value_decrease.addEventListener( "click", onMouseClick );
+			material_value_input.addEventListener( "change", onInputChange );
+			material_value_increase.addEventListener( "click", onMouseClick );
+			material_value_decrease.addEventListener( "click", onMouseClick );
 
 			function onMouseClick(){
 
-				if ( !(entitySelect.value && paramSelect.value) ) return;
+				if ( !(entitySelect.value && keySelect.value) ) return;
 
 				var material = getMaterialByEntityId( entitySelect.value );
 
 				if ( !material ) return;
 
-				var key = paramSelect.value;
+				var key = keySelect.value;
 
 			//	is boolean.
 
 				if ( typeof material[ key ] === "boolean" ) {
 					editor[ key ] = !editor[ key ]; // update editor.
 					material[ key ] = editor[ key ]; // update material.
-					param_value_input.value = editor[ key ]; // display value.
+					material_value_input.value = editor[ key ]; // display value.
 					addToUndo( material ); // undo/redo.
 					return;
 				}
@@ -1083,19 +1083,19 @@
 
 				this.blur(); // important!
 
-				if ( !(entitySelect.value && paramSelect.value) ) return;
+				if ( !(entitySelect.value && keySelect.value) ) return;
 
 				var material = getMaterialByEntityId( entitySelect.value );
 
 				if ( !material ) return;
-				var key = paramSelect.value;
+				var key = keySelect.value;
 
 			//	is boolean.
 
 				if ( typeof material[ key ] === "boolean" ) {
 					editor[ key ] = !editor[ key ]; // update editor.
 					material[ key ] = editor[ key ]; // update material.
-					param_value_input.value = editor[ key ]; // display value.
+					material_value_input.value = editor[ key ]; // display value.
 					addToUndo( material ); // undo/redo.
 					return;
 				}
@@ -1159,13 +1159,13 @@
 			//	Display vectors direct from editor.
 				updateEntitySelectValue();
 				updateTextureSelectValue();
-				updateParamSelectValue();
+				updateKeySelectValue();
 				updateScaleSelectValue();
 				updateColorSelectValue();
 				updateMaterialTypeValue();
 
 			//	Update vectors direct from editor.
-				displayVectorValues( paramSelect.value );
+				displayVectorValues( keySelect.value );
 				displayVectorValues( scaleSelect.value );
 				displayVectorValues( colorSelect.value );
 
@@ -1177,14 +1177,14 @@
 						//	TODO.
 
 			//	Update texture direct from editor.
-				displayVectorValues( paramSelect.value );
+				displayVectorValues( keySelect.value );
 				displayVectorValues( scaleSelect.value );
 				displayVectorValues( colorSelect.value );
 
 			});
 
-			watch(paramSelect, function( prop, action, newValue, oldValue ){
-				debugMode && console.log( "paramSelect watch:", prop, action, newValue );
+			watch(keySelect, function( prop, action, newValue, oldValue ){
+				debugMode && console.log( "keySelect watch:", prop, action, newValue );
 
 						//	TODO.
 

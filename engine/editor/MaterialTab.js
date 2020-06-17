@@ -120,7 +120,27 @@
 
 	(function( tab ){
 
-	//	Param mode droplist.
+	//	Text input.
+	//	var tab = TabUI.Texture.tab;
+
+		var row = document.createElement("h3");
+		row.style.cssText = "margin-right:20px;height:30px;";
+
+		var input = document.createElement("input");
+		input.id = "material-text-input";
+		input.setAttribute("placeholder", "text input" );
+		input.classList.add("form-control","text-center");
+		input.style.cssText = "color:#000;display:inline;width:100%;"
+		+ "margin:0px 5px;text-align:center;font-size:large;font-weigth:bold;background:none;";
+
+		row.appendChild(input);
+		tab.appendChild( row );
+
+	})( TabUI.Material.tab );
+
+	(function( tab ){
+
+	//	Keys mode droplist.
 	//	var tab = TabUI.Material.tab;
 
 		var row = document.createElement("h3");
@@ -128,7 +148,7 @@
 		row.style.cssText = "height:40px;"
 
 		var select = document.createElement("select");
-		select.id = "material-param-droplist";
+		select.id = "material-keys-droplist";
 		select.style.cssText = "width:170px;color:#000;float:right;"
 		+ "border:1px solid;border-radius:4px;padding:2px 4px 4px 4px;"
 		+ "font-size:20px;margin-left:10px;margin-right:15px;";
@@ -161,7 +181,7 @@
 
 	(function( tab ){
 
-	//	param value.
+	//	Keys value.
 	//	var tab = TabUI.Material.tab;
 
 		var row = document.createElement("h3");
@@ -172,20 +192,20 @@
 		vect.style.cssText = "width:170px;height:40px;float:right;";
 
 		var prev = document.createElement("li");
-		prev.id = "material-param-value-decrease";
+		prev.id = "material-value-decrease";
 		prev.innerHTML = "&#9668;";
 		prev.style.display = "inline";
 		prev.classList.add("btn","btn-primary","get-prev-btn","pull-left");
 
 		var next = document.createElement("li");
-		next.id = "material-param-value-increase";
+		next.id = "material-value-increase";
 		next.innerHTML = "&#9658;";
 		next.style.display = "inline";
 		next.classList.add("btn","btn-primary","get-next-btn","pull-right");
 
 		var input = document.createElement("input");
-		input.id = "material-param-value-input";
-		input.setAttribute("placeholder", "v" );
+		input.id = "material-value-input";
+		input.setAttribute("placeholder", "value" );
 		input.classList.add("form-control","text-center");
 		input.style.cssText = "color:#000;border:none;display:inline;width:80px;"
 		+ "margin:0px 5px;text-align:center;font-size:large;font-weigth:bold;background:none;";
@@ -615,7 +635,7 @@
 				var type = material_droplist.value;
 				if ( type === "" || type === undefined ) return;
 
-			//	Init params based on type.
+			//	Init material properties based on material type.
 				switch (type) {
 				//	case "PointsMaterial":
 				//	case "SpriteMaterial":
