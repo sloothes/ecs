@@ -456,9 +456,7 @@
 					editor.copy( material ); // overwrite.
 				//	update material.
 					getMaterialByEntityId( entitySelect.value ).copy( material );
-
-					debugMode && console.log( "undo:", 
-					undo.length, "redo:", redo.length );
+					debugMode && console.log( "undo:", undo.length, "redo:", redo.length );
 
 				}, 250);
 			};
@@ -488,9 +486,7 @@
 					editor.copy( material ); // overwrite.
 				//	update material.
 					getMaterialByEntityId( entitySelect.value ).copy( material );
-
-					debugMode && console.log( "undo:", 
-					undo.length, "redo:", redo.length );
+					debugMode && console.log( "undo:", undo.length, "redo:", redo.length );
 
 				}, 250);
 			};
@@ -1103,7 +1099,8 @@
 				if ( typeof material[ key ] === "boolean" ) {
 					editor[ key ] = !editor[ key ]; // update editor.
 					material[ key ] = editor[ key ]; // update material.
-					param_value_input.value = editor[ key ]; // display.
+					param_value_input.value = editor[ key ]; // display value.
+					addToUndo( material ); // undo/redo.
 					return;
 				}
 
