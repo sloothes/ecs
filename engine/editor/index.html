@@ -87,9 +87,6 @@
 
 		<script>
 
-			debugMode = true;
-			const Signal = signals.Signal;
-
 		</script>
 
 		<script src="/ecs/js/three.js"></script>
@@ -110,6 +107,9 @@
 
 		<script>
 
+			debugMode = true;
+			const Signal = signals.Signal;
+
 		//	TabUI.
 
 			(function(){
@@ -117,17 +117,7 @@
 				var sidePanel = createSidePanel();
 				document.body.appendChild( sidePanel );
 
-			//	var loginTab = TabUI.add( "Login", "login-tab" );
-			//	var debugTab = TabUI.add( "Debug", "debug-tab" );
-			//	var levelTab = TabUI.add( "Levels", "level-tab" );
-			//	var editorTab = TabUI.add( "Editor", "editor-tab" );
-			//	var cameraTab = TabUI.add( "Camera", "camera-tab" );
-			//	var controlTab = TabUI.add( "Controls", "control-tab" );
-			//	var playersTab = TabUI.add( "Players", "players-tab" );
-			//	var materialTab = TabUI.add( "Material", "material-tab" );
-			//	var animationTab = TabUI.add( "Animations", "animation-tab" );
-
-			//	TabUI.append( "Editor", "Material" );
+			//	TabUI.append( "Editor", "Material", "Texture", "Viewport" );
 			//	TabUI.Editor.role.classList.add("active");
 			//	TabUI.Editor.tab.classList.add("in","active");
 
@@ -148,19 +138,182 @@
 		<script src="/ecs/engine/editor/MaterialTab.js"></script>
 		<script src="/ecs/engine/editor/MaterialManager.js"></script>
 		<script src="/ecs/engine/editor/MaterialEditor.js"></script>
+		<script src="/ecs/engine/editor/TextureTab.js"></script>
+		<script src="/ecs/engine/editor/ViewportTab.js"></script>
+
+		<script>
+
+			localPlayer.controller.movementSpeed = 10;
+
+		//	Entities.
+
+		//	debugMode && (function(){
+			//	var r = 1;
+			//	var geometry = new THREE.BoxGeometry(r,r,r);
+			//	var material = new THREE.MeshLambertMaterial();
+			//	var cube = new THREE.Mesh(geometry, material);
+			//	cube.name = "local player cube";
+			//	var geometry = new THREE.SphereGeometry(0.7,8,12);
+			//	var material = new THREE.MeshLambertMaterial();
+			//	var sphere = new THREE.Mesh(geometry, material);
+			//	sphere.name = "local player sphere";
+			//	cube.add( sphere );
+			//	localPlayer.add( cube );
+		//	})();
+
+		//	box coluctions.
+
+			debugMode && (function(){
+
+			//	var material = new THREE.MeshLambertMaterial();
+
+				(function(){
+					var w = 10, h = 20;
+					var x = 10, y = h/2, z = -4;
+					var box = new THREE.BoxGeometry(w,h,w);
+					box.translate(0, h/2, 0);
+					var material = new THREE.MeshLambertMaterial();
+					var mesh = new THREE.Mesh(box, material);
+					mesh.name = "building 1";
+					mesh.position.set(x,0,z);
+					octree.importThreeMesh( mesh );
+					var geometry = new THREE.EdgesGeometry( box );
+					var segments = new THREE.LineSegments( geometry, material );
+					segments.name = "segments 2";
+					segments.position.copy( mesh.position );
+					scene.add( mesh );
+					cameraControls.rigidObjects.push( mesh );
+				})();
+
+				(function(){
+					var w = 12, h = 10;
+					var x = 15, y = h/2, z = -11;
+					var box = new THREE.BoxGeometry(w,h,w);
+					box.translate(0, h/2, 0);
+					var material = new THREE.MeshLambertMaterial();
+					var mesh = new THREE.Mesh(box, material);
+					mesh.name = "building 2";
+					mesh.position.set(x,0,z);
+					octree.importThreeMesh( mesh );
+					var geometry = new THREE.EdgesGeometry( box );
+					var segments = new THREE.LineSegments( geometry, material );
+					segments.name = "segments 3";
+					segments.position.copy( mesh.position );
+					scene.add( mesh );
+					cameraControls.rigidObjects.push( mesh );
+				})();
+
+				(function(){
+					var w = 8, h = 10;
+					var x = -9, y = h/2, z = 5;
+					var box = new THREE.BoxGeometry(w,h,w);
+					box.translate(0, h/2, 0);
+					var material = new THREE.MeshLambertMaterial();
+					var mesh = new THREE.Mesh(box, material);
+					mesh.name = "building 3";
+					mesh.position.set(x,0,z);
+					octree.importThreeMesh( mesh );
+					var geometry = new THREE.EdgesGeometry( box );
+					var segments = new THREE.LineSegments( geometry, material );
+					segments.name = "segments 4";
+					segments.position.copy( mesh.position );
+					scene.add( mesh );
+					cameraControls.rigidObjects.push( mesh );
+				})();
+
+				(function(){
+					var w = 12, h = 20, d = 2;
+					var x = -14, y = h/2, z = 10;
+					var box = new THREE.BoxGeometry(w,h,d);
+					box.translate(0, h/2, 0);
+					var material = new THREE.MeshLambertMaterial();
+					var mesh = new THREE.Mesh(box, material);
+					mesh.name = "building 4";
+					mesh.position.set(x,0,z);
+					octree.importThreeMesh( mesh );
+					var geometry = new THREE.EdgesGeometry( box );
+					var segments = new THREE.LineSegments( geometry, material );
+					segments.name = "segments 5";
+					segments.position.copy( mesh.position );
+					scene.add( mesh );
+					cameraControls.rigidObjects.push( mesh );
+				})();
+
+				(function(){
+					var w = 4, h = 20, d = 20;
+					var x = -17, y = h/2, z = 12;
+					var box = new THREE.BoxGeometry(w,h,d);
+					box.translate(0, h/2, 0);
+					var material = new THREE.MeshLambertMaterial();
+					var mesh = new THREE.Mesh(box, material);
+					mesh.name = "building 5";
+					mesh.position.set(x,0,z);
+					octree.importThreeMesh( mesh );
+					var geometry = new THREE.EdgesGeometry( box );
+					var segments = new THREE.LineSegments( geometry, material );
+					segments.name = "segments 6";
+					segments.position.copy( mesh.position );
+					scene.add( mesh );
+					cameraControls.rigidObjects.push( mesh );
+				})();
+
+			})();
+
+		</script>
+
+		<script>
+
+		//	Add entities.
+
+			scene.traverse(function( object ){
+				entities.add( object );
+			});
+
+		//	Add Material entities.
+			entities.forEach( function( entity ){
+
+			//	It looks in "entities" manager only.
+			//	It looks the root Object3D, but not children.
+
+				var object = scene.getObjectById( entity.id );
+				if ( !object.material ) return; // important!
+
+				if ( Array.isArray( object.material ) )
+					object.material.forEach( addtoManager );
+				else 
+					addtoManager( object.material );
+
+				function addtoManager( material ){
+					rename( material );
+					addEntity( material );
+				}
+
+				function rename( material ){
+					if ( material.name ) return;
+					material.name = "mtl"+material.id;;
+				}
+
+				function addEntity( material ){
+					var included = material_entities.includes( material );
+					debugMode && console.log( "included:", included );
+					if ( !included ) material_entities.add( material );
+				}
+			});
+
+			console.log( {"object3DEditor": object3DEditor} ); // debug!
+			console.log( {"materialEditor": materialEditor} ); // debug!
+
+		</script>
 
 		<script>
 
 		//	Viewport tab.
 
-			TabUI.add( "Viewport", "viewport-tab" );
-			TabUI.append( "Viewport" );
-
 			TabUI.Editor.role.classList.remove("active");
 			TabUI.Editor.tab.classList.remove("in","active");
 			TabUI.Viewport.role.classList.add("active");
 			TabUI.Viewport.tab.classList.add("in","active");
-
+/*
 			(function( tab ){
 
 			//	Front viewer.
@@ -328,171 +481,7 @@
 				tab.appendChild( row );
 
 			})( TabUI.Viewport.tab );
-
-		</script>
-
-		<script>
-
-			localPlayer.controller.movementSpeed = 10;
-
-		//	Entities.
-
-		//	debugMode && (function(){
-			//	var r = 1;
-			//	var geometry = new THREE.BoxGeometry(r,r,r);
-			//	var material = new THREE.MeshLambertMaterial();
-			//	var cube = new THREE.Mesh(geometry, material);
-			//	cube.name = "local player cube";
-			//	var geometry = new THREE.SphereGeometry(0.7,8,12);
-			//	var material = new THREE.MeshLambertMaterial();
-			//	var sphere = new THREE.Mesh(geometry, material);
-			//	sphere.name = "local player sphere";
-			//	cube.add( sphere );
-			//	localPlayer.add( cube );
-		//	})();
-
-		//	box coluctions.
-
-			debugMode && (function(){
-
-			//	var material = new THREE.MeshLambertMaterial();
-
-				(function(){
-					var w = 10, h = 20;
-					var x = 10, y = h/2, z = -4;
-					var box = new THREE.BoxGeometry(w,h,w);
-					box.translate(0, h/2, 0);
-					var material = new THREE.MeshLambertMaterial();
-					var mesh = new THREE.Mesh(box, material);
-					mesh.name = "building 1";
-					mesh.position.set(x,0,z);
-					octree.importThreeMesh( mesh );
-					var geometry = new THREE.EdgesGeometry( box );
-					var segments = new THREE.LineSegments( geometry, material );
-					segments.name = "segments 2";
-					segments.position.copy( mesh.position );
-					scene.add( mesh );
-					cameraControls.rigidObjects.push( mesh );
-				})();
-
-				(function(){
-					var w = 12, h = 10;
-					var x = 15, y = h/2, z = -11;
-					var box = new THREE.BoxGeometry(w,h,w);
-					box.translate(0, h/2, 0);
-					var material = new THREE.MeshLambertMaterial();
-					var mesh = new THREE.Mesh(box, material);
-					mesh.name = "building 2";
-					mesh.position.set(x,0,z);
-					octree.importThreeMesh( mesh );
-					var geometry = new THREE.EdgesGeometry( box );
-					var segments = new THREE.LineSegments( geometry, material );
-					segments.name = "segments 3";
-					segments.position.copy( mesh.position );
-					scene.add( mesh );
-					cameraControls.rigidObjects.push( mesh );
-				})();
-
-				(function(){
-					var w = 8, h = 10;
-					var x = -9, y = h/2, z = 5;
-					var box = new THREE.BoxGeometry(w,h,w);
-					box.translate(0, h/2, 0);
-					var material = new THREE.MeshLambertMaterial();
-					var mesh = new THREE.Mesh(box, material);
-					mesh.name = "building 3";
-					mesh.position.set(x,0,z);
-					octree.importThreeMesh( mesh );
-					var geometry = new THREE.EdgesGeometry( box );
-					var segments = new THREE.LineSegments( geometry, material );
-					segments.name = "segments 4";
-					segments.position.copy( mesh.position );
-					scene.add( mesh );
-					cameraControls.rigidObjects.push( mesh );
-				})();
-
-				(function(){
-					var w = 12, h = 20, d = 2;
-					var x = -14, y = h/2, z = 10;
-					var box = new THREE.BoxGeometry(w,h,d);
-					box.translate(0, h/2, 0);
-					var material = new THREE.MeshLambertMaterial();
-					var mesh = new THREE.Mesh(box, material);
-					mesh.name = "building 4";
-					mesh.position.set(x,0,z);
-					octree.importThreeMesh( mesh );
-					var geometry = new THREE.EdgesGeometry( box );
-					var segments = new THREE.LineSegments( geometry, material );
-					segments.name = "segments 5";
-					segments.position.copy( mesh.position );
-					scene.add( mesh );
-					cameraControls.rigidObjects.push( mesh );
-				})();
-
-				(function(){
-					var w = 4, h = 20, d = 20;
-					var x = -17, y = h/2, z = 12;
-					var box = new THREE.BoxGeometry(w,h,d);
-					box.translate(0, h/2, 0);
-					var material = new THREE.MeshLambertMaterial();
-					var mesh = new THREE.Mesh(box, material);
-					mesh.name = "building 5";
-					mesh.position.set(x,0,z);
-					octree.importThreeMesh( mesh );
-					var geometry = new THREE.EdgesGeometry( box );
-					var segments = new THREE.LineSegments( geometry, material );
-					segments.name = "segments 6";
-					segments.position.copy( mesh.position );
-					scene.add( mesh );
-					cameraControls.rigidObjects.push( mesh );
-				})();
-
-			})();
-
-		</script>
-
-		<script>
-
-		//	Add entities.
-
-			scene.traverse(function( object ){
-				entities.add( object );
-			});
-
-		//	Add Material entities.
-			entities.forEach( function( entity ){
-
-			//	It looks in "entities" manager only.
-			//	It looks the root Object3D, but not children.
-
-				var object = scene.getObjectById( entity.id );
-				if ( !object.material ) return; // important!
-
-				if ( Array.isArray( object.material ) )
-					object.material.forEach( addtoManager );
-				else 
-					addtoManager( object.material );
-
-				function addtoManager( material ){
-					rename( material );
-					addEntity( material );
-				}
-
-				function rename( material ){
-					if ( material.name ) return;
-					material.name = "mtl"+material.id;;
-				}
-
-				function addEntity( material ){
-					var included = material_entities.includes( material );
-					debugMode && console.log( "included:", included );
-					if ( !included ) material_entities.add( material );
-				}
-			});
-
-			console.log( {"object3DEditor": object3DEditor} ); // debug!
-			console.log( {"materialEditor": materialEditor} ); // debug!
-
+*/
 		</script>
 
 	</body>
