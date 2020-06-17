@@ -1,7 +1,9 @@
 
 //	Material Tab.
 
-//	TabUI.append("Material");
+	TabUI.add( "Material", "material-tab" );
+
+	TabUI.append("Material");
 //	TabUI.Editor.role.classList.add("active");
 //	TabUI.Editor.tab.classList.add("in","active");
 
