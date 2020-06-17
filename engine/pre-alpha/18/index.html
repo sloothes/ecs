@@ -161,7 +161,7 @@
 
 			const texture_droplist = (function( tab ){
 
-			//	Materials droplist.
+			//	Textures droplist.
 			//	When option is selected, switches to EditMode.
 			//	var tab = TabUI.Texture.tab;
 
@@ -216,6 +216,117 @@
 
 			(function( tab ){
 
+			//	Vector mode droplist.
+			//	When option is selected, switches to EditMode.
+			//	var tab = TabUI.Texture.tab;
+
+				var row = document.createElement("h3");
+				row.textContent = "select:";
+				row.style.cssText = "height:40px;"
+
+				var select = document.createElement("select");
+				select.id = "texture-vector-droplist";
+				select.style.cssText = "width:170px;color:#000;float:right;"
+				+ "border:1px solid;border-radius:4px;padding:2px 4px 4px 4px;"
+				+ "font-size:20px;margin-left:10px;margin-right:15px;";
+
+				var keys = "";
+				keys += "center,offset,repeat";
+
+				keys.split(",").forEach(function( name ){
+					var option = document.createElement("option");
+					option.text = name;
+					option.value = name;
+					select.appendChild( option );
+				});
+
+				row.appendChild( select );
+				tab.appendChild( row );
+
+			})( TabUI.Texture.tab );
+
+		//	Vector controls.
+
+			(function( tab ){
+
+			//	vector x.
+			//	var tab = TabUI.Texture.tab;
+
+				var row = document.createElement("h3");
+				row.textContent = "vect x:";
+				row.style.cssText = "margin:10px 15px;height:40px;";
+
+				var vect = document.createElement("div");
+				vect.style.cssText = "width:170px;height:40px;float:right;";
+
+				var prev = document.createElement("li");
+				prev.id = "texture-vector-x-decrease";
+				prev.innerHTML = "&#9668;";
+				prev.style.display = "inline";
+				prev.classList.add("btn","btn-primary","get-prev-btn","pull-left");
+
+				var next = document.createElement("li");
+				next.id = "texture-vector-x-increase";
+				next.innerHTML = "&#9658;";
+				next.style.display = "inline";
+				next.classList.add("btn","btn-primary","get-next-btn","pull-right");
+
+				var input = document.createElement("input");
+				input.id = "texture-vector-x-input";
+				input.setAttribute("placeholder", "x" );
+				input.classList.add("form-control","text-center");
+				input.style.cssText = "color:#000;border:none;display:inline;width:80px;"
+					+ "margin:0px 5px;text-align:center;font-size:large;font-weigth:bold;background:none;";
+
+				vect.appendChild(prev);
+				vect.appendChild(input);
+				vect.appendChild(next);
+				row.appendChild(vect);
+				tab.appendChild( row );
+
+			})( TabUI.Texture.tab );
+
+			(function( tab ){
+
+			//	vector y.
+			//	var tab = TabUI.Texture.tab;
+
+				var row = document.createElement("h3");
+				row.textContent = "vect y:";
+				row.style.cssText = "margin:10px 15px;height:40px;";
+
+				var vect = document.createElement("div");
+				vect.style.cssText = "width:170px;height:40px;float:right;";
+
+				var prev = document.createElement("li");
+				prev.id = "texture-vector-y-decrease";
+				prev.innerHTML = "&#9668;";
+				prev.style.display = "inline";
+				prev.classList.add("btn","btn-primary","get-prev-btn","pull-left");
+
+				var next = document.createElement("li");
+				next.id = "texture-vector-y-increase";
+				next.innerHTML = "&#9658;";
+				next.style.display = "inline";
+				next.classList.add("btn","btn-primary","get-next-btn","pull-right");
+
+				var input = document.createElement("input");
+				input.id = "texture-vector-y-input";
+				input.setAttribute("placeholder", "y" );
+				input.classList.add("form-control","text-center");
+				input.style.cssText = "color:#000;border:none;display:inline;width:80px;"
+					+ "margin:0px 5px;text-align:center;font-size:large;font-weigth:bold;background:none;";
+
+				vect.appendChild(prev);
+				vect.appendChild(input);
+				vect.appendChild(next);
+				row.appendChild(vect);
+				tab.appendChild( row );
+
+			})( TabUI.Texture.tab );
+
+			(function( tab ){
+
 			//	Import texture button.
 			//	var tab = TabUI.Texture.tab;
 
@@ -224,23 +335,233 @@
 
 				var button = document.createElement("div");
 				button.id = "texture-import-button";
-				button.textContent = "Import Texture";
+				button.textContent = "Import Texture Entity";
 				button.style.cssText = "width:295px;float:right;height:40px;font-size:large;margin-right:15px;";
 				button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
 
 				var input = document.createElement("input");
 				input.type = "file";
-				input.id = "material-map-file-input";
+				input.id = "texture-file-input";
 				input.style.cssText = "display:none;";
 				button.appendChild( input );
+
+				button.addEventListener( "click", function(){
+					input.files.length = 0;
+					input.click();
+				});
 
 				row.appendChild( button );
 				tab.appendChild( row );
 
 			})( TabUI.Texture.tab );
 
+			(function( tab ){
+
+			//	Exit edit mode button.
+			//	var tab = TabUI.Texture.tab;
+
+				var row = document.createElement("h3");
+				row.style.cssText = "height:40px;margin-bottom:20px;"
+
+				var button = document.createElement("div");
+				button.id = "texture-exit-mode";
+				button.textContent = "Exit Edit Mode";
+				button.style.cssText = "width:295px;float:right;height:40px;font-size:large;margin-right:15px;";
+				button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
+
+				row.appendChild( button );
+				tab.appendChild( row );
+
+			})( TabUI.Texture.tab );
+
+		</script>
+
+		<script>
+
+		//	Texture Manager Class.
+
+		//	Texture Manager: inherits (extends) Array class.
+		//	sources: https://stackoverflow.com/questions/26700164/extending-array-with-es6-classes
+		//	https://stackoverflow.com/questions/11337849/ways-to-extend-array-object-in-javascript
+
+			function TextureManager(){
+				var array = new Array(0);
+				Object.setPrototypeOf( array, TextureManager.prototype );
+				return array; // important!
+			};
+
+			TextureManager.prototype = Object.create(Array.prototype);
+			TextureManager.prototype.move = function( entity, new_index ){
+
+				var old_index = this.findIndex(function( item ){
+					return item.id === entity.id;
+				});
+
+				if ( old_index < 0 ) return; // important!
+				if ( old_index == new_index ) return;
+
+				(function( arr, old_index, new_index ){
+
+					if (new_index >= arr.length) {
+						var k = new_index - arr.length + 1;
+						while (k--) {
+							arr.push(undefined);
+						}
+					}
+
+					arr.splice(new_index, 0, arr.splice(old_index, 1)[0]);
+
+				})( this, old_index, new_index);
+
+			};
+
+			TextureManager.prototype.add = function(){
+			//	params: {object:Material} 
+
+				if ( arguments.length < 1 ) return;
+
+				var materials  = [];
+
+			//	Get materials/ids.
+				for ( var i in arguments ) {
+					var param = arguments[i];
+					if ( typeof param === "object" && param.isMaterial && param.id !== undefined )
+						materials.push( param );  // meterial;
+					else 
+						continue;
+				}
+
+				if ( !materials.length ) return;
+			//	console.log( "materials:", materials );
+
+				var length = materials.length;
+				for ( var j = 0; j < length; j++ ) {
+					this.push( materials[j] );
+				}
+
+			//	var material_droplist = document.getElementById("material-entities-droplist");
+			//	global const "material_droplist" is defined in MaterialTab.js;
+				if ( !material_droplist ) return;
+
+			//	Add options.
+				while ( materials.length ) (function( material ){
+					var str =  "", dot = ".", col = ":";
+					var type = "object";
+					var name = material.name || "mtl"+material.id;
+					if ( material.type ) type = material.type;
+					var option = document.createElement("option");
+					option.text = str+material.id+dot+type+col+name;
+					option.value = material.id;
+					material_droplist.appendChild( option );
+				})( materials.shift() );
+			};
+
+			TextureManager.prototype.remove = function(){
+			//	params: {number:entity.id} or {object:entity} 
+
+				if ( arguments.length < 1 ) return;
+
+			//	Get removed ids.
+				var remove_ids = [];
+				for ( var i in arguments ) {
+					var param = arguments[i];
+					if ( typeof param === "number" && param % 1 === 0 ) // integer. 
+						remove_ids.unshift( param );    // remove_ids.push( param );
+					else if ( typeof param === "object" && param.isMaterial && param.id !== undefined )
+						remove_ids.unshift( param.id ); // remove_ids.push( param.id );
+					else 
+						continue;
+				}
+
+				if ( !remove_ids.length ) return;
+			//	console.log( "remove_ids:", remove_ids );
+
+				var length = remove_ids.length;
+				for ( var j = 0; j < length; j++ ) {
+
+					var _id = remove_ids[ j ];
+
+				//	Find index.
+					var index = this.findIndex(function( item ){
+						return item.id === _id;
+					});
+
+					if ( index < 0 ) continue; // important!
+
+					var removedItems = this.splice(index, 1);
+				//	debugMode && console.log( removedItems );
+
+					while ( removedItems.length ){
+						var removed = removedItems.shift();
+					//	debugMode && console.log( removed );
+						removed_materials.push( removed );
+					}
+				}
+
+			//	global const "texture_droplist" is defined in TextureTab.js;
+			//	var texture_droplist = document.getElementById("texture-entities-droplist");
+
+				if ( !texture_droplist ) return;
+
+			//	Remove options.
+				while ( remove_ids.length ) (function( id ){
+					var selector = "option[value='" + id.toString() + "']"; // console.log( selector );
+					var option = texture_droplist.querySelector( selector ); // console.log(  option  );
+					option && option.remove();
+				})( remove_ids.shift() );
+
+			};
+
+			TextureManager.prototype.clear = function(){
+
+				this.length = 0;
+
+			};
+
+			const texture_entities = new TextureManager(); // texture entities array, important!.
+			const removed_textures = new TextureManager(); // texture entities array, important!.
+
+		</script>
+
+		<script>
+
+		//	Texture Editor.
+
+		//	Create a texture json to hold editor data.
+			const textureEditor = ( function( editor ){
+
+				const images = {};
+				const undo = [], redo = [];
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+				return editor;
+
+			})( new THREE.Texture().toJSON() );
 
 		</script>
 
