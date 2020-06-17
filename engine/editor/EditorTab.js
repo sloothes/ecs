@@ -7,7 +7,7 @@
 	TabUI.Editor.role.classList.add("active");
 	TabUI.Editor.tab.classList.add("in","active");
 
-	const entity_droplist = (function(){
+	const entity_droplist = (function( tab ){
 
 	//	Entities droplist.
 	//	When option is selected, switches to EditMode.
@@ -34,13 +34,13 @@
 
 		return select;
 
-	})();
+	})( TabUI.Editor.tab );
 
-	(function(){
+	(function( tab ){
 
 	//	Undo/Redo button.
+	//	var tab = TabUI.Editor.tab;
 
-		var tab = TabUI.Editor.tab;
 		var row = document.createElement("h3");
 		row.style.cssText = "height:40px;margin-bottom:20px;"
 
@@ -60,14 +60,14 @@
 		row.appendChild( undo );
 		tab.appendChild( row );
 
-	})();
+	})( TabUI.Editor.tab );
 
-	(function(){
+	(function( tab ){
 
 	//	Vector mode droplist.
 	//	When option is selected, switches to EditMode.
+	//	var tab = TabUI.Editor.tab;
 
-		var tab = TabUI.Editor.tab;
 		var row = document.createElement("h3");
 		row.textContent = "select:";
 		row.style.cssText = "height:40px;"
@@ -89,15 +89,15 @@
 		row.appendChild( select );
 		tab.appendChild( row );
 
-	})();
+	})( TabUI.Editor.tab );
 
 //	Vector controls.
 
-	(function(){
+	(function( tab ){
 
 	//	vector x.
+	//	var tab = TabUI.Editor.tab;
 
-		var tab = TabUI.Editor.tab;
 		var row = document.createElement("h3");
 		row.textContent = "vect x:";
 		row.style.cssText = "margin:10px 15px;height:40px;";
@@ -130,13 +130,13 @@
 		row.appendChild(vect);
 		tab.appendChild( row );
 
-	})();
+	})( TabUI.Editor.tab );
 
-	(function(){
+	(function( tab ){
 
 	//	vector y.
+	//	var tab = TabUI.Editor.tab;
 
-		var tab = TabUI.Editor.tab;
 		var row = document.createElement("h3");
 		row.textContent = "vect y:";
 		row.style.cssText = "margin:10px 15px;height:40px;";
@@ -169,13 +169,13 @@
 		row.appendChild(vect);
 		tab.appendChild( row );
 
-	})();
+	})( TabUI.Editor.tab );
 
-	(function(){
+	(function( tab ){
 
 	//	vector z.
+	//	var tab = TabUI.Editor.tab;
 
-		var tab = TabUI.Editor.tab;
 		var row = document.createElement("h3");
 		row.textContent = "vect z:";
 		row.style.cssText = "margin:10px 15px;height:40px;";
@@ -208,13 +208,13 @@
 		row.appendChild(vect);
 		tab.appendChild( row );
 
-	})();
+	})( TabUI.Editor.tab );
 
-	(function(){
+	(function( tab ){
 
 	//	vector w.
+	//	var tab = TabUI.Editor.tab;
 
-		var tab = TabUI.Editor.tab;
 		var row = document.createElement("h3");
 		row.textContent = "vect w:";
 		row.style.cssText = "margin:10px 15px;height:40px;";
@@ -247,14 +247,14 @@
 		row.appendChild(vect);
 		tab.appendChild( row );
 
-	})();
+	})( TabUI.Editor.tab );
 
-	(function(){
+	(function( tab ){
 
 	//	Reset vectors button.
 	//	Resets vector mode values.
+	//	var tab = TabUI.Editor.tab;
 
-		var tab = TabUI.Editor.tab;
 		var row = document.createElement("h3");
 		row.style.cssText = "height:40px;margin-bottom:20px;"
 
@@ -267,13 +267,13 @@
 		row.appendChild( button );
 		tab.appendChild( row );
 
-	})();
+	})( TabUI.Editor.tab );
 
-	(function(){
+	(function( tab ){
 
 	//	Exit edit mode button.
+	//	var tab = TabUI.Editor.tab;
 
-		var tab = TabUI.Editor.tab;
 		var row = document.createElement("h3");
 		row.style.cssText = "height:40px;margin-bottom:20px;"
 
@@ -286,13 +286,13 @@
 		row.appendChild( button );
 		tab.appendChild( row );
 
-	})();
+	})( TabUI.Editor.tab );
 
-	(function(){
+	(function( tab ){
 
 	//	Geometries droplist.
+	//	var tab = TabUI.Editor.tab;
 
-		var tab = TabUI.Editor.tab;
 		var row = document.createElement("h3");
 		row.textContent = "Geometry:";
 		row.style.cssText = "height:40px;margin-top:40px;"
@@ -322,17 +322,17 @@
 		row.appendChild( select );
 		tab.appendChild( row );
 
-	})();
+	})( TabUI.Editor.tab );
 
 //  =============================================================================== //
 /*
-	(function(){
+	(function( tab ){
 
 	//	New plane geometry button.
 	//	Creates a mesh plane 1x1 (m2),
 	//	and switch to EditMode.
+	//	var tab = TabUI.Editor.tab;
 
-		var tab = TabUI.Editor.tab;
 		var row = document.createElement("h3");
 		row.style.cssText = "height:40px;margin-bottom:20px;"
 
@@ -345,15 +345,15 @@
 		row.appendChild( button );
 	//	tab.appendChild( row );
 
-	})();
+	})( TabUI.Editor.tab );
 
-	(function(){
+	(function( tab ){
 
 	//	New box geometry button.
 	//	Creates a mesh box 1x1 (m3),
 	//	and switch to EditMode.
+	//	var tab = TabUI.Editor.tab;
 
-		var tab = TabUI.Editor.tab;
 		var row = document.createElement("h3");
 		row.style.cssText = "height:40px;margin-bottom:20px;"
 
@@ -366,13 +366,13 @@
 		row.appendChild( button );
 	//	tab.appendChild( row );
 
-	})();
+	})( TabUI.Editor.tab );
 
-	(function(){
+	(function( tab ){
 
 	//	Add to world octree button.
+	//	var tab = TabUI.Editor.tab;
 
-		var tab = TabUI.Editor.tab;
 		var row = document.createElement("h3");
 		row.style.cssText = "height:40px;margin-bottom:20px;"
 
@@ -385,17 +385,17 @@
 		row.appendChild( button );
 	//	tab.appendChild( row );
 
-	})();
+	})( TabUI.Editor.tab );
 */
 //  =============================================================================== //
 
-	(function(){
+	(function( tab ){
 
 	//	Create geometry button.
 	//	Creates a mesh geometry
 	//	and switch to EditMode.
+	//	var tab = TabUI.Editor.tab;
 
-		var tab = TabUI.Editor.tab;
 		var row = document.createElement("h3");
 		row.style.cssText = "height:40px;margin-bottom:20px;"
 
@@ -408,16 +408,16 @@
 		row.appendChild( button );
 		tab.appendChild( row );
 
-	})();
+	})( TabUI.Editor.tab );
 
-	(function(){
+	(function( tab ){
 
 	//	Clone geometry button.
 	//	Clones selected mesh 
 	//	with the same geometry
 	//	and switch to EditMode.
+	//	var tab = TabUI.Editor.tab;
 
-		var tab = TabUI.Editor.tab;
 		var row = document.createElement("h3");
 		row.style.cssText = "height:40px;margin-bottom:20px;"
 
@@ -430,13 +430,13 @@
 		row.appendChild( button );
 		tab.appendChild( row );
 
-	})();
+	})( TabUI.Editor.tab );
 
-	(function(){
+	(function( tab ){
 
 	//	Remove entity button.
+	//	var tab = TabUI.Editor.tab;
 
-		var tab = TabUI.Editor.tab;
 		var row = document.createElement("h3");
 		row.style.cssText = "height:40px;margin-bottom:20px;"
 
@@ -449,7 +449,7 @@
 		row.appendChild( button );
 		tab.appendChild( row );
 
-	})();
+	})( TabUI.Editor.tab );
 
 //  =============================================================================== //
 
