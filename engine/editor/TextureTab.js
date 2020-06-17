@@ -412,80 +412,86 @@
 
 //	Texture Manager Class.
 
-//	Texture Manager: inherits (extends) Array class.
+//	Texture Manager: inherits from EntityManager class.
 //	sources: https://stackoverflow.com/questions/26700164/extending-array-with-es6-classes
 //	https://stackoverflow.com/questions/11337849/ways-to-extend-array-object-in-javascript
 
 	function TextureManager(){
-		var array = new Array(0);
-		Object.setPrototypeOf( array, TextureManager.prototype );
-		return array; // important!
-	};
+		Object.assign( this, EntityManager );
+	}
 
-	TextureManager.prototype = Object.create(Array.prototype);
-	TextureManager.prototype.move = function( entity, new_index ){
-
-		var old_index = this.findIndex(function( item ){
-			return item.id === entity.id;
-		});
-
-		if ( old_index < 0 ) return; // important!
-		if ( old_index == new_index ) return;
-
-		(function( arr, old_index, new_index ){
-
-			if (new_index >= arr.length) {
-				var k = new_index - arr.length + 1;
-				while (k--) {
-					arr.push(undefined);
-				}
-			}
-
-			arr.splice(new_index, 0, arr.splice(old_index, 1)[0]);
-
-		})( this, old_index, new_index);
-
-	};
+//	function TextureManager(){
+//		var array = new Array(0);
+//		Object.setPrototypeOf( array, TextureManager.prototype );
+//		return array; // important!
+//	}
+//
+//	TextureManager.prototype = Object.create(Array.prototype);
+//
+//	TextureManager.prototype.move = function( entity, new_index ){
+//
+//		var old_index = this.findIndex(function( item ){
+//			return item.id === entity.id;
+//		});
+//
+//		if ( old_index < 0 ) return; // important!
+//		if ( old_index == new_index ) return;
+//
+//		(function( arr, old_index, new_index ){
+//
+//			if (new_index >= arr.length) {
+//				var k = new_index - arr.length + 1;
+//				while (k--) {
+//					arr.push(undefined);
+//				}
+//			}
+//
+//			arr.splice(new_index, 0, arr.splice(old_index, 1)[0]);
+//
+//		})( this, old_index, new_index);
+//
+//	};
 
 	TextureManager.prototype.add = function(){
-	//	params: {object:Material} 
+	//	params: {object:Texture} 
 
 		if ( arguments.length < 1 ) return;
 
-		var materials  = [];
+		var textures = [];
 
-	//	Get materials/ids.
+	//	Get textures/ids.
 		for ( var i in arguments ) {
 			var param = arguments[i];
-			if ( typeof param === "object" && param.isMaterial && param.id !== undefined )
-				materials.push( param );  // meterial;
+			if ( typeof param === "object" && param.isTexture && param.id !== undefined )
+				textures.push( param );  // meterial;
 			else 
 				continue;
 		}
 
-		if ( !materials.length ) return;
-	//	console.log( "materials:", materials );
+		if ( !textures.length ) return;
+	//	console.log( "textures:", textures );
 
-		var length = materials.length;
+		var length = textures.length;
 		for ( var j = 0; j < length; j++ ) {
-			this.push( materials[j] );
+			this.push( textures[j] );
 		}
 
-	//	var material_droplist = document.getElementById("material-entities-droplist");
-	//	global const "material_droplist" is defined in MaterialTab.js;
-		if ( !material_droplist ) return;
+	//	global const "texture_droplist" is defined in TextureTab.js;
+	//	var texture_droplist = document.getElementById("texture-entities-droplist");
+
+		if ( !texture_droplist ) return;
 
 	//	Add options.
-		while ( materials.length ) (function( material ){
+		while ( textures.length ) (function( texture ){
 			var str =  "", dot = ".", col = ":";
 			var type = "object";
-			var name = material.name || "mtl"+material.id;
-			if ( material.type ) type = material.type;
+			var name = texture.name || "texture"+texture.id;
+			if ( texture.type ) type = texture.type;
 			var option = document.createElement("option");
-			option.text = str+material.id+dot+type+col+name;
-			option.value = material.id;
-			material_droplist.appendChild( option );
-		})( materials.shift() );
+			option.text = str+texture.id+dot+type+col+name;
+			option.value = texture.id;
+			texture_droplist.appendChild( option );
+		})( textures.shift() );
 	};
 
 	TextureManager.prototype.remove = function(){
@@ -499,7 +505,7 @@
 			var param = arguments[i];
 			if ( typeof param === "number" && param % 1 === 0 ) // integer. 
 				remove_ids.unshift( param );    // remove_ids.push( param );
-			else if ( typeof param === "object" && param.isMaterial && param.id !== undefined )
+			else if ( typeof param === "object" && param.isTexture && param.id !== undefined )
 				remove_ids.unshift( param.id ); // remove_ids.push( param.id );
 			else 
 				continue;
@@ -526,7 +532,7 @@
 			while ( removedItems.length ){
 				var removed = removedItems.shift();
 			//	debugMode && console.log( removed );
-				removed_materials.push( removed );
+				removed_textures.push( removed );
 			}
 		}
 
@@ -550,5 +556,7 @@
 
 	};
 
+	const texture_entities = new TextureManager(); // texture entities array, important!.
+	const removed_textures = new TextureManager(); // texture entities array, important!.
 
 //  ======================================================================================  //
