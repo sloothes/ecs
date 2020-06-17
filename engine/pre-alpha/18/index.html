@@ -159,6 +159,11 @@
 			TabUI.add( "Texture", "texture-tab" );
 			TabUI.append( "Texture" );
 
+			TabUI.Editor.role.classList.remove("active");
+			TabUI.Editor.tab.classList.remove("in","active");
+			TabUI.Texture.role.classList.add("active");
+			TabUI.Texture.tab.classList.add("in","active");
+
 			const texture_droplist = (function( tab ){
 
 			//	Textures droplist.
@@ -190,6 +195,99 @@
 
 			(function( tab ){
 
+			//	Texture viewer.
+			//	var tab = TabUI.Texture.tab;
+
+				var row = document.createElement("h3");
+				row.style.cssText = "height:260px;border:none;text-align:center;";
+
+				var canvas = document.createElement("canvas");
+				canvas.width = 256; canvas.height = 256;
+				canvas.id = "texture-viewer";
+				canvas.style.cssText = "max-width:300px;max-height:300px;margin:auto;";
+
+			//	Viewer scene.
+
+				const scene = (function(){
+					var scene = new THREE.Scene();
+					scene.name = "viewer scene";
+					return scene;
+				})();
+
+				const camera = (function(){
+				//	var aspect = canvas.clientWidth / canvas.clientWidth;
+					var camera  = new THREE.OrthographicCamera( -128,128,128,-128, 1, 1000 );
+					camera.name = "viewer camera";
+					camera.position.y = 10;
+					camera.lookAt( 0,0,0 );
+					scene.add( camera );
+					return camera;
+				})();
+				
+				const light = (function(){
+					var light = new THREE.DirectionalLight( 0xffffff, 0.75 );
+					light.name = "viewer light";
+					camera.position.set( 0,10,0 );
+					scene.add( light );
+					return light;
+				})();
+
+				const grid = (function(){
+					var helper = new THREE.GridHelper( 250, 10, 0x444444, 0x444444 );
+					helper.name = "viewer grid";
+					helper.position.y = 0.01;
+					scene.add( helper );
+					return helper;
+				})();
+
+				textureViewer = (function(){
+					var mesh = new THREE.Mesh(
+						new THREE.PlaneGeometry( 252, 252, 1, 1 ).rotateX(-Math.PI/2),
+						new THREE.MeshLambertMaterial({ opacity:1, color:0x000000 })
+					);  
+					mesh.name = "texture viewer";
+					mesh.material.name = "Viewer";
+					material_entities.add( mesh.material );
+					scene.add( mesh );
+					return mesh;
+				})();
+
+			//  Renderer.
+
+				const renderer = new THREE.WebGLRenderer({
+					alpha: true,  // for transparent rendering set alpha:true, important!
+					canvas: canvas,
+					antialias: true,
+					preserveDrawingBuffer: true,
+				});
+
+				renderer.gammaInput = true;
+				renderer.gammaOutput = true;
+				renderer.shadowMap.enabled = true;
+				renderer.setClearAlpha( 0 ); // for transparent rendering set clear alpha: 0.
+				renderer.setClearColor( 0x000000, 0 ); // for transparent rendering set clear alpha: 0.
+				renderer.setPixelRatio( window.devicePixelRatio );
+				renderer.setSize( canvas.width, canvas.height );
+				renderer.domElement.style.background = "none";  // transparent rendering. important!
+
+				window.addEventListener("resize", function onWindowResize() {
+					renderer.setSize( canvas.width, canvas.width );
+				//	camera.aspect = renderer.domElement.clientWidth / renderer.domElement.clientHeight;
+				//	camera.updateProjectionMatrix();
+				});
+
+				(function render(){
+					requestAnimationFrame( render );
+					renderer.render( scene, camera );
+				})();
+
+				row.appendChild( canvas );
+				tab.appendChild( row );
+
+			})( TabUI.Texture.tab );
+
+			(function( tab ){
+
 			//	Undo/Redo button.
 			//	var tab = TabUI.Texture.tab;
 
@@ -216,6 +314,75 @@
 
 			(function( tab ){
 
+			//	Keys droplist.
+			//	var tab = TabUI.Texture.tab;
+
+				var row = document.createElement("h3");
+				row.textContent = "key:";
+				row.style.cssText = "height:40px;"
+
+				var select = document.createElement("select");
+				select.id = "texture-keys-droplist";
+				select.style.cssText = "width:170px;color:#000;float:right;"
+				+ "border:1px solid;border-radius:4px;padding:2px 4px 4px 4px;"
+				+ "font-size:20px;margin-left:10px;margin-right:15px;";
+
+				var keys = ",";
+				keys += "uuid,name,mapping,rotation,format,minFilter,magFilter,anisotropy,flipY";
+
+				keys.split(",").forEach(function( name ){
+					var option = document.createElement("option");
+					option.text = name;
+					option.value = name;
+					select.appendChild( option );
+				});
+
+				row.appendChild( select );
+				tab.appendChild( row );
+
+			})( TabUI.Texture.tab );
+
+			(function( tab ){
+
+			//	Key/Value.
+			//	var tab = TabUI.Texture.tab;
+
+				var row = document.createElement("h3");
+				row.textContent = "value:";
+				row.style.cssText = "margin:10px 15px;height:30px;";
+
+				var vect = document.createElement("div");
+				vect.style.cssText = "width:170px;height:40px;float:right;";
+
+				var prev = document.createElement("li");
+				prev.id = "texture-value-decrease";
+				prev.innerHTML = "&#9668;";
+				prev.style.display = "inline";
+				prev.classList.add("btn","btn-primary","get-prev-btn","pull-left");
+
+				var next = document.createElement("li");
+				next.id = "texture-value-increase";
+				next.innerHTML = "&#9658;";
+				next.style.display = "inline";
+				next.classList.add("btn","btn-primary","get-next-btn","pull-right");
+
+				var input = document.createElement("input");
+				input.id = "texture-value-input";
+				input.setAttribute("placeholder", "v" );
+				input.classList.add("form-control","text-center");
+				input.style.cssText = "color:#000;border:none;display:inline;width:80px;"
+				+ "margin:0px 5px;text-align:center;font-size:large;font-weigth:bold;background:none;";
+
+				vect.appendChild(prev);
+				vect.appendChild(input);
+				vect.appendChild(next);
+				row.appendChild(vect);
+				tab.appendChild( row );
+
+			})( TabUI.Texture.tab );
+
+			(function( tab ){
+
 			//	Vector mode droplist.
 			//	When option is selected, switches to EditMode.
 			//	var tab = TabUI.Texture.tab;
@@ -231,7 +398,7 @@
 				+ "font-size:20px;margin-left:10px;margin-right:15px;";
 
 				var keys = "";
-				keys += "center,offset,repeat";
+				keys += "offset,repeat,center,wrap";
 
 				keys.split(",").forEach(function( name ){
 					var option = document.createElement("option");
@@ -518,14 +685,14 @@
 
 			};
 
-			const texture_entities = new TextureManager(); // texture entities array, important!.
-			const removed_textures = new TextureManager(); // texture entities array, important!.
-
 		</script>
 
 		<script>
 
 		//	Texture Editor.
+
+			const texture_entities = new TextureManager(); // texture entities array, important!.
+			const removed_textures = new TextureManager(); // texture entities array, important!.
 
 		//	Create a texture json to hold editor data.
 			const textureEditor = ( function( editor ){
@@ -533,7 +700,9 @@
 				const images = {};
 				const undo = [], redo = [];
 
-
+				const entity_droplist = document.getElementById("texture-entities-droplist");
+				const parmas_droplist = document.getElementById("texture-param-droplist");
+				const vector_droplist = document.getElementById("texture-vector-droplist");
 
 
 
@@ -722,7 +891,7 @@
 			//	It looks the root Object3D, but not children.
 
 				var object = scene.getObjectById( entity.id );
-				if ( !object.material ) return; // important!
+				if ( !object || !object.material ) return; // important!
 
 				if ( Array.isArray( object.material ) )
 					object.material.forEach( addtoManager );
