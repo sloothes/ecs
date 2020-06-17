@@ -455,7 +455,7 @@
 				//	update editor.
 					editor.copy( material ); // overwrite.
 				//	update material.
-					getMaterialByEntityId( editorSelect.value ).copy( material );
+					getMaterialByEntityId( entitySelect.value ).copy( material );
 
 					debugMode && console.log( "undo:", 
 					undo.length, "redo:", redo.length );
@@ -489,7 +489,7 @@
 				//	update editor.
 					editor.copy( material ); // overwrite.
 				//	update material.
-					getMaterialByEntityId( editorSelect.value ).copy( material );
+					getMaterialByEntityId( entitySelect.value ).copy( material );
 
 					debugMode && console.log( "undo:", 
 					undo.length, "redo:", redo.length );
@@ -913,7 +913,7 @@
 					if ( !(input && colorSelect.value) ) return resetValues();
 
 					var key = colorSelect.value;
-					var value = step * Math.abs( parseInt( input.value ) % 255 );
+					var value = step * Math.abs( parseInt( input.value ) % 256 );
 
 					if ( input === color_r_input ) editor[ key ].r = value; // update editor.
 					if ( input === color_g_input ) editor[ key ].g = value; // update editor.
