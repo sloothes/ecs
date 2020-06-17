@@ -668,7 +668,7 @@
 					updateScale( this ); // update.
 
 				//	Undo/Redo.
-					addToUndo(); // undo/redo.
+					addToUndo( material ); // undo/redo.
 
 				}
 
@@ -749,7 +749,7 @@
 			scale_x_decrease.addEventListener( "click", onMouseClick );
 			scale_y_decrease.addEventListener( "click", onMouseClick );
 
-			function updateScale( button ){
+			function updateEditor( button ){
 
 				if ( !( button && scaleSelect.value) ) return;
 
@@ -785,14 +785,14 @@
 				if ( !editor.normalScale && !editor.displacementScale ) return;
 
 			//	Update editor.
-				entitySelect.value && scaleSelect.value && updateScale( this ); // editor.isEditing, update editor.
+				entitySelect.value && scaleSelect.value && updateEditor( this ); // editor.isEditing, update editor.
 
 			//	Update material.
-				material.normalScale && editor.normalScale && material.normalScale.copy( editor.normalScale ); // update material.
-				material.displacementScale && editor.displacementScale && material.displacementScale.copy( editor.displacementScale ); // update material.
+				entitySelect.value && material.normalScale && editor.normalScale && material.normalScale.copy( editor.normalScale ); // update material.
+				entitySelect.value && material.displacementScale && editor.displacementScale && material.displacementScale.copy( editor.displacementScale ); // update material.
 
 			//	Undo/Redo.
-				entitySelect.value && addToUndo();
+				entitySelect.value && addToUndo( material );
 
 				debugMode && console.log( "on Mouse Click:", interval );
 
@@ -824,11 +824,11 @@
 					if ( !entitySelect.value ) return;
 
 				//	Update editor.
-					entitySelect.value && scaleSelect.value && updateScale( button ); // editor.isEditing, update editor.
+					entitySelect.value && scaleSelect.value && updateEditor( button ); // editor.isEditing, update editor.
 
 				//	Update material.
-					material.normalScale && editor.normalScale && material.normalScale.copy( editor.normalScale ); // update material.
-					material.displacementScale && editor.displacementScale && material.displacementScale.copy( editor.displacementScale ); // update material.
+					entitySelect.value && material.normalScale && editor.normalScale && material.normalScale.copy( editor.normalScale ); // update material.
+					entitySelect.value && material.displacementScale && editor.displacementScale && material.displacementScale.copy( editor.displacementScale ); // update material.
 
 					var dt = clock.getDelta();
 					interval = setTimeout( onUpdate, dt );
@@ -839,10 +839,190 @@
 
 		})();
 
+	//	color inputs.
 
+		(function(){
 
+			var interval;
 
+			const color_r_input = document.getElementById("material-color-r-input");
+			const color_g_input = document.getElementById("material-color-g-input");
+			const color_b_input = document.getElementById("material-color-b-input");
 
+			const color_r_increase = document.getElementById("material-color-r-increase");
+			const color_g_increase = document.getElementById("material-color-g-increase");
+			const color_b_increase = document.getElementById("material-color-b-increase");
+
+			const color_r_decrease = document.getElementById("material-color-r-decrease");
+			const color_g_decrease = document.getElementById("material-color-g-decrease");
+			const color_b_decrease = document.getElementById("material-color-b-decrease");
+
+			color_r_input.addEventListener( "change", onInputChange );
+			color_g_input.addEventListener( "change", onInputChange );
+			color_b_input.addEventListener( "change", onInputChange );
+
+			function onInputChange(){
+
+				this.blur(); // important!
+
+				var step = 1/255;
+
+				var material = getMaterialByEntityId( entitySelect.value );
+
+				if ( !(entitySelect.value && colorSelect.value) ) return resetValues();
+
+				if ( material && entitySelect.value && colorSelect.value ) {
+
+				//	Update.
+					updateColor( this ); // update.
+
+				//	Undo/Redo.
+					addToUndo( material ); // undo/redo.
+
+				}
+
+				function resetValues(){
+
+					color_r_input.value = parseInt( 255 * editor.color.r ).toFixed(0); // string.
+					color_g_input.value = parseInt( 255 * editor.color.g ).toFixed(0); // string.
+					color_b_input.value = parseInt( 255 * editor.color.b ).toFixed(0); // string.
+
+					return;
+				}
+
+				function displayValue( input ){
+
+					if ( !(input && colorSelect.value) ) return resetValues();
+
+					var key = colorSelect.value;
+					if ( input === color_r_input ) input.value = parseInt( 255 * editor[ key ].r ).toFixed(0); // string.
+					if ( input === color_g_input ) input.value = parseInt( 255 * editor[ key ].g ).toFixed(0); // string.
+					if ( input === color_b_input ) input.value = parseInt( 255 * editor[ key ].b ).toFixed(0); // string.
+
+					return;
+				}
+
+				function updateColor( input ){
+
+					if ( !(input && colorSelect.value) ) return resetValues();
+
+					var key = colorSelect.value;
+					var value = step * Math.abs( parseInt( input.value ) % 255 );
+
+					if ( input === color_r_input ) editor[ key ].r = value; // update editor.
+					if ( input === color_g_input ) editor[ key ].g = value; // update editor.
+					if ( input === color_b_input ) editor[ key ].b = value; // update editor.
+
+					material.color && editor.color && material.color.copy( editor.color ); // update material.
+					material.emissive && editor.emissive && material.emissive.copy( editor.emissive ); // update material.
+					material.specular && editor.specular && material.specular.copy( editor.specular ); // update material.
+
+					return displayValue( input );
+				}
+
+			}
+
+			color_r_increase.addEventListener( "mousedown", onMouseDown );
+			color_g_increase.addEventListener( "mousedown", onMouseDown );
+			color_b_increase.addEventListener( "mousedown", onMouseDown );
+			color_r_decrease.addEventListener( "mousedown", onMouseDown );
+			color_g_decrease.addEventListener( "mousedown", onMouseDown );
+			color_b_decrease.addEventListener( "mousedown", onMouseDown );
+
+			window.addEventListener( "mouseup", function (){
+				clearTimeout( interval ); // important!
+			//	debugMode && console.log( "on MouseUp:", interval );
+			});
+
+			color_r_increase.addEventListener( "click", onMouseClick );
+			color_g_increase.addEventListener( "click", onMouseClick );
+			color_b_increase.addEventListener( "click", onMouseClick );
+			color_r_decrease.addEventListener( "click", onMouseClick );
+			color_g_decrease.addEventListener( "click", onMouseClick );
+			color_b_decrease.addEventListener( "click", onMouseClick );
+
+			function updateEditor( button ){
+
+				var step = 1/255;
+				var max = 1, min = 0;
+				var key = colorSelect.value;
+
+				var r = editor[key].r; 
+				var g = editor[key].g; 
+				var b = editor[key].b;
+
+				if ( button === color_r_increase ) editor[ key ].r = Math.min(max, r + step);
+				if ( button === color_g_increase ) editor[ key ].g = Math.min(max, g + step);
+				if ( button === color_b_increase ) editor[ key ].b = Math.min(max, b + step);
+
+				if ( button === color_r_decrease ) editor[ key ].r = Math.max(min, r - step);
+				if ( button === color_g_decrease ) editor[ key ].g = Math.max(min, g - step);
+				if ( button === color_b_decrease ) editor[ key ].b = Math.max(min, b - step);
+
+				displayVectorValues( colorSelect.value );
+			}
+
+			function onMouseClick(){
+
+			//	clearTimeout( interval ); // important!
+
+				if ( !colorSelect.value ) return;
+				if ( !entitySelect.value ) return;
+
+				var material = getMaterialByEntityId( entitySelect.value );
+
+				if ( !material ) return;
+
+			//	Update editor.
+				entitySelect.value && colorSelect.value && updateEditor( this ); // update editor.
+
+			//	Update material.
+				entitySelect.value && material.color && editor.color && material.color.copy( editor.color ); // update material.
+				entitySelect.value && material.emissive && editor.emissive && material.emissive.copy( editor.emissive ); // update material.
+				entitySelect.value && material.specular && editor.specular && material.specular.copy( editor.specular ); // update material.
+
+			//	Undo/Redo.
+				entitySelect.value && addToUndo( material );
+
+				debugMode && console.log( "on Mouse Click:", interval );
+
+			}
+
+			function onMouseDown(){ 
+
+				clearTimeout( interval ); // important!
+
+				if ( !colorSelect.value ) return; // !editor.isEditing;
+				if ( !entitySelect.value ) return; // !editor.isEditing;
+
+				var material = getMaterialByEntityId( entitySelect.value );
+
+				if ( !material ) return;
+
+				var button = this;
+				var clock = new THREE.Clock();
+
+				interval = setTimeout( function onUpdate() {
+
+					if ( !material ) return;
+					if ( !colorSelect.value ) return;
+					if ( !entitySelect.value ) return;
+
+					entitySelect.value && colorSelect.value && updateEditor( button ); // update editor.
+
+				//	update material.
+					entitySelect.value && material.color && editor.color && material.color.copy( editor.color ); // update material.
+					entitySelect.value && material.emissive && editor.emissive && material.emissive.copy( editor.emissive ); // update material.
+					entitySelect.value && material.specular && editor.specular && material.specular.copy( editor.specular ); // update material.
+
+					var dt = clock.getDelta();
+					interval = setTimeout( onUpdate, dt );
+				//	debugMode && console.log( "on Update:", interval );
+
+				}, 500);
+			}
+
+		})();
 
 
 
