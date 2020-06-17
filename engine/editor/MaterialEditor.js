@@ -633,17 +633,211 @@
 
 		})();
 
+	//	scale inputs.
 
+		(function(){
 
+			var interval;
 
+			const scale_x_input = document.getElementById("material-scale-x-input");
+			const scale_y_input = document.getElementById("material-scale-y-input");
 
+			const scale_x_increase = document.getElementById("material-scale-x-increase");
+			const scale_y_increase = document.getElementById("material-scale-y-increase");
+			const scale_x_decrease = document.getElementById("material-scale-x-decrease");
+			const scale_y_decrease = document.getElementById("material-scale-y-decrease");
 
+			scale_x_input.addEventListener( "change", onInputChange );
+			scale_y_input.addEventListener( "change", onInputChange );
 
+			function onInputChange(){
 
+				this.blur();
 
+				var material = getMaterialByEntityId( entitySelect.value );
 
+				var step = 1/100;
 
+				if ( !material ) return resetValues();
 
+				if ( !(entitySelect.value && scaleSelect.value) ) return resetValues();
+
+				if ( material && entitySelect.value && scaleSelect.value ) {
+
+				//	Update.
+					updateScale( this ); // update.
+
+				//	Undo/Redo.
+					addToUndo(); // undo/redo.
+
+				}
+
+				function resetValues(){
+
+					if ( textureSelect.value !== "normalMap" && textureSelect.value !== "displacementMap" ) {
+						scale_x_input.value = scale_y_input.value = ""; return; // reset.
+					} 
+
+					if ( editor.normalMap === undefined && editor.displacementMap === undefined ) {
+						scale_x_input.value = scale_y_input.value = ""; return; // reset.
+					} 
+
+					if ( !scaleSelect.value ) {
+						scale_x_input.value = scale_y_input.value = ""; return; // reset.
+					} 
+
+					if ( scaleSelect.value !== "normalScale" && scaleSelect.value !== "displacementScale" ) {
+						scale_x_input.value = scale_y_input.value = ""; return; // reset.
+					}
+
+					var value = 1;
+					scale_x_input.value = value.toFixed(2); // string.
+					scale_y_input.value = value.toFixed(2); // string.
+
+					return;
+				}
+
+				function displayValue( input ){
+
+					if ( !input || !scaleSelect.value ) return resetValues();
+					if ( editor.normalMap === undefined && editor.displacementMap === undefined ) return resetValues();
+					if ( textureSelect.value !== "normalMap" && textureSelect.value !== "displacementMap" ) return resetValues();
+					if ( scaleSelect.value !== "normalScale" && scaleSelect.value !== "displacementScale" ) return resetValues();
+
+					var key = scaleSelect.value;
+
+					if ( input === scale_x_input ) input.value = parseFloat( editor[ key ].x ).toFixed(2); // string.
+					if ( input === scale_y_input ) input.value = parseFloat( editor[ key ].y ).toFixed(2); // string.
+
+					return;
+				}
+
+				function updateScale( input ){
+
+					if ( !input || !scaleSelect.value ) return resetValues();
+					if ( editor.normalMap === undefined && editor.displacementMap === undefined ) return resetValues();
+					if ( textureSelect.value !== "normalMap" && textureSelect.value !== "displacementMap" ) return resetValues();
+					if ( scaleSelect.value !== "normalScale" && scaleSelect.value !== "displacementScale" ) return resetValues();
+
+					var max = 10, min = -max;
+					var key = scaleSelect.value;
+					var value = THREE.Math.clamp( parseFloat( input.value ) % max, min, max );
+
+					if ( input === scale_x_input ) editor[ key ].x = value; // update editor.
+					if ( input === scale_y_input ) editor[ key ].y = value; // update editor.
+
+					material.normalScale && editor.normalScale && material.normalScale.copy( editor.normalScale ); // update material.
+					material.displacementScale && editor.displacementScale && material.displacementScale.copy( editor.displacementScale ); // update material.
+
+					return displayValue( input );
+				}
+
+			}
+
+			scale_x_increase.addEventListener( "mousedown", onMouseDown );
+			scale_y_increase.addEventListener( "mousedown", onMouseDown );
+			scale_x_decrease.addEventListener( "mousedown", onMouseDown );
+			scale_y_decrease.addEventListener( "mousedown", onMouseDown );
+
+			window.addEventListener( "mouseup", function (){
+				clearTimeout( interval ); // important!
+			//	debugMode && console.log( "on MouseUp:", interval );
+			});
+
+			scale_x_increase.addEventListener( "click", onMouseClick );
+			scale_y_increase.addEventListener( "click", onMouseClick );
+			scale_x_decrease.addEventListener( "click", onMouseClick );
+			scale_y_decrease.addEventListener( "click", onMouseClick );
+
+			function updateScale( button ){
+
+				if ( !( button && scaleSelect.value) ) return;
+
+				var step = 1/100;
+				var max = 10, min = -max;
+				var key = scaleSelect.value;
+
+				var x = editor[key].x; 
+				var y = editor[key].y; 
+
+				if ( button === scale_x_increase ) editor[ key ].x = Math.min(max, x + step);
+				if ( button === scale_y_increase ) editor[ key ].y = Math.min(max, y + step);
+				if ( button === scale_x_decrease ) editor[ key ].x = Math.max(min, x - step);
+				if ( button === scale_y_decrease ) editor[ key ].y = Math.max(min, y - step);
+
+				displayVectorValues( scaleSelect.value );
+			}
+
+			function onMouseClick(){
+
+			//	clearTimeout( interval ); // important!
+
+				if ( !scaleSelect.value ) return; // !editor.isEditing;
+				if ( !entitySelect.value ) return; // !editor.isEditing;
+
+				var material = getMaterialByEntityId( entitySelect.value );
+
+				if ( !material ) return;
+				if ( !material.normalMap && !material.displacementMap ) return;
+				if ( !material.normalScale && !material.displacementScale ) return;
+
+				if ( !editor.normalMap && !editor.displacementMap ) return;
+				if ( !editor.normalScale && !editor.displacementScale ) return;
+
+			//	Update editor.
+				entitySelect.value && scaleSelect.value && updateScale( this ); // editor.isEditing, update editor.
+
+			//	Update material.
+				material.normalScale && editor.normalScale && material.normalScale.copy( editor.normalScale ); // update material.
+				material.displacementScale && editor.displacementScale && material.displacementScale.copy( editor.displacementScale ); // update material.
+
+			//	Undo/Redo.
+				entitySelect.value && addToUndo();
+
+				debugMode && console.log( "on Mouse Click:", interval );
+
+			}
+
+			function onMouseDown(){ 
+
+				clearTimeout( interval ); // important!
+
+				if ( !scaleSelect.value ) return; // !editor.isEditing;
+				if ( !entitySelect.value ) return; // !editor.isEditing;
+
+				var material = getMaterialByEntityId( entitySelect.value );
+
+				if ( !material ) return;
+				if ( !material.normalMap && !material.displacementMap ) return;
+				if ( !material.normalScale && !material.displacementScale ) return;
+
+				if ( !editor.normalMap && !editor.displacementMap ) return;
+				if ( !editor.normalScale && !editor.displacementScale ) return;
+
+				var button = this;
+				var clock = new THREE.Clock();
+
+				interval = setTimeout( function onUpdate() {
+
+					if ( !material ) return;
+					if ( !scaleSelect.value ) return;
+					if ( !entitySelect.value ) return;
+
+				//	Update editor.
+					entitySelect.value && scaleSelect.value && updateScale( button ); // editor.isEditing, update editor.
+
+				//	Update material.
+					material.normalScale && editor.normalScale && material.normalScale.copy( editor.normalScale ); // update material.
+					material.displacementScale && editor.displacementScale && material.displacementScale.copy( editor.displacementScale ); // update material.
+
+					var dt = clock.getDelta();
+					interval = setTimeout( onUpdate, dt );
+				//	debugMode && console.log( "on Update:", interval );
+
+				}, 500);
+			}
+
+		})();
 
 
 
