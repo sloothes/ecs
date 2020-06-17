@@ -1888,14 +1888,15 @@
 
 					function onInputChange(){
 
-						var step = 1/255;
 						this.blur(); // important!
 
-						if ( !(entitySelect.value && colorSelect.value) ) 
+						var step = 1/255;
 
-							return resetValues();
+						var material = getMaterialByEntityId( entitySelect.value );
 
-						if ( entitySelect.value && colorSelect.value ) {
+						if ( !(entitySelect.value && colorSelect.value) ) return resetValues();
+
+						if ( material && entitySelect.value && colorSelect.value ) {
 
 						//	Update.
 							updateColor( this );
@@ -1906,30 +1907,40 @@
 						}
 
 						function resetValues(){
+
 							color_r_input.value = parseInt( 255 * editor.color.r ).toFixed(0); // string.
 							color_g_input.value = parseInt( 255 * editor.color.g ).toFixed(0); // string.
 							color_b_input.value = parseInt( 255 * editor.color.b ).toFixed(0); // string.
+
 							return;
 						}
 
 						function displayValue( input ){
+
 							if ( !(input && colorSelect.value) ) return resetValues();
 
 							var key = colorSelect.value;
 							if ( input === color_r_input ) input.value = parseInt( 255 * editor[ key ].r ).toFixed(0); // string.
 							if ( input === color_g_input ) input.value = parseInt( 255 * editor[ key ].g ).toFixed(0); // string.
 							if ( input === color_b_input ) input.value = parseInt( 255 * editor[ key ].b ).toFixed(0); // string.
+
 							return;
 						}
 
 						function updateColor( input ){
+
 							if ( !(input && colorSelect.value) ) return resetValues();
 
 							var key = colorSelect.value;
 							var value = step * Math.abs( parseInt( input.value ) % 255 );
-							if ( input === color_r_input ) editor[ key ].r = value;
-							if ( input === color_g_input ) editor[ key ].g = value;
-							if ( input === color_b_input ) editor[ key ].b = value;
+
+							if ( input === color_r_input ) editor[ key ].r = value; // update editor.
+							if ( input === color_g_input ) editor[ key ].g = value; // update editor.
+							if ( input === color_b_input ) editor[ key ].b = value; // update editor.
+
+							material.color && editor.color && material.color.copy( editor.color ); // update material.
+							material.emissive && editor.emissive && material.emissive.copy( editor.emissive ); // update material.
+							material.specular && editor.specular && material.specular.copy( editor.specular ); // update material.
 
 							return displayValue( input );
 						}
