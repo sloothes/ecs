@@ -251,6 +251,8 @@
 	(function( tab ){
 
 	//	vector x.
+	//	TODO: By holding key "shift" vectors x, y,
+	//	increase/decrease together at same time.
 	//	var tab = TabUI.Material.tab;
 
 		var row = document.createElement("h3");
@@ -290,6 +292,8 @@
 	(function( tab ){
 
 	//	vector y.
+	//	TODO: By holding key "shift" vectors x, y,
+	//	increase/decrease together at same time.
 	//	var tab = TabUI.Material.tab;
 
 		var row = document.createElement("h3");

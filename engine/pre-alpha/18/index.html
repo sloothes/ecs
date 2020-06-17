@@ -136,11 +136,6 @@
 		<script>
 
 			//	TextureTab.js
-
-		</script>
-
-		<script>
-
 			//	TextureManager.js
 
 		</script>
@@ -154,6 +149,17 @@
 
 				const images = {};
 				const undo = [], redo = [];
+
+			//	Material tab.
+
+				const textureMap = { value:"" };
+
+				(function( selector ){
+					TabUI.Material.tab.querySelector(selector)
+					.addEventListener("change", function(){
+						textureMap.value = this.value;  // string.
+					});
+				})("select#material-map-droplist");
 
 			//	droplists.
 
@@ -181,14 +187,132 @@
 				const vector_y_increase_button = document.getElementById("texture-vector-y-increase");
 				const vector_y_decrease_button = document.getElementById("texture-vector-y-decrease");
 
+			//	reset select droplist values.
+
+				function resetEntitySelectValue(){
+					entitySelect.value = entity_droplist.value = "";
+					entity_droplist.dispatchEvent( new Event("change") );
+				}
+
+			//	update select droplist values.
+
+				function updateEntitySelectValue( value ){ 
+					if ( value === undefined ) {
+						entitySelect.value = entity_droplist.value; 
+					} else {
+						entitySelect.value = entity_droplist.value = value;
+						entity_droplist.dispatchEvent( new Event("change") );
+					}
+				}
+
+			//	material texture droplist.
+			//
+			//	(function(){
+			//		const map_droplist = document.getElementById("material-map-droplist");
+			//		map_droplist.addEventListener( "change", function(){
+			//			if ( !this.value || !material_droplist.value ) 
+			//				return resetEntitySelectValue(); // reset editor.
+			//			var value = material_droplist.value;
+			//			var material = getMaterialByEntityId( value );
+			//			var texture = material[ this.value ];
+			//			if ( !material || !texture || !texture.isTexture ) return;
+			//			entitySelect.value = entity_droplist.value = texture.id.toString();
+			//			entity_droplist.dispatchEvent( new Event("change") ); // important!
+			//		//	textureViewer.material[ map ] = texture; // later!
+			//			function getMaterialByEntityId( value ){
+			//				var id = parseInt( value );
+			//				return material_entities.find( function( material ){
+			//					return material.id === id;
+			//				});
+			//			}
+			//		});
+			//	})();
 
 
+			//	droplists.
+
+				(function(){
+
+					function blur_droplists(){
+						keys_droplist.blur();
+						vector_droplist.blur();
+						entity_droplist.blur();
+					};
+					
+					function reset_inputs(){
+						text_input.value = "";
+						value_input.value = "";
+						vector_x_input.value = "";
+						vector_y_input.value = "";
+					}
+					
+					function reset_selects(){
+
+						keySelect.value = keys_droplist.value = "";
+						vectorSelect.value = vector_droplist.value = "";
+
+					}
+
+				//	const keys_droplist   = document.getElementById("texture-keys-droplist");
+				//	const entity_droplist = document.getElementById("texture-entities-droplist");
+				//	const vector_droplist = document.getElementById("texture-vector-droplist");
+
+					entity_droplist.addEventListener( "change", function(){
+
+						blur_droplists();
+
+						entitySelect.value = entity_droplist.value; // updates editor.
+
+						reset_selects(); // reset selects.
+					
+						reset_inputs(); // reset input fields.
+					});
+
+					keys_droplist.addEventListener( "change", function(){
+
+						blur_droplists();
+
+					});
+
+					vector_droplist.addEventListener( "change", function(){
+
+						blur_droplists();
+
+					});
 
 
+				})();
+
+			//	inputs.
+
+				(function(){
+
+					var interval;
+
+				//	const text_input     = document.getElementById("texture-text-input");
+				//	const value_input    = document.getElementById("texture-value-input");
+				//	const vector_x_input = document.getElementById("texture-vector-x-input");
+				//	const vector_y_input = document.getElementById("texture-vector-y-input");
 
 
+				})();
 
 
+			//	input buttons.
+
+				(function(){
+
+					var interval;
+
+					const value_increase = document.getElementById("texture-value-increase");
+					const value_decrease = document.getElementById("texture-value-decrease");
+					const vector_x_increase = document.getElementById("texture-vector-x-increase");
+					const vector_x_decrease = document.getElementById("texture-vector-x-decrease");
+					const vector_y_increase = document.getElementById("texture-vector-y-increase");
+					const vector_y_decrease = document.getElementById("texture-vector-y-decrease");
+
+
+				})();
 
 
 
@@ -234,13 +358,13 @@
 			debugMode && (function(){
 
 				var material = new THREE.MeshStandardMaterial({name:"mtl00"});
-				var maps = "map,aoMap,envMap,lightMap,bumpMap,alphaMap,normalMap,specularMap,"
+				var maps = "map,aoMap,envMap,lightMap,bumpMap,alphaMap,normalMap,specularMap,";
 				maps += "gradientMap,emissiveMap,metalnessMap,roughnessMap,displacementMap";
 				material.envMap = new THREE.CubeTexture();
-				maps.split(",").forEach( function( name ){
-					if ( name !== "envMap" ) material[ name ] = new THREE.Texture();
-				}); material_entities.add( material );
-
+				maps.split(",").forEach( function( key ){
+					if ( key !== "envMap" ) material[ key ] = new THREE.Texture();
+				}); debugMode && console.log( material );
+				material_entities.add( material );
 			})();
 
 		//	box coluctions.
@@ -404,10 +528,10 @@
 
 		//	Add Texture entities.
 			material_entities.forEach( function( material ){
-				for ( var key in material ) {
+				for ( var name in material ) (function( key ){
 					material[key] && material[key].isTexture 
 					&& texture_entities.add( material[ key ] );
-				}
+				})( name );
 			});
 
 			console.log( {"object3DEditor": object3DEditor} ); // debug!

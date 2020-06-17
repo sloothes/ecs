@@ -727,6 +727,9 @@
 
 			}
 
+		//	TODO: By holding key "shift" vectors x, y,
+		//	increase/decrease together at same time.
+
 			scale_x_increase.addEventListener( "mousedown", onMouseDown );
 			scale_y_increase.addEventListener( "mousedown", onMouseDown );
 			scale_x_decrease.addEventListener( "mousedown", onMouseDown );
