@@ -284,15 +284,14 @@
 				return typeof material[ key ] != "function";
 			}).forEach( function( key ){
 				try {
-					if ( typeof material[ key ] === "object" ) {
-						for ( var k in material[ key ] ){
-							editor[ key ][ k ] = material[ key ][ k ];
-						}
+					if ( key === "normalScale" ) {
+						editor.normalScale.x = material.normalScale.x;
+						editor.normalScale.y = material.normalScale.y;
 					} else {
 						editor[ key ] = material[ key ];
 					}
 				} catch(err){
-					//	debugMode && console.warn(err);
+					debugMode && console.warn(err);
 				}
 			});
 		};
