@@ -2,6 +2,7 @@
 //	Material Editor.
 
 //	Create a Material to hold editor values.
+//	TO TRY: Create a json material to hold data.
 	const materialEditor = (function( editor ){
 
 		const undo = [], redo = [];
@@ -86,17 +87,25 @@
 
 	//	add to undo/redo.
 
-		function addToUndo(){
+		function addToUndo( material ){
 			redo.length = 0; // important!
-			var json = editor.toJSON();
+			var json = material.toJSON();
 			json && undo.unshift( json );
+		//	There is issue when try to parse json
+		//	from the loader. Make custom .toJSON?
+		//	var json = editor.toJSON();
+		//	json && undo.unshift( json );
 		//	debugMode && console.log( arguments.callee.name, 
 		//		"undo:", undo.length, "redo:", redo.length );
 		}
 
-		function addToRedo(){
-			var json = editor.toJSON();
+		function addToRedo( material ){
+			var json = material.toJSON();
 			json && redo.unshift( json );
+		//	There is issue when try to parse json
+		//	from the loader. Make custom .toJSON?
+		//	var json = editor.toJSON();
+		//	json && redo.unshift( json );
 		//	debugMode && console.log( arguments.callee.name, 
 		//		"undo:", undo.length, "redo:", redo.length );
 		}
@@ -284,7 +293,7 @@
 						editor[ key ] = material[ key ];
 					}
 				} catch(err){
-				//	debugMode && console.warn(err);
+					//	debugMode && console.warn(err);
 				}
 			});
 		};
@@ -296,7 +305,6 @@
 			editor.reset = function(){
 
 				var source = new THREE.Material();
-			//	editor.copy( source ); // overwrite editor.copy();
 
 			//	reset.
 
@@ -317,12 +325,11 @@
 				keys += "depthPacking,scale,gapSize,linecap,linejoin,linewidth,";
 				keys += "dashSize,size,rotation,sizeAttenuation";
 
-
 				keys.split(",").forEach(function( key ){
 					switch ( key ){
 
 						case "name":
-							editor.name = "material editor";
+							editor.name = "editor";
 						break;
 
 						case "color":
@@ -378,26 +385,253 @@
 					}
 				});
 
+			//	editor.copy( source ); // overwrite editor.copy();
+
 				undo.length = 0; redo.length = 0; // clear undo/redo.
-				debugMode && console.log( "material editor reset:", editor );
+				debugMode && console.log( "editor reset:", editor );
 			};
 
 			editor.reset(); // important!
 
 		})();
 
+	//	editor update.
 
+		editor.update = function( value ){
 
+		//	Reset editor.
+			editor.reset();
 
+		//	Get new material.
+			var material = getMaterialByEntityId( value ); 
 
+			if ( !material ) {
+			//	debugMode && console.log( false );
+				return false; // important!
+			}
 
+		//	Copy material.
+			material && editor.copy( material );
 
+		//	editor.type = material.type; // important!
+		//	editor.name = material.name; // important!
+		//	editor.uuid = material.uuid; //	important!
 
+		//	keep initial state.
+			material && addToUndo( material );
+			debugMode && console.log( "editor updated:", editor );
 
+		//	debugMode && console.log( true );
+			return true; // important!
+		};
 
+	//	editor undo/redo.
 
+		(function(){
 
+			var interval;
 
+			editor.undo = function(){ 
+
+				if ( !undo.length ) return;
+
+			//	Get undo json.
+				var json = undo.shift();
+
+				if ( !json ) return;
+
+			//	Move json to redo.
+				redo.unshift( json );
+
+				clearTimeout( interval );
+				interval = setTimeout( function(){
+
+				//	Copy state (undo).
+				//	There is hex color issue when try to parse
+				//	json from loader. Must make custom loader.
+					var loader = new THREE.MaterialLoader();
+					var material = loader.parse( json ); // issue - error!!!
+					debugMode && console.log( material );
+					editor.copy( material );
+
+					debugMode && console.log( "undo:", 
+					undo.length, "redo:", redo.length );
+
+				}, 250);
+			};
+
+			editor.redo = function(){
+
+				if ( !redo.length ) return;
+
+			//	Get redo json.
+				var json = redo.shift();
+
+				if ( !json ) return;
+
+				debugMode && console.log( json ); // debug!
+
+			//	Move json to undo.
+				undo.unshift( json );
+
+				clearTimeout( interval );
+				interval = setTimeout( function(){
+
+				//	Copy state (redo).
+					var loader = new THREE.MaterialLoader();
+				//	There is hex color issue when try to parse
+				//	json from loader. Must make custom loader.
+					var material = loader.parse( json ); // issue - error!!!
+					debugMode && console.log( material );
+					editor.copy( material );
+
+					debugMode && console.log( "undo:", 
+					undo.length, "redo:", redo.length );
+
+				}, 250);
+			};
+
+		})();
+
+	//	buttons.
+
+		(function(){
+
+			var interval;
+
+			redo_button.addEventListener( "click", editor.redo );
+			undo_button.addEventListener( "click", editor.undo );
+
+			exit_edit_button.addEventListener( "click",  function(){
+				clearTimeout( interval );
+				interval = setTimeout(function(){
+					resetEntitySelectValue(); // exit from edit mode.
+				}, 250);
+			});
+
+		})();
+
+	//	droplists.
+
+		(function(){
+
+			function blur_droplists(){
+				type_droplist.blur();
+				param_droplist.blur();
+				scale_droplist.blur();
+				color_droplist.blur();
+				entity_droplist.blur();
+				texture_droplist.blur();
+			};
+
+			entity_droplist.addEventListener("change", function(){
+
+				blur_droplists();
+
+			//	update editor.
+
+				entitySelect.value = entity_droplist.value; // update editor.
+
+			//	reset texture/param/scale.
+
+				paramSelect.value = param_droplist.value = ""; // reset.
+				scaleSelect.value = scale_droplist.value = ""; // reset.
+				textureSelect.value = texture_droplist.value = ""; // reset.
+
+			//	update color vectors.
+
+				if ( entitySelect.value ) {
+
+					if ( editor.color ) updateColorSelectValue("color");
+					else if ( editor.emissive ) updateColorSelectValue("emissive");
+					else if ( editor.specular ) updateColorSelectValue("specular");
+
+				}
+
+			});
+
+			param_droplist.addEventListener("change", function(){
+
+				blur_droplists();
+
+				if ( entitySelect.value ) {
+
+					var key = param_droplist.value;
+
+				//	TODO: cases depended on texture select value?
+
+					if ( editor[ key ] !== undefined )
+						paramSelect.value = param_droplist.value; // update.
+					else
+						paramSelect.value = param_droplist.value = ""; // reset.
+				} 
+
+				else paramSelect.value = param_droplist.value = ""; // reset.
+
+			});
+
+			texture_droplist.addEventListener("change", function(){
+
+				blur_droplists();
+
+			//	DO NOT USE resetTextureSelectValue(); stack overflow!
+			//	DO NOT USE updateTextureSelectValue(); stack overflow!
+
+				if ( entitySelect.value && texture_droplist.value ) {
+
+					textureSelect.value = texture_droplist.value; // update.
+
+					if ( textureSelect.value === "normalMap"
+					&& editor.normalMap && editor.normalScale ) {
+						updateScaleSelectValue( "normalScale" ); // update.
+					} 
+
+					else if ( textureSelect.value === "displacementMap"
+					&& editor.displacementMap && editor.displacementScale ) {
+						updateScaleSelectValue( "displacementScale" ); // update.
+					} 
+
+					else scaleSelect.value = scale_droplist.value = ""; // reset.
+
+				} else {
+
+					scaleSelect.value = scale_droplist.value = "";     // reset.
+					textureSelect.value = texture_droplist.value = ""; // reset.
+				}
+			});
+
+			scale_droplist.addEventListener("change", function(){
+
+				blur_droplists();
+
+			//	DO NOT USE resetScaleSelectValue(); stack overflow!
+			//	DO NOT USE updateScaleSelectValue(); stack overflow!
+
+				if ( entitySelect.value && textureSelect.value && ( 
+					( textureSelect.value === "normalMap" && editor.normalMap && editor.normalScale ) ||
+					( textureSelect.value === "displacementMap" && editor.displacementMap && editor.displacementScale ) 
+				) ) 
+					scaleSelect.value = scale_droplist.value; // update.
+				else 
+					scaleSelect.value = scale_droplist.value = ""; // reset.
+			});
+
+			color_droplist.addEventListener("change", function(){
+
+				blur_droplists();
+
+			//	DO NOT USE resetColorSelectValue(); stack overflow!
+			//	DO NOT USE updateColorSelectValue(); stack overflow!
+
+				if ( entitySelect.value && ( 
+					 editor.color || editor.emissive || editor.specular
+				) ) 
+					colorSelect.value = color_droplist.value; // update.
+				else 
+					colorSelect.value = color_droplist.value = ""; // reset.
+			});
+
+		})();
 
 
 
