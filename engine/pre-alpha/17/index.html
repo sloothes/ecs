@@ -1955,13 +1955,23 @@
 
 					//	clearTimeout( interval ); // important!
 
+						if ( !colorSelect.value ) return;
 						if ( !entitySelect.value ) return;
 
-					//	Update.
-						entitySelect.value && updateColor( this );
+						var material = getMaterialByEntityId( entitySelect.value );
+
+						if ( !material ) return;
+
+					//	Update editor.
+						entitySelect.value && colorSelect.value && updateColor( this ); // update editor.
+
+					//	Update material.
+						entitySelect.value && material.color && editor.color && material.color.copy( editor.color ); // update material.
+						entitySelect.value && material.emissive && editor.emissive && material.emissive.copy( editor.emissive ); // update material.
+						entitySelect.value && material.specular && editor.specular && material.specular.copy( editor.specular ); // update material.
 
 					//	Undo/Redo.
-						entitySelect.value && addToUndo();
+						entitySelect.value && addToUndo( material );
 
 						debugMode && console.log( "on Mouse Click:", interval );
 
@@ -1971,7 +1981,9 @@
 
 						clearTimeout( interval ); // important!
 
+						if ( !colorSelect.value ) return; // !editor.isEditing;
 						if ( !entitySelect.value ) return; // !editor.isEditing;
+
 						var material = getMaterialByEntityId( entitySelect.value );
 
 						if ( !material ) return;
@@ -1982,14 +1994,15 @@
 						interval = setTimeout( function onUpdate() {
 
 							if ( !material ) return;
+							if ( !colorSelect.value ) return;
 							if ( !entitySelect.value ) return;
 
-							entitySelect.value && updateColor( button ); // editor.isEditing;
+							entitySelect.value && colorSelect.value && updateColor( button ); // update editor.
 
 						//	update material.
-							material.color && editor.color && material.color.copy( editor.color );
-							material.emissive && editor.emissive && material.emissive.copy( editor.emissive );
-							material.specular && editor.specular && material.specular.copy( editor.specular );
+							entitySelect.value && material.color && editor.color && material.color.copy( editor.color ); // update material.
+							entitySelect.value && material.emissive && editor.emissive && material.emissive.copy( editor.emissive ); // update material.
+							entitySelect.value && material.specular && editor.specular && material.specular.copy( editor.specular ); // update material.
 
 							var dt = clock.getDelta();
 							interval = setTimeout( onUpdate, dt );
