@@ -447,11 +447,9 @@
 				interval = setTimeout( function(){
 
 				//	Copy state (undo).
-				//	There is hex color issue when try to parse
-				//	json from loader. Must make custom loader.
 					var loader = new THREE.MaterialLoader();
 					var material = loader.parse( json ); // issue - error!!!
-					debugMode && console.log( material );
+				//	debugMode && console.log( material );
 				//	update editor.
 					editor.copy( material ); // overwrite.
 				//	update material.
@@ -478,10 +476,8 @@
 
 				//	Copy state (redo).
 					var loader = new THREE.MaterialLoader();
-				//	There is hex color issue when try to parse
-				//	json from loader. Must make custom loader.
 					var material = loader.parse( json ); // issue - error!!!
-					debugMode && console.log( material );
+				//	debugMode && console.log( material );
 				//	update editor.
 					editor.copy( material ); // overwrite.
 				//	update material.
