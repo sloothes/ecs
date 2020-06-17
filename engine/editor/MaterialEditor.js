@@ -162,7 +162,6 @@
 				break;
 
 				case "normalScale":
-				case "displacementScale":
 					updateScaleInputValues( value );
 				break;
 
@@ -348,7 +347,6 @@
 						break;
 
 						case "normalScale":
-						case "displacementScale":
 							if ( editor[ key ] === undefined )
 								editor[ key ] = new THREE.Vector2(1,1);
 							else
@@ -582,10 +580,10 @@
 						updateScaleSelectValue( "normalScale" ); // update.
 					} 
 
-					else if ( textureSelect.value === "displacementMap"
-					&& editor.displacementMap && editor.displacementScale ) {
-						updateScaleSelectValue( "displacementScale" ); // update.
-					} 
+				//	else if ( textureSelect.value === "displacementMap"
+				//	&& editor.displacementMap && editor.displacementScale ) {
+				//		updateScaleSelectValue( "displacementScale" ); // update.
+				//	} 
 
 					else scaleSelect.value = scale_droplist.value = ""; // reset.
 
@@ -604,9 +602,9 @@
 			//	DO NOT USE updateScaleSelectValue(); stack overflow!
 
 				if ( entitySelect.value && textureSelect.value && ( 
-					( textureSelect.value === "normalMap" && editor.normalMap && editor.normalScale ) ||
-					( textureSelect.value === "displacementMap" && editor.displacementMap && editor.displacementScale ) 
-				) ) 
+						textureSelect.value === "normalMap" 
+						&& editor.normalMap && editor.normalScale 
+				) )
 					scaleSelect.value = scale_droplist.value; // update.
 				else 
 					scaleSelect.value = scale_droplist.value = ""; // reset.
@@ -670,11 +668,11 @@
 
 				function resetValues(){
 
-					if ( textureSelect.value !== "normalMap" && textureSelect.value !== "displacementMap" ) {
+					if ( textureSelect.value !== "normalMap" ) {
 						scale_x_input.value = scale_y_input.value = ""; return; // reset.
 					} 
 
-					if ( editor.normalMap === undefined && editor.displacementMap === undefined ) {
+					if ( editor.normalMap === undefined ) {
 						scale_x_input.value = scale_y_input.value = ""; return; // reset.
 					} 
 
@@ -682,7 +680,7 @@
 						scale_x_input.value = scale_y_input.value = ""; return; // reset.
 					} 
 
-					if ( scaleSelect.value !== "normalScale" && scaleSelect.value !== "displacementScale" ) {
+					if ( scaleSelect.value !== "normalScale" ) {
 						scale_x_input.value = scale_y_input.value = ""; return; // reset.
 					}
 
@@ -696,9 +694,9 @@
 				function displayValue( input ){
 
 					if ( !input || !scaleSelect.value ) return resetValues();
-					if ( editor.normalMap === undefined && editor.displacementMap === undefined ) return resetValues();
-					if ( textureSelect.value !== "normalMap" && textureSelect.value !== "displacementMap" ) return resetValues();
-					if ( scaleSelect.value !== "normalScale" && scaleSelect.value !== "displacementScale" ) return resetValues();
+					if ( editor.normalMap === undefined ) return resetValues();
+					if ( textureSelect.value !== "normalMap" ) return resetValues();
+					if ( scaleSelect.value !== "normalScale" ) return resetValues();
 
 					var key = scaleSelect.value;
 
@@ -711,9 +709,9 @@
 				function updateScale( input ){
 
 					if ( !input || !scaleSelect.value ) return resetValues();
-					if ( editor.normalMap === undefined && editor.displacementMap === undefined ) return resetValues();
-					if ( textureSelect.value !== "normalMap" && textureSelect.value !== "displacementMap" ) return resetValues();
-					if ( scaleSelect.value !== "normalScale" && scaleSelect.value !== "displacementScale" ) return resetValues();
+					if ( editor.normalMap === undefined ) return resetValues();
+					if ( textureSelect.value !== "normalMap" ) return resetValues();
+					if ( scaleSelect.value !== "normalScale" ) return resetValues();
 
 					var max = 10, min = -max;
 					var key = scaleSelect.value;
@@ -723,7 +721,6 @@
 					if ( input === scale_y_input ) editor[ key ].y = value; // update editor.
 
 					material.normalScale && editor.normalScale && material.normalScale.copy( editor.normalScale ); // update material.
-					material.displacementScale && editor.displacementScale && material.displacementScale.copy( editor.displacementScale ); // update material.
 
 					return displayValue( input );
 				}
@@ -774,18 +771,16 @@
 				var material = getMaterialByEntityId( entitySelect.value );
 
 				if ( !material ) return;
-				if ( !material.normalMap && !material.displacementMap ) return;
-				if ( !material.normalScale && !material.displacementScale ) return;
-
-				if ( !editor.normalMap && !editor.displacementMap ) return;
-				if ( !editor.normalScale && !editor.displacementScale ) return;
+				if ( !material.normalMap ) return;
+				if ( !material.normalScale ) return;
+				if ( !editor.normalScale ) return;
+				if ( !editor.normalMap ) return;
 
 			//	Update editor.
 				entitySelect.value && scaleSelect.value && updateEditor( this ); // editor.isEditing, update editor.
 
 			//	Update material.
 				entitySelect.value && material.normalScale && editor.normalScale && material.normalScale.copy( editor.normalScale ); // update material.
-				entitySelect.value && material.displacementScale && editor.displacementScale && material.displacementScale.copy( editor.displacementScale ); // update material.
 
 			//	Undo/Redo.
 				entitySelect.value && addToUndo( material );
@@ -804,11 +799,10 @@
 				var material = getMaterialByEntityId( entitySelect.value );
 
 				if ( !material ) return;
-				if ( !material.normalMap && !material.displacementMap ) return;
-				if ( !material.normalScale && !material.displacementScale ) return;
-
-				if ( !editor.normalMap && !editor.displacementMap ) return;
-				if ( !editor.normalScale && !editor.displacementScale ) return;
+				if ( !material.normalMap ) return;
+				if ( !material.normalScale ) return;
+				if ( !editor.normalScale ) return;
+				if ( !editor.normalMap ) return;
 
 				var button = this;
 				var clock = new THREE.Clock();
@@ -824,7 +818,6 @@
 
 				//	Update material.
 					entitySelect.value && material.normalScale && editor.normalScale && material.normalScale.copy( editor.normalScale ); // update material.
-					entitySelect.value && material.displacementScale && editor.displacementScale && material.displacementScale.copy( editor.displacementScale ); // update material.
 
 					var dt = clock.getDelta();
 					interval = setTimeout( onUpdate, dt );

@@ -160,7 +160,7 @@
 		keys += "depthFunc,depthTest,depthWrite,shadowSide,clipShadows,clipIntersection,";
 		keys += "polygonOffset,polygonOffsetUnits,polygonOffsetFactor,";
 		keys += "metalness,roughness,bumpScale,reflectivity,";
-		keys += "refractionRatio,displacementBias,normalMapType,";
+		keys += "refractionRatio,displacementBias,displacementScale,normalMapType,";
 		keys += "aoMapIntensity,envMapIntensity,emissiveIntensity,lightMapIntensity,";
 		keys += "wireframe,wireframeLinecap,wireframeLinejoin,wireframeLinewidth,";
 		keys += "skinning,morphTargets,morphNormals,combine,shininess,";
@@ -234,7 +234,7 @@
 		+ "font-size:20px;margin-left:10px;margin-right:15px;";
 
 		var keys = "";
-		keys += "normalScale,displacementScale";
+		keys += "normalScale";
 
 		keys.split(",").forEach(function( name ){
 			var option = document.createElement("option");
@@ -261,19 +261,19 @@
 		vect.style.cssText = "width:170px;height:40px;float:right;";
 
 		var prev = document.createElement("li");
-		prev.id = "material-scale-x-decrease";
+		prev.id = "material-scale-x-decrease"; // "normal-scale-x-decrease"
 		prev.innerHTML = "&#9668;";
 		prev.style.display = "inline";
 		prev.classList.add("btn","btn-primary","get-prev-btn","pull-left");
 
 		var next = document.createElement("li");
-		next.id = "material-scale-x-increase";
+		next.id = "material-scale-x-increase"; // "normal-scale-x-increase"
 		next.innerHTML = "&#9658;";
 		next.style.display = "inline";
 		next.classList.add("btn","btn-primary","get-next-btn","pull-right");
 
 		var input = document.createElement("input");
-		input.id = "material-scale-x-input";
+		input.id = "material-scale-x-input"; // "normal-scale-x-input"
 		input.setAttribute("placeholder", "x" );
 		input.classList.add("form-control","text-center");
 		input.style.cssText = "color:#000;border:none;display:inline;width:80px;"
@@ -300,19 +300,19 @@
 		vect.style.cssText = "width:170px;height:40px;float:right;";
 
 		var prev = document.createElement("li");
-		prev.id = "material-scale-y-decrease";
+		prev.id = "material-scale-y-decrease"; // "normal-scale-y-decrease"
 		prev.innerHTML = "&#9668;";
 		prev.style.display = "inline";
 		prev.classList.add("btn","btn-primary","get-prev-btn","pull-left");
 
 		var next = document.createElement("li");
-		next.id = "material-scale-y-increase";
+		next.id = "material-scale-y-increase"; // "normal-scale-y-increase"
 		next.innerHTML = "&#9658;";
 		next.style.display = "inline";
 		next.classList.add("btn","btn-primary","get-next-btn","pull-right");
 
 		var input = document.createElement("input");
-		input.id = "material-scale-y-input";
+		input.id = "material-scale-y-input"; // "normal-scale-y-input"
 		input.setAttribute("placeholder", "y" );
 		input.classList.add("form-control","text-center");
 		input.style.cssText = "color:#000;border:none;display:inline;width:80px;"
