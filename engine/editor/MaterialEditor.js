@@ -12,7 +12,8 @@
 		const editorTabSelect = { value:"" };
 
 		(function( selector ){
-			TabUI.Editor.tab.querySelector(selector).addEventListener("change", function(){
+			TabUI.Editor.tab.querySelector(selector)
+			.addEventListener("change", function(){
 				editorTabSelect.value = this.value;  // string.
 			});
 		})("select#entities-droplist");
