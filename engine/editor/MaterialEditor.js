@@ -1062,7 +1062,8 @@
 				if ( typeof material[ key ] === "boolean" ) {
 					editor[ key ] = !editor[ key ]; // update editor.
 					material[ key ] = editor[ key ]; // update material.
-					param_value_input.value = editor[ key ]; // display.
+					param_value_input.value = editor[ key ]; // display value.
+					addToUndo( material ); // undo/redo.
 					return;
 				}
 
