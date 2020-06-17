@@ -366,7 +366,7 @@
 		row.style.cssText = "height:40px;margin-bottom:20px;"
 
 		var button = document.createElement("div");
-		button.id = "texture-import-button";
+		button.id = "import-texture-button";
 		button.textContent = "Import Texture Entity";
 		button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
 		button.style.cssText = "width:-webkit-fill-available;float:right;height:40px;font-size:large;margin-right:15px;";
