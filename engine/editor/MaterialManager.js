@@ -68,7 +68,7 @@
 			var str =  "", dot = ".", col = ":";
 			var type = "object";
 			var name = material.name || "mtl"+material.id;
-			if ( material.type ) type = material.type;
+			if ( material.type ) type = material.type.replace("Material","");
 			var option = document.createElement("option");
 			option.text = str+material.id+dot+type+col+name;
 			option.value = material.id;
