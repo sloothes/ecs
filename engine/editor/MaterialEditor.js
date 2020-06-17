@@ -452,7 +452,10 @@
 					var loader = new THREE.MaterialLoader();
 					var material = loader.parse( json ); // issue - error!!!
 					debugMode && console.log( material );
-					editor.copy( material );
+				//	update editor.
+					editor.copy( material ); // overwrite.
+				//	update material.
+					getMaterialByEntityId( editorSelect.value ).copy( material );
 
 					debugMode && console.log( "undo:", 
 					undo.length, "redo:", redo.length );
@@ -483,7 +486,10 @@
 				//	json from loader. Must make custom loader.
 					var material = loader.parse( json ); // issue - error!!!
 					debugMode && console.log( material );
-					editor.copy( material );
+				//	update editor.
+					editor.copy( material ); // overwrite.
+				//	update material.
+					getMaterialByEntityId( editorSelect.value ).copy( material );
 
 					debugMode && console.log( "undo:", 
 					undo.length, "redo:", redo.length );
