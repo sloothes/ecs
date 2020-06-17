@@ -261,8 +261,8 @@
 		var button = document.createElement("div");
 		button.id = "reset-vectors-button";
 		button.textContent = "Reset Vectors";
-		button.style.cssText = "width:295px;float:right;height:40px;font-size:large;margin-right:15px;";
 		button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
+		button.style.cssText = "width:-webkit-fill-available;float:right;height:40px;font-size:large;margin-right:15px;";
 
 		row.appendChild( button );
 		tab.appendChild( row );
@@ -280,8 +280,8 @@
 		var button = document.createElement("div");
 		button.id = "exit-edit-mode";
 		button.textContent = "Exit Edit Mode";
-		button.style.cssText = "width:295px;float:right;height:40px;font-size:large;margin-right:15px;";
 		button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
+		button.style.cssText = "width:-webkit-fill-available;float:right;height:40px;font-size:large;margin-right:15px;";
 
 		row.appendChild( button );
 		tab.appendChild( row );
@@ -339,8 +339,8 @@
 		var button = document.createElement("div");
 		button.id = "new-plane-geometry";
 		button.textContent = "Create Plane Geometry";
-		button.style.cssText = "width:295px;float:right;height:40px;font-size:large;margin-right:15px;";
 		button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
+		button.style.cssText = "width:-webkit-fill-available;float:right;height:40px;font-size:large;margin-right:15px;";
 
 		row.appendChild( button );
 	//	tab.appendChild( row );
@@ -360,8 +360,8 @@
 		var button = document.createElement("div");
 		button.id = "new-box-geometry";
 		button.textContent = "Create Box Geometry";
-		button.style.cssText = "width:295px;float:right;height:40px;font-size:large;margin-right:15px;";
 		button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
+		button.style.cssText = "width:-webkit-fill-available;float:right;height:40px;font-size:large;margin-right:15px;";
 
 		row.appendChild( button );
 	//	tab.appendChild( row );
@@ -379,7 +379,7 @@
 		var button = document.createElement("div");
 		button.id = "add-world-octree";
 		button.textContent = "Add to World Octree";
-		button.style.cssText = "width:295px;float:right;height:40px;font-size:large;margin-right:15px;";
+		button.style.cssText = "width:-webkit-fill-available;float:right;height:40px;font-size:large;margin-right:15px;";
 		button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
 
 		row.appendChild( button );
@@ -402,7 +402,7 @@
 		var button = document.createElement("div");
 		button.id = "create-geometry-button";
 		button.textContent = "Create Geometry Entity";
-		button.style.cssText = "width:295px;float:right;height:40px;font-size:large;margin-right:15px;";
+		button.style.cssText = "width:-webkit-fill-available;float:right;height:40px;font-size:large;margin-right:15px;";
 		button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
 
 		row.appendChild( button );
@@ -424,7 +424,7 @@
 		var button = document.createElement("div");
 		button.id = "clone-geometry-button";
 		button.textContent = "Clone Geometry Entity";
-		button.style.cssText = "width:295px;float:right;height:40px;font-size:large;margin-right:15px;";
+		button.style.cssText = "width:-webkit-fill-available;float:right;height:40px;font-size:large;margin-right:15px;";
 		button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
 
 		row.appendChild( button );
@@ -443,7 +443,7 @@
 		var button = document.createElement("div");
 		button.id = "remove-geometry-button";
 		button.textContent = "Remove Geometry Entity";
-		button.style.cssText = "width:295px;float:right;height:40px;font-size:large;margin-right:15px;";
+		button.style.cssText = "width:-webkit-fill-available;float:right;height:40px;font-size:large;margin-right:15px;";
 		button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
 
 		row.appendChild( button );

@@ -130,7 +130,7 @@
 		input.id = "material-text-input";
 		input.setAttribute("placeholder", "text input" );
 		input.classList.add("form-control","text-center");
-		input.style.cssText = "color:#000;display:inline;width:100%;"
+		input.style.cssText = "width:-webkit-fill-available;color:#000;display:inline;"
 		+ "margin:0px 5px;text-align:center;font-size:large;font-weigth:bold;background:none;";
 
 		row.appendChild(input);
@@ -484,8 +484,8 @@
 		var button = document.createElement("div");
 		button.id = "material-clone-button";
 		button.textContent = "Clone Material";
-		button.style.cssText = "width:295px;float:right;height:40px;font-size:large;margin-right:15px;";
 		button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
+		button.style.cssText = "width:-webkit-fill-available;float:right;height:40px;font-size:large;margin-right:15px;";
 
 		row.appendChild( button );
 		tab.appendChild( row );
@@ -503,13 +503,15 @@
 		var button = document.createElement("div");
 		button.id = "material-exit-mode";
 		button.textContent = "Exit Edit Mode";
-		button.style.cssText = "width:295px;float:right;height:40px;font-size:large;margin-right:15px;";
 		button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
+		button.style.cssText = "width:-webkit-fill-available;float:right;height:40px;font-size:large;margin-right:15px;";
 
 		row.appendChild( button );
 		tab.appendChild( row );
 
 	})( TabUI.Material.tab );
+
+//	===================================================================================================================  //
 
 	(function( tab ){
 
@@ -548,8 +550,6 @@
 
 	})( TabUI.Material.tab );
 
-//	===================================================================================================================  //
-
 	(function( tab ){
 
 	//	Create material entity button.
@@ -561,8 +561,8 @@
 		var button = document.createElement("div");
 		button.id = "create-material-button";
 		button.textContent = "Create Material Entity";
-		button.style.cssText = "width:295px;float:right;height:40px;font-size:large;margin-right:15px;";
 		button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
+		button.style.cssText = "width:-webkit-fill-available;float:right;height:40px;font-size:large;margin-right:15px;";
 
 		row.appendChild( button );
 		tab.appendChild( row );
@@ -580,8 +580,8 @@
 		var button = document.createElement("div");
 		button.id = "clone-material-button";
 		button.textContent = "Clone Material Entity";
-		button.style.cssText = "width:295px;float:right;height:40px;font-size:large;margin-right:15px;";
 		button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
+		button.style.cssText = "width:-webkit-fill-available;float:right;height:40px;font-size:large;margin-right:15px;";
 
 		row.appendChild( button );
 		tab.appendChild( row );
@@ -599,8 +599,8 @@
 		var button = document.createElement("div");
 		button.id = "remove-material-button";
 		button.textContent = "Remove Material Entity";
-		button.style.cssText = "width:295px;float:right;height:40px;font-size:large;margin-right:15px;";
 		button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
+		button.style.cssText = "width:-webkit-fill-available;float:right;height:40px;font-size:large;margin-right:15px;";
 
 		row.appendChild( button );
 		tab.appendChild( row );

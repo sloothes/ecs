@@ -169,7 +169,7 @@
 		input.id = "texture-text-input";
 		input.setAttribute("placeholder", "text input" );
 		input.classList.add("form-control","text-center");
-		input.style.cssText = "color:#000;display:inline;width:100%;"
+		input.style.cssText = "width:-webkit-fill-available;color:#000;display:inline;"
 		+ "margin:0px 5px;text-align:center;font-size:large;font-weigth:bold;background:none;";
 
 		row.appendChild(input);
@@ -368,7 +368,7 @@
 		var button = document.createElement("div");
 		button.id = "texture-import-button";
 		button.textContent = "Import Texture Entity";
-		button.style.cssText = "width:295px;float:right;height:40px;font-size:large;margin-right:15px;";
+		button.style.cssText = "width:-webkit-fill-available;float:right;height:40px;font-size:large;margin-right:15px;";
 		button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
 
 		var input = document.createElement("input");
@@ -398,7 +398,7 @@
 		var button = document.createElement("div");
 		button.id = "texture-exit-mode";
 		button.textContent = "Exit Edit Mode";
-		button.style.cssText = "width:295px;float:right;height:40px;font-size:large;margin-right:15px;";
+		button.style.cssText = "width:-webkit-fill-available;float:right;height:40px;font-size:large;margin-right:15px;";
 		button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
 
 		row.appendChild( button );

@@ -528,7 +528,7 @@
 
 				entitySelect.value = entity_droplist.value; // update editor.
 
-			//	reset texture/keys/scale.
+			//	reset texture/keys/scale selects.
 
 				keySelect.value = keys_droplist.value = ""; // reset.
 				scaleSelect.value = scale_droplist.value = ""; // reset.
