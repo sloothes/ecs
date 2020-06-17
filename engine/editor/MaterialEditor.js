@@ -1024,13 +1024,198 @@
 
 		})();
 
+	//	param inputs.
 
+		(function(){
 
+			var interval;
 
+			const param_value_input = document.getElementById("material-param-value-input");
+			const param_value_increase = document.getElementById("material-param-value-increase");
+			const param_value_decrease = document.getElementById("material-param-value-decrease");
 
+			window.addEventListener( "mouseup", function (){
+				clearTimeout( interval ); // important!
+			//	debugMode && console.log( "on MouseUp:", interval );
+			});
 
+			param_value_input.addEventListener( "change", onInputChange );
+			param_value_increase.addEventListener( "click", onMouseClick );
+			param_value_decrease.addEventListener( "click", onMouseClick );
 
+			function onMouseClick(){
 
+				if ( !(entitySelect.value && paramSelect.value) ) return;
+
+				var material = getMaterialByEntityId( entitySelect.value );
+
+				if ( !material ) return;
+
+				var key = paramSelect.value;
+
+			//	is boolean.
+
+				if ( typeof material[ key ] === "boolean" ) {
+					editor[ key ] = !editor[ key ]; // update editor.
+					material[ key ] = editor[ key ]; // update material.
+					param_value_input.value = editor[ key ]; // display.
+					return;
+				}
+
+			//	is number.
+
+				if ( typeof material[ key ] === "number" ) {
+
+				//	TODO.
+
+					return;
+				}
+
+			//	is string.
+
+				if ( typeof material[ key ] === "string" ) {
+
+				//	TODO.
+
+					return;
+				}
+
+			}
+
+			function onInputChange(){
+
+				this.blur(); // important!
+
+				if ( !(entitySelect.value && paramSelect.value) ) return;
+
+				var material = getMaterialByEntityId( entitySelect.value );
+
+				if ( !material ) return;
+				var key = paramSelect.value;
+
+			//	is boolean.
+
+				if ( typeof material[ key ] === "boolean" ) {
+					editor[ key ] = !editor[ key ]; // update editor.
+					material[ key ] = editor[ key ]; // update material.
+					param_value_input.value = editor[ key ]; // display.
+					return;
+				}
+
+			//	is number.
+
+				if ( typeof material[ key ] === "number" ) {
+
+				//	TODO.
+
+					return;
+				}
+
+			//	is string.
+
+				if ( typeof material[ key ] === "string" ) {
+
+				//	TODO.
+
+					return;
+				}
+
+			}
+
+		})();
+
+	//	Watchers.
+
+		(function(){
+
+		//	Update material tab entity droplist when an editor tab entity selected.
+			watch(editorTabSelect, function( prop, action, newValue, oldValue ){
+			//	debugMode && console.log( "editorSelect watch:", 
+			//	prop, action, "newValue:", newValue, "oldValue:", oldValue  );
+
+				if ( !newValue ) return resetEntitySelectValue();
+
+			//	Get object.
+				var object = getObjectByEntityId( newValue );
+				if ( !(object && object.material) ) return; // important!
+
+			//	Get material.
+				var material;
+				if ( Array.isArray( object.material ) ) 
+					material = object.material[0]; // get first material.
+				else 
+					material = object.material;
+
+				updateEntitySelectValue( material.id.toString() ); // string.
+
+			});
+
+		//	Update material tab editor.
+
+			watch(entitySelect, function( prop, action, newValue, oldValue ){
+			//	debugMode && console.log( "entitySelect watch:", 
+			//	prop, action, "newValue:", newValue, "oldValue:", oldValue  );
+
+				switchToEditMode( newValue ); // important!
+
+			//	Display vectors direct from editor.
+				updateEntitySelectValue();
+				updateTextureSelectValue();
+				updateParamSelectValue();
+				updateScaleSelectValue();
+				updateColorSelectValue();
+				updateMaterialTypeValue();
+
+			//	Update vectors direct from editor.
+				displayVectorValues( paramSelect.value );
+				displayVectorValues( scaleSelect.value );
+				displayVectorValues( colorSelect.value );
+
+			});
+
+			watch(textureSelect, function( prop, action, newValue, oldValue ){
+				debugMode && console.log( "textureSelect watch:", prop, action, newValue );
+
+						//	TODO.
+
+			//	Update texture direct from editor.
+				displayVectorValues( paramSelect.value );
+				displayVectorValues( scaleSelect.value );
+				displayVectorValues( colorSelect.value );
+
+			});
+
+			watch(paramSelect, function( prop, action, newValue, oldValue ){
+				debugMode && console.log( "paramSelect watch:", prop, action, newValue );
+
+						//	TODO.
+
+			//	Update vectors direct from editor.
+				displayVectorValues( newValue );
+
+			});
+
+			watch(scaleSelect, function( prop, action, newValue, oldValue ){
+				debugMode && console.log( "scaleSelect watch:", prop, action, newValue );
+
+						//	TODO.
+
+			//	Update vectors direct from editor.
+				displayVectorValues( newValue );
+
+			});
+
+			watch(colorSelect, function( prop, action, newValue, oldValue ){
+				debugMode && console.log( "colorSelect watch:", prop, action, newValue );
+
+						//	TODO.
+
+			//	Update vectors direct from editor.
+				displayVectorValues( newValue );
+
+			});
+
+		})();
 
 
 		return editor;
