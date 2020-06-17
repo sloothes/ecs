@@ -480,9 +480,9 @@
 	//	Add options.
 		while ( textures.length ) (function( texture ){
 			var str =  "", dot = ".", col = ":";
-			var name = texture.name || "texture"+texture.id;
+			var name = texture.name || "texture";
 			var option = document.createElement("option");
-			option.text = str+texture.id+dot+name;
+			option.text = str+texture.id+dot+name+col+texture.id;
 			option.value = texture.id;
 			texture_droplist.appendChild( option );
 		})( textures.shift() );
