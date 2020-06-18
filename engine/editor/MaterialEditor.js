@@ -493,14 +493,15 @@
 
 			var interval;
 
+			const exit_button = document.getElementById("material-exit-mode");
+			const redo_button = document.getElementById("material-redo-button");
+			const undo_button = document.getElementById("material-undo-button");
+
 			redo_button.addEventListener( "click", editor.redo );
 			undo_button.addEventListener( "click", editor.undo );
-
-			exit_edit_button.addEventListener( "click",  function(){
+			exit_button.addEventListener( "click",  function(){
 				clearTimeout( interval );
-				interval = setTimeout(function(){
-					resetEntitySelectValue(); // exit from edit mode.
-				}, 250);
+				interval = setTimeout( resetEntitySelectValue, 250);
 			});
 
 		})();

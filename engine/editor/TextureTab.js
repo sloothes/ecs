@@ -179,7 +179,7 @@
 
 	(function( tab ){
 
-	//	Keys droplist.
+	//	Key droplist.
 	//	var tab = TabUI.Texture.tab;
 
 		var row = document.createElement("h3");
@@ -187,7 +187,7 @@
 		row.style.cssText = "height:40px;"
 
 		var select = document.createElement("select");
-		select.id = "texture-keys-droplist";
+		select.id = "texture-key-droplist";
 		select.style.cssText = "width:170px;color:#000;float:right;"
 		+ "border:1px solid;border-radius:4px;padding:2px 4px 4px 4px;"
 		+ "font-size:20px;margin-left:10px;margin-right:15px;";
@@ -366,8 +366,8 @@
 		row.style.cssText = "height:40px;margin-bottom:20px;"
 
 		var button = document.createElement("div");
-		button.id = "import-texture-button";
-		button.textContent = "Import Texture Entity";
+		button.id = "create-texture-button";
+		button.textContent = "Create Texture Entity";
 		button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
 		button.style.cssText = "width:-webkit-fill-available;float:right;height:40px;font-size:large;margin-right:15px;";
 
