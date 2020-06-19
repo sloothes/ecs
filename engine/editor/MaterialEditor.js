@@ -446,7 +446,7 @@
 
 				//	Copy state (undo).
 					var loader = new THREE.MaterialLoader();
-					var material = loader.parse( json ); // issue - error!!!
+					var material = loader.parse( json );
 				//	debugMode && console.log( material );
 				//	update editor.
 					editor.copy( material ); // overwrite.

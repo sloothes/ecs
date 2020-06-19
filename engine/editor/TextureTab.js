@@ -584,10 +584,11 @@
 
 	TextureManager.prototype.getTextureById = function( value ){
 
-		if ( parseInt( value ) === NaN ) return; // id.
+		var id = parseInt( value );
+		if ( id === NaN ) return;
 
 		return this.find( function( texture ){
-			return texture.id === parseInt( value );
+			return texture.id === id;
 		});
 
 	};
