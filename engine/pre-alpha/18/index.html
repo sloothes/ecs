@@ -455,6 +455,9 @@
 
 						switch ( name ){
 
+						//	Consider arrays as single value.  important!
+						//	Watcher ignores in-array changes. important!
+
 							case "vector x":
 							case "vector y":
 								(function(){
@@ -470,11 +473,23 @@
 								//	reset input value.
 									if ( !entity_id )
 										vector_x.value = vector_y.value = "";
-									else if ( isNaN(x) && isNaN(y) ) 
-										vector_x.value = vector_y.value = "";
+
+									else if ( isNaN(x) || isNaN(y) ) {
+
+										if ( key === "wrap" )
+											value = [ 1001, 1001 ]; // reset.
+										else if ( key === "repeat" ) 
+											value = [ 1, 1 ];       // reset.
+										else 
+											value = [ 0, 0 ];       // reset.
+
+										vector_x.value = value[0];
+										vector_y.value = value[1];
+									}
 
 								//	update editor wrap value (special case).
 									else if ( key === "wrap" ) {
+
 									//	(special case)
 										if ( name === "vector x" ) {
 											editor[ key ] = [ x, x ];
@@ -492,6 +507,7 @@
 										editor[ key ] = [ x, y ];
 									else if ( key === "center" ) 
 										editor[ key ] = [ x, y ];
+
 								//	reset input value.
 									else vector_x.value = vector_y.value = "";
 
@@ -499,43 +515,9 @@
 								//	state.update(); // important!
 
 								})();
+
 							break;
-						/*
-							case "vector y":
-								(function( value ){
 
-								//	get droplist value.
-									var key = state["vector droplist"];
-									var entity_id = state["entity droplist"];
-
-								//	reset state key and vector droplists.
-								//	will recall watcher on state.update().
-								//	state["key droplist"] = "";
-								//	state["vector droplist"] = "";
-
-								//	reset input value.
-									if ( !entity_id )
-										vector_y.value = "";
-									else if ( isNaN(value) ) 
-										vector_y.value = "";
-								//	update editor value.
-									else if ( key === "wrap" ) 
-										editor[ key ][1] = Number( value );
-									else if ( key === "offset" ) 
-										editor[ key ][1] = Number( value );
-									else if ( key === "repeat" ) 
-										editor[ key ][1] = Number( value );
-									else if ( key === "center" ) 
-										editor[ key ][1] = Number( value );
-								//	reset input value.
-									else vector_y.value = "";
-
-								//	update state.
-								//	state.update(); // important!
-
-								})( value );
-							break;
-						*/
 							case "text input":
 								(function( value ){
 
@@ -559,6 +541,7 @@
 								//	state.update(); // important!
 
 								})( value );
+
 							break;
 
 							case "value input":
@@ -571,17 +554,24 @@
 								//	reset input value.
 									if ( !entity_id )
 										value_input.value = "";
-									else if ( isNaN( parseInt(value) ) ) 
-										value_input.value = "";
-									else if ( isNaN( parseFloat(value) ) ) 
-										value_input.value = "";
 									else if ( key === "name" ) 
 										value_input.value = "";
 									else if ( key === "uuid" ) 
 										value_input.value = "";
+								//	reset editor value.
+									else if ( value === "" || isNaN(value) ) {
+										if ( key === "format" ) editor[ key ] = 1023;         // reset.
+										else if ( key === "mapping" ) editor[ key ] = 300;    // reset.
+										else if ( key === "rotation" ) editor[ key ] = 0;     // reset.
+										else if ( key === "encoding" ) editor[ key ] = 3000;  // reset.
+										else if ( key === "magFilter" ) editor[ key ] = 1006; // reset.
+										else if ( key === "minFilter" ) editor[ key ] = 1008; // reset.
+										else if ( key === "anisotropy" ) editor[ key ] = 1;   // reset.
+										value_input.value = editor[ key ];
+									}
 								//	update editor value.
 									else if ( key )
-										editor[ key ] = value;
+										editor[ key ] = Number(value);
 								//	reset input value.
 									else value_input.value = "";
 
@@ -589,6 +579,7 @@
 								//	state.update(); // important!
 
 								})( value );
+
 							break;
 
 							case "map droplist":
@@ -613,6 +604,7 @@
 								//	state.update(); // important!
 
 								})( value );
+
 							break;
 
 							case "key droplist": 
@@ -629,11 +621,11 @@
 								//	display values.
 									else if ( key === "name" ) {
 										value_input.value = "";
-										text_input.value = editor[ key ];
+										text_input.value = editor[ key ]; // string.
 									} 
 									else if ( key === "uuid" ) {
 										value_input.value = "";
-										text_input.value = editor[ key ];
+										text_input.value = editor[ key ]; // string.
 									} 
 									else if ( key ) {
 										text_input.value = "";
@@ -646,6 +638,7 @@
 								//	state.update(); // important!
 
 								})( value );
+
 							break;
 
 							case "vector droplist": 
@@ -672,6 +665,7 @@
 								//	state.update(); // important!
 
 								})( value );
+
 							break;
 
 							case "entity droplist":
@@ -698,13 +692,14 @@
 								//	state.update(); // important!
 
 								})( value );
+
 							break;
 
 						}
 
-						state.update(); // important!
 
 						interval = setTimeout( function(){
+							state.update(); // important!
 							debugMode && console.log( "state:", JSON.parse( JSON.stringify(state) ) ); 
 						}, 100);
 
@@ -730,7 +725,6 @@
 						var id = state["entity droplist"]; // string.
 						var texture = getTextureByEntityId( id );
 						if ( texture === undefined ) return;
-					//	if ( texture[ key ] === undefined ) return;
 
 						if ( key && action === "set" ) {
 
@@ -742,75 +736,93 @@
 									console.warn( "case", key+":", "TODO!" );
 								break;
 
+							//	wrap, special case!
+
 								case "wrap":
 									(function( key, value ){
 
-										if ( isNaN(editor[key][0]) ) return;
-										if ( isNaN(editor[key][1]) ) return;
-
-										texture.wrapS = Number( editor[key][0] );
-										texture.wrapT = Number( editor[key][1] );
+										if ( isNaN(editor[key][0]) || isNaN(editor[key][1]) ) { 
+											texture.wrapS = texture.wrapT = 1001; // reset.
+										} else {
+											texture.wrapS = Number( editor[key][0] );
+											texture.wrapT = Number( editor[key][1] );
+										}
 
 									})( key, value );
 								break;
 
-							//	if ( texture[key].isVector2 && Array.isArray(editor[key]) )
-
-								//	Vector2.
+							//	vector2.
 							
 								case "center":
 								case "offset":
 								case "repeat":
+
 									(function( key, value ){
 
-										if ( isNaN(editor[key][0]) ) return;
-										if ( isNaN(editor[key][1]) ) return;
-
-										texture[ key ].x = Number( editor[key][0] );
-										texture[ key ].y = Number( editor[key][1] );
-
-									//	texture[ key ].fromArray( JSON.parse(JSON.stringify(value)) );
+										if ( isNaN(editor[key][0]) || isNaN(editor[key][1]) ) { 
+											if ( key === "repeat" ) 
+												texture[ key ].x = texture[ key ].y = 1; // reset.
+											else 
+												texture[ key ].x = texture[ key ].y = 0; // reset.
+										} else {
+											texture[ key ].x = Number( editor[key][0] );
+											texture[ key ].y = Number( editor[key][1] );
+										}
 
 									})( key, value );
+
 								break;
-							
 
-							//	if ( texture[key] !== undefined && editor[key] !== undefined )
+							//	string.
 
-								//	string.
-
+							//	case "uuid":
 								case "name":
-							//	case "uuid": // DO NOT replace uuid
+
 									(function( key, value ){
-										if ( editor[key] && texture[key] !== undefined ) 
-											texture[ key ] = editor[ key ]; // string.
+										texture[ key ] = editor[ key ].toString(); // string.
 									})( key, value );
+
 								break;
 
-								//	boolean.
+							//	boolean.
 
 								case "flipY":
 								case "generateMipmaps":
 								case "matrixAutoUpdate":
 								case "premultiplyAlpha":
+
 									(function( key, value ){
-										if ( editor[key] !== undefined && texture[key] !== undefined ) 
-											texture[ key ] = Boolean(editor[ key ]); // boolean.
+										texture[ key ] = Boolean(editor[ key ]); // boolean.
 									})( key, value );
+
 								break;
 
-								//	number.
+							//	number.
 
 								case "format":
 								case "mapping":
 								case "rotation":
+								case "encoding":
 								case "magFilter":
 								case "minFilter":
 								case "anisotropy":
+
 									(function( key, value ){
-										if ( texture[key] !== undefined && editor[key] !== undefined && !isNaN(editor[key]) ) 
-											texture[ key ] = Number( editor[key] ); // number.
+
+										if ( isNaN(editor[key]) || typeof editor[key] === "string" ) {
+
+											if ( key === "format" ) texture[ key ] = 1023;         // reset.
+											else if ( key === "mapping" ) texture[ key ] = 300;    // reset.
+											else if ( key === "rotation" ) texture[ key ] = 0;     // reset.
+											else if ( key === "encoding" ) texture[ key ] = 3000;  // reset.
+											else if ( key === "magFilter" ) texture[ key ] = 1006; // reset.
+											else if ( key === "minFilter" ) texture[ key ] = 1008; // reset.
+											else if ( key === "anisotropy" ) texture[ key ] = 1;   // reset.
+
+										} else texture[ key ] = Number( editor[key] ); // number.
+
 									})( key, value );
+
 								break;
 
 							}
