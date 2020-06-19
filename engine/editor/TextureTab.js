@@ -582,6 +582,16 @@
 
 	};
 
+	TextureManager.prototype.getTextureById = function( value ){
+
+		if ( parseInt( value ) === NaN ) return; // id.
+
+		return this.find( function( texture ){
+			return texture.id === parseInt( value );
+		});
+
+	};
+
 	const texture_entities = new TextureManager(); // texture entities array, important!.
 	const removed_textures = new TextureManager(); // texture entities array, important!.
 
