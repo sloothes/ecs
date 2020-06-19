@@ -91,7 +91,7 @@
 				new THREE.MeshLambertMaterial({ opacity:1, color:0x000000 })
 			);  
 			mesh.name = "texture viewer";
-			mesh.material.name = "Viewer";
+			mesh.material.name = "TextureViewerMaterial";
 			material_entities.add( mesh.material );
 			scene.add( mesh );
 			return mesh.material;
