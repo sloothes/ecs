@@ -115,11 +115,11 @@
 		renderer.setSize( canvas.width, canvas.height );
 		renderer.domElement.style.background = "none";  // transparent rendering. important!
 
-		window.addEventListener("resize", function onWindowResize() {
-			renderer.setSize( canvas.width, canvas.width );
-		//	camera.aspect = renderer.domElement.clientWidth / renderer.domElement.clientHeight;
-		//	camera.updateProjectionMatrix();
-		});
+	//	window.addEventListener("resize", function onWindowResize() {
+	//		renderer.setSize( canvas.width, canvas.width );
+	//		camera.aspect = renderer.domElement.clientWidth / renderer.domElement.clientHeight;
+	//		camera.updateProjectionMatrix();
+	//	});
 
 		(function render(){
 			requestAnimationFrame( render );
@@ -192,7 +192,7 @@
 		+ "border:1px solid;border-radius:4px;padding:2px 4px 4px 4px;"
 		+ "font-size:20px;margin-left:10px;margin-right:15px;";
 
-		var keys = ",";
+		var keys = "";
 		keys += "uuid,name,mapping,rotation,format,minFilter,magFilter,anisotropy,flipY";
 
 		keys.split(",").forEach(function( name ){
