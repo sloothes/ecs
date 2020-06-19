@@ -193,7 +193,7 @@
 		+ "font-size:20px;margin-left:10px;margin-right:15px;";
 
 		var keys = "";
-		keys += "uuid,name,mapping,rotation,format,minFilter,magFilter,anisotropy,flipY,wrap";
+		keys += "uuid,name,mapping,rotation,format,minFilter,magFilter,anisotropy,flipY";
 
 		keys.split(",").forEach(function( name ){
 			var option = document.createElement("option");
@@ -263,7 +263,7 @@
 		+ "font-size:20px;margin-left:10px;margin-right:15px;";
 
 		var keys = "";
-		keys += "offset,repeat,center";
+		keys += "offset,repeat,center,wrap";
 
 		keys.split(",").forEach(function( name ){
 			var option = document.createElement("option");
