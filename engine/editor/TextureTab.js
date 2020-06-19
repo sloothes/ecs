@@ -38,7 +38,7 @@
 
 	})( TabUI.Texture.tab );
 
-	(function( tab ){
+	const textureViewer = (function( tab ){
 
 	//	Texture viewer.
 	//	var tab = TabUI.Texture.tab;
@@ -85,7 +85,7 @@
 			return helper;
 		})();
 
-		textureViewer = (function(){
+		const material = (function(){
 			var mesh = new THREE.Mesh(
 				new THREE.PlaneGeometry( 252, 252, 1, 1 ).rotateX(-Math.PI/2),
 				new THREE.MeshLambertMaterial({ opacity:1, color:0x000000 })
@@ -94,7 +94,7 @@
 			mesh.material.name = "Viewer";
 			material_entities.add( mesh.material );
 			scene.add( mesh );
-			return mesh;
+			return mesh.material;
 		})();
 
 	//  Renderer.
@@ -128,6 +128,8 @@
 
 		row.appendChild( canvas );
 		tab.appendChild( row );
+
+		return material; // important!
 
 	})( TabUI.Texture.tab );
 
