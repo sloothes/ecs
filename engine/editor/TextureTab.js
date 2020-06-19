@@ -38,7 +38,7 @@
 
 	})( TabUI.Texture.tab );
 
-	const textureViewer = (function( tab ){
+	const textureViewerMaterial = (function( tab ){
 
 	//	Texture viewer.
 	//	var tab = TabUI.Texture.tab;
