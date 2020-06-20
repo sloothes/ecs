@@ -23,6 +23,9 @@
 
 	}
 
+//	mod.js
+	function mod( a, n ) { return ( a % n + n ) % n; }
+
 //	round.js
 	function round(number, precision) {
 		var shift = function (number, precision, reverseShift) {
