@@ -163,18 +163,6 @@
 
 			};
 
-			TextureEditor.prototype.undo = function(){
-
-				var editor = this;
-
-			};
-
-			TextureEditor.prototype.redo = function(){
-
-				var editor = this;
-
-			};
-
 			TextureEditor.prototype.copy = function( json ){
 
 			//	param: texture json {object}
@@ -272,6 +260,73 @@
 
 			};
 
+		//	editor undo/redo.
+
+			(function(){
+
+				var interval;
+
+				TextureEditor.prototype.undo = function( undo, redo ){
+
+					var editor = this;
+
+					if ( undo === undefined ) return;
+					if ( redo === undefined ) return;
+
+					if ( !undo.length ) return;
+
+				//	Get undo json.
+					var json = undo.shift();
+
+					if ( !json ) return;
+
+				//	Move json to redo.
+					redo.unshift( json );
+
+					clearTimeout( interval );
+					interval = setTimeout( function(){
+
+					//	Copy texture state (undo).
+						editor.copy( json ); // update.
+					//	Will watcher update texture?
+
+						debugMode && console.log( "undo:", undo.length, "redo:", redo.length );
+
+					}, 250);
+
+				};
+
+				TextureEditor.prototype.redo = function( undo, redo ){
+
+					var editor = this;
+
+					if ( undo === undefined ) return;
+					if ( redo === undefined ) return;
+
+					if ( !redo.length ) return;
+
+				//	Get redo json.
+					var json = redo.shift();
+
+					if ( !json ) return;
+
+				//	Move json to undo.
+					undo.unshift( json );
+
+					clearTimeout( interval );
+					interval = setTimeout( function(){
+
+					//	Copy texture state (redo).
+						editor.copy( json ); // update.
+					//	Will watcher update texture?
+
+						debugMode && console.log( "undo:", undo.length, "redo:", redo.length );
+
+					}, 250);
+				};
+
+			})();
+
 		</script>
 
 		<script>
@@ -279,14 +334,6 @@
 			const textureEditor = ( function( editor ){
 
 				const undo = [], redo = [];
-
-			//	Compose wrap [wrapS, wrapT]. very-important!
-			//	editor.wrap = Math.min(editor.wrap[0], editor.wrap[1]); // compose wrap!
-
-			//	const mapSelect    = {value:""}; // string (for material tab texture droplist).
-			//	const keySelect    = {value:""}; // string (for texture tab keys droplist).
-			//	const vectorSelect = {value:""}; // string (for texture tab vector droplist).
-			//	const entitySelect = {value:""}; // string (for texture tab entities droplist).
 
 			//	droplists.
 
@@ -396,6 +443,76 @@
 					});
 				}
 
+			//	add to undo/redo.
+
+				function addtoUndo(){
+				//	redo.length = 0; // important!
+					var json = JSON.parse( JSON.stringify(editor) );
+					json && undo.unshift( json );
+				}
+
+			//	function addtoRedo(){
+			//		var json = JSON.parse( JSON.stringify(editor) );
+			//		json && redo.unshift( json );
+			//	}
+
+			//	exit from edit mode.
+
+				function exitFromEditMode(){
+					editor.reset();
+				//	Reset droplists.
+					key_droplist.value = "";
+					vector_droplist.value = "";
+					entity_droplist.value = "";
+				//	Reset redo/undo.
+					undo.length = 0; redo.length = 0;
+				}
+
+			//	switch to edit mode.
+
+				function switchToEditMode( value ){
+					if ( !editor.update( value ) ) exitFromEditMode();
+				//	Reset redo/undo.
+					else { undo.length = 0; redo.length = 0; }
+				}
+
+				undo_button.addEventListener( "click", function(){ 
+					debugMode && console.log( "undo:", undo.length, "redo:", redo.length );
+
+				//	clear.
+					if ( !state["entity droplist"] ) { 
+						undo.length = 0; redo.length = 0; return;
+					} 
+					
+				//	undo.
+					else undo.length && editor.undo(undo, redo); // ends here.
+
+				});
+
+				redo_button.addEventListener( "click", function(){ 
+					debugMode && console.log( "undo:", undo.length, "redo:", redo.length );
+
+				//	clear.
+					if ( !state["entity droplist"] ) { 
+						undo.length = 0; redo.length = 0; return;
+					}
+
+				//	redo.
+					else redo.length && editor.redo(undo, redo); // ends here.
+
+				});
+
+				(function(){
+
+					var interval;
+
+					exit_button.addEventListener( "click",  function(){
+						clearTimeout( interval );
+						interval = setTimeout( exitFromEditMode, 250);
+					});
+
+				})();
+
 			//	droplists.
 
 				(function(){
@@ -449,9 +566,9 @@
 
 						clearTimeout( interval );
 
-						debugMode && console.log( "watch state:", { 
-							"name":name, "action":action, "value":value 
-						});
+					//	debugMode && console.log( "watch state:", { 
+					//		"name":name, "action":action, "value":value 
+					//	});
 
 						switch ( name ){
 
@@ -468,7 +585,7 @@
 									var key = state["vector droplist"];
 									var entity_id = state["entity droplist"];
 									
-									var value = [x, y]; console.log( "value:", value );
+									var value = [x, y]; // debugMode && console.log( "value:", value );
 
 								//	reset input value.
 									if ( !entity_id )
@@ -511,9 +628,6 @@
 								//	reset input value.
 									else vector_x.value = vector_y.value = "";
 
-								//	update state.
-								//	state.update(); // important!
-
 								})();
 
 							break;
@@ -536,9 +650,6 @@
 										text_input.value = editor.uuid;
 								//	reset input value.
 									else text_input.value = "";
-
-								//	update state.
-								//	state.update(); // important!
 
 								})( value );
 
@@ -575,9 +686,6 @@
 								//	reset input value.
 									else value_input.value = "";
 
-								//	update state.
-								//	state.update(); // important!
-
 								})( value );
 
 							break;
@@ -600,8 +708,6 @@
 									entity_droplist.value = id.toString();
 								//	update editor.
 									editor.update( id );
-								//	update state.
-								//	state.update(); // important!
 
 								})( value );
 
@@ -634,9 +740,6 @@
 								//	reset inputs.
 								//	else text_input.value = value_input.value = "";
 
-								//	update state.
-								//	state.update(); // important!
-
 								})( value );
 
 							break;
@@ -661,9 +764,6 @@
 								//	reset inputs.
 								//	else vector_x.value = vector_y.value = "";
 
-								//	update state.
-								//	state.update(); // important!
-
 								})( value );
 
 							break;
@@ -683,20 +783,18 @@
 									//	reset droplists.
 										key_droplist.value = "";
 										vector_droplist.value = "";
+									//	reset redo/undo.
+										undo.length = 0; redo.length = 0;
 									} else {
 									//	update editor.
 										editor.update( id );
 									}
-
-								//	update state (recall watcher).
-								//	state.update(); // important!
 
 								})( value );
 
 							break;
 
 						}
-
 
 						interval = setTimeout( function(){
 							state.update(); // important!
@@ -723,10 +821,10 @@
 
 					//	get texture.
 						var id = state["entity droplist"]; // string.
-						var texture = getTextureByEntityId( id );
+						var texture = texture_entities.getTextureById( id );
 						if ( texture === undefined ) return;
 
-						if ( key && action === "set" ) {
+						if ( texture && key && action === "set" ) {
 
 						//	update texture values.
 							switch ( key ) {
@@ -740,14 +838,14 @@
 
 								case "wrap":
 									(function( key, value ){
-
+							
 										if ( isNaN(editor[key][0]) || isNaN(editor[key][1]) ) { 
 											texture.wrapS = texture.wrapT = 1001; // reset.
 										} else {
 											texture.wrapS = Number( editor[key][0] );
 											texture.wrapT = Number( editor[key][1] );
 										}
-
+							
 									})( key, value );
 								break;
 
@@ -829,10 +927,34 @@
 						}
 
 						interval = setTimeout( function(){
-							texture.needsUpdate = true; // important!
-							debugMode && console.log( "texture:", texture ); 
-						//	debugMode && console.log( "editor:", JSON.parse( JSON.stringify(editor) ) ); 
+							debugMode && console.log( "texture:", texture );
+ 
+						//	texture needsUpdate.
+							if ( texture ) texture.needsUpdate = true; // important!
+
+						//	addtoUndo/redo.
+
+							if ( texture && key && action === "set" ) {
+
+								if ( key === "name" ) addtoUndo();
+								else if ( key === "center" ) addtoUndo();
+								else if ( key === "offset" ) addtoUndo();
+								else if ( key === "repeat" ) addtoUndo();
+								else if ( key === "format" ) addtoUndo();
+								else if ( key === "mapping" ) addtoUndo();
+								else if ( key === "rotation" ) addtoUndo();
+								else if ( key === "magFilter" ) addtoUndo();
+								else if ( key === "minFilter" ) addtoUndo();
+								else if ( key === "anisotropy" ) addtoUndo();
+							//	DONT USE "wrap"; watch "wrap" triggers on every undo event.
+							//	else if ( key === "wrap" ) addtoUndo(); // DONT USE "wrap"; 
+
+							}
+
+							debugMode && console.log( "undo:", undo.length, "redo:", redo.length );
 						//	debugMode && console.log( "state:", JSON.parse( JSON.stringify(state) ) ); 
+						//	debugMode && console.log( "editor:", JSON.parse( JSON.stringify(editor) ) ); 
+
 						}, 100);
 
 					});
