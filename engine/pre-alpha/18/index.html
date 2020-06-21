@@ -144,6 +144,14 @@
 
 		//	TextureEditor Class.
 
+		//	Pros of using TextureEditor class.
+			//	Keeps editor clean. 
+			//	Defines methods in prototype.
+
+		//	Cons of using TextureEditor class.
+			//	Difficult to display values after undo/redo.
+			//	Need to parse undo/redo arrays in editor.undo/redo method.
+
 			function TextureEditor(){
 				Object.assign( this, new THREE.Texture().toJSON() );
 			}
@@ -164,10 +172,11 @@
 			};
 
 			TextureEditor.prototype.copy = function( json ){
-
 			//	param: texture json {object}
 
 				var editor = this;
+
+				var json = JSON.parse( JSON.stringify(json) ); // copy.
 
 				for ( var key in json ) {
 					switch ( key ){
@@ -195,7 +204,7 @@
 					}
 				}
 				
-				console.log( "json copied:", JSON.parse( JSON.stringify(editor) ) );
+			//	console.log( "json copied:", JSON.parse( JSON.stringify(editor) ) );
 			};
 
 			TextureEditor.prototype.reset = function(){
@@ -334,6 +343,8 @@
 			const textureEditor = ( function( editor ){
 
 				const undo = [], redo = [];
+				const RAD2DEG = THREE.Math.RAD2DEG;
+				const DEG2RAD = THREE.Math.DEG2RAD;
 
 			//	droplists.
 
@@ -398,14 +409,34 @@
 
 					TextureTabState.prototype.update = function(){
 
-						this["vector x"] = vector_x.value;
-						this["vector y"] = vector_y.value;
 						this["text input"] = text_input.value;
-						this["value input"] = value_input.value;
 						this["map droplist"] = map_droplist.value;
 						this["key droplist"] = key_droplist.value;
-						this["vector droplist"] = vector_droplist.value;
 						this["entity droplist"] = entity_droplist.value;
+						this["vector droplist"] = vector_droplist.value;
+
+						switch ( key_droplist.value ){
+
+						//	case "name":
+						//	case "uuid":
+						//		this["text input"] = text_input.value;
+						//	break;
+
+							case "flipY":
+								this["value input"] = Boolean(value_input.value);
+							break;
+
+							case "rotation":
+								this["value input"] = DEG2RAD * Number(value_input.value);
+							break;
+
+							default:
+								this["value input"] = Number(value_input.value);
+							break;
+						}
+
+						this["vector x"] = Number(vector_x.value);
+						this["vector y"] = Number(vector_y.value);
 
 					};
 
@@ -414,7 +445,7 @@
 				})();
 
 			//	helpers.
-				
+
 				function getTextureByEntityId( value ){
 
 					if ( arguments.length ) 
@@ -446,15 +477,15 @@
 			//	add to undo/redo.
 
 				function addtoUndo(){
-				//	redo.length = 0; // important!
 					var json = JSON.parse( JSON.stringify(editor) );
 					json && undo.unshift( json );
 				}
 
-			//	function addtoRedo(){
-			//		var json = JSON.parse( JSON.stringify(editor) );
-			//		json && redo.unshift( json );
-			//	}
+				function clearUndoRedo(){
+					undo.length = 0; 
+					redo.length = 0;
+					return;
+				}
 
 			//	exit from edit mode.
 
@@ -464,25 +495,29 @@
 					key_droplist.value = "";
 					vector_droplist.value = "";
 					entity_droplist.value = "";
+				//	Reset keyboard inputs.
+				//	vector_x.value = ""; // infinity loop!
+				//	vector_y.value = ""; // infinity loop!
+				//	text_input.value = ""; // infinity loop!
+				//	value_input.value = ""; // infinity loop!
 				//	Reset redo/undo.
-					undo.length = 0; redo.length = 0;
+					setTimeout( clearUndoRedo );
 				}
 
 			//	switch to edit mode.
 
 				function switchToEditMode( value ){
-					if ( !editor.update( value ) ) exitFromEditMode();
+					if ( !editor.update( value ) ) 
+						exitFromEditMode();
 				//	Reset redo/undo.
-					else { undo.length = 0; redo.length = 0; }
+					else setTimeout( clearUndoRedo );
 				}
 
 				undo_button.addEventListener( "click", function(){ 
 					debugMode && console.log( "undo:", undo.length, "redo:", redo.length );
 
-				//	clear.
-					if ( !state["entity droplist"] ) { 
-						undo.length = 0; redo.length = 0; return;
-					} 
+				//	clear undo/redo.
+					if ( !state["entity droplist"] ) return clearUndoRedo();
 					
 				//	undo.
 					else undo.length && editor.undo(undo, redo); // ends here.
@@ -492,10 +527,8 @@
 				redo_button.addEventListener( "click", function(){ 
 					debugMode && console.log( "undo:", undo.length, "redo:", redo.length );
 
-				//	clear.
-					if ( !state["entity droplist"] ) { 
-						undo.length = 0; redo.length = 0; return;
-					}
+				//	clear undo/redo.
+					if ( !state["entity droplist"] ) return clearUndoRedo();
 
 				//	redo.
 					else redo.length && editor.redo(undo, redo); // ends here.
@@ -529,32 +562,437 @@
 
 				})();
 
-			//	key inputs.
+			//	keyboard inputs.
 
 				(function(){
 
+				//	const vector_x    = document.getElementById("texture-vector-x-input");
+				//	const vector_y    = document.getElementById("texture-vector-y-input");
+				//	const text_input  = document.getElementById("texture-text-input");
+				//	const value_input = document.getElementById("texture-value-input");
+
+				//	keyInputs blur.
+
+					function keyinputBlur(){ 
+						vector_x.blur(); 
+						vector_y.blur(); 
+						text_input.blur(); 
+						value_input.blur(); 
+					}
+
+					vector_x.addEventListener( "change", keyinputBlur );
+					vector_y.addEventListener( "change", keyinputBlur );
+					text_input.addEventListener( "change", keyinputBlur );
+					value_input.addEventListener( "change", keyinputBlur );
+
 				//	keyInputControls.
 
-					function onBlur(){
+					function enableKeyInputControls(){
 						keyInputControls.isDisabled = false;
 					}
 
-					function onFocus(){
+					function disableKeyInputControls(){
 						keyInputControls.isDisabled = true;
 					}
 
-					vector_x.addEventListener( "blur", onBlur );
-					vector_y.addEventListener( "blur", onBlur );
-					text_input.addEventListener( "blur", onBlur );
-					value_input.addEventListener( "blur", onBlur );
+					vector_x.addEventListener( "blur", enableKeyInputControls );
+					vector_y.addEventListener( "blur", enableKeyInputControls );
+					text_input.addEventListener( "blur", enableKeyInputControls );
+					value_input.addEventListener( "blur", enableKeyInputControls );
 
-					vector_x.addEventListener( "focus", onFocus );
-					vector_y.addEventListener( "focus", onFocus );
-					text_input.addEventListener( "focus", onFocus );
-					value_input.addEventListener( "focus", onFocus );
+					vector_x.addEventListener( "focus", disableKeyInputControls );
+					vector_y.addEventListener( "focus", disableKeyInputControls );
+					text_input.addEventListener( "focus", disableKeyInputControls );
+					value_input.addEventListener( "focus", disableKeyInputControls );
+
 
 				})();
 
+			//	mouse inputs.
+
+				(function(){
+
+					var interval;
+
+				//	const key_droplist = document.getElementById("texture-key-droplist");
+				//	const value_input = document.getElementById("texture-value-input");
+				//	const increase_v = document.getElementById("texture-value-increase");
+				//	const decrease_v = document.getElementById("texture-value-decrease");
+
+					increase_v.addEventListener( "mousedown", onMouseDown );
+					decrease_v.addEventListener( "mousedown", onMouseDown );
+
+					window.addEventListener( "mouseup", function (){
+						clearTimeout( interval ); // important!
+					//	debugMode && console.log( "on MouseUp:", interval );
+					});
+
+					increase_v.addEventListener( "click", onMouseClick );
+					decrease_v.addEventListener( "click", onMouseClick );
+
+					function onMouseDown(){ 
+
+						clearTimeout( interval ); // important!
+
+						if ( !state["entity droplist"] ) return;
+
+					//	disabled on mouse down.
+						if ( state["key droplist"] === "name" ) return;
+						if ( state["key droplist"] === "uuid" ) return;
+						if ( state["key droplist"] === "flipY" ) return;
+						if ( state["key droplist"] === "format" ) return;
+						if ( state["key droplist"] === "mapping" ) return;
+						if ( state["key droplist"] === "minFilter" ) return;
+						if ( state["key droplist"] === "magFilter" ) return;
+
+						var button = this;
+						var clock = new THREE.Clock();
+
+					//	enabled on mouse down.
+						interval = setTimeout( function onUpdate() {
+
+						//	if ( isNaN(state["value input"]) ) return;
+
+							var key = state["key droplist"];
+
+							if ( key === "rotation" ) (function(){
+
+								var step = 0.1 * Math.PI/180; // 0.1 deg.
+								var max = Math.PI, min = -max;
+								var value = Number(state["value input"]); // copy.
+
+								if ( button === increase_v ) value = THREE.Math.clamp( value+step, min, max );
+								if ( button === decrease_v ) value = THREE.Math.clamp( value-step, min, max );
+
+								value_input.value = Number(RAD2DEG*value).toFixed(1); // string.
+
+							})();
+
+							else if ( key === "anisotropy" ) (function(){
+
+								var step = 1/100, max = 1, min = -max;
+								var value = Number(state["value input"]); // copy.
+
+								if ( button === increase_v ) value = THREE.Math.clamp( value+step, min, max );
+								if ( button === decrease_v ) value = THREE.Math.clamp( value-step, min, max );
+
+								value_input.value = Number(value).toFixed(2); // string.
+
+							})();
+
+						//	update state.
+							state.update(); // imporant!
+
+							var dt = clock.getDelta();
+							interval = setTimeout( onUpdate, dt );
+						//	debugMode && console.log( "on Update:", interval );
+
+						}, 500);
+					}
+
+					function onMouseClick(){
+
+						clearTimeout( interval ); // important!
+						if ( !state["entity droplist"] ) return;
+
+						var button = this;
+
+						var key = state["key droplist"];
+
+					//	disabled on mouse click.
+
+						if ( key === "name" ) return;
+
+					//	enabled on mouse click.
+
+						else if ( key === "uuid" ) (function(){ 
+							text_input.value = THREE.Math.generateUUID(); 
+							state.update(); // important!
+						})();
+
+						else if ( key === "flipY" ) (function(){ 
+							value_input.value = !state["value input"]; // boolean.
+						//	state.update(); // important!
+						})();
+
+						else if ( key === "format" ) (function(){
+
+							var values = [
+							//	order matters.
+								THREE.AlphaFormat,THREE.RGBFormat,THREE.RGBAFormat,THREE.LuminanceFormat,
+								THREE.LuminanceAlphaFormat, THREE.DepthFormat, THREE.DepthStencilFormat 
+							]; 
+
+							var step = 1, min = 0, max = values.length;
+							var value = Number(state["value input"]); // copy.
+							var index = values.findIndex(function( item ){ return item === value; });
+							
+							if ( button === increase_v ) value = values[ ( ++index % max + max ) % max ]; // mod();
+							if ( button === decrease_v ) value = values[ ( --index % max + max ) % max ]; // mod();
+
+							value_input.value = Number(value); // string.
+
+						})();
+
+						else if ( key === "mapping" ) (function(){
+
+							var values = [
+							//	order matters.
+								THREE.UVMapping,THREE.CubeReflectionMapping,THREE.CubeRefractionMapping,
+								THREE.EquirectangularReflectionMapping,THREE.EquirectangularRefractionMapping,
+								THREE.SphericalReflectionMapping,THREE.CubeUVReflectionMapping,THREE.CubeUVRefractionMapping
+							];
+
+							var step = 1, min = 0, max = values.length;
+							var value = Number(state["value input"]); // copy.
+							var index = values.findIndex(function( item ){ return item === value; });
+							
+							if ( button === increase_v ) value = values[ ( ++index % max + max ) % max ]; // mod();
+							if ( button === decrease_v ) value = values[ ( --index % max + max ) % max ]; // mod();
+
+							value_input.value = Number(value); // string.
+
+						})();
+
+						else if ( key === "encoding" ) (function(){
+
+							var values = [
+							//	order matters.
+								THREE.LinearEncoding,THREE.sRGBEncoding,THREE.GammaEncoding,
+								THREE.RGBEEncoding,THREE.LogLuvEncoding,THREE.RGBM7Encoding,
+								THREE.RGBM16Encoding,THREE.RGBDEncoding,THREE.BasicDepthPacking,
+								THREE.RGBADepthPacking
+							];
+
+							var step = 1, min = 0, max = values.length;
+							var value = Number(state["value input"]); // copy.
+							var index = values.findIndex(function( item ){ return item === value; });
+							
+							if ( button === increase_v ) value = values[ ( ++index % max + max ) % max ]; // mod();
+							if ( button === decrease_v ) value = values[ ( --index % max + max ) % max ]; // mod();
+
+							value_input.value = Number(value); // string.
+
+						})();
+
+						else if ( key === "magFilter" ) (function(){
+
+						//	order matters.
+							var values = [ THREE.NearestFilter,THREE.LinearFilter ];
+
+							var step = 1, min = 0, max = values.length;
+							var value = Number(state["value input"]); // copy.
+							var index = values.findIndex(function( item ){ return item === value; });
+							
+							if ( button === increase_v ) value = values[ ( ++index % max + max ) % max ]; // mod();
+							if ( button === decrease_v ) value = values[ ( --index % max + max ) % max ]; // mod();
+
+							value_input.value = Number(value); // string.
+
+						})();
+
+						else if ( key === "minFilter" ) (function(){
+
+							var values = [ 
+							//	order matters.
+								THREE.NearestFilter,THREE.NearestMipMapNearestFilter,
+								THREE.NearestMipMapLinearFilter,THREE.LinearFilter,
+								THREE.LinearMipMapNearestFilter,THREE.LinearMipMapLinearFilter
+							];
+
+							var step = 1, min = 0, max = values.length;
+							var value = Number(state["value input"]); // copy.
+							var index = values.findIndex(function( item ){ return item === value; });
+							
+							if ( button === increase_v ) value = values[ ( ++index % max + max ) % max ]; // mod();
+							if ( button === decrease_v ) value = values[ ( --index % max + max ) % max ]; // mod();
+
+							value_input.value = Number(value); // string.
+
+						})();
+
+						else if ( key === "rotation" ) (function(){
+
+							var step = 0.1 * Math.PI/180; // 0.1 deg.
+							var max = Math.PI, min = -max;
+							var value = Number(state["value input"]); // copy.
+
+							if ( button === increase_v ) value = THREE.Math.clamp( value+step, min, max );
+							if ( button === decrease_v ) value = THREE.Math.clamp( value-step, min, max );
+
+							value_input.value = Number(RAD2DEG*value).toFixed(1); // string.
+
+						})();
+
+						else if ( key === "anisotropy" ) (function(){
+
+							var step = 1/100, max = 1, min = -max;
+							var value = Number(state["value input"]); // copy.
+
+							if ( button === increase_v ) value = THREE.Math.clamp( value+step, min, max );
+							if ( button === decrease_v ) value = THREE.Math.clamp( value-step, min, max );
+
+							value_input.value = Number(value).toFixed(2); // string.
+
+						})();
+
+
+					//	update state.
+						state.update(); // imporant!
+
+						debugMode && console.log( "undo:", undo.length, "redo:", redo.length );
+						debugMode && console.log( "on Mouse Click:", interval );
+						debugMode && console.log( "state:", JSON.parse( JSON.stringify(state) ) ); 
+
+					}
+
+				})();
+
+				(function(){
+
+					var interval;
+
+				//	const vector_x   = document.getElementById("texture-vector-x-input");
+				//	const increase_x = document.getElementById("texture-vector-x-increase");
+				//	const decrease_x = document.getElementById("texture-vector-x-decrease");
+
+				//	const vector_y   = document.getElementById("texture-vector-y-input");
+				//	const increase_y = document.getElementById("texture-vector-y-increase");
+				//	const decrease_y = document.getElementById("texture-vector-y-decrease");
+
+					increase_x.addEventListener( "mousedown", onMouseDown );
+					decrease_x.addEventListener( "mousedown", onMouseDown );
+					increase_y.addEventListener( "mousedown", onMouseDown );
+					decrease_y.addEventListener( "mousedown", onMouseDown );
+
+					window.addEventListener( "mouseup", function (){
+						clearTimeout( interval ); // important!
+					//	debugMode && console.log( "on MouseUp:", interval );
+					});
+
+					increase_x.addEventListener( "click", onMouseClick );
+					decrease_x.addEventListener( "click", onMouseClick );
+					increase_y.addEventListener( "click", onMouseClick );
+					decrease_y.addEventListener( "click", onMouseClick );
+
+					function onMouseDown(){ 
+
+						clearTimeout( interval ); // important!
+
+						if ( !state["entity droplist"] ) return;
+
+					//	disabled on mouse down.
+						if ( state["vector droplist"] === "wrap" ) return;
+
+						var button = this;
+						var clock = new THREE.Clock();
+
+					//	enabled on mouse down.
+						interval = setTimeout( function onUpdate() {
+
+							var key = state["vector droplist"];
+
+							if ( key ) (function(){
+
+								var step = 1/100, max = 1000, min = -max;
+
+								if ( button === increase_x || button === decrease_x ) {
+									var value = Number(state["vector x"]); // copy.
+
+									if ( button === increase_x ) value = THREE.Math.clamp( value+step, min, max );
+									if ( button === decrease_x ) value = THREE.Math.clamp( value-step, min, max );
+
+									vector_x.value = Number(value).toFixed(2); // string.
+								}
+								
+								else if ( button === increase_y || button === decrease_y ) {
+									var value = Number(state["vector y"]); // copy.
+
+									if ( button === increase_y ) value = THREE.Math.clamp( value+step, min, max );
+									if ( button === decrease_y ) value = THREE.Math.clamp( value-step, min, max );
+
+									vector_y.value = Number(value).toFixed(2); // string.
+								}
+
+							})();
+
+						//	update state.
+							state.update(); // imporant!
+
+							var dt = clock.getDelta();
+							interval = setTimeout( onUpdate, dt );
+						//	debugMode && console.log( "on Update:", interval );
+
+						}, 500);
+					}
+
+					function onMouseClick(){
+
+						clearTimeout( interval ); // important!
+						if ( !state["entity droplist"] ) return;
+
+						var button = this;
+
+						var key = state["vector droplist"];
+
+					//	enabled on mouse click.
+
+						if ( key === "wrap" ) (function(){
+
+						//	order matters.
+							var values = [ 
+								THREE.RepeatWrapping,
+								THREE.ClampToEdgeWrapping,
+								THREE.MirroredRepeatWrapping
+							];
+
+							var step = 1, min = 0, max = values.length;
+							var value = Number(state["vector x"]); // copy.
+							var index = values.findIndex(function( item ){ return item === value; });
+
+							if ( button === increase_x || button === increase_y ) 
+								value = values[ ( ++index % max + max ) % max ]; // mod();
+							if ( button === decrease_x ||  button === decrease_y ) 
+								value = values[ ( --index % max + max ) % max ]; // mod();
+
+							vector_x.value = vector_y.value = Number(value); // string.
+
+						})();
+
+						else if ( key ) (function(){
+
+							var step = 1/100, max = 1000, min = -max;
+
+							if ( button === increase_x || button === decrease_x ) {
+								var value = Number(state["vector x"]); // copy.
+
+								if ( button === increase_x ) value = THREE.Math.clamp( value+step, min, max );
+								if ( button === decrease_x ) value = THREE.Math.clamp( value-step, min, max );
+
+								vector_x.value = Number(value).toFixed(2); // string.
+							}
+
+							else if ( button === increase_y || button === decrease_y ) {
+								var value = Number(state["vector y"]); // copy.
+
+								if ( button === increase_y ) value = THREE.Math.clamp( value+step, min, max );
+								if ( button === decrease_y ) value = THREE.Math.clamp( value-step, min, max );
+
+								vector_y.value = Number(value).toFixed(2); // string.
+							}
+
+						})();
+
+					//	update state.
+						state.update(); // imporant!
+
+						debugMode && console.log( "undo:", undo.length, "redo:", redo.length );
+						debugMode && console.log( "on Mouse Click:", interval );
+						debugMode && console.log( "state:", JSON.parse( JSON.stringify(state) ) ); 
+
+					}
+
+				})();
 
 			//	state watcher.
 
@@ -580,53 +1018,37 @@
 								(function(){
 									
 								//	get droplist value.
-									var x = Number(state["vector x"]);
-									var y = Number(state["vector y"]);
 									var key = state["vector droplist"];
 									var entity_id = state["entity droplist"];
-									
-									var value = [x, y]; // debugMode && console.log( "value:", value );
 
-								//	reset input value.
-									if ( !entity_id )
-										vector_x.value = vector_y.value = "";
+									var x = Number(state["vector x"]); // copy.
+									var y = Number(state["vector y"]); // copy.
 
+									if ( !entity_id ) x = y = "";               // reset.
 									else if ( isNaN(x) || isNaN(y) ) {
-
-										if ( key === "wrap" )
-											value = [ 1001, 1001 ]; // reset.
-										else if ( key === "repeat" ) 
-											value = [ 1, 1 ];       // reset.
-										else 
-											value = [ 0, 0 ];       // reset.
-
-										vector_x.value = value[0];
-										vector_y.value = value[1];
+										if ( key === "wrap" ) x = y = 1001;     // reset.
+										else if ( key === "repeat" ) x = y = 1; // reset.
+										else x = y = 0;                         // reset.
+									} else if ( key === "wrap" ) {
+										var wrapModes = [1000, 1001, 1002];
+										if ( wrapModes.includes(x) && !wrapModes.includes(y) ) y = x;
+										else if ( !wrapModes.includes(x) &&  wrapModes.includes(y) ) x = y;
+										else if ( !wrapModes.includes(x) && !wrapModes.includes(y) ) x = y = 1001; // reset.
 									}
 
-								//	update editor wrap value (special case).
-									else if ( key === "wrap" ) {
+								//	update editor.
+									editor[ key ] = [ x, y ];
 
-									//	(special case)
-										if ( name === "vector x" ) {
-											editor[ key ] = [ x, x ];
-											vector_y.value = vector_x.value;
-										} else if ( name === "vector y" ) {
-											editor[ key ] = [ y, y ];
-											vector_x.value = vector_y.value;
-										}
-									}
-
-								//	update editor values.
-									else if ( key === "offset" ) 
-										editor[ key ] = [ x, y ];
-									else if ( key === "repeat" ) 
-										editor[ key ] = [ x, y ];
-									else if ( key === "center" ) 
-										editor[ key ] = [ x, y ];
-
-								//	reset input value.
-									else vector_x.value = vector_y.value = "";
+								//	display values.
+									if ( key === "wrap"
+									|| typeof x !== "number" 
+									|| typeof y !== "number" ) {
+										vector_x.value = x; // string.
+										vector_y.value = y; // string.
+									} else {
+										vector_x.value = x.toFixed(2); // string.
+										vector_y.value = y.toFixed(2); // string.
+									} 
 
 								})();
 
@@ -640,16 +1062,13 @@
 									var entity_id = state["entity droplist"];
 
 								//	reset input value.
-									if ( !entity_id )
-										text_input.value = "";
+									if ( !entity_id ) text_input.value = ""; // reset!
 								//	update editor name.
-									else if ( key === "name" ) 
-										editor.name = value;
+									else if ( key === "name" ) editor.name = value;
 								//	display editor uuid.
-									else if ( key === "uuid" ) 
-										text_input.value = editor.uuid;
+									else if ( key === "uuid" ) editor.uuid = value;
 								//	reset input value.
-									else text_input.value = "";
+									else text_input.value = ""; // reset!
 
 								})( value );
 
@@ -663,14 +1082,14 @@
 									var entity_id = state["entity droplist"];
 
 								//	reset input value.
-									if ( !entity_id )
-										value_input.value = "";
-									else if ( key === "name" ) 
-										value_input.value = "";
-									else if ( key === "uuid" ) 
-										value_input.value = "";
+									if ( !entity_id ) value_input.value = ""; // reset!
+									else if ( key === "name" ) value_input.value = ""; // reset!
+									else if ( key === "uuid" ) value_input.value = ""; // reset!
+
+									else if ( typeof value === "boolean" ) editor[ key ] = value;
+
 								//	reset editor value.
-									else if ( value === "" || isNaN(value) ) {
+									else if ( isNaN(value) || typeof value !== "number" ) {
 										if ( key === "format" ) editor[ key ] = 1023;         // reset.
 										else if ( key === "mapping" ) editor[ key ] = 300;    // reset.
 										else if ( key === "rotation" ) editor[ key ] = 0;     // reset.
@@ -678,11 +1097,12 @@
 										else if ( key === "magFilter" ) editor[ key ] = 1006; // reset.
 										else if ( key === "minFilter" ) editor[ key ] = 1008; // reset.
 										else if ( key === "anisotropy" ) editor[ key ] = 1;   // reset.
-										value_input.value = editor[ key ];
+										value_input.value = Number(editor[ key ]); // string.
 									}
+										
 								//	update editor value.
-									else if ( key )
-										editor[ key ] = Number(value);
+									else if ( key ) editor[ key ] = Number(value);
+
 								//	reset input value.
 									else value_input.value = "";
 
@@ -724,21 +1144,40 @@
 								//	reset inputs.
 									if ( !entity_id )
 										text_input.value = value_input.value = "";
+
 								//	display values.
 									else if ( key === "name" ) {
 										value_input.value = "";
 										text_input.value = editor[ key ]; // string.
 									} 
+
 									else if ( key === "uuid" ) {
 										value_input.value = "";
 										text_input.value = editor[ key ]; // string.
 									} 
+
+									else if ( key === "flipY" ) {
+										text_input.value = "";
+										value_input.value = Boolean(editor[ key ]); // string.
+									} 
+
+									else if ( key === "rotation" ) {
+										text_input.value = "";
+										value_input.value = Number(RAD2DEG*editor[key]).toFixed(1); // string!
+									} 
+
+									else if ( key === "anisotropy" ) {
+										text_input.value = "";
+										value_input.value = Number(editor[key]).toFixed(2); // string!
+									} 
+
 									else if ( key ) {
 										text_input.value = "";
 										value_input.value = editor[ key ];
 									}
+
 								//	reset inputs.
-								//	else text_input.value = value_input.value = "";
+									else text_input.value = value_input.value = "";
 
 								})( value );
 
@@ -753,16 +1192,21 @@
 									var entity_id = state["entity droplist"];
 
 								//	reset inputs.
-									if ( !entity_id )
-										vector_x.value = vector_y.value = "";
+									if ( !entity_id ) vector_x.value = vector_y.value = ""; // reset.
+
 								//	display values.
-									else if ( key && editor[ key ] 
-									&& Array.isArray(editor[key]) ) { 
-										vector_x.value = editor[ key ][0];
-										vector_y.value = editor[ key ][1];
+									else if ( key && editor[ key ] && Array.isArray(editor[key]) ) { 
+										if ( key === "wrap" ) {
+											vector_x.value = Number(editor[ key ][0]).toFixed(0); // string!
+											vector_y.value = Number(editor[ key ][1]).toFixed(0); // string!
+										} else {
+											vector_x.value = Number(editor[ key ][0]).toFixed(2); // string!
+											vector_y.value = Number(editor[ key ][1]).toFixed(2); // string!
+										}
 									} 
+
 								//	reset inputs.
-								//	else vector_x.value = vector_y.value = "";
+									else vector_x.value = vector_y.value = "";
 
 								})( value );
 
@@ -773,8 +1217,8 @@
 
 								//	reset state key and vector droplists.
 								//	will recall watcher on state.update().
-									state["key droplist"] = "";
-									state["vector droplist"] = "";
+									state["key droplist"] = "";    // important!
+									state["vector droplist"] = ""; // important!
 
 								//	reset editor/droplists.
 									if ( isNaN( parseInt(id) ) ) {
@@ -785,10 +1229,18 @@
 										vector_droplist.value = "";
 									//	reset redo/undo.
 										undo.length = 0; redo.length = 0;
+
 									} else {
 									//	update editor.
 										editor.update( id );
+									//	reset droplists.
+									//	key_droplist.value = ""; // infinity loop!
+									//	vector_droplist.value = ""; // infinity loop!
+									//	reset redo/undo.
+										undo.length = 0; redo.length = 0;
+
 									}
+
 
 								})( value );
 
@@ -796,8 +1248,9 @@
 
 						}
 
+						state.update(); // important!
+
 						interval = setTimeout( function(){
-							state.update(); // important!
 							debugMode && console.log( "state:", JSON.parse( JSON.stringify(state) ) ); 
 						}, 100);
 
@@ -812,6 +1265,7 @@
 					var interval;
 
 					watch( editor, function( key, action, value, oldValue ){
+						var value = JSON.parse( JSON.stringify(value) ); // cleanup copy. 
 
 						clearTimeout( interval );
 
@@ -834,19 +1288,21 @@
 									console.warn( "case", key+":", "TODO!" );
 								break;
 
-							//	wrap, special case!
+							//	wrap, special case, always triggers!
 
 								case "wrap":
+
 									(function( key, value ){
 							
-										if ( isNaN(editor[key][0]) || isNaN(editor[key][1]) ) { 
+										if ( isNaN(editor.wrap[0]) || isNaN(editor.wrap[1]) ) { 
 											texture.wrapS = texture.wrapT = 1001; // reset.
 										} else {
-											texture.wrapS = Number( editor[key][0] );
-											texture.wrapT = Number( editor[key][1] );
+											texture.wrapS = Number( editor.wrap[0] ); // copy.
+											texture.wrapT = Number( editor.wrap[1] ); // copy.
 										}
-							
+
 									})( key, value );
+
 								break;
 
 							//	vector2.
@@ -863,8 +1319,8 @@
 											else 
 												texture[ key ].x = texture[ key ].y = 0; // reset.
 										} else {
-											texture[ key ].x = Number( editor[key][0] );
-											texture[ key ].y = Number( editor[key][1] );
+											texture[ key ].x = Number( editor[key][0] ); // copy.
+											texture[ key ].y = Number( editor[key][1] ); // copy.
 										}
 
 									})( key, value );
@@ -877,7 +1333,8 @@
 								case "name":
 
 									(function( key, value ){
-										texture[ key ] = editor[ key ].toString(); // string.
+										if ( typeof editor[ key ] === "string" )
+											texture[ key ] = editor[ key ].toString(); // string.
 									})( key, value );
 
 								break;
@@ -885,12 +1342,10 @@
 							//	boolean.
 
 								case "flipY":
-								case "generateMipmaps":
-								case "matrixAutoUpdate":
-								case "premultiplyAlpha":
 
 									(function( key, value ){
-										texture[ key ] = Boolean(editor[ key ]); // boolean.
+										if ( typeof editor[ key ] === "boolean" )
+											texture[ key ] = Boolean(editor[ key ]); // boolean.
 									})( key, value );
 
 								break;
@@ -907,8 +1362,8 @@
 
 									(function( key, value ){
 
-										if ( isNaN(editor[key]) || typeof editor[key] === "string" ) {
-
+										if ( isNaN(editor[key]) || typeof editor[key] !== "number" ) {
+										//	reset.
 											if ( key === "format" ) texture[ key ] = 1023;         // reset.
 											else if ( key === "mapping" ) texture[ key ] = 300;    // reset.
 											else if ( key === "rotation" ) texture[ key ] = 0;     // reset.
@@ -926,7 +1381,7 @@
 							}
 						}
 
-						interval = setTimeout( function(){
+						interval = setTimeout( function( key ){
 							debugMode && console.log( "texture:", texture );
  
 						//	texture needsUpdate.
@@ -935,31 +1390,109 @@
 						//	addtoUndo/redo.
 
 							if ( texture && key && action === "set" ) {
+								switch ( key ){
 
-								if ( key === "name" ) addtoUndo();
-								else if ( key === "center" ) addtoUndo();
-								else if ( key === "offset" ) addtoUndo();
-								else if ( key === "repeat" ) addtoUndo();
-								else if ( key === "format" ) addtoUndo();
-								else if ( key === "mapping" ) addtoUndo();
-								else if ( key === "rotation" ) addtoUndo();
-								else if ( key === "magFilter" ) addtoUndo();
-								else if ( key === "minFilter" ) addtoUndo();
-								else if ( key === "anisotropy" ) addtoUndo();
-							//	DONT USE "wrap"; watch "wrap" triggers on every undo event.
-							//	else if ( key === "wrap" ) addtoUndo(); // DONT USE "wrap"; 
+									case "wrap":
+								//	DONT USE "wrap"; watcher calls "wrap" always and last.
+									break;
 
+									case "name":
+									case "center":
+									case "offset":
+									case "repeat":
+									case "format":
+									case "mapping":
+									case "rotation":
+									case "magFilter":
+									case "minFilter":
+									case "anisotropy":
+										addtoUndo();
+									break;
+								}
 							}
 
 							debugMode && console.log( "undo:", undo.length, "redo:", redo.length );
 						//	debugMode && console.log( "state:", JSON.parse( JSON.stringify(state) ) ); 
 						//	debugMode && console.log( "editor:", JSON.parse( JSON.stringify(editor) ) ); 
 
-						}, 100);
+						//	display undo/redo values.
+							setTimeout( function( key ){
+
+							//	if ( !texture ) return;
+								if ( !state["entity droplist"] ) return;
+
+							//	key droplist.
+
+								key && texture && state["key droplist"] && (function( key ){
+
+									text_input.value = value_input.value = ""; // reset;
+
+									switch ( key ){
+										case "uuid":
+										case "name":
+											text_input.value = texture[ key ]; // string.
+										break;
+										case "flipY":
+											value_input.value = Boolean(texture.flipY); // string.
+										break;
+										case "anisotropy":
+											value_input.value = texture.anisotropy.toFixed(2); // string.
+										break;
+										case "rotation":
+											value_input.value = Number(RAD2DEG*texture.rotation).toFixed(1); // string.
+										break;
+										default:
+											value_input.value = texture[ key ];
+										break;
+									}
+
+								})( state["key droplist"] );
+
+							//	vector droplist.
+
+								key && texture && state["vector droplist"] && (function( key ){
+
+								//	vector_x.value = vector_y.value = ""; // reset;
+
+									switch ( key ){
+										case "wrap":
+											vector_x.value = texture.wrapS.toFixed(0); // string.
+											vector_y.value = texture.wrapT.toFixed(0); // string.
+										break;
+										default:
+											vector_x.value = texture[key].x.toFixed(2); // string.
+											vector_y.value = texture[key].y.toFixed(2); // string.
+										break;
+									}
+
+								})( state["vector droplist"] );
+
+								return;
+
+							}, 100, key);
+
+							return;
+
+						}, 100, key);
 
 					});
 
 				})();
+
+				//	if ( texture && key && action === "set" ) {
+				//		if ( key === "name" ) addtoUndo();
+				//		if ( key === "center" ) addtoUndo();
+				//		if ( key === "offset" ) addtoUndo();
+				//		if ( key === "repeat" ) addtoUndo();
+				//		if ( key === "format" ) addtoUndo();
+				//		if ( key === "mapping" ) addtoUndo();
+				//		if ( key === "rotation" ) addtoUndo();
+				//		if ( key === "magFilter" ) addtoUndo();
+				//		if ( key === "minFilter" ) addtoUndo();
+				//		if ( key === "anisotropy" ) addtoUndo();
+				//	//	DONT USE "wrap"; watcher calls "wrap" always and last.
+				//	//	if ( key === "wrap" ) addtoUndo(); // DONT USE "wrap"; 
+				//	}
 
 			//	state eventListeners.
 
