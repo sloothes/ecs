@@ -195,7 +195,7 @@
 		+ "font-size:20px;margin-left:10px;margin-right:15px;";
 
 		var keys = "";
-		keys += "uuid,name,mapping,rotation,format,minFilter,magFilter,anisotropy,flipY";
+		keys += "uuid,name,flipY,format,rotation,mapping,minFilter,magFilter,anisotropy";
 
 		keys.split(",").forEach(function( name ){
 			var option = document.createElement("option");
