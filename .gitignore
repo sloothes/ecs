@@ -3,3 +3,5 @@ engine/CharacterScaleSphere(1.7m).obj
 misc/*
 engine/editor/MaterialEditorClass.js
 engine/editor/EntityManagerClass.js
+engine/editor/history/*
+engine/pre-alpha/18/index-1592735661381.html
