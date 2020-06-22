@@ -287,31 +287,11 @@
 				redo.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
 				redo.style.cssText = "width:44%;float:left;height:40px;font-size:large;margin-right:15px;";
 
-			//	Add a watcher.
-				watch(redo, "onclick", function(property, event, value){
-				//	debugMode && console.log({item:"button",event:event});
-				});
-
-			//	Call watchers.
-				redo.addEventListener( "click", function(){
-					callWatchers( this, "onclick", "click" );
-				});
-
 				var undo = document.createElement("div");
 				undo.id = "texture-undo-button";
 				undo.textContent = "Undo";
 				undo.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
 				undo.style.cssText = "width:44%;float:right;height:40px;font-size:large;margin-right:15px;";
-
-			//	Add a watcher.
-				watch(undo, "onclick", function(property, event, value){
-				//	debugMode && console.log({item:"button",event:event});
-				});
-
-			//	Call watchers.
-				undo.addEventListener( "click", function(){
-					callWatchers( this, "onclick", "click" );
-				});
 
 				row.appendChild( redo );
 				row.appendChild( undo );
@@ -594,16 +574,6 @@
 				button.style.cssText = "width:-webkit-fill-available;float:right;height:40px;font-size:large;margin-right:15px;";
 				button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
 
-			//	Add a watcher.
-				watch(button, "onclick", function(property, event, value){
-					debugMode && console.log({item:"button",event:event});
-				});
-
-			//	Call watchers.
-				button.addEventListener( "click", function(){
-					callWatchers( this, "onclick", "click" );
-				});
-
 				row.appendChild( button );
 				tab.appendChild( row );
 
@@ -632,16 +602,6 @@
 
 				button.addEventListener( "click", function(){
 					input.files.length = 0; input.click();
-				});
-
-			//	Add a watcher.
-				watch(input, "onchange", function(property, event, value){
-					debugMode && console.log({item:"input",event:event,"files":value});
-				});
-
-			//	Call watchers.
-				input.addEventListener( "change", function(){
-					callWatchers(this, "onchange", "change", this.files );
 				});
 
 				row.appendChild( button );
@@ -673,16 +633,6 @@
 					input.files.length = 0; input.click();
 				});
 
-			//	Add a watcher.
-				watch(input, "onchange", function(property, event, value){
-					debugMode && console.log({item:"input",event:event,"files":value});
-				});
-
-			//	Call watchers.
-				input.addEventListener( "change", function(){
-					callWatchers(this, "onchange", "change", this.files );
-				});
-
 				row.appendChild( button );
 				tab.appendChild( row );
 
@@ -701,16 +651,6 @@
 				button.textContent = "Exit Edit Mode";
 				button.style.cssText = "width:-webkit-fill-available;float:right;height:40px;font-size:large;margin-right:15px;";
 				button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
-
-			//	Add a watcher.
-				watch(button, "onclick", function(property, event){
-					debugMode && console.log({item:"button",event:event});
-				});
-
-			//	Call watchers.
-				button.addEventListener( "click", function(){
-					callWatchers( this, "onclick", "click" );
-				});
 
 				row.appendChild( button );
 				tab.appendChild( row );
@@ -1181,18 +1121,18 @@
 				//	const undo_button = document.getElementById("texture-undo-button");
 				//	const redo_button = document.getElementById("texture-redo-button");
 
-					watch( exit_button, "onclick", function( property, event ){
+					exit_button.addEventListener( "click", function(){
 						clearTimeout( interval ); 
 						interval = setTimeout( exitFromEditMode, 250);
 					});
 
-					watch( undo_button, "onclick", function( property, event ){
+					undo_button.addEventListener( "click", function(){
 						debugMode && console.log("undo:",undo.length,"redo:",redo.length);
 						if ( !entity_droplist.value ) clearUndoRedo();
 						else undo.length && editor.undo(); // undo.
 					});
 
-					watch( redo_button, "onclick", function( property, event ){
+					redo_button.addEventListener( "click", function(){
 						debugMode && console.log("undo:",undo.length,"redo:",redo.length);
 						if ( !entity_droplist.value ) clearUndoRedo();
 						else redo.length && editor.redo(); // redo.
@@ -1208,9 +1148,9 @@
 				//	const vector_droplist = document.getElementById("texture-vector-droplist");
 				//	const entity_droplist = document.getElementById("texture-entities-droplist");
 
-					watch(key_droplist, "onchange", key_droplist.blur );
-					watch(vector_droplist, "onchange", vector_droplist.blur );
-					watch(entity_droplist, "onchange", entity_droplist.blur );
+					key_droplist.addEventListener( "change", key_droplist.blur );
+					vector_droplist.addEventListener( "change", vector_droplist.blur );
+					entity_droplist.addEventListener( "change", entity_droplist.blur );
 
 					watch( vector_droplist, "onchange", function( property, event, key ){
 						if ( !key ) [vector_x.value, vector_y.value] = [ "", "" ];
@@ -1239,6 +1179,8 @@
 
 				(function(){
 
+					var interval;
+
 				//	const vector_x = document.getElementById("texture-vector-x-input");
 				//	const vector_y = document.getElementById("texture-vector-y-input");
 				//	const text_input = document.getElementById("texture-text-input");
@@ -1246,10 +1188,10 @@
 
 				//	keyInputs blur.
 
-					watch( vector_x, "onchange", vector_x.blur );
-					watch( vector_y, "onchange", vector_y.blur );
-					watch( text_input, "onchange", text_input.blur );
-					watch( value_input, "onchange", value_input.blur );
+					vector_x.addEventListener( "change", vector_x.blur );
+					vector_y.addEventListener( "change", vector_y.blur );
+					text_input.addEventListener( "change", text_input.blur );
+					value_input.addEventListener( "change", value_input.blur );
 
 				//	keyInputControls.
 
@@ -1270,6 +1212,88 @@
 					vector_y.addEventListener( "focus", disableKeyInputControls );
 					text_input.addEventListener( "focus", disableKeyInputControls );
 					value_input.addEventListener( "focus", disableKeyInputControls );
+
+				//	keyinputs change.
+
+					text_input.addEventListener( "change", function(){
+
+						var key = key_droplist.value;
+
+						if ( key === "uuid" ) text_input.value = editor[ key ];
+						else if ( !key_droplist.value ) text_input.value = "";
+						else if ( !entity_droplist.value ) text_input.value = "";
+						else if ( key === "name" ) editor[ key ] = text_input.value;
+						else text_input.value = "";
+
+					});
+
+					value_input.addEventListener( "change", function(){
+
+						var key = key_droplist.value;
+						var value = Number(value_input.value); // number!
+
+					//	disabled on key change.
+
+						if ( !key_droplist.value || !entity_droplist.value ) value = "";
+						if ( isNaN( value ) || key === "uuid" || key === "name") value = "";
+
+					//	enabled on key change.
+
+						switch ( key ){
+
+							case "flipY":
+								value_input.value = editor[key] = Boolean(value);
+							break;
+
+							case "format":
+								if ( [1021, 1022, 1023, 1024, 1025, 1026, 1027].includes( value ) ) editor[ key ] = Number(value);
+								else if ( !isNaN( editor[key]) ) value_input.value = editor[key];
+								else value_input.value = editor[key] = 1023; // reset.
+							break;
+
+							case "mapping":
+								if ( [300, 301, 302, 303, 304, 305, 306, 307].includes( value ) ) editor[ key ] = Number(value);
+								else if ( !isNaN( editor[key]) ) value_input.value = editor[key];
+								else value_input.value = editor[key] = 300; // reset.
+							break;
+
+							case "encoding":
+								if ( [3000, 3001, 3007, 3002, 3003, 3004, 3005, 3006, 3200, 3201].includes( value ) ) editor[ key ] = Number(value);
+								else if ( !isNaN( editor[key]) ) value_input.value = editor[key];
+								else value_input.value = editor[key] = 3000; // reset.
+							break;
+
+							case "magFilter":
+								if ( [1003, 1006].includes( value ) )editor[ key ] = Number(value);
+								else if ( !isNaN( editor[key]) ) value_input.value = editor[key];
+								else value_input.value = editor[key] = 1006; // reset.
+							break;
+
+							case "minFilter":
+								if ( [1003, 1004, 1005, 1006, 1007, 1008].includes( value ) )editor[ key ] = Number(value);
+								else if ( !isNaN( editor[key]) ) value_input.value = editor[key];
+								else value_input.value = editor[key] = 1008; // reset.
+							break;
+
+							case "anisotropy":
+								if ( !isNaN( value ) ) 
+									value_input.value = ( editor[ key ] = THREE.Math.clamp(value,1,-1) ).toFixed(1);
+								else if ( !isNaN( editor[key]) ) 
+									value_input.value = editor[key].toFixed(2);
+								else value_input.value = editor[key] = 1; // reset.
+							break;
+
+							case "rotation":
+								if ( !isNaN( value ) ) {
+									editor[key] = THREE.Math.clamp(DEG2RAD*value,-Math.PI, Math.PI);
+									value_input.value = THREE.Math.clamp((value),-180,180).toFixed(1);
+								} else if ( !isNaN( editor[key]) ) 
+									value_input.value = THREE.Math.clamp((RAD2DEG*editor[key]),-180,180).toFixed(1);
+								else value_input.value = editor[key] = 0; // reset.
+							break;
+						}
+
+					});
 
 				})();
 
@@ -1572,7 +1596,7 @@
 				})();
 
 			//	Editor Watchers.
-			//	Watch each object individually.
+			//	Watch each object/property individually.
 
 				(function( editor ){
 
@@ -1686,6 +1710,14 @@
 					});
 
 				})( editor );
+
+				return editor;  // important!
+
+			})();
+
+		</script>
+
+		<script>
 /*
 				(function(){
 					
@@ -1719,15 +1751,7 @@
 
 				})();
 */
-			//	Init.
-			//	state.update(); // important!
-				return editor;  // important!
 
-			})();
-
-		</script>
-
-		<script>
 /*
 			//	Texture TabState class (extends Object Class).
 			//	An object that holds texture tab UI values (state).
