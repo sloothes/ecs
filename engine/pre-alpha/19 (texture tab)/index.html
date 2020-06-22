@@ -1261,62 +1261,15 @@
 						keyInputControls.isDisabled = true;
 					}
 
-				//	vector_x.addEventListener( "blur", enableKeyInputControls );
-				//	vector_y.addEventListener( "blur", enableKeyInputControls );
-				//	text_input.addEventListener( "blur", enableKeyInputControls );
-				//	value_input.addEventListener( "blur", enableKeyInputControls );
+					vector_x.addEventListener( "blur", enableKeyInputControls );
+					vector_y.addEventListener( "blur", enableKeyInputControls );
+					text_input.addEventListener( "blur", enableKeyInputControls );
+					value_input.addEventListener( "blur", enableKeyInputControls );
 
-				//	vector_x.addEventListener( "focus", disableKeyInputControls );
-				//	vector_y.addEventListener( "focus", disableKeyInputControls );
-				//	text_input.addEventListener( "focus", disableKeyInputControls );
-				//	value_input.addEventListener( "focus", disableKeyInputControls );
-
-					watch( vector_x, "onblur", function( property, event ){
-						debugMode && console.log({item:"input",event:event});
-					});
-					watch( vector_y, "onblur", function( property, event ){
-						debugMode && console.log({item:"input",event:event});
-					});
-					watch( text_input, "onblur", function( property, event ){
-						debugMode && console.log({item:"input",event:event});
-					});
-					watch( value_input, "onblur", function( property, event ){
-						debugMode && console.log({item:"input",event:event});
-					});
-
-					watch( vector_x, "onfocus", function( property, event ){
-						debugMode && console.log({item:"input",event:event});
-					});
-					watch( vector_y, "onfocus", function( property, event ){
-						debugMode && console.log({item:"input",event:event});
-					});
-					watch( text_input, "onfocus", function( property, event ){
-						debugMode && console.log({item:"input",event:event});
-					});
-					watch( value_input, "onfocus", function( property, event ){
-						debugMode && console.log({item:"input",event:event});
-					});
-
-					vector_x.addEventListener( "blur", function(){ callWatchers( vector_x, "onblur", "blur" ); });
-					vector_y.addEventListener( "blur", function(){ callWatchers( vector_y, "onblur", "blur" ); });
-					text_input.addEventListener( "blur", function(){ callWatchers( text_input, "onblur", "blur" ); });
-					value_input.addEventListener( "blur", function(){ callWatchers( value_input, "onblur", "blur" ); });
-
-					vector_x.addEventListener( "focus", function(){ callWatchers( vector_x, "onfocus", "focus" ); });
-					vector_y.addEventListener( "focus", function(){ callWatchers( vector_y, "onfocus", "focus" ); });
-					text_input.addEventListener( "focus", function(){ callWatchers( text_input, "onfocus", "focus" ); });
-					value_input.addEventListener( "focus", function(){ callWatchers( value_input, "onfocus", "focus" ); });
-
-
-					watch( vector_x, "onblur", function( property, event ){ keyInputControls.isDisabled = false; });
-					watch( vector_y, "onblur", function( property, event ){ keyInputControls.isDisabled = false; });
-					watch( text_input, "onblur", function( property, event ){ keyInputControls.isDisabled = false; });
-					watch( value_input, "onblur", function( property, event ){ keyInputControls.isDisabled = false; });
-
-					watch( vector_x, "onfocus", function( property, event ){ keyInputControls.isDisabled = true; });
-					watch( vector_y, "onfocus", function( property, event ){ keyInputControls.isDisabled = true; });
-					watch( text_input, "onfocus", function( property, event ){ keyInputControls.isDisabled = true; });
-					watch( value_input, "onfocus", function( property, event ){ keyInputControls.isDisabled = true; });
+					vector_x.addEventListener( "focus", disableKeyInputControls );
+					vector_y.addEventListener( "focus", disableKeyInputControls );
+					text_input.addEventListener( "focus", disableKeyInputControls );
+					value_input.addEventListener( "focus", disableKeyInputControls );
 
 				})();
 
