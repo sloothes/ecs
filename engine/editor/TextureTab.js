@@ -33,12 +33,12 @@
 
 	//	Add a watcher.
 		watch(select.selectedOptions, function(prop, action, value){
-			debugMode && console.log("texture_entities id:", value);
+			debugMode && console.log("texture id value:", value);
 		});
 
 	//	Call watchers.
 		select.addEventListener( "change", function(){
-			callWatchers(this.selectedOptions, 0, "get", this.value );
+			callWatchers(this.selectedOptions, 0, "change", this.value );
 		});
 
 		row.appendChild( select );
@@ -216,12 +216,12 @@
 
 	//	Add a watcher.
 		watch(select.selectedOptions, function(prop, action, value){
-			debugMode && console.log("texture key droplist:", value);
+			debugMode && console.log("texture key value:", value);
 		});
 
 	//	Call watchers.
 		select.addEventListener( "change", function(){
-			callWatchers(this.selectedOptions, 0, "get", this.value );
+			callWatchers(this.selectedOptions, 0, "change", this.value );
 		});
 
 		row.appendChild( select );
@@ -296,12 +296,12 @@
 
 	//	Add a watcher.
 		watch(select.selectedOptions, function(prop, action, value){
-			debugMode && console.log("texture vect droplist:", value);
+			debugMode && console.log("texture vector value:", value);
 		});
 
 	//	Call watchers.
 		select.addEventListener( "change", function(){
-			callWatchers(this.selectedOptions, 0, "get", this.value );
+			callWatchers(this.selectedOptions, 0, "change", this.value );
 		});
 
 		row.appendChild( select );
