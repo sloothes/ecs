@@ -32,17 +32,13 @@
 		})();
 
 	//	Add a watcher.
-		setTimeout(function(){
-			watch(select.selectedOptions, function(prop, action, value){
-				debugMode && console.log("texture id value:", value);
-			});
+		watch(select, "onchange", function(property, event, value){
+			debugMode && console.log({item:"texture",event:event,"item id":value});
 		});
 
 	//	Call watchers.
-		setTimeout(function(){
-			select.addEventListener( "change", function(){
-				callWatchers(this.selectedOptions, 0, "change", this.value );
-			});
+		select.addEventListener( "change", function(){
+			callWatchers(this, "onchange", "change", this.value );
 		});
 
 		row.appendChild( select );
@@ -129,12 +125,6 @@
 		renderer.setSize( canvas.width, canvas.height );
 		renderer.domElement.style.background = "none";  // transparent rendering. important!
 
-	//	window.addEventListener("resize", function onWindowResize() {
-	//		renderer.setSize( canvas.width, canvas.width );
-	//		camera.aspect = renderer.domElement.clientWidth / renderer.domElement.clientHeight;
-	//		camera.updateProjectionMatrix();
-	//	});
-
 		(function render(){
 			requestAnimationFrame( render );
 			renderer.render( scene, camera );
@@ -182,11 +172,22 @@
 		row.style.cssText = "margin-right:20px;height:30px;";
 
 		var input = document.createElement("input");
+		input.type = "text";
 		input.id = "texture-text-input";
 		input.setAttribute("placeholder", "text input" );
 		input.classList.add("form-control","text-center");
 		input.style.cssText = "width:-webkit-fill-available;color:#000;display:inline;"
 		+ "margin:0px 5px;text-align:center;font-size:large;font-weigth:bold;background:none;";
+
+	//	Add a watcher.
+		watch(input, "onchange", function(property, event, value){
+			debugMode && console.log({item:"input",event:event,"value":value});
+		});
+
+	//	Call watchers.
+		input.addEventListener( "change", function(){
+			callWatchers(this, "onchange", "change", this.value );
+		});
 
 		row.appendChild(input);
 		tab.appendChild( row );
@@ -209,7 +210,7 @@
 		+ "font-size:20px;margin-left:10px;margin-right:15px;";
 
 		var keys = "";
-		keys += "uuid,name,flipY,format,mapping,rotation,minFilter,magFilter,anisotropy";
+		keys += "uuid,name,flipY,format,rotation,mapping,minFilter,magFilter,anisotropy,wrapS,wrapT";
 
 		keys.split(",").forEach(function( name ){
 			var option = document.createElement("option");
@@ -219,17 +220,13 @@
 		});
 
 	//	Add a watcher.
-		setTimeout(function(){
-			watch(select.selectedOptions, function(prop, action, value){
-				debugMode && console.log("texture key value:", value);
-			});
+		watch(select, "onchange", function(property, event, value){
+			debugMode && console.log({item:"droplist",event:event,"key":value});
 		});
 
 	//	Call watchers.
-		setTimeout(function(){
-			select.addEventListener( "change", function(){
-				callWatchers(this.selectedOptions, 0, "change", this.value );
-			});
+		select.addEventListener( "change", function(){
+			callWatchers(this, "onchange", "change", this.value );
 		});
 
 		row.appendChild( select );
@@ -268,6 +265,16 @@
 		input.style.cssText = "color:#000;border:none;display:inline;width:80px;"
 		+ "margin:0px 5px;text-align:center;font-size:large;font-weigth:bold;background:none;";
 
+	//	Add a watcher.
+		watch(input, "onchange", function(property, event, value){
+			debugMode && console.log({item:"input",event:event,"value":value});
+		});
+
+	//	Call watchers.
+		input.addEventListener( "change", function(){
+			callWatchers(this, "onchange", "change", this.value );
+		});
+
 		vect.appendChild(prev);
 		vect.appendChild(input);
 		vect.appendChild(next);
@@ -293,7 +300,7 @@
 		+ "font-size:20px;margin-left:10px;margin-right:15px;";
 
 		var keys = "";
-		keys += "offset,repeat,center,wrap";
+		keys += "offset,repeat,center";
 
 		keys.split(",").forEach(function( name ){
 			var option = document.createElement("option");
@@ -303,17 +310,13 @@
 		});
 
 	//	Add a watcher.
-		setTimeout(function(){
-			watch(select.selectedOptions, function(prop, action, value){
-				debugMode && console.log("texture vector value:", value);
-			});
+		watch(select, "onchange", function(property, event, value){
+			debugMode && console.log({item:"droplist",event:event,"vector":value});
 		});
 
 	//	Call watchers.
-		setTimeout(function(){
-			select.addEventListener( "change", function(){
-				callWatchers(this.selectedOptions, 0, "change", this.value );
-			});
+		select.addEventListener( "change", function(){
+			callWatchers(this, "onchange", "change", this.value );
 		});
 
 		row.appendChild( select );
@@ -354,6 +357,16 @@
 		input.style.cssText = "color:#000;border:none;display:inline;width:80px;"
 			+ "margin:0px 5px;text-align:center;font-size:large;font-weigth:bold;background:none;";
 
+	//	Add a watcher.
+		watch(input, "onchange", function(property, event, value){
+			debugMode && console.log({item:"input",event:event,"vector-x":value});
+		});
+
+	//	Call watchers.
+		input.addEventListener( "change", function(){
+			callWatchers(this, "onchange", "change", this.value );
+		});
+
 		vect.appendChild(prev);
 		vect.appendChild(input);
 		vect.appendChild(next);
@@ -392,6 +405,16 @@
 		input.classList.add("form-control","text-center");
 		input.style.cssText = "color:#000;border:none;display:inline;width:80px;"
 			+ "margin:0px 5px;text-align:center;font-size:large;font-weigth:bold;background:none;";
+
+	//	Add a watcher.
+		watch(input, "onchange", function(property, event, value){
+			debugMode && console.log({item:"input",event:event,"vector-y":value});
+		});
+
+	//	Call watchers.
+		input.addEventListener( "change", function(){
+			callWatchers(this, "onchange", "change", this.value );
+		});
 
 		vect.appendChild(prev);
 		vect.appendChild(input);
@@ -442,8 +465,7 @@
 		button.appendChild( input );
 
 		button.addEventListener( "click", function(){
-			input.files.length = 0;
-			input.click();
+			input.files.length = 0; input.click();
 		});
 
 		row.appendChild( button );
@@ -472,8 +494,7 @@
 		button.appendChild( input );
 
 		button.addEventListener( "click", function(){
-			input.files.length = 0;
-			input.click();
+			input.files.length = 0; input.click();
 		});
 
 		row.appendChild( button );
@@ -501,8 +522,7 @@
 	})( TabUI.Texture.tab );
 
 
-//  ======================================================================================  //
-
+//  =====================================================================================  //
 
 //	Texture Manager Class.
 
@@ -658,4 +678,867 @@
 	const texture_entities = new TextureManager(); // texture entities array, important!.
 	const removed_textures = new TextureManager(); // texture entities array, important!.
 
-//  ======================================================================================  //
+//  =====================================================================================  //
+
+
+//	TextureEditor.js
+
+	const textureEditor = (function(){
+
+	//	UndoRedoArray Class (extends Array class).
+
+		function UndoArray(){
+			var array = new Array(0);
+			Object.setPrototypeOf( array, UndoArray.prototype );
+			return array; // important!
+		}
+
+		UndoArray.prototype = Object.create(Array.prototype); // important!
+		UndoArray.prototype.clear = function(){ this.length = 0; };
+		UndoArray.prototype.move = array_move.bind(UndoArray.prototype); // TO BE TESTED!!!
+
+		const undo = new UndoArray(); debugMode && console.log( {"undo": undo} );
+		const redo = new UndoArray(); debugMode && console.log( {"redo": redo} );
+
+	//
+
+		const RAD2DEG = THREE.Math.RAD2DEG;
+		const DEG2RAD = THREE.Math.DEG2RAD;
+
+	//	droplists.
+
+		const map_droplist    = document.getElementById("material-map-droplist");
+		const key_droplist    = document.getElementById("texture-key-droplist");
+		const vector_droplist = document.getElementById("texture-vector-droplist");
+		const entity_droplist = document.getElementById("texture-entities-droplist");
+
+	//	mouse inputs.
+
+		const increase_v = document.getElementById("texture-value-increase");
+		const increase_x = document.getElementById("texture-vector-x-increase");
+		const increase_y = document.getElementById("texture-vector-y-increase");
+
+		const decrease_v = document.getElementById("texture-value-decrease");
+		const decrease_x = document.getElementById("texture-vector-x-decrease");
+		const decrease_y = document.getElementById("texture-vector-y-decrease");
+
+	//	keyboard inputs.
+
+		const vector_x    = document.getElementById("texture-vector-x-input");
+		const vector_y    = document.getElementById("texture-vector-y-input");
+		const text_input  = document.getElementById("texture-text-input");
+		const value_input = document.getElementById("texture-value-input");
+
+	//	texture tab buttons.
+
+		const exit_button = document.getElementById("texture-exit-mode");
+		const redo_button = document.getElementById("texture-redo-button");
+		const undo_button = document.getElementById("texture-undo-button");
+		const create_button = document.getElementById("create-texture-button");
+		const replace_button = document.getElementById("replace-image-button");
+
+	//	texture tab file inputs.
+
+		const image_fileinput = document.getElementById("image-file-input");
+		const texture_fileinput = document.getElementById("texture-file-input");
+
+	//	TextureEditor class (extends THREE.Texture Class).
+	//	A THREE.Texture that holds editor values. Extends THREE.Texture.
+
+		const editor = (function(){
+
+			var interval;
+
+			function TextureEditor(){
+				var texture = new THREE.Texture();
+				Object.setPrototypeOf( texture, TextureEditor.prototype );
+				return texture; // important!
+			}
+
+			TextureEditor.prototype = Object.create(THREE.Texture.prototype); // important!
+
+			TextureEditor.prototype.reset = function(){ 
+				this.copy( new THREE.Texture() ); 
+				this.uuid = THREE.Math.generateUUID();
+			};
+
+			TextureEditor.prototype.fromJSON = function( json ){
+			//	param: a texture json {object}
+
+				var editor = this;
+
+				for ( var key in json ) {
+					switch ( key ){
+
+						case "image":
+							console.warn("case:",key,"TODO!"); // TODO!
+						break;
+
+						case "center":
+						case "offset":
+						case "repeat":
+							editor[ key ].x = json[ key ][0];
+							editor[ key ].y = json[ key ][1];
+						break;
+
+						case "wrap":
+							editor.wrapS = json[ key ][0];
+							editor.wrapT = json[ key ][1];
+						break;
+
+						default:
+							editor[ key ] = json[ key ];
+						break;
+					}
+				}
+
+			};
+
+			TextureEditor.prototype.undo = function(){
+
+				var editor = this;
+
+				if ( !undo.length ) return;
+
+			//	Get undo json.
+				var json = undo.shift();
+
+				if ( !json ) return;
+
+			//	Move json to redo.
+				redo.unshift( json );
+
+				clearTimeout( interval );
+				interval = setTimeout( function(){
+
+				//	Copy texture state (undo).
+					editor.fromJSON( json ); // update.
+
+					debugMode && console.log( "undo:", undo.length, "redo:", redo.length );
+
+				}, 250);
+
+			};
+
+			TextureEditor.prototype.redo = function(){
+
+				var editor = this;
+
+				if ( !redo.length ) return;
+
+			//	Get redo json.
+				var json = redo.shift();
+
+				if ( !json ) return;
+
+			//	Move json to undo.
+				undo.unshift( json );
+
+				clearTimeout( interval );
+				interval = setTimeout( function(){
+
+				//	Copy texture state (redo).
+					editor.fromJSON( json ); // update.
+
+					debugMode && console.log( "undo:", undo.length, "redo:", redo.length );
+
+				}, 250);
+			};
+
+			TextureEditor.prototype.update = function( value ){
+
+			//	Copies the values of the target texture in textures
+			//	entity manager. Does not updates the target texture.
+			//	dependences: texture_entities {texture manager},
+			//	param: a texture id {string or number},
+
+				var editor = this;
+
+			//	get target texture.
+				var texture = texture_entities.getTextureById( value );
+			//	debugMode && console.log( "target texture:", texture );
+
+				if ( !texture ) {
+					editor.reset();
+					console.log("editor update:", false);
+					return false; // important!
+				}
+
+			//	copy texture (update).
+				editor.copy( texture );
+				editor.name = texture.name;
+				editor.uuid = texture.uuid;
+
+			//	return true.
+				console.log("editor update:", true);
+				return true; // important!
+
+			};
+
+			return new TextureEditor();
+
+		})();
+
+	//	helpers.
+
+		function getTextureByEntityId( value ){
+
+			if ( arguments.length ) 
+				var id = parseInt( value );
+			else
+				var id = parseInt( texture_droplist.value );
+
+			if ( id === NaN ) return;
+
+			return texture_entities.find( function( texture ){
+				return texture.id === id;
+			});
+		}
+
+		function getMaterialByEntityId( value ){
+
+			if ( arguments.length ) 
+				var id = parseInt( value );
+			else
+				var id = parseInt( material_droplist.value );
+
+			if ( id === NaN ) return;
+
+			return material_entities.find( function( material ){
+				return material.id === id;
+			});
+		}
+
+	//	add to undo/redo.
+
+		function addtoUndo(){
+			var json = editor.toJSON();
+			json && undo.unshift( json );
+			return;
+		}
+
+		function clearUndoRedo(){
+			undo.clear();
+			redo.clear();
+			return;
+		}
+
+		function resetUIValues(){
+			vector_x.value = "";
+			vector_y.value = "";
+			text_input.value = "";
+			value_input.value = "";
+			key_droplist.value = "";
+			vector_droplist.value = "";
+			entity_droplist.value = "";
+		//	state.update(); // imporant!
+			return;
+		}
+
+	//	exit from edit mode.
+
+		function exitFromEditMode(){
+			editor.reset();
+			resetUIValues();
+			clearUndoRedo();
+			return;
+		}
+
+	//	Undo/Redo/Exit buttons.
+
+		(function(){
+
+			var interval;
+
+		//	const exit_button = document.getElementById("texture-exit-mode");
+		//	const undo_button = document.getElementById("texture-undo-button");
+		//	const redo_button = document.getElementById("texture-redo-button");
+
+			exit_button.addEventListener( "click", function(){
+				clearTimeout( interval ); 
+				interval = setTimeout( exitFromEditMode, 250);
+			});
+
+			undo_button.addEventListener( "click", function(){
+				debugMode && console.log("undo:",undo.length,"redo:",redo.length);
+				if ( !entity_droplist.value ) clearUndoRedo();
+				else undo.length && editor.undo(); // undo.
+			});
+
+			redo_button.addEventListener( "click", function(){
+				debugMode && console.log("undo:",undo.length,"redo:",redo.length);
+				if ( !entity_droplist.value ) clearUndoRedo();
+				else redo.length && editor.redo(); // redo.
+			});
+
+		})();
+
+	//	Tab droplists.
+
+		(function(){
+
+		//	const key_droplist    = document.getElementById("texture-key-droplist");
+		//	const vector_droplist = document.getElementById("texture-vector-droplist");
+		//	const entity_droplist = document.getElementById("texture-entities-droplist");
+
+			key_droplist.addEventListener( "change", key_droplist.blur );
+			vector_droplist.addEventListener( "change", vector_droplist.blur );
+			entity_droplist.addEventListener( "change", entity_droplist.blur );
+
+			watch( vector_droplist, "onchange", function( property, event, key ){
+				if ( !key ) [vector_x.value, vector_y.value] = [ "", "" ];
+				else [vector_x.value, vector_y.value] = [editor[key].x, editor[key].y];
+			});
+
+			watch( key_droplist, "onchange", function( property, event, key ){
+				if ( !key ) [ value_input.value, text_input.value ] = ["", ""];
+				else if ( key == "name" || key == "uuid" ) {
+					[ value_input.value, text_input.value ] = [ "", editor[key] ];
+				} else {
+					[ value_input.value, text_input.value ] = [ editor[key], "" ];
+				}
+			});
+
+			watch( entity_droplist, "onchange", function( property, event, value ){
+				editor.update( parseInt(value) ); // important! id.
+				var key = key_droplist.value, vector = vector_droplist.value;
+				callWatchers( key_droplist, "onchange", "change", key );
+				callWatchers( vector_droplist, "onchange", "change", vector );
+			});
+
+		})();
+
+	//	Tab keyboard inputs.
+
+		(function(){
+
+			var interval;
+
+		//	const vector_x = document.getElementById("texture-vector-x-input");
+		//	const vector_y = document.getElementById("texture-vector-y-input");
+		//	const text_input = document.getElementById("texture-text-input");
+		//	const value_input = document.getElementById("texture-value-input");
+
+		//	keyInputs blur.
+
+			vector_x.addEventListener( "change", vector_x.blur );
+			vector_y.addEventListener( "change", vector_y.blur );
+			text_input.addEventListener( "change", text_input.blur );
+			value_input.addEventListener( "change", value_input.blur );
+
+		//	keyInputControls.
+
+			function enableKeyInputControls(){
+				keyInputControls.isDisabled = false;
+			}
+
+			function disableKeyInputControls(){
+				keyInputControls.isDisabled = true;
+			}
+
+			vector_x.addEventListener( "blur", enableKeyInputControls );
+			vector_y.addEventListener( "blur", enableKeyInputControls );
+			text_input.addEventListener( "blur", enableKeyInputControls );
+			value_input.addEventListener( "blur", enableKeyInputControls );
+
+			vector_x.addEventListener( "focus", disableKeyInputControls );
+			vector_y.addEventListener( "focus", disableKeyInputControls );
+			text_input.addEventListener( "focus", disableKeyInputControls );
+			value_input.addEventListener( "focus", disableKeyInputControls );
+
+		//	keyinputs change.
+
+			text_input.addEventListener( "change", function(){
+
+				var key = key_droplist.value;
+
+				if ( key === "uuid" ) text_input.value = editor[ key ];
+				else if ( !key_droplist.value ) text_input.value = "";
+				else if ( !entity_droplist.value ) text_input.value = "";
+				else if ( key === "name" ) editor[ key ] = text_input.value;
+				else text_input.value = "";
+
+			});
+
+			value_input.addEventListener( "change", function(){
+
+				var key = key_droplist.value;
+				var value = Number(value_input.value); // number!
+
+			//	disabled on key change.
+
+				if ( !key_droplist.value || !entity_droplist.value ) value = "";
+				if ( isNaN( value ) || key === "uuid" || key === "name") value = "";
+
+			//	enabled on key change.
+
+				switch ( key ){
+
+					case "flipY":
+						value_input.value = editor[key] = Boolean(value);
+					break;
+
+					case "format":
+						if ( [1021, 1022, 1023, 1024, 1025, 1026, 1027].includes( value ) ) editor[ key ] = Number(value);
+						else if ( !isNaN( editor[key]) ) value_input.value = editor[key];
+						else value_input.value = editor[key] = 1023; // reset.
+					break;
+
+					case "mapping":
+						if ( [300, 301, 302, 303, 304, 305, 306, 307].includes( value ) ) editor[ key ] = Number(value);
+						else if ( !isNaN( editor[key]) ) value_input.value = editor[key];
+						else value_input.value = editor[key] = 300; // reset.
+					break;
+
+					case "encoding":
+						if ( [3000, 3001, 3007, 3002, 3003, 3004, 3005, 3006, 3200, 3201].includes( value ) ) editor[ key ] = Number(value);
+						else if ( !isNaN( editor[key]) ) value_input.value = editor[key];
+						else value_input.value = editor[key] = 3000; // reset.
+					break;
+
+					case "magFilter":
+						if ( [1003, 1006].includes( value ) )editor[ key ] = Number(value);
+						else if ( !isNaN( editor[key]) ) value_input.value = editor[key];
+						else value_input.value = editor[key] = 1006; // reset.
+					break;
+
+					case "minFilter":
+						if ( [1003, 1004, 1005, 1006, 1007, 1008].includes( value ) )editor[ key ] = Number(value);
+						else if ( !isNaN( editor[key]) ) value_input.value = editor[key];
+						else value_input.value = editor[key] = 1008; // reset.
+					break;
+
+					case "anisotropy":
+						if ( !isNaN( value ) ) 
+							value_input.value = ( editor[ key ] = THREE.Math.clamp(value,1,-1) ).toFixed(1);
+						else if ( !isNaN( editor[key]) ) 
+							value_input.value = editor[key].toFixed(2);
+						else value_input.value = editor[key] = 1; // reset.
+					break;
+
+					case "rotation":
+						if ( !isNaN( value ) ) {
+							editor[key] = THREE.Math.clamp(DEG2RAD*value,-Math.PI, Math.PI);
+							value_input.value = THREE.Math.clamp((value),-180,180).toFixed(1);
+						} else if ( !isNaN( editor[key]) ) 
+							value_input.value = THREE.Math.clamp((RAD2DEG*editor[key]),-180,180).toFixed(1);
+						else value_input.value = editor[key] = 0; // reset.
+					break;
+				}
+
+			});
+
+		})();
+
+	//	mouse inputs.
+
+		(function(){
+
+			var interval;
+
+		//	const increase_v = document.getElementById("texture-value-increase");
+		//	const decrease_v = document.getElementById("texture-value-decrease");
+		//	const value_input = document.getElementById("texture-value-input");
+		//	const key_droplist = document.getElementById("texture-key-droplist");
+		//	const entity_droplist = document.getElementById("texture-entities-droplist");
+
+			increase_v.addEventListener( "mousedown", onMouseDown );
+			decrease_v.addEventListener( "mousedown", onMouseDown );
+
+			window.addEventListener( "mouseup", function (){
+			//	debugMode && console.log( "on MouseUp:", interval );
+				clearTimeout( interval ); // important!
+			});
+
+			increase_v.addEventListener( "click", onMouseClick );
+			decrease_v.addEventListener( "click", onMouseClick );
+
+			function onMouseDown(){ 
+
+				clearTimeout( interval ); // important!
+
+				if ( !entity_droplist.value ) return;
+
+			//	disabled on mouse down.
+
+				if ( key_droplist.value === "name" ) return;
+				if ( key_droplist.value === "uuid" ) return;
+				if ( key_droplist.value === "flipY" ) return;
+				if ( key_droplist.value === "format" ) return;
+				if ( key_droplist.value === "mapping" ) return;
+				if ( key_droplist.value === "minFilter" ) return;
+				if ( key_droplist.value === "magFilter" ) return;
+
+			//	enabled on mouse down.
+
+				var button = this;
+				var clock = new THREE.Clock();
+
+				interval = setTimeout( function update() {
+
+					var key = key_droplist.value;
+
+					if ( key === "rotation" ) (function(){
+
+						var step = 0.1 * Math.PI/180; // 0.1 deg.
+						var max = Math.PI, min = -max;
+						var value = Number(editor[ key ]); // get value from editor.
+						if ( button === increase_v ) value = THREE.Math.clamp( value+step, min, max );
+						if ( button === decrease_v ) value = THREE.Math.clamp( value-step, min, max );
+						value_input.value = ( RAD2DEG * ( editor[ key ] = value) ).toFixed(1); // string.
+
+					})();
+
+					else if ( key === "anisotropy" ) (function(){
+
+						var step = 1/100, max = 1, min = -max;
+						var value = Number(editor[ key ]); // get value from editor.
+						if ( button === increase_v ) value = THREE.Math.clamp( value+step, min, max );
+						if ( button === decrease_v ) value = THREE.Math.clamp( value-step, min, max );
+						value_input.value = ( editor[key] = round(value, 2) ).toFixed(2);
+
+					})();
+
+					var dt = clock.getDelta();
+					interval = setTimeout( update, dt );
+				//	debugMode && console.log( "on mousedown:", interval );
+
+				}, 500);
+			}
+
+			function onMouseClick(){
+
+				var button = this;
+
+				clearTimeout( interval ); // important!
+
+				if ( !entity_droplist.value ) return;
+
+				var key = key_droplist.value;
+
+			//	disabled on mouse click.
+
+				if ( key === "name" ) return;
+
+			//	enabled on mouse click.
+
+				function updateConstantInputValue( values ){
+					var min = 0, max = values.length;
+					var value = Number(editor[ key ]); // get value from editor.
+					var index = values.findIndex(function( item ){ return item === value; });
+					if ( button === increase_v ) value = values[ ( ++index % max + max ) % max ]; // mod();
+					if ( button === decrease_v ) value = values[ ( --index % max + max ) % max ]; // mod();
+					value_input.value = editor[ key ] = value; // number.
+				}
+
+				switch ( key ){
+
+					case "uuid": 
+						text_input.value = editor[ key ] = THREE.Math.generateUUID(); // string.
+					break;
+
+					case "flipY":
+						value_input.value = editor[ key ] = !editor[ key ]; // boolean.
+					break;
+
+					case "format":
+						updateConstantInputValue([ // order matters...
+							THREE.AlphaFormat,THREE.RGBFormat,THREE.RGBAFormat,THREE.LuminanceFormat,
+							THREE.LuminanceAlphaFormat, THREE.DepthFormat, THREE.DepthStencilFormat 
+						]);
+					break;
+
+					case "mapping":
+						updateConstantInputValue([ // order matters...
+							THREE.UVMapping,THREE.CubeReflectionMapping,THREE.CubeRefractionMapping,
+							THREE.EquirectangularReflectionMapping,THREE.EquirectangularRefractionMapping,
+							THREE.SphericalReflectionMapping,THREE.CubeUVReflectionMapping,THREE.CubeUVRefractionMapping
+						]);
+					break;
+
+					case "encoding":
+						updateConstantInputValue([ // order matters...
+							THREE.LinearEncoding,THREE.sRGBEncoding,THREE.GammaEncoding,THREE.RGBEEncoding,
+							THREE.LogLuvEncoding,THREE.RGBM7Encoding,THREE.RGBM16Encoding,THREE.RGBDEncoding,
+							THREE.BasicDepthPacking,THREE.RGBADepthPacking 
+						]);
+					break;
+
+					case "magFilter":
+						updateConstantInputValue([ THREE.NearestFilter,THREE.LinearFilter ]);
+					break;
+
+					case "minFilter":
+						updateConstantInputValue([ // order matters...
+							THREE.NearestFilter,THREE.NearestMipMapNearestFilter,
+							THREE.NearestMipMapLinearFilter,THREE.LinearFilter,
+							THREE.LinearMipMapNearestFilter,THREE.LinearMipMapLinearFilter 
+						]);
+					break;
+
+					case "rotation":
+						(function(){
+							var step = 0.1 * Math.PI/180; // 0.1 deg.
+							var max = Math.PI, min = -max;
+							var value = Number(editor[ key ]); // get value from editor.
+							if ( button === increase_v ) value = THREE.Math.clamp( value+step, min, max );
+							if ( button === decrease_v ) value = THREE.Math.clamp( value-step, min, max );
+							value_input.value = ( RAD2DEG * ( editor[ key ] = value) ).toFixed(1); // string.
+						})();
+					break;
+
+					case "anisotropy":
+						(function(){
+							var step = 1/100, max = 1, min = -max;
+							var value = Number(editor[ key ]); // get value from editor.
+							if ( button === increase_v ) value = THREE.Math.clamp( value+step, min, max );
+							if ( button === decrease_v ) value = THREE.Math.clamp( value-step, min, max );
+							value_input.value = ( editor[key] = round(value, 2) ).toFixed(2);
+						})();
+					break;
+
+					case "wrapS":
+					case "wrapT":
+						updateConstantInputValue([ // order matters...
+							THREE.RepeatWrapping,THREE.ClampToEdgeWrapping,THREE.MirroredRepeatWrapping 
+						]);
+					break;
+
+				}
+
+				debugMode && console.log( "undo:", undo.length, "redo:", redo.length );
+				debugMode && console.log( "on Mouse Click:", interval );
+
+			}
+
+		})();
+
+		(function(){
+
+			var interval;
+
+		//	const vector_x   = document.getElementById("texture-vector-x-input");
+		//	const vector_y   = document.getElementById("texture-vector-y-input");
+		//	const increase_x = document.getElementById("texture-vector-x-increase");
+		//	const increase_y = document.getElementById("texture-vector-y-increase");
+		//	const decrease_x = document.getElementById("texture-vector-x-decrease");
+		//	const decrease_y = document.getElementById("texture-vector-y-decrease");
+		//	const vector_droplist = document.getElementById("texture-vector-droplist");
+		//	const entity_droplist = document.getElementById("texture-entities-droplist");
+
+			increase_x.addEventListener( "mousedown", onMouseDown );
+			decrease_x.addEventListener( "mousedown", onMouseDown );
+			increase_y.addEventListener( "mousedown", onMouseDown );
+			decrease_y.addEventListener( "mousedown", onMouseDown );
+
+			window.addEventListener( "mouseup", function (){
+			//	debugMode && console.log( "on MouseUp:", interval );
+				clearTimeout( interval ); // important!
+			});
+
+			increase_x.addEventListener( "click", onMouseClick );
+			decrease_x.addEventListener( "click", onMouseClick );
+			increase_y.addEventListener( "click", onMouseClick );
+			decrease_y.addEventListener( "click", onMouseClick );
+
+			function onMouseDown(){ 
+
+				clearTimeout( interval ); // important!
+
+				if ( !entity_droplist.value ) return;
+
+			//	disabled on mouse down.
+
+				if ( vector_droplist.value === "wrap" ) return;
+
+			//	enabled on mouse down.
+
+				var button = this;
+				var clock = new THREE.Clock();
+
+				interval = setTimeout( function onUpdate() {
+
+					var key = vector_droplist.value;
+
+					if ( key ) (function(){
+
+						var step = 1/100, max = 1000, min = -max;
+
+						if ( button === increase_x || button === decrease_x ) {
+							var value = Number(editor[ key ].x); // get value from editor.
+							if ( button === increase_x ) value = THREE.Math.clamp( value+step, min, max );
+							if ( button === decrease_x ) value = THREE.Math.clamp( value-step, min, max );
+							vector_x.value = ( editor[ key ].x = round(value, 2) ).toFixed(2); // string.
+						}
+
+						else if ( button === increase_y || button === decrease_y ) {
+							var value = Number(editor[ key ].y); // get value from editor.
+							if ( button === increase_y ) value = THREE.Math.clamp( value+step, min, max );
+							if ( button === decrease_y ) value = THREE.Math.clamp( value-step, min, max );
+							vector_y.value = ( editor[ key ].y = round(value, 2) ).toFixed(2); // string.
+						}
+
+					})();
+
+					var dt = clock.getDelta();
+					interval = setTimeout( onUpdate, dt );
+				//	debugMode && console.log( "on Update:", interval );
+
+				}, 500);
+			}
+
+			function onMouseClick(){
+
+				clearTimeout( interval ); // important!
+
+				if ( !entity_droplist.value ) return;
+
+				var button = this;
+
+				var key = vector_droplist.value;
+
+			//	enabled on mouse click.
+
+				if ( key ) (function(){
+
+					var step = 1/100, max = 1000, min = -max;
+
+					if ( button === increase_x || button === decrease_x ) {
+						var value = Number(editor[ key ].x); // get value from editor.
+						if ( button === increase_x ) value = THREE.Math.clamp( value+step, min, max );
+						if ( button === decrease_x ) value = THREE.Math.clamp( value-step, min, max );
+						vector_x.value = ( editor[ key ].x = round(value, 2) ).toFixed(2);
+					//	callWatchers(vector_x, "onchange", "change", value);
+					}
+
+					else if ( button === increase_y || button === decrease_y ) {
+						var value = Number(editor[ key ].y); // get value from editor.
+						if ( button === increase_y ) value = THREE.Math.clamp( value+step, min, max );
+						if ( button === decrease_y ) value = THREE.Math.clamp( value-step, min, max );
+						vector_y.value = ( editor[ key ].y = round(value, 2) ).toFixed(2);
+					//	callWatchers(vector_y, "onchange", "change", value);
+					}
+
+				})();
+
+				debugMode && console.log( "undo:", undo.length, "redo:", redo.length );
+				debugMode && console.log( "on Mouse Click:", interval );
+
+			}
+
+		})();
+
+	//	Editor Watchers.
+	//	Watch each object/property individually.
+
+		(function( editor ){
+
+			var interval;
+
+		//	Vectors.
+			watch( editor.center, function( key, action, value, oldValue ){
+				debugMode && console.log("editor:",{"key":key,"action":action,"value":value});
+				texture.center[ key ] = editor.center[ key ];
+			//	clearTimeout( interval );
+			});
+			watch( editor.offset, function( key, action, value, oldValue ){
+				debugMode && console.log("editor:",{"key":key,"action":action,"value":value});
+				texture.offset[ key ] = editor.offset[ key ];
+			//	clearTimeout( interval );
+			});
+			watch( editor.repeat, function( key, action, value, oldValue ){
+				debugMode && console.log("editor:",{"key":key,"action":action,"value":value});
+				texture.repeat[ key ] = editor.repeat[ key ];
+			//	clearTimeout( interval );
+			});
+
+		//	Nubers.
+			watch( editor, "anisotropy", function( key, action, value, oldValue ){
+				debugMode && console.log("editor:",{"key":key,"action":action,"value":value});
+				texture[ key ] = editor[ key ];
+			//	clearTimeout( interval );
+			});
+			watch( editor, "rotation", function( key, action, value, oldValue ){
+				debugMode && console.log("editor:",{"key":key,"action":action,"value":value});
+				texture[ key ] = editor[ key ];
+			//	clearTimeout( interval );
+			});
+
+		//	Strings.
+			watch( editor, "name", function( key, action, value, oldValue ){
+				debugMode && console.log("editor:",{"key":key,"action":action,"value":value});
+				texture[ key ] = editor[ key ];
+			//	clearTimeout( interval );
+			});
+			watch( editor, "uuid", function( key, action, value, oldValue ){
+				debugMode && console.log("editor:",{"key":key,"action":action,"value":value});
+				texture[ key ] = editor[ key ];
+			//	clearTimeout( interval );
+			});
+
+		//	Constants.
+			watch( editor, "format", function( key, action, value, oldValue ){
+				debugMode && console.log("editor:",{"key":key,"action":action,"value":value});
+				texture[ key ] = editor[ key ];
+			//	clearTimeout( interval );
+			});
+			watch( editor, "mapping", function( key, action, value, oldValue ){
+				debugMode && console.log("editor:",{"key":key,"action":action,"value":value});
+				texture[ key ] = editor[ key ];
+			//	clearTimeout( interval );
+			});
+			watch( editor, "wrapS", function( key, action, value, oldValue ){
+				debugMode && console.log("editor:",{"key":key,"action":action,"value":value});
+				texture[ key ] = editor[ key ];
+			//	clearTimeout( interval );
+			});
+			watch( editor, "wrapT", function( key, action, value, oldValue ){
+				debugMode && console.log("editor:",{"key":key,"action":action,"value":value});
+			//	clearTimeout( interval );
+			});
+			watch( editor, "minFilter", function( key, action, value, oldValue ){
+				debugMode && console.log("editor:",{"key":key,"action":action,"value":value});
+			//	clearTimeout( interval );
+			});
+			watch( editor, "magFilter", function( key, action, value, oldValue ){
+				debugMode && console.log("editor:",{"key":key,"action":action,"value":value});
+			//	clearTimeout( interval );
+			});
+			watch( editor, "type", function( key, action, value, oldValue ){
+				debugMode && console.log("editor:",{"key":key,"action":action,"value":value});
+				texture[ key ] = editor[ key ];
+			//	clearTimeout( interval );
+			});
+
+		//	Boolean.
+			watch( editor, "flipY", function( key, action, value, oldValue ){
+			//	clearTimeout( interval );
+				debugMode && console.log("editor:",{"key":key,"action":action,"value":value});
+			});
+			watch( editor, "premultiplyAlpha", function( key, action, value, oldValue ){
+				debugMode && console.log("editor:",{"key":key,"action":action,"value":value});
+				texture[ key ] = editor[ key ];
+			//	clearTimeout( interval );
+			});
+			watch( editor, "matrixAutoUpdate", function( key, action, value, oldValue ){
+				debugMode && console.log("editor:",{"key":key,"action":action,"value":value});
+				texture[ key ] = editor[ key ];
+			//	clearTimeout( interval );
+			});
+			watch( editor, "generateMipmaps", function( key, action, value, oldValue ){
+				debugMode && console.log("editor:",{"key":key,"action":action,"value":value});
+				texture[ key ] = editor[ key ];
+			//	clearTimeout( interval );
+			});
+
+		//	Image.
+			watch( editor.image, function( key, action, value, oldValue ){
+				debugMode && console.log("editor:",{"key":key,"action":action,"value":value});
+			//	clearTimeout( interval );
+			});
+
+		})( editor );
+
+		return editor;  // important!
+
+	})();
