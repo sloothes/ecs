@@ -1307,6 +1307,8 @@
 
 				}
 
+			//	TODO: add undo.
+
 				debugMode && console.log( "undo:", undo.length, "redo:", redo.length );
 				debugMode && console.log( "on Mouse Click:", interval );
 
@@ -1422,6 +1424,8 @@
 
 				})();
 
+			//	TODO: add undo.
+
 				debugMode && console.log( "undo:", undo.length, "redo:", redo.length );
 				debugMode && console.log( "on Mouse Click:", interval );
 
@@ -1434,105 +1438,114 @@
 
 		(function( editor ){
 
+			var texture;
 			var interval;
+
+			watch( entity_droplist, "onchange", function( property, event, value ){
+				texture = texture_entities.getTextureById( value ); // id.
+			});
 
 		//	Vectors.
 			watch( editor.center, function( key, action, value, oldValue ){
 				debugMode && console.log("editor:",{"key":key,"action":action,"value":value});
-				texture.center[ key ] = editor.center[ key ];
+				if (texture) texture.center[ key ] = editor.center[ key ];
 			//	clearTimeout( interval );
 			});
 			watch( editor.offset, function( key, action, value, oldValue ){
 				debugMode && console.log("editor:",{"key":key,"action":action,"value":value});
-				texture.offset[ key ] = editor.offset[ key ];
+				if (texture) texture.offset[ key ] = editor.offset[ key ];
 			//	clearTimeout( interval );
 			});
 			watch( editor.repeat, function( key, action, value, oldValue ){
 				debugMode && console.log("editor:",{"key":key,"action":action,"value":value});
-				texture.repeat[ key ] = editor.repeat[ key ];
+				if (texture) texture.repeat[ key ] = editor.repeat[ key ];
 			//	clearTimeout( interval );
 			});
 
 		//	Nubers.
 			watch( editor, "anisotropy", function( key, action, value, oldValue ){
 				debugMode && console.log("editor:",{"key":key,"action":action,"value":value});
-				texture[ key ] = editor[ key ];
+				if (texture) texture[ key ] = editor[ key ];
 			//	clearTimeout( interval );
 			});
 			watch( editor, "rotation", function( key, action, value, oldValue ){
 				debugMode && console.log("editor:",{"key":key,"action":action,"value":value});
-				texture[ key ] = editor[ key ];
+				if (texture) texture[ key ] = editor[ key ];
 			//	clearTimeout( interval );
 			});
 
 		//	Strings.
 			watch( editor, "name", function( key, action, value, oldValue ){
 				debugMode && console.log("editor:",{"key":key,"action":action,"value":value});
-				texture[ key ] = editor[ key ];
+				if (texture) texture[ key ] = editor[ key ];
 			//	clearTimeout( interval );
 			});
 			watch( editor, "uuid", function( key, action, value, oldValue ){
 				debugMode && console.log("editor:",{"key":key,"action":action,"value":value});
-				texture[ key ] = editor[ key ];
+				if (texture) texture[ key ] = editor[ key ];
 			//	clearTimeout( interval );
 			});
 
 		//	Constants.
 			watch( editor, "format", function( key, action, value, oldValue ){
 				debugMode && console.log("editor:",{"key":key,"action":action,"value":value});
-				texture[ key ] = editor[ key ];
+				if (texture) texture[ key ] = editor[ key ];
 			//	clearTimeout( interval );
 			});
 			watch( editor, "mapping", function( key, action, value, oldValue ){
 				debugMode && console.log("editor:",{"key":key,"action":action,"value":value});
-				texture[ key ] = editor[ key ];
+				if (texture) texture[ key ] = editor[ key ];
 			//	clearTimeout( interval );
 			});
 			watch( editor, "wrapS", function( key, action, value, oldValue ){
 				debugMode && console.log("editor:",{"key":key,"action":action,"value":value});
-				texture[ key ] = editor[ key ];
+				if (texture) texture[ key ] = editor[ key ];
 			//	clearTimeout( interval );
 			});
 			watch( editor, "wrapT", function( key, action, value, oldValue ){
 				debugMode && console.log("editor:",{"key":key,"action":action,"value":value});
+				if (texture) texture[ key ] = editor[ key ];
 			//	clearTimeout( interval );
 			});
 			watch( editor, "minFilter", function( key, action, value, oldValue ){
 				debugMode && console.log("editor:",{"key":key,"action":action,"value":value});
+				if (texture) texture[ key ] = editor[ key ];
 			//	clearTimeout( interval );
 			});
 			watch( editor, "magFilter", function( key, action, value, oldValue ){
 				debugMode && console.log("editor:",{"key":key,"action":action,"value":value});
+				if (texture) texture[ key ] = editor[ key ];
 			//	clearTimeout( interval );
 			});
 			watch( editor, "type", function( key, action, value, oldValue ){
 				debugMode && console.log("editor:",{"key":key,"action":action,"value":value});
-				texture[ key ] = editor[ key ];
+				if (texture) texture[ key ] = editor[ key ];
 			//	clearTimeout( interval );
 			});
 
 		//	Boolean.
 			watch( editor, "flipY", function( key, action, value, oldValue ){
-			//	clearTimeout( interval );
 				debugMode && console.log("editor:",{"key":key,"action":action,"value":value});
+				if (texture) texture[ key ] = editor[ key ];
+			//	clearTimeout( interval );
 			});
 			watch( editor, "premultiplyAlpha", function( key, action, value, oldValue ){
 				debugMode && console.log("editor:",{"key":key,"action":action,"value":value});
-				texture[ key ] = editor[ key ];
+				if (texture) texture[ key ] = editor[ key ];
 			//	clearTimeout( interval );
 			});
 			watch( editor, "matrixAutoUpdate", function( key, action, value, oldValue ){
 				debugMode && console.log("editor:",{"key":key,"action":action,"value":value});
-				texture[ key ] = editor[ key ];
+				if (texture) texture[ key ] = editor[ key ];
 			//	clearTimeout( interval );
 			});
 			watch( editor, "generateMipmaps", function( key, action, value, oldValue ){
 				debugMode && console.log("editor:",{"key":key,"action":action,"value":value});
-				texture[ key ] = editor[ key ];
+				if (texture) texture[ key ] = editor[ key ];
 			//	clearTimeout( interval );
 			});
 
-		//	Image.
+		//	Image. TODO!
 			watch( editor.image, function( key, action, value, oldValue ){
 				debugMode && console.log("editor:",{"key":key,"action":action,"value":value});
 			//	clearTimeout( interval );
