@@ -1600,105 +1600,114 @@
 
 				(function( editor ){
 
+					var texture;
 					var interval;
+
+					watch( entity_droplist, "onchange", function( property, event, value ){
+						texture = texture_entities.getTextureById( value ); // id.
+					});
 
 				//	Vectors.
 					watch( editor.center, function( key, action, value, oldValue ){
 						debugMode && console.log("editor:",{"key":key,"action":action,"value":value});
-						texture.center[ key ] = editor.center[ key ];
+						if (texture) texture.center[ key ] = editor.center[ key ];
 					//	clearTimeout( interval );
 					});
 					watch( editor.offset, function( key, action, value, oldValue ){
 						debugMode && console.log("editor:",{"key":key,"action":action,"value":value});
-						texture.offset[ key ] = editor.offset[ key ];
+						if (texture) texture.offset[ key ] = editor.offset[ key ];
 					//	clearTimeout( interval );
 					});
 					watch( editor.repeat, function( key, action, value, oldValue ){
 						debugMode && console.log("editor:",{"key":key,"action":action,"value":value});
-						texture.repeat[ key ] = editor.repeat[ key ];
+						if (texture) texture.repeat[ key ] = editor.repeat[ key ];
 					//	clearTimeout( interval );
 					});
 
 				//	Nubers.
 					watch( editor, "anisotropy", function( key, action, value, oldValue ){
 						debugMode && console.log("editor:",{"key":key,"action":action,"value":value});
-						texture[ key ] = editor[ key ];
+						if (texture) texture[ key ] = editor[ key ];
 					//	clearTimeout( interval );
 					});
 					watch( editor, "rotation", function( key, action, value, oldValue ){
 						debugMode && console.log("editor:",{"key":key,"action":action,"value":value});
-						texture[ key ] = editor[ key ];
+						if (texture) texture[ key ] = editor[ key ];
 					//	clearTimeout( interval );
 					});
 
 				//	Strings.
 					watch( editor, "name", function( key, action, value, oldValue ){
 						debugMode && console.log("editor:",{"key":key,"action":action,"value":value});
-						texture[ key ] = editor[ key ];
+						if (texture) texture[ key ] = editor[ key ];
 					//	clearTimeout( interval );
 					});
 					watch( editor, "uuid", function( key, action, value, oldValue ){
 						debugMode && console.log("editor:",{"key":key,"action":action,"value":value});
-						texture[ key ] = editor[ key ];
+						if (texture) texture[ key ] = editor[ key ];
 					//	clearTimeout( interval );
 					});
 
 				//	Constants.
 					watch( editor, "format", function( key, action, value, oldValue ){
 						debugMode && console.log("editor:",{"key":key,"action":action,"value":value});
-						texture[ key ] = editor[ key ];
+						if (texture) texture[ key ] = editor[ key ];
 					//	clearTimeout( interval );
 					});
 					watch( editor, "mapping", function( key, action, value, oldValue ){
 						debugMode && console.log("editor:",{"key":key,"action":action,"value":value});
-						texture[ key ] = editor[ key ];
+						if (texture) texture[ key ] = editor[ key ];
 					//	clearTimeout( interval );
 					});
 					watch( editor, "wrapS", function( key, action, value, oldValue ){
 						debugMode && console.log("editor:",{"key":key,"action":action,"value":value});
-						texture[ key ] = editor[ key ];
+						if (texture) texture[ key ] = editor[ key ];
 					//	clearTimeout( interval );
 					});
 					watch( editor, "wrapT", function( key, action, value, oldValue ){
 						debugMode && console.log("editor:",{"key":key,"action":action,"value":value});
+						if (texture) texture[ key ] = editor[ key ];
 					//	clearTimeout( interval );
 					});
 					watch( editor, "minFilter", function( key, action, value, oldValue ){
 						debugMode && console.log("editor:",{"key":key,"action":action,"value":value});
+						if (texture) texture[ key ] = editor[ key ];
 					//	clearTimeout( interval );
 					});
 					watch( editor, "magFilter", function( key, action, value, oldValue ){
 						debugMode && console.log("editor:",{"key":key,"action":action,"value":value});
+						if (texture) texture[ key ] = editor[ key ];
 					//	clearTimeout( interval );
 					});
 					watch( editor, "type", function( key, action, value, oldValue ){
 						debugMode && console.log("editor:",{"key":key,"action":action,"value":value});
-						texture[ key ] = editor[ key ];
+						if (texture) texture[ key ] = editor[ key ];
 					//	clearTimeout( interval );
 					});
 
 				//	Boolean.
 					watch( editor, "flipY", function( key, action, value, oldValue ){
-					//	clearTimeout( interval );
 						debugMode && console.log("editor:",{"key":key,"action":action,"value":value});
+						if (texture) texture[ key ] = editor[ key ];
+					//	clearTimeout( interval );
 					});
 					watch( editor, "premultiplyAlpha", function( key, action, value, oldValue ){
 						debugMode && console.log("editor:",{"key":key,"action":action,"value":value});
-						texture[ key ] = editor[ key ];
+						if (texture) texture[ key ] = editor[ key ];
 					//	clearTimeout( interval );
 					});
 					watch( editor, "matrixAutoUpdate", function( key, action, value, oldValue ){
 						debugMode && console.log("editor:",{"key":key,"action":action,"value":value});
-						texture[ key ] = editor[ key ];
+						if (texture) texture[ key ] = editor[ key ];
 					//	clearTimeout( interval );
 					});
 					watch( editor, "generateMipmaps", function( key, action, value, oldValue ){
 						debugMode && console.log("editor:",{"key":key,"action":action,"value":value});
-						texture[ key ] = editor[ key ];
+						if (texture) texture[ key ] = editor[ key ];
 					//	clearTimeout( interval );
 					});
 
-				//	Image.
+				//	Image. TODO!
 					watch( editor.image, function( key, action, value, oldValue ){
 						debugMode && console.log("editor:",{"key":key,"action":action,"value":value});
 					//	clearTimeout( interval );
@@ -1710,151 +1719,6 @@
 
 			})();
 
-		</script>
-
-		<script>
-/*
-				(function(){
-					
-					function onStateUpdate(){ 
-						state.update();  // imporant!
-					//	debugMode && console.log( "state:", JSON.parse( JSON.stringify(state) ) ); 
-					}
-
-					increase_v.addEventListener( "click", onStateUpdate );
-					increase_x.addEventListener( "click", onStateUpdate );
-					increase_y.addEventListener( "click", onStateUpdate );
-					decrease_v.addEventListener( "click", onStateUpdate );
-					decrease_x.addEventListener( "click", onStateUpdate );
-					decrease_y.addEventListener( "click", onStateUpdate );
-					exit_button.addEventListener( "click", onStateUpdate );
-					redo_button.addEventListener( "click", onStateUpdate );
-					undo_button.addEventListener( "click", onStateUpdate );
-					create_button.addEventListener( "click", onStateUpdate );
-					replace_button.addEventListener( "click", onStateUpdate );
-
-					vector_x.addEventListener( "change", onStateUpdate );
-					vector_y.addEventListener( "change", onStateUpdate );
-					text_input.addEventListener( "change", onStateUpdate );
-					value_input.addEventListener( "change", onStateUpdate );
-					map_droplist.addEventListener( "change", onStateUpdate );
-					key_droplist.addEventListener( "change", onStateUpdate );
-					vector_droplist.addEventListener( "change", onStateUpdate );
-					entity_droplist.addEventListener( "change", onStateUpdate );
-					image_fileinput.addEventListener( "change", onStateUpdate );
-					texture_fileinput.addEventListener( "change", onStateUpdate );
-
-				})();
-*/
-
-/*
-			//	Texture TabState class (extends Object Class).
-			//	An object that holds texture tab UI values (state).
-
-				const state = (function(){
-
-					function TabState(){
-
-						var object = {
-							vector_x: "",
-							vector_y: "",
-							text_input: "",
-							value_input: "",
-							map_droplist: "",
-							key_droplist: "",
-							vector_droplist: "",
-							entity_droplist: "",
-						};
-
-						Object.setPrototypeOf( object, TabState.prototype ); // important!
-
-						return object; // important!
-					}
-
-					TabState.prototype = Object.create(Object.prototype); // important!
-
-					TabState.prototype.update = function(){
-
-					//	this.text_input = text_input.value;
-						this.map_droplist = map_droplist.value;
-						this.key_droplist = key_droplist.value;
-						this.entity_droplist = entity_droplist.value;
-						this.vector_droplist = vector_droplist.value;
-
-						switch ( key_droplist.value ){
-
-							case "flipY":
-								this.value_input = Boolean(value_input.value);
-							break;
-
-							case "rotation":
-								this.value_input = DEG2RAD * Number(value_input.value);
-							break;
-
-							default:
-								this.value_input = Number(value_input.value);
-							break;
-						}
-
-						this.vector_x = Number(vector_x.value);
-						this.vector_y = Number(vector_y.value);
-
-					};
-
-					return new TabState();
-
-				})();
-*/
-/*
-			//	TabState watcher.
-
-				(function( state ){
-
-					var interval;
-
-					watch( state, function( name, action, value, oldValue ){
-
-						clearTimeout( interval );
-
-						debugMode && console.log("state:",{"name":name,"action":action,"value":value });
-
-						switch ( name ){
-
-							case "map droplist":
-								(function( key ){})( value );
-							break;
-							case "entity droplist":
-								(function( id ){})( value );
-							break;
-							case "key droplist": 
-								(function( key ){})( value );
-							break;
-							case "vector droplist": 
-								(function( key ){})( value );
-							break;
-						//
-							case "vector x":
-							case "vector y":
-								(function( value ){})( value );
-							break;
-							case "text input":
-								(function( value ){})( value );
-							break;
-							case "value input":
-								(function( value ){})( value );
-							break;
-
-						}
-
-						interval = setTimeout( function(){
-							state.update(); // important!
-							debugMode && console.log( "state:", JSON.parse( JSON.stringify(state) ) ); 
-						}, 100);
-
-					});
-
-				})( state );
-*/
 		</script>
 
 		<script>
