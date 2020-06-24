@@ -1308,9 +1308,12 @@
 
 				}
 
-			//	TODO: add undo.
+			//	add undo.
+				interval = setTimeout( function(){
+					entity_droplist.value && addtoUndo();
+					debugMode && console.log( "undo:", undo.length, "redo:", redo.length );
+				}, 250);
 
-				debugMode && console.log( "undo:", undo.length, "redo:", redo.length );
 				debugMode && console.log( "on Mouse Click:", interval );
 
 			}
@@ -1425,9 +1428,12 @@
 
 				})();
 
-			//	TODO: add undo.
+			//	add undo.
+				interval = setTimeout( function(){
+					entity_droplist.value && addtoUndo();
+					debugMode && console.log( "undo:", undo.length, "redo:", redo.length );
+				}, 250);
 
-				debugMode && console.log( "undo:", undo.length, "redo:", redo.length );
 				debugMode && console.log( "on Mouse Click:", interval );
 
 			}
