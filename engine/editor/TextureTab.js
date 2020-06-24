@@ -686,7 +686,7 @@
 
 	const textureEditor = (function(){
 
-	//	UndoRedoArray Class (extends Array class).
+	//	UndoArray Class (extends Array class).
 
 		function UndoArray(){
 			var array = new Array(0);
@@ -765,6 +765,7 @@
 
 			TextureEditor.prototype.fromJSON = function( json ){
 			//	param: a texture json {object}
+			//	the missing TextureLoader.parse;
 
 				var editor = this;
 
@@ -848,7 +849,7 @@
 
 			TextureEditor.prototype.update = function( value ){
 
-			//	Copies the values of the target texture in textures
+			//	Copies the values of the target texture of textures
 			//	entity manager. Does not updates the target texture.
 			//	dependences: texture_entities {texture manager},
 			//	param: a texture id {string or number},
