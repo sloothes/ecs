@@ -1959,7 +1959,7 @@
 						entity_droplist.value && addtoUndo(); // add to undo.
 						debugMode && console.log( "undo:", undo.length, "redo:", redo.length );
 
-					}, 0); // root level only deep.
+					});
 
 				//	keep first, ignore next events.
 					increase_v.addEventListener( "mousedown", onWatchValue );
@@ -2306,27 +2306,76 @@
 				(function(){
 
 					var interval;
-					var startValue = null; // keep value for addtoUndo, important!
 
 				//	const increase_x = document.getElementById("material-vector-x-increase");
 				//	const increase_y = document.getElementById("material-vector-y-increase");
 				//	const decrease_x = document.getElementById("material-vector-x-decrease");
 				//	const decrease_y = document.getElementById("material-vector-y-decrease");
 
-					increase_x.addEventListener( "mousedown", onStartValue );
-					increase_y.addEventListener( "mousedown", onStartValue );
-					decrease_x.addEventListener( "mousedown", onStartValue );
-					decrease_y.addEventListener( "mousedown", onStartValue );
+				//	var startValue = null; // keep value for addtoUndo, important!
+				//	increase_x.addEventListener( "mousedown", onStartValue );
+				//	increase_y.addEventListener( "mousedown", onStartValue );
+				//	decrease_x.addEventListener( "mousedown", onStartValue );
+				//	decrease_y.addEventListener( "mousedown", onStartValue );
+				//	function onStartValue(){
+				//		var button = this;
+				//		var key = vector_droplist.value; 
+				//		if ( key === "" ) startValue = null;
+				//		else if ( button === increase_x || button === decrease_x ) startValue = Number(editor[ key ].x); // copy!
+				//		else if ( button === increase_y || button === decrease_y ) startValue = Number(editor[ key ].y); // copy!
+				//		button.removeEventListener( "mousedown", onStartValue );
+				//		debugMode && console.log( "startValue:", startValue );
+				//	}
 
-					function onStartValue(){
+				//  =======================================================================================  //
+
+				//	First "mousedown" event (mousedown, onWatchValue ) eventListener, sets the values in 
+				//	the "watchValue" object and the ( mousedown, onWatchValue ) eventListener is removed.
+				//	Last "click" event ( click, onMouseClick ) eventListener, changes the watchValue.value 
+				//	and calls the watcher, which restore the (mousedown, onWatchValue ) eventListener.
+
+					var watchValue = {
+						entity:null, // material.id,
+						button:null, // current button.
+						key:null,    // editor key,
+						vector: new THREE.Vector2(), // editor[key].
+					};
+
+				//	Will trigger when clicking has finished (and a value has changed).
+					watch( watchValue.vector, ["x","y"], function( prop, action, value, oldValue ){
+						debugMode && console.log({ event:"click end", "new value":value, "old value":oldValue });
+
+						if ( watchValue.button == null ) return;
+						if ( entity_droplist.value === "" ) return;
+
+					//	Add event listener.
+						watchValue.button && watchValue.button.addEventListener( "mousedown", onWatchValue ); // important!
+
+					//	Add to undo.
+						entity_droplist.value && addtoUndo(); // add to undo.
+						debugMode && console.log( "undo:", undo.length, "redo:", redo.length );
+
+					});
+
+				//	keep first, ignore next events.
+					increase_x.addEventListener( "mousedown", onWatchValue );
+					increase_y.addEventListener( "mousedown", onWatchValue );
+					decrease_x.addEventListener( "mousedown", onWatchValue );
+					decrease_y.addEventListener( "mousedown", onWatchValue );
+
+					function onWatchValue(){
+						
 						var button = this;
-						var key = vector_droplist.value; 
-						if ( key === "" ) startValue = null;
-						else if ( button === increase_x || button === decrease_x ) startValue = Number(editor[ key ].x); // copy!
-						else if ( button === increase_y || button === decrease_y ) startValue = Number(editor[ key ].y); // copy!
-						button.removeEventListener( "mousedown", onStartValue );
-						debugMode && console.log( "startValue:", startValue );
+						if ( entity_droplist.value === "" ) return;
+
+						watchValue.button = button;
+						watchValue.key = vector_droplist.value;
+						watchValue.entity = parseInt(entity_droplist.value);
+						watchValue.vector.copy( editor[vector_droplist.value] ); // editor[key]
+						button.removeEventListener( "mousedown", onWatchValue ); // important!
 					}
+
+				//  =======================================================================================  //
 
 					increase_x.addEventListener( "mousedown", onMouseDown );
 					increase_y.addEventListener( "mousedown", onMouseDown );
@@ -2399,7 +2448,8 @@
 
 					//	disabled on mouse click.
 
-						if ( vector_droplist !== "normalScale" ) 
+					//	if ( vector_droplist !== "normalScale" ) // bug!
+						if ( vector_droplist === "" ) 
 							return [ vector_x.value, vector_y.value ] = ["",""];
 
 					//	enabled on mouse click.
@@ -2426,19 +2476,24 @@
 							}
 
 						//	add undo.
-							if ( startValue != value ) interval = setTimeout( function(){
-								button.addEventListener( "mousedown", onStartValue ); // important!
-								debugMode && console.log({"old value":startValue,"value x":editor[key].x,"value y":editor[key].y});
-								entity_droplist.value && addtoUndo(); // add to undo.
-								debugMode && console.log( "undo:", undo.length, "redo:", redo.length );
-								startValue = null; // reset start value.
+						//	if ( startValue != value ) interval = setTimeout( function(){
+						//		button.addEventListener( "mousedown", onStartValue ); // important!
+						//		debugMode && console.log({"old value":startValue,"value x":editor[key].x,"value y":editor[key].y});
+						//		entity_droplist.value && addtoUndo(); // add to undo.
+						//		debugMode && console.log( "undo:", undo.length, "redo:", redo.length );
+						//		startValue = null; // reset start value.
+						//	}, 250);
+
+						//	call watcher to add undo.
+							interval = setTimeout( function(){
+								watchValue.vector.copy( editor[key] );
 							}, 250);
 
 						})();
 						
 						else [ vector_x.value, vector_y.value ] = ["",""];
 
-						debugMode && console.log( "on Mouse Click:", interval );
+						debugMode && console.log( "on Mouse Click:", interval, watchValue );
 
 					}
 
@@ -2447,7 +2502,6 @@
 				(function(){
 
 					var interval;
-					var startValue = null; // keep value for addtoUndo, important!
 
 				//	const increase_r = document.getElementById("material-color-r-increase");
 				//	const increase_g = document.getElementById("material-color-g-increase");
@@ -2456,24 +2510,75 @@
 				//	const decrease_g = document.getElementById("material-color-g-decrease");
 				//	const decrease_b = document.getElementById("material-color-b-decrease");
 
-					increase_r.addEventListener( "mousedown", onStartValue );
-					increase_g.addEventListener( "mousedown", onStartValue );
-					increase_b.addEventListener( "mousedown", onStartValue );
-					decrease_r.addEventListener( "mousedown", onStartValue );
-					decrease_g.addEventListener( "mousedown", onStartValue );
-					decrease_b.addEventListener( "mousedown", onStartValue );
+				//	var startValue = null; // keep value for addtoUndo, important!
+				//	increase_r.addEventListener( "mousedown", onStartValue );
+				//	increase_g.addEventListener( "mousedown", onStartValue );
+				//	increase_b.addEventListener( "mousedown", onStartValue );
+				//	decrease_r.addEventListener( "mousedown", onStartValue );
+				//	decrease_g.addEventListener( "mousedown", onStartValue );
+				//	decrease_b.addEventListener( "mousedown", onStartValue );
+				//	function onStartValue(){
+				//		var button = this;
+				//		var key = color_droplist.value; 
+				//		if ( key === "" ) startValue = null;
+				//		else if ( button === increase_r || button === decrease_r ) startValue = Number(editor[ key ].r); // important!
+				//		else if ( button === increase_g || button === decrease_g ) startValue = Number(editor[ key ].g); // important!
+				//		else if ( button === increase_b || button === decrease_b ) startValue = Number(editor[ key ].b); // important!
+				//		button.removeEventListener( "mousedown", onStartValue );
+				//		debugMode && console.log( "startValue:", startValue );
+				//	}
 
-					function onStartValue(){
+				//  =======================================================================================  //
+
+				//	First "mousedown" event (mousedown, onWatchValue ) eventListener, sets the values in 
+				//	the "watchValue" object and the ( mousedown, onWatchValue ) eventListener is removed.
+				//	Last "click" event ( click, onMouseClick ) eventListener, changes the watchValue.value 
+				//	and calls the watcher, which restore the (mousedown, onWatchValue ) eventListener.
+
+					var watchValue = {
+						entity:null, // material.id,
+						button:null, // current button.
+						key:null,    // editor key,
+						color: new THREE.Color(), // editor[key].
+					};
+
+				//	Will trigger when clicking has finished (and a value has changed).
+					watch( watchValue.color, ["r","g","b"], function( prop, action, value, oldValue ){
+						debugMode && console.log({ event:"click end", "new value":value, "old value":oldValue });
+
+						if ( watchValue.button == null ) return;
+						if ( entity_droplist.value === "" ) return;
+
+					//	Add event listener.
+						watchValue.button && watchValue.button.addEventListener( "mousedown", onWatchValue ); // important!
+
+					//	Add to undo.
+						entity_droplist.value && addtoUndo(); // add to undo.
+						debugMode && console.log( "undo:", undo.length, "redo:", redo.length );
+
+					});
+
+				//	keep first, ignore next events.
+					increase_r.addEventListener( "mousedown", onWatchValue );
+					increase_g.addEventListener( "mousedown", onWatchValue );
+					increase_b.addEventListener( "mousedown", onWatchValue );
+					decrease_r.addEventListener( "mousedown", onWatchValue );
+					decrease_g.addEventListener( "mousedown", onWatchValue );
+					decrease_b.addEventListener( "mousedown", onWatchValue );
+
+					function onWatchValue(){
+						
 						var button = this;
-						var key = color_droplist.value; 
-						if ( key === "" ) startValue = null;
-						else if ( button === increase_r || button === decrease_r ) startValue = Number(editor[ key ].r); // important!
-						else if ( button === increase_g || button === decrease_g ) startValue = Number(editor[ key ].g); // important!
-						else if ( button === increase_b || button === decrease_b ) startValue = Number(editor[ key ].b); // important!
-						button.removeEventListener( "mousedown", onStartValue );
-						debugMode && console.log( "startValue:", startValue );
+						if ( entity_droplist.value === "" ) return;
 
+						watchValue.button = button;
+						watchValue.key = color_droplist.value;
+						watchValue.entity = parseInt(entity_droplist.value);
+						watchValue.color.copy( editor[color_droplist.value] ); // editor[key]
+						button.removeEventListener( "mousedown", onWatchValue ); // important!
 					}
+
+				//  =======================================================================================  //
 
 					increase_r.addEventListener( "mousedown", onMouseDown );
 					increase_g.addEventListener( "mousedown", onMouseDown );
@@ -2591,12 +2696,17 @@
 							}
 
 						//	add undo.
-							if ( startValue != value ) interval = setTimeout( function(){
-								button.addEventListener( "mousedown", onStartValue ); // important!
-								debugMode && console.log({"old value":startValue,"value r":editor[key].r,"value g":editor[key].g,"value b":editor[key].b});
-								entity_droplist.value && addtoUndo(); // add to undo.
-								debugMode && console.log( "undo:", undo.length, "redo:", redo.length );
-								startValue = null; // reset start value.
+						//	if ( startValue != value ) interval = setTimeout( function(){
+						//		button.addEventListener( "mousedown", onStartValue ); // important!
+						//		debugMode && console.log({"old value":startValue,"value r":editor[key].r,"value g":editor[key].g,"value b":editor[key].b});
+						//		entity_droplist.value && addtoUndo(); // add to undo.
+						//		debugMode && console.log( "undo:", undo.length, "redo:", redo.length );
+						//		startValue = null; // reset start value.
+						//	}, 250);
+
+						//	call watcher to add undo.
+							interval = setTimeout( function(){
+								watchValue.color.copy( editor[key] );
 							}, 250);
 
 						})();
