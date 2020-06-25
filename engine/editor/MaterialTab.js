@@ -71,7 +71,7 @@
 
 	//	Add a watcher.
 		watch(select, "onchange", function(property, event, value){
-			debugMode && console.log({item:"texture",event:event,"item id":value});
+			debugMode && console.log({item:"droplist",event:event,"value":value});
 		});
 
 	//	Call watchers.
