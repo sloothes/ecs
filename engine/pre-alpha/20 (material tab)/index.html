@@ -1947,7 +1947,7 @@
 
 				//	Will trigger when clicking has finished (and a value has changed).
 					watch( watchValue, "value", function( prop, action, value, oldValue ){
-						debugMode && console.log({ event:"click end", "new value":value, "old value":oldValue });
+						debugMode && console.log({ event:"on click end", "new value":value, "old value":oldValue });
 
 						if ( watchValue.button == null ) return;
 						if ( entity_droplist.value === "" ) return;
@@ -2343,7 +2343,7 @@
 
 				//	Will trigger when clicking has finished (and a value has changed).
 					watch( watchValue.vector, ["x","y"], function( prop, action, value, oldValue ){
-						debugMode && console.log({ event:"click end", "new value":value, "old value":oldValue });
+						debugMode && console.log({ event:"on click end", "new value":value, "old value":oldValue });
 
 						if ( watchValue.button == null ) return;
 						if ( entity_droplist.value === "" ) return;
@@ -2367,6 +2367,7 @@
 						
 						var button = this;
 						if ( entity_droplist.value === "" ) return;
+						if ( vector_droplist.value === "" ) return;
 
 						watchValue.button = button;
 						watchValue.key = vector_droplist.value;
@@ -2448,8 +2449,7 @@
 
 					//	disabled on mouse click.
 
-					//	if ( vector_droplist !== "normalScale" ) // bug!
-						if ( vector_droplist === "" ) 
+						if ( vector_droplist.value !== "normalScale" || texture_droplist.value !== "normalMap" )
 							return [ vector_x.value, vector_y.value ] = ["",""];
 
 					//	enabled on mouse click.
@@ -2493,7 +2493,7 @@
 						
 						else [ vector_x.value, vector_y.value ] = ["",""];
 
-						debugMode && console.log( "on Mouse Click:", interval, watchValue );
+						debugMode && console.log( "on Mouse Click:", interval );
 
 					}
 
@@ -2544,7 +2544,7 @@
 
 				//	Will trigger when clicking has finished (and a value has changed).
 					watch( watchValue.color, ["r","g","b"], function( prop, action, value, oldValue ){
-						debugMode && console.log({ event:"click end", "new value":value, "old value":oldValue });
+						debugMode && console.log({ event:"on click end", "new value":value, "old value":oldValue });
 
 						if ( watchValue.button == null ) return;
 						if ( entity_droplist.value === "" ) return;
@@ -2570,6 +2570,7 @@
 						
 						var button = this;
 						if ( entity_droplist.value === "" ) return;
+						if ( color_droplist.value === "" ) return;
 
 						watchValue.button = button;
 						watchValue.key = color_droplist.value;
