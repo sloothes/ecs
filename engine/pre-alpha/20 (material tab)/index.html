@@ -1913,25 +1913,72 @@
 				(function(){
 
 					var interval;
-					var startValue = null;
 
 				//	const increase_v = document.getElementById("material-value-increase");
 				//	const decrease_v = document.getElementById("material-value-decrease");
 
+				//	var startValue = null;
 				//	keep first event, ignore next events.
-					increase_v.addEventListener( "mousedown", onStartValue );
-					decrease_v.addEventListener( "mousedown", onStartValue );
+				//	increase_v.addEventListener( "mousedown", onStartValue );
+				//	decrease_v.addEventListener( "mousedown", onStartValue );
+				//	function onStartValue(){
+				//		var key = key_droplist.value;
+				//		if ( key === "" ) startValue = null;
+				//		else if ( typeof editor[key] === "string" ) startValue = String( editor[key]); // copy!
+				//		else if ( typeof editor[key] === "number" ) startValue = Number( editor[key]); // copy!
+				//		else if ( typeof editor[key] === "boolean") startValue = Boolean(editor[key]); // copy!
+				//		this.removeEventListener( "mousedown", onStartValue );
+				//		debugMode && console.log( "startValue:", startValue );
+				//	}
 
-					function onStartValue(){
-						var key = key_droplist.value;
-						if ( key === "" ) startValue = null;
-						else if ( typeof editor[key] === "string" ) startValue = String( editor[key]); // copy!
-						else if ( typeof editor[key] === "number" ) startValue = Number( editor[key]); // copy!
-						else if ( typeof editor[key] === "boolean") startValue = Boolean(editor[key]); // copy!
-						this.removeEventListener( "mousedown", onStartValue );
-						debugMode && console.log( "startValue:", startValue );
+				//  =======================================================================================  //
+
+				//	First "mousedown" event (mousedown, onWatchValue ) eventListener, sets the values in 
+				//	the "watchValue" object and the ( mousedown, onWatchValue ) eventListener is removed.
+				//	Last "click" event ( click, onMouseClick ) eventListener, changes the watchValue.value 
+				//	and calls the watcher, which restore the (mousedown, onWatchValue ) eventListener.
+
+					var watchValue = {
+						key:null,    // editor key,
+						value:null,  // editor[key].
+						button:null, // current button.
+						entity:null, // material.id,
+					};
+
+				//	Will trigger when clicking has finished (and a value has changed).
+					watch( watchValue, "value", function( prop, action, value, oldValue ){
+						debugMode && console.log({ event:"click end", "new value":value, "old value":oldValue });
+
+						if ( watchValue.button == null ) return;
+						if ( entity_droplist.value === "" ) return;
+
+					//	Add event listener.
+						watchValue.button && watchValue.button.addEventListener( "mousedown", onWatchValue ); // important!
+
+					//	Add to undo.
+						entity_droplist.value && addtoUndo(); // add to undo.
+						debugMode && console.log( "undo:", undo.length, "redo:", redo.length );
+
+					}, 0); // root level only deep.
+
+				//	keep first, ignore next events.
+					increase_v.addEventListener( "mousedown", onWatchValue );
+					decrease_v.addEventListener( "mousedown", onWatchValue );
+
+					function onWatchValue(){
+						
+						var button = this;
+						if ( entity_droplist.value === "" ) return;
+
+						watchValue.button = button;
+						watchValue.key = key_droplist.value;
+						watchValue.value = editor[ key_droplist.value ]; // editor[key].
+						watchValue.entity = parseInt(entity_droplist.value);
+						button.removeEventListener( "mousedown", onWatchValue ); // important!
 					}
 
+				//  =======================================================================================  //
+					
 					increase_v.addEventListener( "mousedown", onMouseDown );
 					decrease_v.addEventListener( "mousedown", onMouseDown );
 
@@ -2141,7 +2188,6 @@
 							case "morphTargets":
 							case "morphNormals":
 							case "sizeAttenuation":
-								startValue = Boolean(editor[key]); // copy.
 								value_input.value = editor[ key ] = !editor[ key ]; // boolean.
 							break;
 
@@ -2240,12 +2286,17 @@
 						debugMode && console.log( "on Mouse Click:", interval );
 
 					//	add undo.
-						if ( startValue != editor[key] ) interval = setTimeout( function(){
-							button.addEventListener( "mousedown", onStartValue ); // important!
-							debugMode && console.log({"old value":startValue, "new value":editor[key]});
-							entity_droplist.value && addtoUndo(); // add to undo.
-							debugMode && console.log( "undo:", undo.length, "redo:", redo.length );
-							startValue = null; // reset start value.
+					//	if ( startValue != editor[key] ) interval = setTimeout( function(){
+					//		button.addEventListener( "mousedown", onStartValue ); // important!
+					//		debugMode && console.log({"old value":startValue, "new value":editor[key]});
+					//		entity_droplist.value && addtoUndo(); // add to undo.
+					//		debugMode && console.log( "undo:", undo.length, "redo:", redo.length );
+					//		startValue = null; // reset start value.
+					//	}, 250);
+
+					//	call watcher to add undo.
+						interval = setTimeout( function(){
+							watchValue.value = editor[ key ];
 						}, 250);
 
 					}
