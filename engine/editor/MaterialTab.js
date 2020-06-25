@@ -2445,17 +2445,17 @@
 			});
 
 		//	Colors.
-			watch( editor.color, function( key, action, value, oldValue ){
+			watch( editor.color, ["r","g","b"], function( key, action, value, oldValue ){
 				debugMode && console.log("editor:",{"key":key,"action":action,"value":value});
 				if (material && material.color) material.color[ key ] = editor.color[ key ];
 			//	clearTimeout( interval );
 			});
-			watch( editor.emissive, function( key, action, value, oldValue ){
+			watch( editor.emissive, ["r","g","b"], function( key, action, value, oldValue ){
 				debugMode && console.log("editor:",{"key":key,"action":action,"value":value});
 				if (material && material.emissive) material.emissive[ key ] = editor.emissive[ key ];
 			//	clearTimeout( interval );
 			});
-			watch( editor.specular, function( key, action, value, oldValue ){
+			watch( editor.specular, ["r","g","b"], function( key, action, value, oldValue ){
 				debugMode && console.log("editor:",{"key":key,"action":action,"value":value});
 				if (material && material.specular) material.specular[ key ] = editor.specular[ key ];
 			//	clearTimeout( interval );
