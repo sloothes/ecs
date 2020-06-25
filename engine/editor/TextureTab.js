@@ -4,11 +4,6 @@
 	TabUI.add( "Texture", "texture-tab" );
 	TabUI.append( "Texture" );
 
-//	TabUI.Editor.role.classList.remove("active");
-//	TabUI.Editor.tab.classList.remove("in","active");
-//	TabUI.Texture.role.classList.add("active");
-//	TabUI.Texture.tab.classList.add("in","active");
-
 	const texture_droplist = (function( tab ){
 
 	//	Textures droplist.

@@ -2,7 +2,6 @@
 //	Material Tab.
 
 	TabUI.add( "Material", "material-tab" );
-
 	TabUI.append("Material");
 
 	const material_droplist = (function( tab ){
