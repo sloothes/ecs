@@ -2338,23 +2338,25 @@
 						entity:null, // material.id,
 						button:null, // current button.
 						key:null,    // editor key,
-						vector: new THREE.Vector2(), // editor[key].
+						vector: new THREE.Vector2(1,1), // editor[key].
 					};
 
 				//	Will trigger when clicking has finished (and a value has changed).
 					watch( watchValue.vector, ["x","y"], function( prop, action, value, oldValue ){
-						debugMode && console.log({ event:"on click end", "new value":value, "old value":oldValue });
+						clearTimeout( interval );
+						interval = setTimeout(function(){
+							debugMode && console.log({ event:"on click end", "new value":value, "old value":oldValue });
 
-						if ( watchValue.button == null ) return;
-						if ( entity_droplist.value === "" ) return;
+							if ( watchValue.button == null ) return;
+							if ( entity_droplist.value === "" ) return;
 
-					//	Add event listener.
-						watchValue.button && watchValue.button.addEventListener( "mousedown", onWatchValue ); // important!
+						//	Add event listener.
+							watchValue.button && watchValue.button.addEventListener( "mousedown", onWatchValue ); // important!
 
-					//	Add to undo.
-						entity_droplist.value && addtoUndo(); // add to undo.
-						debugMode && console.log( "undo:", undo.length, "redo:", redo.length );
-
+						//	Add to undo.
+							entity_droplist.value && addtoUndo(); // add to undo.
+							debugMode && console.log( "undo:", undo.length, "redo:", redo.length );
+						}, 100);
 					});
 
 				//	keep first, ignore next events.
@@ -2401,7 +2403,7 @@
 
 					//	disabled on mouse down.
 
-						if ( vector_droplist.value !== "normalScale" ) 
+						if ( vector_droplist.value !== "normalScale" || texture_droplist.value !== "normalMap" ) 
 							return [ vector_x.value, vector_y.value ] = ["",""];
 
 					//	enabled on mouse down.
@@ -2539,23 +2541,25 @@
 						entity:null, // material.id,
 						button:null, // current button.
 						key:null,    // editor key,
-						color: new THREE.Color(), // editor[key].
+						color: new THREE.Color(1,1,1), // editor[key].
 					};
 
 				//	Will trigger when clicking has finished (and a value has changed).
 					watch( watchValue.color, ["r","g","b"], function( prop, action, value, oldValue ){
-						debugMode && console.log({ event:"on click end", "new value":value, "old value":oldValue });
+						clearTimeout( interval );
+						interval = setTimeout(function(){
+							debugMode && console.log({ event:"on click end", "new value":value, "old value":oldValue });
 
-						if ( watchValue.button == null ) return;
-						if ( entity_droplist.value === "" ) return;
+							if ( watchValue.button == null ) return;
+							if ( entity_droplist.value === "" ) return;
 
-					//	Add event listener.
-						watchValue.button && watchValue.button.addEventListener( "mousedown", onWatchValue ); // important!
+						//	Add event listener.
+							watchValue.button && watchValue.button.addEventListener( "mousedown", onWatchValue ); // important!
 
-					//	Add to undo.
-						entity_droplist.value && addtoUndo(); // add to undo.
-						debugMode && console.log( "undo:", undo.length, "redo:", redo.length );
-
+						//	Add to undo.
+							entity_droplist.value && addtoUndo(); // add to undo.
+							debugMode && console.log( "undo:", undo.length, "redo:", redo.length );
+						}, 100);
 					});
 
 				//	keep first, ignore next events.
