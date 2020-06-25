@@ -2431,10 +2431,39 @@
 
 
 
+	//	Material Editor Watchers.
+	//	Watch each object/property individually.
+
+		(function( editor ){
+
+			var material;
+			var interval;
+
+			watch( entity_droplist, "onchange", function( property, event, value ){
+				material = material_entities.getMaterialById( value ); // id.
+				debugMode && console.log({item:"droplist",event:event,"material":material});
+			});
 
 
 
 
-		return editor;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		})( editor );
+
+		return editor; // important!
 
 	})();

@@ -1435,7 +1435,7 @@
 
 		})();
 
-	//	Editor Watchers.
+	//	Texture Editor Watchers.
 	//	Watch each object/property individually.
 
 		(function( editor ){
@@ -1464,7 +1464,7 @@
 			//	clearTimeout( interval );
 			});
 
-		//	Nubers.
+		//	Numbers.
 			watch( editor, "anisotropy", function( key, action, value, oldValue ){
 				debugMode && console.log("editor:",{"key":key,"action":action,"value":value});
 				if (texture) texture[ key ] = editor[ key ];
