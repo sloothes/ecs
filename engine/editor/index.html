@@ -298,6 +298,14 @@
 				}
 			});
 
+		//	Add Texture entities.
+			material_entities.forEach( function( material ){
+				for ( var name in material ) (function( key ){
+					material[key] && material[key].isTexture 
+					&& texture_entities.add( material[ key ] );
+				})( name );
+			});
+
 			console.log( {"object3DEditor": object3DEditor} ); // debug!
 			console.log( {"materialEditor": materialEditor} ); // debug!
 			console.log( {"textureEditor" : textureEditor}  ); // debug!
