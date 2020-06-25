@@ -1279,7 +1279,7 @@
 
 		})();
 
-		editor.reset(); // important!
+	//	editor.reset(); // important!
 
 	//	helpers.
 
@@ -2480,7 +2480,7 @@
 
 
 
-		})( editor );
+		})( editor.reset() );
 
 		return editor; // important!
 
