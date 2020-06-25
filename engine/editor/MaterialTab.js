@@ -2444,6 +2444,22 @@
 				debugMode && console.log({item:"droplist",event:event,"material":material});
 			});
 
+		//	Colors.
+			watch( editor.color, function( key, action, value, oldValue ){
+				debugMode && console.log("editor:",{"key":key,"action":action,"value":value});
+				if (material && material.color) material.color[ key ] = editor.color[ key ];
+			//	clearTimeout( interval );
+			});
+			watch( editor.emissive, function( key, action, value, oldValue ){
+				debugMode && console.log("editor:",{"key":key,"action":action,"value":value});
+				if (material && material.emissive) material.emissive[ key ] = editor.emissive[ key ];
+			//	clearTimeout( interval );
+			});
+			watch( editor.specular, function( key, action, value, oldValue ){
+				debugMode && console.log("editor:",{"key":key,"action":action,"value":value});
+				if (material && material.specular) material.specular[ key ] = editor.specular[ key ];
+			//	clearTimeout( interval );
+			});
 
 
 
