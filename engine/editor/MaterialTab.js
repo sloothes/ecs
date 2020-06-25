@@ -1256,7 +1256,7 @@
 
 			//	get target material.
 				var material = material_entities.getMaterialById( value );
-				debugMode && console.log( "editor material:", material );
+			//	debugMode && console.log( "editor material:", material );
 
 				if ( !material ) {
 					editor.reset();
