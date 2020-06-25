@@ -4,8 +4,8 @@
 	TabUI.add( "Editor", "editor-tab" );
 
 	TabUI.append("Editor");
-	TabUI.Editor.role.classList.add("active");
-	TabUI.Editor.tab.classList.add("in","active");
+//	TabUI.Editor.role.classList.add("active");
+//	TabUI.Editor.tab.classList.add("in","active");
 
 	const entity_droplist = (function( tab ){
 
