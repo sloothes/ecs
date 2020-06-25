@@ -1221,8 +1221,15 @@
 						entity:null, // material.id,
 						button:null, // current button.
 						key:null,    // editor key,
-						value:1,     // editor[key].x
+						value:null,  // editor[key].x
 					};
+
+				//	Initialize watchValue.
+					watch( entity_droplist, "onchange", function( property, event, id ){
+					//	debugMode && console.log({item:"droplist",event:event,"value":id});
+						watchValue.button = increase_x; watchValue.key = vector_droplist.value;
+						watchValue.value = editor[vector_droplist.value].x; watchValue.entity = id; 
+					});
 
 				//	Will trigger when clicking has finished (and value has changed).
 					watch( watchValue, "value", function( prop, action, value, oldValue ){
@@ -1341,8 +1348,15 @@
 						entity:null, // material.id,
 						button:null, // current button.
 						key:null,    // editor key,
-						value:1,    // editor[key].y
+						value:null,  // editor[key].y
 					};
+
+				//	Initialize watchValue.
+					watch( entity_droplist, "onchange", function( property, event, id ){
+					//	debugMode && console.log({item:"droplist",event:event,"value":id});
+						watchValue.button = increase_y; watchValue.key = vector_droplist.value;
+						watchValue.value = editor[vector_droplist.value].y; watchValue.entity = id; 
+					});
 
 				//	Will trigger when clicking has finished (and value has changed).
 					watch( watchValue, "value", function( prop, action, value, oldValue ){
@@ -1469,8 +1483,15 @@
 						entity:null, // material.id,
 						button:null, // current button.
 						key:null,    // editor key (color),
-						value:1,     // editor[key].r
+						value:null,  // editor[key].r
 					};
+
+				//	Initialize watchValue.
+					watch( entity_droplist, "onchange", function( property, event, id ){
+					//	debugMode && console.log({item:"droplist",event:event,"value":id});
+						watchValue.button = increase_r; watchValue.key = color_droplist.value;
+						watchValue.value = editor[color_droplist.value].r; watchValue.entity = id; 
+					});
 
 				//	Will trigger when clicking has finished (and value has changed).
 					watch( watchValue, "value", function( prop, action, value, oldValue ){
@@ -1588,8 +1609,15 @@
 						entity:null, // material.id,
 						button:null, // current button.
 						key:null,    // editor key (color),
-						value:1,     // editor[key].g
+						value:null,  // editor[key].g
 					};
+
+				//	Initialize watchValue.
+					watch( entity_droplist, "onchange", function( property, event, id ){
+					//	debugMode && console.log({item:"droplist",event:event,"value":id});
+						watchValue.button = increase_g; watchValue.key = color_droplist.value;
+						watchValue.value = editor[color_droplist.value].g; watchValue.entity = id; 
+					});
 
 				//	Will trigger when clicking has finished (and value has changed).
 					watch( watchValue, "value", function( prop, action, value, oldValue ){
@@ -1707,8 +1735,15 @@
 						entity:null, // material.id,
 						button:null, // current button.
 						key:null,    // editor key (color),
-						value:1,     // editor[key].b
+						value:null,  // editor[key].b
 					};
+
+				//	Initialize watchValue.
+					watch( entity_droplist, "onchange", function( property, event, id ){
+					//	debugMode && console.log({item:"droplist",event:event,"value":id});
+						watchValue.button = increase_b; watchValue.key = color_droplist.value;
+						watchValue.value = editor[color_droplist.value].b; watchValue.entity = id; 
+					});
 
 				//	Will trigger when clicking has finished (and value has changed).
 					watch( watchValue, "value", function( prop, action, value, oldValue ){
