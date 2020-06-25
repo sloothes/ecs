@@ -1277,7 +1277,9 @@
 
 			return new MaterialEditor();
 
-		})().reset(); // important!
+		})();
+
+		editor.reset(); // important!
 
 	//	helpers.
 
