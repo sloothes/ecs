@@ -2480,7 +2480,7 @@
 
 
 
-		})( editor.reset() );
+		})( editor.reset() ); // important!
 
 		return editor; // important!
 
