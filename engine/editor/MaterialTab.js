@@ -1002,6 +1002,7 @@
 
 //	===================================================================================================================  //
 
+/*
 //	MaterialEditor.js
 
 //	Create a Material to hold editor values.
@@ -2463,25 +2464,10 @@
 			//	clearTimeout( interval );
 			});
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 		})( editor.reset() ); // important!
 
 		return editor; // important!
 
 	})();
+
+*/
