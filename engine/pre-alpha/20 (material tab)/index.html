@@ -522,13 +522,49 @@
 					entity_droplist.addEventListener( "change", entity_droplist.blur );
 					texture_droplist.addEventListener( "change", texture_droplist.blur );
 
+					document.getElementById("entities-droplist").addEventListener( "change", function(){
+
+						var object = scene.getObjectById( Number(this.value) );
+
+						if ( object && object.material ) {
+
+							if ( !Array.isArray(object.material) ) 
+								callWatchers( entity_droplist, "onchange", "change", 
+								entity_droplist.value = String(object.material.id) );
+							if ( Array.isArray(object.material) && object.material.length ) 
+								callWatchers( entity_droplist, "onchange", "change", 
+								entity_droplist.value = String(object.material[0].id) );
+
+						}  else exitFromEditMode();
+
+						// else callWatchers( entity_droplist, "onchange", "change", entity_droplist.value = "" );
+
+					});
+
+
 					watch( key_droplist, "onchange", function( property, event, key ){
+
+						if ( !key || editor[key] == undefined ) 
+							return [ value_input.value, text_input.value ] = ["",""];
 
 						if ( key && editor[key] !== undefined && typeof editor[key] === "string" )
 							[text_input.value, value_input.value] = [ editor[key], "" ];
 
-						else if ( key && editor[key] !== undefined && typeof editor[key] === "number" )
-							[text_input.value, value_input.value] = [ "", editor[key] ];
+						else if ( key && editor[key] !== undefined && typeof editor[key] === "number" ) {
+
+							if ( "displacementScale,polygonOffsetUnits,polygonOffsetFactor,opacity,"
+							+ "alphaTest,reflectivity,refractionRatio,bumpScale,metalness,roughness,displacementBias,"
+							+ "aoMapIntensity,envMapIntensity,emissiveIntensity,lightMapIntensity,wireframeLinewidth,"
+							+ "linewidth,size,scale,gapSize,dashSize,shininess".split(",").includes(key) )
+
+								[value_input.value, text_input.value] = [ editor[key].toFixed(2), "" ];
+
+							else if ( key === "rotation" )
+
+								[value_input.value, text_input.value] = [ (RAD2DEG*editor[key]).toFixed(1), "" ];
+
+							else [value_input.value, text_input.value] = [ editor[key].toFixed(0), "" ];
+						}
 
 						else if ( key && editor[key] !== undefined && typeof editor[key] === "boolean" )
 							[text_input.value, value_input.value] = [ "", editor[key] ];
@@ -1247,7 +1283,7 @@
 						state.key = key;
 						state.value = editor[ key ];
 						state.json = editor.toJSON();
-						console.log( "state:", state );
+						console.log( "state:", state, "undo:", undo.length, "redo:", redo.length );
 					//	Remove on firstMouseDown event listener.
 						this.removeEventListener( "mousedown", onfirstMouseDown ); // important!
 					};
@@ -2305,11 +2341,12 @@
 
 			//	Material Editor Watchers.
 			//	Watch each object/property individually.
+			//	Synchronize material with editor (brige).
 
 				(function( editor ){
 
-					var material;
 					var interval;
+					var material; // important!
 
 					watch( entity_droplist, "onchange", function( property, event, value ){
 						material = material_entities.getMaterialById( value ); // material.id.
@@ -2340,13 +2377,84 @@
 					//	clearTimeout( interval );
 					});
 
-				//	Values.
-					watch( editor, "visible", function( key, action, value ){
-						if ( material ) material.visible = Boolean(editor.visible); // copy.
+				//	String.
+					watch( editor, "name", function( key, action, value ){
+						if ( material ) material[key] = String(editor[key]); // copy.
+					});
+					watch( editor, "uuid", function( key, action, value ){
+						if ( material ) material[key] = String(editor[key]); // copy.
 					});
 
+				//	Values.
+					watch( editor, "side", function( key, action, value ){
+						if ( material ) material[key] = Number(editor[key]); // copy.
+					});
+					watch( editor, "visible", function( key, action, value ){
+						if ( material ) material[key] = Boolean(editor[key]); // copy.
+					});
+					watch( editor, "opacity", function( key, action, value ){
+						if ( material ) material[key] = Number(editor[key]); // copy.
+					});
+					watch( editor, "alphaTest", function( key, action, value ){
+						if ( material ) material[key] = Boolean(editor[key]); // copy.
+					});
+					watch( editor, "transparent", function( key, action, value ){
+						if ( material ) material[key] = Boolean(editor[key]); // copy.
+					});
+					watch( editor, "premultipliedAlpha", function( key, action, value ){
+						if ( material ) material[key] = Boolean(editor[key]); // copy.
+					});
 
+					watch( editor, "fog", function( key, action, value ){
+						if ( material ) material[key] = Boolean(editor[key]); // copy.
+					});
+					watch( editor, "lights", function( key, action, value ){
+						if ( material ) material[key] = Boolean(editor[key]); // copy.
+					});
+					watch( editor, "dithering", function( key, action, value ){
+						if ( material ) material[key] = Boolean(editor[key]); // copy.
+					});
+					watch( editor, "colorWrite", function( key, action, value ){
+						if ( material ) material[key] = Boolean(editor[key]); // copy.
+					});
+					watch( editor, "flatShading", function( key, action, value ){
+						if ( material ) material[key] = Boolean(editor[key]); // copy.
+					});
 
+					watch( editor, "precision", function( key, action, value ){
+						if ( material ) material[key] = String(editor[key]); // copy.
+					});
+
+					watch( editor, "overdraw", function( key, action, value ){
+						if ( material ) material[key] = Number(editor[key]); // copy.
+					});
+					watch( editor, "vertexColors", function( key, action, value ){
+						if ( material ) material[key] = Number(editor[key]); // copy.
+					});
+					watch( editor, "blending", function( key, action, value ){
+						if ( material ) material[key] = Number(editor[key]); // copy.
+					});
+					watch( editor, "blendSrc", function( key, action, value ){
+						if ( material ) material[key] = Number(editor[key]); // copy.
+					});
+					watch( editor, "blendDst", function( key, action, value ){
+						if ( material ) material[key] = Number(editor[key]); // copy.
+					});
+					watch( editor, "blendEquation", function( key, action, value ){
+						if ( material ) material[key] = Number(editor[key]); // copy.
+					});
+					watch( editor, "blendSrcAlpha", function( key, action, value ){
+						if ( material ) material[key] = Number(editor[key]); // copy.
+					});
+					watch( editor, "blendDstAlpha", function( key, action, value ){
+						if ( material ) material[key] = Number(editor[key]); // copy.
+					});
+					watch( editor, "blendEquationAlpha", function( key, action, value ){
+						if ( material ) material[key] = Number(editor[key]); // copy.
+					});
+					watch( editor, "depthFunc", function( key, action, value ){
+						if ( material ) material[key] = Number(editor[key]); // copy.
+					});
 
 
 
