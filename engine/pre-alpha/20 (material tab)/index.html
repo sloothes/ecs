@@ -444,6 +444,11 @@
 				}
 
 			//	add to undo/redo.
+			//	You want addtoUndo to keyinput change event and to mouse
+			//	clickend event.
+			//	Should you place addtoUndo on each keyinput change event?
+			//	Should you place addtoUndo on each mouse clickend event?
+			// 	Watch editor value and if is differend add an undo json?
 
 				function addtoUndo(){
 					var json = editor.toJSON();
@@ -469,6 +474,7 @@
 					color_droplist.value = "";
 					vector_droplist.value = "";
 					entity_droplist.value = "";
+					texture_droplist.value = "";
 					return;
 				}
 
@@ -629,255 +635,589 @@
 
 				//	keyinputs change.
 
-					text_input.addEventListener( "change", function(){
+				//	Text input update editor value on keyinput change watch event.
+					watch( text_input, "onchange", function(property, event, value){
+						debugMode && console.log({item:"text input",event:event,"value":value});
 
 						if ( !key_droplist.value ) return text_input.value = "";
 						if ( !entity_droplist.value ) return text_input.value = "";
 
+					//	"value" always comes as typeof "string".
+
+						if ( value === "" )  return text_input.value = "";
+						if ( value === "undefined" ) return text_input.value = "";
+
 						var key = key_droplist.value;
 						var value = text_input.value; // string.
 
-						if ( key && value !== "" && value !== "undefined" ) 
+						switch ( key ){
 
-							switch ( key ){
+						//	Before change the editor[key] value add an undo state in undo queue.
+						//	Until now we has adding to Undo after the value has changed. That was mistake/bug! (TO FIX!)
 
-								case "name":
-									editor[ key ] = value;
-								break;
+							case "name":
+								if ( editor[key] !== value ) {
+									addtoUndo(); editor[ key ] = value; // important!
+									debugMode && console.log( "undo:", undo.length, "redo:", redo.length );
+								}
+							break;
 
-								case "uuid":
-								case "type":
-								case "linecap":
-								case "linejoin":
-								case "wireframeLinecap":
-									text_input.value = editor[ key ];
-								break;
+							case "uuid":
+							case "type":
+							case "linecap":
+							case "linejoin":
+							case "wireframeLinecap":
+								text_input.value = editor[ key ];
+							break;
 
-								default:
-									[ value_input.value, text_input.value ] = ["",""];
-								break;
-							}
-
-						else [ value_input.value, text_input.value ] = ["",""];
-
-					//	TODO: add to undo.
+							default:
+								[ value_input.value, text_input.value ] = ["",""];
+							break;
+						}
 
 					});
 
-					value_input.addEventListener( "change", function(){
+				//	Value input update editor value on keyinput change watch event.
+					watch( value_input, "onchange", function(property, event, value){
+					//	debugMode && console.log({item:"value input",event:event,"value":value});
 
 						if ( !key_droplist.value ) return value_input.value = "";
 						if ( !entity_droplist.value ) return value_input.value = "";
 
-						var key = key_droplist.value;
-						var value = Number(value_input.value); // number.
+					//	"value" always comes as typeof "string", (ecxept NaN, undefined?)
 
-						if ( isNaN(value) ) return value_input.value = "";
+						if ( value === undefined ) return value_input.value = "";
+						if ( value === "" ) return value_input.value = "";
+						if ( value === "NaN" ) return value_input.value = "";
+						if ( value === "undefined" ) return value_input.value = "";
+
+						var key = key_droplist.value;
 
 					//	disabled on key change.
 
-						if ( key && editor[key] !== undefined )
+						if ( typeof editor[key] === "string" ) value_input.value = "";
 
-							if ( typeof editor[key] === "string" ) value_input.value = "";
-							if ( typeof editor[key] === "number" ) value_input.value = value;
-							if ( typeof editor[key] === "boolean" ) value_input.value = Boolean(value);
+					//	enabled on key change.
 
-						else if ( key && editor[key] === undefined )
+						else if ( typeof editor[key] === "boolean" ) {
 
-							switch ( key ){
+							if ( value === "false" ) value = 0;     // accept "false" string.
+							else if ( value === "true" ) value = 1; // accept "true" string.
+							else if ( isNaN(value) ) return value_input.value = editor[ key ]; // avoid to pass NaN value!
+							else value = Number(value); // convert to number, important!
 
-							//	string:
-								case "uuid":
-								case "type":
-								case "linecap":
-								case "linejoin":
-								case "wireframeLinecap":
-								case "name":
-									value_input.value = "";
-								break;
+						//	Before change the editor[key] value add an undo state in undo queue.
+						//	Until now we has adding to Undo after the value has changed. That was mistake/bug! (TO FIX!)
 
-							//	number:
-								case "blending":
-								case "side":
-								case "vertexColors":
-								case "opacity":
-								case "blendSrc":
-								case "blendDst":
-								case "blendEquation":
-								case "depthFunc":
-								case "polygonOffsetFactor":
-								case "polygonOffsetUnits":
-								case "alphaTest,overdraw":
+							if ( editor[key] !== Boolean(value) ) {
+								addtoUndo(); editor[key] = Boolean(value); // important!
+								debugMode && console.log( "undo:", undo.length, "redo:", redo.length );
+							}
+
+							value_input.value = editor[ key ]; // display value.
+						}
+
+						else if ( typeof editor[key] === "number" ) {
+
+							if ( isNaN(value) ) return value_input.value = editor[ key ];
+							if ( isNaN(editor[key]) ) return value_input.value = ""; // avoid to pass NaN value!
+
+						//	Before change the editor[key] value add an undo state in undo queue.
+						//	Until now we has adding to Undo after the value has changed. That was mistake/bug! (TO FIX!)
+
+							switch ( key ) {
+
 								case "displacementScale":
+								case "polygonOffsetUnits":
+								case "polygonOffsetFactor":
+									var value = THREE.Math.clamp(Number(value), -100, 100);
+									if ( editor[key] !== value ) { addtoUndo(); editor[key] = Number(value); 
+									debugMode && console.log( "undo:", undo.length, "redo:", redo.length ); }
+								break;
+								case "opacity":
+								case "overdraw":
+								case "alphaTest":
+								case "reflectivity":
+									var value = THREE.Math.clamp(Number(value), 0, 1);
+									if ( editor[key] !== value ) { addtoUndo(); editor[key] = Number(value); 
+									debugMode && console.log( "undo:", undo.length, "redo:", redo.length ); }
+								break;
+								case "refractionRatio":
+									var value = THREE.Math.clamp(Number(value), -1, 1);
+									if ( editor[key] !== value ) { addtoUndo(); editor[key] = Number(value); 
+									debugMode && console.log( "undo:", undo.length, "redo:", redo.length ); }
+								break;
+								case "bumpScale":
 								case "metalness":
 								case "roughness":
-								case "bumpScale":
-								case "refractionRatio":
 								case "displacementBias":
-								case "normalMapType":
 								case "aoMapIntensity":
 								case "envMapIntensity":
 								case "emissiveIntensity":
 								case "lightMapIntensity":
 								case "wireframeLinewidth":
-								case "reflectivity":
-								case "combine":
+									var value = THREE.Math.clamp(Number(value), -10, 10);
+									if ( editor[key] !== value ) { addtoUndo(); editor[key] = Number(value); 
+									debugMode && console.log( "undo:", undo.length, "redo:", redo.length ); }
+								break;
 								case "linewidth":
-								case "shininess":
-								case "depthPacking":
+									var value = THREE.Math.clamp(Number(value), 0, 100);
+									if ( editor[key] !== value ) { addtoUndo(); editor[key] = Number(value); 
+									debugMode && console.log( "undo:", undo.length, "redo:", redo.length ); }
+								break;
+								case "size":
 								case "scale":
 								case "gapSize":
 								case "dashSize":
-								case "size":
+								case "shininess":
+									var value = THREE.Math.clamp(Number(value), 0, 1000);
+									if ( editor[key] !== value ) { addtoUndo(); editor[key] = Number(value); 
+									debugMode && console.log( "undo:", undo.length, "redo:", redo.length ); }
+								break;
 								case "rotation":
-								case "sizeAttenuation":
-									editor[ key ] = value;
+									var value = DEG2RAD*THREE.Math.clamp(Number(value), -180, 180);
+									if ( editor[key] !== value ) { addtoUndo(); editor[key] = Number(value); 
+									debugMode && console.log( "undo:", undo.length, "redo:", redo.length ); }
+								break;
+							//
+								case "blending":
+									if ( "0,1,2,3,4,5".split(",").includes(value) 
+									&& editor[key] !== Number(value) ) { addtoUndo(); editor[key] = Number(value); 
+										debugMode && console.log( "undo:", undo.length, "redo:", redo.length ); }
+								break;
+								case "side":
+									if ( "0,1,2".split(",").includes(value) 
+									&& editor[key] !== Number(value) ) { addtoUndo(); editor[key] = Number(value); 
+										debugMode && console.log( "undo:", undo.length, "redo:", redo.length ); }
+								break;
+								case "vertexColors":
+									if ( "0,1,2".split(",").includes(value) 
+									&& editor[key] !== Number(value) ) { addtoUndo(); editor[key] = Number(value); 
+										debugMode && console.log( "undo:", undo.length, "redo:", redo.length ); }
+								break;
+								case "blendDst":
+								case "blendSrc":
+									if ( "200,201,202,203,204,205,206,207,208,209,210".split(",").includes(value)
+									&& editor[key] !== Number(value) ) { addtoUndo(); editor[key] = Number(value); 
+										debugMode && console.log( "undo:", undo.length, "redo:", redo.length ); }
+								break;
+								case "blendEquation":
+									if ( "100,101,102,103,104".split(",").includes(value)
+									&& editor[key] !== Number(value) ) { addtoUndo(); editor[key] = Number(value); 
+										debugMode && console.log( "undo:", undo.length, "redo:", redo.length ); }
+								break;
+								case "depthFunc":
+									if ( "0,1,2,3,4,5,6,7".split(",").includes(value)
+									&& editor[key] !== Number(value) ) { addtoUndo(); editor[key] = Number(value); 
+										debugMode && console.log( "undo:", undo.length, "redo:", redo.length ); }
+								break;
+								case "normalMapType":
+									if ( "0,1".includes(value)
+									&& editor[key] !== Number(value) ) { addtoUndo(); editor[key] = Number(value); 
+										debugMode && console.log( "undo:", undo.length, "redo:", redo.length ); }
+								break;
+								case "combine":
+									if ( "0,1,2".includes(value)
+									&& editor[key] !== Number(value) ) { addtoUndo(); editor[key] = Number(value); 
+										debugMode && console.log( "undo:", undo.length, "redo:", redo.length ); }
 								break;
 
-							//	boolean:
-								case "fog":
-								case "lights":
-								case "flatShading":
-								case "transparent":
-								case "depthTest":
-								case "depthWrite":
-								case "clipIntersection":
-								case "clipShadows":
-								case "colorWrite":
-								case "polygonOffset":
-								case "dithering":
-								case "premultipliedAlpha":
-								case "visible":
-								case "needsUpdate":
-								case "wireframe":
-								case "skinning":
-								case "morphTargets":
-								case "morphNormals":
-									editor[ key ] = Boolean(value);
-								break;
-
-								default:
-									[ value_input.value, text_input.value ] = ["",""];
-								break;
 							}
 
-						else [ value_input.value, text_input.value ] = ["",""];
+							if ( key === "rotation" )
+								value_input.value = RAD2DEG*editor[key].toFixed(1); // display value.
+							else 
+								value_input.value = editor[ key ]; // display value.
+						}
 
-					//	TODO: add to undo.
+					//
+
+						else if ( typeof editor[key] === "undefined" ) {
+
+						 //	string type values.
+
+							if ( "uuid,type,linecap,linejoin,wireframeLinecap,name".split(",").includes(key) ) {
+
+								value_input.value = "";
+
+						//	boolean type values.
+
+							} else if ( "fog,lights,flatShading,transparent,depthTest,"
+							+ "depthWrite,clipIntersection,clipShadows,colorWrite,polygonOffset,"
+							+ "dithering,premultipliedAlpha,visible,needsUpdate,wireframe,"
+							+ "skinning,morphTargets,morphNormals".split(",").includes(key) ) {
+
+								if ( value === "false" ) value = 0;       // accepts "false" string.
+								else if ( value === "true" ) value = 1;   // accepts "true" string.
+								else if ( isNaN(value) ) return value_input.value = ""; // avoid to pass NaN value!
+								else value = Number(value); // convert to number, important!
+
+							//	Before change the editor[key] value add an undo state in undo queue.
+							//	Until now we has adding to Undo after the value has changed. That was mistake/bug! (TO FIX!)
+
+								if ( editor[key] !== Boolean(value) ) {
+									addtoUndo(); editor[key] = Boolean(value); // important!
+									debugMode && console.log( "undo:", undo.length, "redo:", redo.length );
+								}
+								
+								value_input.value = editor[ key ]; // display value.
+
+						//	number type values.
+
+							} else if ( "displacementScale,polygonOffsetUnits,polygonOffsetFactor,opacity,overdraw,"
+							+ "alphaTest,reflectivity,refractionRatio,bumpScale,metalness,roughness,displacementBias,"
+							+ "aoMapIntensity,envMapIntensity,emissiveIntensity,lightMapIntensity,wireframeLinewidth,"
+							+ "linewidth,size,scale,gapSize,dashSize,shininess,rotation".split(",").includes(key) ) {
+
+							//	Before change the editor[key] value add an undo state in undo queue.
+							//	Until now we has adding to Undo after the value has changed. That was mistake/bug! (TO FIX!)
+
+								if ( isNaN(value) ) return value_input.value = ""; // avoid to pass NaN value!
+
+								switch ( key ) {
+
+									case "displacementScale":
+									case "polygonOffsetUnits":
+									case "polygonOffsetFactor":
+										var value = THREE.Math.clamp(Number(value), -100, 100); // number.
+									break;
+									case "opacity":
+									case "overdraw":
+									case "alphaTest":
+									case "reflectivity":
+										var value = THREE.Math.clamp(Number(value), 0, 1); // number.
+									break;
+									case "refractionRatio":
+										var value = THREE.Math.clamp(Number(value), -1, 1); // number.
+									break;
+									case "bumpScale":
+									case "metalness":
+									case "roughness":
+									case "displacementBias":
+									case "aoMapIntensity":
+									case "envMapIntensity":
+									case "emissiveIntensity":
+									case "lightMapIntensity":
+									case "wireframeLinewidth":
+										var value = THREE.Math.clamp(Number(value), -10, 10); // number.
+									break;
+									case "linewidth":
+										var value = THREE.Math.clamp(Number(value), 0, 100); // number.
+									break;
+									case "size":
+									case "scale":
+									case "gapSize":
+									case "dashSize":
+									case "shininess":
+										var value = THREE.Math.clamp(Number(value), 0, 1000); // number.
+									break;
+									case "rotation":
+										var value = DEG2RAD*THREE.Math.clamp(Number(value), -180, 180); // number.
+									break;
+
+								}
+
+								if ( !isNaN(value) && editor[key] !== Number(value) ) {
+									addtoUndo(); editor[key] = Number(value); // important!
+									debugMode && console.log( "undo:", undo.length, "redo:", redo.length );
+								}
+
+								value_input.value = editor[ key ]; // display value.
+
+							} else if ( "blending,side,vertexColors,blendDst,blendSrc,blendEquation,depthFunc,"
+							+ "normalMapType,combine,polygonOffsetUnits,polygonOffsetFactor".split(",").includes(key) ) {
+
+							//	Before change the editor[key] value add an undo state in undo queue.
+							//	Until now we has adding to Undo after the value has changed. That was mistake/bug! (TO FIX!)
+
+								switch ( key ) {
+
+									case "blending":
+										if ( "0,1,2,3,4,5".split(",").includes(value) 
+										&& editor[key] !== Number(value) ) { addtoUndo(); editor[key] = Number(value); 
+											debugMode && console.log( "undo:", undo.length, "redo:", redo.length ); }
+									break;
+									case "side":
+										if ( "0,1,2".split(",").includes(value) 
+										&& editor[key] !== Number(value) ) { addtoUndo(); editor[key] = Number(value); 
+											debugMode && console.log( "undo:", undo.length, "redo:", redo.length ); }
+									break;
+									case "vertexColors":
+										if ( "0,1,2".split(",").includes(value) 
+										&& editor[key] !== Number(value) ) { addtoUndo(); editor[key] = Number(value); 
+											debugMode && console.log( "undo:", undo.length, "redo:", redo.length ); }
+									break;
+									case "blendDst":
+									case "blendSrc":
+										if ( "200,201,202,203,204,205,206,207,208,209,210".split(",").includes(value)
+										&& editor[key] !== Number(value) ) { addtoUndo(); editor[key] = Number(value); 
+											debugMode && console.log( "undo:", undo.length, "redo:", redo.length ); }
+									break;
+									case "blendEquation":
+										if ( "100,101,102,103,104".split(",").includes(value)
+										&& editor[key] !== Number(value) ) { addtoUndo(); editor[key] = Number(value); 
+											debugMode && console.log( "undo:", undo.length, "redo:", redo.length ); }
+									break;
+									case "depthFunc":
+										if ( "0,1,2,3,4,5,6,7".split(",").includes(value)
+										&& editor[key] !== Number(value) ) { addtoUndo(); editor[key] = Number(value); 
+											debugMode && console.log( "undo:", undo.length, "redo:", redo.length ); }
+									break;
+									case "normalMapType":
+										if ( "0,1".includes(value)
+										&& editor[key] !== Number(value) ) { addtoUndo(); editor[key] = Number(value); 
+											debugMode && console.log( "undo:", undo.length, "redo:", redo.length ); }
+									break;
+									case "combine":
+										if ( "0,1,2".includes(value)
+										&& editor[key] !== Number(value) ) { addtoUndo(); editor[key] = Number(value); 
+											debugMode && console.log( "undo:", undo.length, "redo:", redo.length ); }
+									break;
+								}
+
+								value_input.value = editor[ key ]; // display value.
+							}
+
+						} else [ value_input.value, text_input.value ] = ["",""];
 
 					});
 
-					vector_x.addEventListener( "change", onScaleInput )
-					vector_y.addEventListener( "change", onScaleInput )
+				//	Vector input (x) update editor vector value on keyinput change watch event.
+					watch( vector_x, "onchange", function(property, event, value){
+					//	debugMode && console.log({item:"vector x",event:event,"value":value});
 
-					function onScaleInput(){
+						if ( key_droplist.value === "" ) return vector_x.value = "";
+						if ( entity_droplist.value === "" ) return vector_x.value = "";
 
-						if ( this.value === "" ) return;
-						if ( this.value == null ) return this.value = "";
+					//	"value" always comes as typeof "string".
+
+						if ( value === undefined ) return vector_x.value = "";
+						if ( value === "" ) return vector_x.value = "";
+						if ( value === "NaN" ) return vector_x.value = "";
+						if ( value === "undefined" ) return vector_x.value = "";
 
 						var key = vector_droplist.value;
-						var map = texture_droplist.value;
 
-						if ( key !== "normalScale" || map !== "normalMap") 
-							return [vector_x.value, vector_y.value] = ["",""];
+					//	disabled on key change.
 
-						if ( !editor.normalScale || !editor.normalScale.isVector2 )
-							return [vector_x.value, vector_y.value] = ["",""];
+						if ( editor[key] === undefined ) vector_x.value = "";
+						else if ( !editor[key].isVector2 ) vector_x.value = "";
+						else if ( isNaN(value) ) vector_x.value = editor[key].x.toFixed(2);
 
-						if ( editor.normalScale && editor.normalScale.isVector2 ) {
+					//	enabled on key change.
+					//	Before change the editor[key] value add an undo state in undo queue.
+					//	Until now we has adding to Undo after the value has changed. That was mistake/bug! (TO FIX!)
 
-							var x = Number( vector_x.value ); // number. 
-							if ( isNaN(x) ) vector_x.value = "";
-							else editor.normalScale.x = x;
+						else if ( ["normalScale"].includes(key) ) {
 
-							var y = Number( vector_y.value ); // number. 
-							if ( isNaN(y) ) vector_y.value = "";
-							else editor.normalScale.y = y;
+							var value = THREE.Math.clamp( Number(value), -100, 100 ); // number.
 
+							if ( editor[key].x !== Number(value) ) { 
+								addtoUndo(); editor[key].x = Number(value); // important!
+								debugMode && console.log( "undo:", undo.length, "redo:", redo.length, "value:", value );
+							}
+
+							vector_x.value = editor[key].x.toFixed(2); // display value.
 						}
 
-					//	TODO: add to undo.
+					});
 
-					}
 
-					color_r.addEventListener( "change", onColorInput )
-					color_g.addEventListener( "change", onColorInput )
-					color_b.addEventListener( "change", onColorInput )
+				//	Vector input (y) update editor vector value on keyinput change watch event.
+					watch( vector_y, "onchange", function(property, event, value){
+					//	debugMode && console.log({item:"vector y",event:event,"value":value});
 
-					function onColorInput(){
+						if ( key_droplist.value === "" ) return vector_y.value = "";
+						if ( entity_droplist.value === "" ) return vector_y.value = "";
 
-						if ( this.value === "" ) return;
-						if ( this.value == null ) return this.value = "";
+					//	"value" always comes as typeof "string".
 
-						if ( !entity_droplist.value || !color_droplist.value ) {
-							[color_r.value, color_g.value, color_b.value] = ["","",""]; return;
+						if ( value === undefined ) return vector_y.value = "";
+						if ( value === "" ) return vector_y.value = "";
+						if ( value === "NaN" ) return vector_y.value = "";
+						if ( value === "undefined" ) return vector_y.value = "";
+
+						var key = vector_droplist.value;
+
+					//	disabled on key change.
+
+						if ( editor[key] === undefined ) vector_y.value = "";
+						else if ( !editor[key].isVector2 ) vector_y.value = "";
+						else if ( isNaN(value) ) vector_y.value = editor[key].y.toFixed(2);
+
+					//	enabled on key change.
+					//	Before change the editor[key] value add an undo state in undo queue.
+					//	Until now we has adding to Undo after the value has changed. That was mistake/bug! (TO FIX!)
+
+						else if ( ["normalScale"].includes(key) ) {
+
+							var value = THREE.Math.clamp( Number(value), -100, 100 ); // number.
+
+							if ( editor[key].y !== Number(value) ) { 
+								addtoUndo(); editor[key].y = Number(value); // important!
+								debugMode && console.log( "undo:", undo.length, "redo:", redo.length, "value:", value );
+							}
+
+							vector_y.value = editor[key].y.toFixed(2); // display value.
 						}
+
+					});
+
+
+				//	Color input (r) update editor color value on keyinput change watch event.
+					watch( color_r, "onchange", function(property, event, value){
+						debugMode && console.log({item:"color r",event:event,"value":value});
+
+						if ( color_droplist.value === "" ) return color_r.value = "";
+						if ( entity_droplist.value === "" ) return color_r.value = "";
+
+					//	"value" always comes as typeof "string".
+
+						if ( value === "" ) return color_r.value = "";
+						if ( value === "undefined" ) return color_r.value = "";
 
 						var key = color_droplist.value;
 
-						if ( key !== "color" || key !== "emissive" || key !== "specular" ) {
-							[color_r.value, color_g.value, color_b.value] = ["","",""]; return;
+					//	disabled on key change.
+
+						if ( editor[key] === undefined ) value_input.value = "";
+						else if ( !editor[key].isColor ) value_input.value = "";
+						else if ( isNaN(value) ) color_r.value = (255*editor[key].r).toFixed(0);
+
+					//	enabled on key change.
+					//	Before change the editor[key] value add an undo state in undo queue.
+					//	Until now we has adding to Undo after the value has changed. That was mistake/bug! (TO FIX!)
+
+						else if ( ["color","emissive","specular"].includes(key) ) {
+
+							var value = THREE.Math.clamp( (Number(value) % 256) / 255, 0, 1 ); // normalize.
+
+							if ( editor[key].r !== value ) { addtoUndo(); editor[key].r = value; // important!
+
+								debugMode && console.log( "undo:", undo.length, "redo:", redo.length, "value:", value );
+							}
 						}
 
-						var value = THREE.Math.clamp( Number(this.value), 0, 255) ;
+						color_r.value = Number(255*editor[key].r).toFixed(0); // display value.
 
-						if ( editor[key] && editor[key].isColor ) {
+					});
 
-							if ( isNaN(value) ) {
-								if ( this === color_r ) color_r.value = parseInt(255*editor[key].r);
-								if ( this === color_g ) color_g.value = parseInt(255*editor[key].g);
-								if ( this === color_b ) color_b.value = parseInt(255*editor[key].b);
-							} else {
-								if ( this === color_r ) editor[key].r = Number(value)/255;
-								if ( this === color_g ) editor[key].g = Number(value)/255;
-								if ( this === color_b ) editor[key].b = Number(value)/255;
+				//	Color input (g) update editor color value on keyinput change watch event.
+					watch( color_g, "onchange", function(property, event, value){
+						debugMode && console.log({item:"color g",event:event,"value":value});
+
+						if ( color_droplist.value === "" ) return color_g.value = "";
+						if ( entity_droplist.value === "" ) return color_g.value = "";
+
+					//	"value" always comes as typeof "string".
+
+						if ( value === "" ) return color_g.value = "";
+						if ( value === "undefined" ) return color_g.value = "";
+
+						var key = color_droplist.value;
+
+					//	disabled on key change.
+
+						if ( editor[key] === undefined ) value_input.value = "";
+						else if ( !editor[key].isColor ) value_input.value = "";
+						else if ( isNaN(value) ) color_g.value = (255*editor[key].g).toFixed(0);
+
+					//	enabled on key change.
+					//	Before change the editor[key] value add an undo state in undo queue.
+					//	Until now we has adding to Undo after the value has changed. That was mistake/bug! (TO FIX!)
+
+						else if ( ["color","emissive","specular"].includes(key) ) {
+
+							var value = THREE.Math.clamp( (Number(value) % 256) / 255, 0, 1 ); // normalize.
+
+							if ( editor[key].g !== value ) { addtoUndo(); editor[key].g = value; // important!
+
+								debugMode && console.log( "undo:", undo.length, "redo:", redo.length, "value:", value );
 							}
+						}
 
-						} else [color_r.value, color_g.value, color_b.value] = ["","",""];
+						color_g.value = Number(255*editor[key].g).toFixed(0); // display value.
 
-					//	TODO: add to undo.
+					});
 
-					}
+				//	Color input (b) update editor color value on keyinput change watch event.
+					watch( color_b, "onchange", function(property, event, value){
+						debugMode && console.log({item:"color b",event:event,"value":value});
+
+						if ( color_droplist.value === "" ) return color_b.value = "";
+						if ( entity_droplist.value === "" ) return color_b.value = "";
+
+					//	"value" always comes as typeof "string".
+
+						if ( value === "" ) return color_b.value = "";
+						if ( value === "undefined" ) return color_b.value = "";
+
+						var key = color_droplist.value;
+
+					//	disabled on key change.
+
+						if ( editor[key] === undefined ) value_input.value = "";
+						else if ( !editor[key].isColor ) value_input.value = "";
+						else if ( isNaN(value) ) color_b.value = (255*editor[key].b).toFixed(0);
+
+					//	enabled on key change.
+					//	Before change the editor[key] value add an undo state in undo queue.
+					//	Until now we has adding to Undo after the value has changed. That was mistake/bug! (TO FIX!)
+
+						else if ( ["color","emissive","specular"].includes(key) ) {
+
+							var value = THREE.Math.clamp( (Number(value) % 256) / 255, 0, 1 ); // normalize.
+
+							if ( editor[key].b !== value ) { addtoUndo(); editor[key].b = value; // important!
+
+								debugMode && console.log( "undo:", undo.length, "redo:", redo.length, "value:", value );
+							}
+						}
+
+						color_b.value = Number(255*editor[key].b).toFixed(0); // display value.
+
+					});
 
 				})();
 
-			//	key/value mouse inputs.
-
-				(function(){
-
-					var interval;
-
+/*
 				//	First "mousedown" event (mousedown, onWatchValue ) eventListener, sets the values in 
 				//	the "watchValue" object and the ( mousedown, onWatchValue ) eventListener is removed.
 				//	Last "click" event ( click, onMouseClick ) eventListener, changes the watchValue.value 
 				//	and calls the watcher, which restore the (mousedown, onWatchValue ) eventListener.
 
 					var watchValue = {
-						key:null,    // editor key,
-						value:null,  // editor[key].
-						button:null, // current button.
-						entity:null, // material.id,
+						key:undefined,    // editor key,
+						value:undefined,  // editor[key].
+						button:undefined, // current button.
+						entity:undefined, // material.id,
 					};
 
 				//	Will trigger when clicking has finished (and a value has changed).
 					watch( watchValue, "value", function( prop, action, value, oldValue ){
-						debugMode && console.log({ event:"on click end", "new value":value, "old value":oldValue });
+						debugMode && console.log({ event:"on click end", key:watchValue.key, "new value":value, "old value":oldValue });
 
-						if ( watchValue.button == null ) return;
+						if ( watchValue.button == undefined ) return;
 						if ( entity_droplist.value === "" ) return;
 
 					//	Add event listener.
 						watchValue.button && watchValue.button.addEventListener( "mousedown", onWatchValue ); // important!
 
 					//	Add to undo.
-						entity_droplist.value && addtoUndo(); // add to undo.
-						debugMode && console.log( "undo:", undo.length, "redo:", redo.length );
+						if ( watchValue.key && editor[ watchValue.key ] !== value ) {
+						//	add to undo.
+							addtoUndo(); debugMode && console.log( "undo:", undo.length, "redo:", redo.length ); // undo.
+						//	update editor value.
+							editor[ watchValue.key ] = value; // update.
+						}
+
+					//	display editor value.
+						if ( watchValue.key === "rotation" )  [value_input.value, text_input.value] = [ (RAD2DEG*editor[watchValue.key]).toFixed(1),""];
+						else if (typeof value === "string" )  [text_input.value, value_input.value] = [ editor[ watchValue.key ],""]; // string.
+						else if (typeof value === "number" )  [value_input.value, text_input.value] = [ editor[ watchValue.key ],""]; // number.
+						else if (typeof value === "boolean" ) [value_input.value, text_input.value] = [ editor[ watchValue.key ],""]; // boolean.
 
 					});
-
-				//	keep first, ignore next events.
-					increase_v.addEventListener( "mousedown", onWatchValue );
-					decrease_v.addEventListener( "mousedown", onWatchValue );
 
 					function onWatchValue(){
 
@@ -890,6 +1230,30 @@
 						watchValue.entity = parseInt(entity_droplist.value);
 						button.removeEventListener( "mousedown", onWatchValue ); // important!
 					}
+*/
+
+			//	key/value mouse inputs.
+
+				(function(){
+
+					var interval;
+
+				//	keep first, ignore next events.
+
+					var state;
+					function onfirstMouseDown(){
+						state = {};
+						var key = key_droplist.value;
+						state.key = key;
+						state.value = editor[ key ];
+						state.json = editor.toJSON();
+						console.log( "state:", state );
+					//	Remove on firstMouseDown event listener.
+						this.removeEventListener( "mousedown", onfirstMouseDown ); // important!
+					};
+
+					increase_v.addEventListener( "mousedown", onfirstMouseDown );
+					decrease_v.addEventListener( "mousedown", onfirstMouseDown );
 
 					increase_v.addEventListener( "mousedown", onMouseDown );
 					decrease_v.addEventListener( "mousedown", onMouseDown );
@@ -911,6 +1275,7 @@
 					//	disabled on mouse down.
 
 						if ( key_droplist.value === "" ) return;
+						if ( isNaN(editor[key_droplist.value]) ) return; // avoid to pass NaN value!
 
 					//	enabled on mouse down.
 
@@ -920,6 +1285,8 @@
 						interval = setTimeout( function update() {
 
 							var key = key_droplist.value;
+
+							if ( isNaN(editor[key]) ) return; // avoid to pass NaN value!
 
 							function updateFloatRotationValue(){
 								var step = 0.1 * Math.PI/180; // 0.1 deg.
@@ -1018,36 +1385,76 @@
 						var button = this;
 						var key = key_droplist.value;
 
+					//	if ( isNaN(editor[key]) ) value_input.value = ""; // avoid to pass NaN value!
+
+
+					//	Before change the editor[key] value add an undo state in undo queue.
+					//	Until now we has adding to Undo after the value has changed. That was mistake/bug! (TO FIX!)
+
 						function updateFloatRotationValue(){
 							var step = 0.1 * Math.PI/180; // 0.1 deg.
 							var min = -Math.PI, max = Math.PI;
-							var value = Number(editor[ key ]); // get value from editor.
-							if ( button === increase_v ) value = THREE.Math.clamp( value+step, min, max );
-							if ( button === decrease_v ) value = THREE.Math.clamp( value-step, min, max );
-							value_input.value = ( RAD2DEG * ( editor[ key ] = value) ).toFixed(1); // string.
+							var value = Number(editor[ key ]); // get value from editor, rad.
+							if ( isNaN(value) ) return value_input.value = ""; // avoid to pass NaN editor[key] value.
+							if ( button === increase_v ) value = THREE.Math.clamp( value+step, min, max ); // rad.
+							if ( button === decrease_v ) value = THREE.Math.clamp( value-step, min, max ); // rad.
+						//	Bypass watcher.
+							if ( value !== state.value ) 
+								interval = setTimeout( function(){ 
+									state.json && undo.unshift( state.json ); // Add to undo.
+									debugMode && console.log( "undo:", undo.length, "redo:", redo.length ); 
+									button.addEventListener( "mousedown", onfirstMouseDown ); // important!
+								}, 250);
+						//	update editor value.
+							editor[ key ] = value; value_input.value = (RAD2DEG*editor[key]).toFixed(1); // display.
 						}
 
 						function updateFloatNumberValue(min, max, step){
 							var value = Number(editor[ key ]); // get value from editor.
+							if ( isNaN(value) ) return value_input.value = ""; // avoid to pass NaN editor[key] value.
 							if ( button === increase_v ) value = THREE.Math.clamp( value+step, min, max );
 							if ( button === decrease_v ) value = THREE.Math.clamp( value-step, min, max );
-							value_input.value = ( editor[key] = round(value, 2) ).toFixed(2);
+						//	Bypass watcher.
+							if ( value !== state.value ) 
+								interval = setTimeout( function(){ 
+									state.json && undo.unshift( state.json ); // Add to undo.
+									debugMode && console.log( "undo:", undo.length, "redo:", redo.length ); 
+									button.addEventListener( "mousedown", onfirstMouseDown ); // important!
+								}, 250);
+						//	update editor value.
+							editor[ key ] = value; value_input.value = editor[key].toFixed(2); // display.
 						}
 
 						function updateIntegerNumberValue(min, max){
 							var value = parseInt(editor[ key ]); // get value from editor.
+							if ( isNaN(value) ) return value_input.value = ""; // avoid to pass NaN editor[key] value.
 							if ( button === increase_v ) value = THREE.Math.clamp( ++value, min, max );
 							if ( button === decrease_v ) value = THREE.Math.clamp( --value, min, max );
-							value_input.value = ( editor[key] = parseInt(value) ).toFixed(0);
+						//	Bypass watcher.
+							if ( value !== state.value ) interval = setTimeout( function(){ 
+								state.json && undo.unshift( state.json ); // Add to undo.
+								debugMode && console.log( "undo:", undo.length, "redo:", redo.length ); 
+								button.addEventListener( "mousedown", onfirstMouseDown ); // important!
+							}, 250);
+						//	update editor value.
+							value_input.value = editor[ key ] = value; // display.
 						}
 
 						function updateConstantStringValue( values ){
 							var min = 0, max = values.length;
-							var value = editor[ key ]; // string
+							var value = editor[ key ]; // string.
 							var index = values.findIndex(function( item ){ return item === value; });
 							if ( button === increase_v ) value = values[ ( ++index % max + max ) % max ]; // mod();
 							if ( button === decrease_v ) value = values[ ( --index % max + max ) % max ]; // mod();
-							text_input.value = editor[ key ] = value; // string.
+						//	Bypass watcher.
+							if ( value !== state.value ) 
+								interval = setTimeout( function(){ 
+									state.json && undo.unshift( state.json ); // Add to undo.
+									debugMode && console.log( "undo:", undo.length, "redo:", redo.length ); 
+									button.addEventListener( "mousedown", onfirstMouseDown ); // important!
+								}, 250);
+						//	update editor value.
+							text_input.value = editor[ key ] = value; // display.
 						}
 
 						function updateConstantNumberValue( values ){
@@ -1056,7 +1463,15 @@
 							var index = values.findIndex(function( item ){ return item === value; });
 							if ( button === increase_v ) value = values[ ( ++index % max + max ) % max ]; // mod();
 							if ( button === decrease_v ) value = values[ ( --index % max + max ) % max ]; // mod();
-							value_input.value = editor[ key ] = value; // number.
+						//	Bypass watcher.
+							if ( value !== state.value ) 
+								interval = setTimeout( function(){ 
+									state.json && undo.unshift( state.json ); // Add to undo.
+									debugMode && console.log( "undo:", undo.length, "redo:", redo.length ); 
+									button.addEventListener( "mousedown", onfirstMouseDown ); // important!
+								}, 250);
+						//	update editor value.
+							value_input.value = editor[ key ] = value; // display.
 						}
 
 						switch ( key ){
@@ -1066,9 +1481,23 @@
 							case "type":
 								text_input.value = editor[ key ]; // disabled on mouse click.
 							break;
+
 							case "uuid": 
-								text_input.value = editor[ key ] = THREE.Math.generateUUID(); // string.
+							//	Bypass watcher.
+								(function(){
+									var value = THREE.Math.generateUUID(); // string
+								//	Bypass watcher.
+									if ( value !== state.value ) 
+										interval = setTimeout( function(){ 
+											state.json && undo.unshift( state.json ); // Add to undo.
+											debugMode && console.log( "undo:", undo.length, "redo:", redo.length ); 
+											button.addEventListener( "mousedown", onfirstMouseDown ); // important!
+										}, 250);
+								//	update editor value.
+									text_input.value = editor[ key ] = value; // display.
+								})();
 							break;
+
 							case "linecap":
 							case "wireframeLinecap":
 								updateConstantStringValue(["butt","round","square"]);
@@ -1100,7 +1529,19 @@
 							case "morphTargets":
 							case "morphNormals":
 							case "sizeAttenuation":
-								value_input.value = editor[ key ] = !editor[ key ]; // boolean.
+							//	Bypass watcher.
+								(function(){
+									var value = !editor[ key ]; // boolean.
+								//	Bypass watcher.
+									if ( value !== state.value ) 
+										interval = setTimeout( function(){ 
+											state.json && undo.unshift( state.json ); // Add to undo.
+											debugMode && console.log( "undo:", undo.length, "redo:", redo.length ); 
+											button.addEventListener( "mousedown", onfirstMouseDown ); // important!
+										}, 250);
+								//	update editor value.
+									value_input.value = editor[ key ] = value; // display.
+								})();
 							break;
 
 						//	number:
@@ -1198,9 +1639,9 @@
 						debugMode && console.log( "on Mouse Click:", interval );
 
 					//	call watcher to add undo.
-						interval = setTimeout( function(){
-							watchValue.value = editor[ key ];
-						}, 250);
+					//	interval = setTimeout( function(){
+					//		watchValue.value = editor[ key ];
+					//	}, 250);
 
 					}
 
@@ -1218,10 +1659,10 @@
 				//	and calls the watcher, which restore the (mousedown, onWatchValue ) eventListener.
 
 					var watchValue = {
-						entity:null, // material.id,
-						button:null, // current button.
-						key:null,    // editor key,
-						value:null,  // editor[key].x
+						entity:undefined, // material.id,
+						button:undefined, // current button.
+						key:undefined,    // editor key,
+						value:undefined,  // editor[key].x
 					};
 
 				//	Initialize watchValue.
@@ -1345,10 +1786,10 @@
 					var interval;
 
 					var watchValue = {
-						entity:null, // material.id,
-						button:null, // current button.
-						key:null,    // editor key,
-						value:null,  // editor[key].y
+						entity:undefined, // material.id,
+						button:undefined, // current button.
+						key:undefined,    // editor key,
+						value:undefined,  // editor[key].y
 					};
 
 				//	Initialize watchValue.
@@ -1480,10 +1921,10 @@
 				//	and calls the watcher, which restore the (mousedown, onWatchValue ) eventListener.
 
 					var watchValue = {
-						entity:null, // material.id,
-						button:null, // current button.
-						key:null,    // editor key (color),
-						value:null,  // editor[key].r
+						entity:undefined, // material.id,
+						button:undefined, // current button.
+						key:undefined,    // editor key,
+						value:undefined,  // editor[key].r
 					};
 
 				//	Initialize watchValue.
@@ -1606,10 +2047,10 @@
 					var interval;
 
 					var watchValue = {
-						entity:null, // material.id,
-						button:null, // current button.
-						key:null,    // editor key (color),
-						value:null,  // editor[key].g
+						entity:undefined, // material.id,
+						button:undefined, // current button.
+						key:undefined,    // editor key,
+						value:undefined,  // editor[key].g
 					};
 
 				//	Initialize watchValue.
@@ -1732,10 +2173,10 @@
 					var interval;
 
 					var watchValue = {
-						entity:null, // material.id,
-						button:null, // current button.
-						key:null,    // editor key (color),
-						value:null,  // editor[key].b
+						entity:undefined, // material.id,
+						button:undefined, // current button.
+						key:undefined,    // editor key,
+						value:undefined,  // editor[key].b
 					};
 
 				//	Initialize watchValue.
@@ -1878,30 +2319,31 @@
 				//	Vector.
 					watch( editor.normalScale, ["x","y"], function( v, action, value ){
 					//	debugMode && console.log("editor:",{"key":v,"action":action,"value":value});
-						if (material && material.normalScale) material.normalScale[v] = editor.normalScale[v];
+						if (material && material.normalScale) material.normalScale[v] = Number(editor.normalScale[v]); // copy.
 					//	clearTimeout( interval );
 					});
 
 				//	Colors.
 					watch( editor.color, ["r","g","b"], function( c, action, value ){
 					//	debugMode && console.log("editor:",{"key":c,"action":action,"value":value});
-						if (material && material.color) material.color[c] = editor.color[c];
+						if (material && material.color) material.color[c] = Number(editor.color[c]); // copy.
 					//	clearTimeout( interval );
 					});
 					watch( editor.emissive, ["r","g","b"], function( c, action, value ){
 					//	debugMode && console.log("editor:",{"key":c,"action":action,"value":value});
-						if (material && material.emissive) material.emissive[c] = editor.emissive[c];
+						if (material && material.emissive) material.emissive[c] = Number(editor.emissive[c]); // copy.
 					//	clearTimeout( interval );
 					});
 					watch( editor.specular, ["r","g","b"], function( c, action, value ){
 					//	debugMode && console.log("editor:",{"key":c,"action":action,"value":value});
-						if (material && material.specular) material.specular[c] = editor.specular[c];
+						if (material && material.specular) material.specular[c] = Number(editor.specular[c]); // copy.
 					//	clearTimeout( interval );
 					});
 
 				//	Values.
-
-
+					watch( editor, "visible", function( key, action, value ){
+						if ( material ) material.visible = Boolean(editor.visible); // copy.
+					});
 
 
 
@@ -2135,6 +2577,219 @@
 
 		</script>
 
+		<script>
+/*
+					text_input.addEventListener( "change", function(){
 
+						if ( !key_droplist.value ) return text_input.value = "";
+						if ( !entity_droplist.value ) return text_input.value = "";
+
+						var key = key_droplist.value;
+						var value = text_input.value; // string.
+
+						if ( key && value !== "" && value !== "undefined" ) 
+
+							switch ( key ){
+
+								case "name":
+									editor[ key ] = value;
+								break;
+
+								case "uuid":
+								case "type":
+								case "linecap":
+								case "linejoin":
+								case "wireframeLinecap":
+									text_input.value = editor[ key ];
+								break;
+
+								default:
+									[ value_input.value, text_input.value ] = ["",""];
+								break;
+							}
+
+						else [ value_input.value, text_input.value ] = ["",""];
+
+					//	TODO: add to undo.
+
+					});
+
+					value_input.addEventListener( "change", function(){
+
+						if ( !key_droplist.value ) return value_input.value = "";
+						if ( !entity_droplist.value ) return value_input.value = "";
+
+						var key = key_droplist.value;
+						var value = Number(value_input.value); // number.
+
+						if ( isNaN(value) ) return value_input.value = "";
+
+					//	disabled on key change.
+
+						if ( key && editor[key] !== undefined )
+
+							if ( typeof editor[key] === "string" ) value_input.value = "";
+							if ( typeof editor[key] === "number" ) value_input.value = value;
+							if ( typeof editor[key] === "boolean" ) value_input.value = Boolean(value);
+
+						else if ( key && editor[key] === undefined )
+
+							switch ( key ){
+
+							//	string:
+								case "uuid":
+								case "type":
+								case "linecap":
+								case "linejoin":
+								case "wireframeLinecap":
+								case "name":
+									value_input.value = "";
+								break;
+
+							//	number:
+								case "blending":
+								case "side":
+								case "vertexColors":
+								case "opacity":
+								case "blendSrc":
+								case "blendDst":
+								case "blendEquation":
+								case "depthFunc":
+								case "polygonOffsetFactor":
+								case "polygonOffsetUnits":
+								case "alphaTest,overdraw":
+								case "displacementScale":
+								case "metalness":
+								case "roughness":
+								case "bumpScale":
+								case "refractionRatio":
+								case "displacementBias":
+								case "normalMapType":
+								case "aoMapIntensity":
+								case "envMapIntensity":
+								case "emissiveIntensity":
+								case "lightMapIntensity":
+								case "wireframeLinewidth":
+								case "reflectivity":
+								case "combine":
+								case "linewidth":
+								case "shininess":
+								case "depthPacking":
+								case "scale":
+								case "gapSize":
+								case "dashSize":
+								case "size":
+								case "rotation":
+								case "sizeAttenuation":
+									editor[ key ] = value;
+								break;
+
+							//	boolean:
+								case "fog":
+								case "lights":
+								case "flatShading":
+								case "transparent":
+								case "depthTest":
+								case "depthWrite":
+								case "clipIntersection":
+								case "clipShadows":
+								case "colorWrite":
+								case "polygonOffset":
+								case "dithering":
+								case "premultipliedAlpha":
+								case "visible":
+								case "needsUpdate":
+								case "wireframe":
+								case "skinning":
+								case "morphTargets":
+								case "morphNormals":
+									editor[ key ] = Boolean(value);
+								break;
+
+								default:
+									[ value_input.value, text_input.value ] = ["",""];
+								break;
+							}
+
+						else [ value_input.value, text_input.value ] = ["",""];
+
+					//	TODO: add to undo.
+
+					});
+
+					vector_x.addEventListener( "change", onScaleInput )
+					vector_y.addEventListener( "change", onScaleInput )
+
+					function onScaleInput(){
+
+						if ( this.value === "" ) return;
+						if ( this.value == null ) return this.value = "";
+
+						var key = vector_droplist.value;
+						var map = texture_droplist.value;
+
+						if ( key !== "normalScale" || map !== "normalMap") 
+							return [vector_x.value, vector_y.value] = ["",""];
+
+						if ( !editor.normalScale || !editor.normalScale.isVector2 )
+							return [vector_x.value, vector_y.value] = ["",""];
+
+						if ( editor.normalScale && editor.normalScale.isVector2 ) {
+
+							var x = Number( vector_x.value ); // number. 
+							if ( isNaN(x) ) vector_x.value = "";
+							else editor.normalScale.x = x;
+
+							var y = Number( vector_y.value ); // number. 
+							if ( isNaN(y) ) vector_y.value = "";
+							else editor.normalScale.y = y;
+
+						}
+
+					//	TODO: add to undo.
+
+					}
+
+					color_r.addEventListener( "change", onColorInput )
+					color_g.addEventListener( "change", onColorInput )
+					color_b.addEventListener( "change", onColorInput )
+
+					function onColorInput(){
+
+						if ( this.value === "" ) return;
+						if ( this.value == null ) return this.value = "";
+
+						if ( !entity_droplist.value || !color_droplist.value ) {
+							[color_r.value, color_g.value, color_b.value] = ["","",""]; return;
+						}
+
+						var key = color_droplist.value;
+
+						if ( key !== "color" || key !== "emissive" || key !== "specular" ) {
+							[color_r.value, color_g.value, color_b.value] = ["","",""]; return;
+						}
+
+						var value = THREE.Math.clamp( Number(this.value), 0, 255) ;
+
+						if ( editor[key] && editor[key].isColor ) {
+
+							if ( isNaN(value) ) {
+								if ( this === color_r ) color_r.value = parseInt(255*editor[key].r);
+								if ( this === color_g ) color_g.value = parseInt(255*editor[key].g);
+								if ( this === color_b ) color_b.value = parseInt(255*editor[key].b);
+							} else {
+								if ( this === color_r ) editor[key].r = Number(value)/255;
+								if ( this === color_g ) editor[key].g = Number(value)/255;
+								if ( this === color_b ) editor[key].b = Number(value)/255;
+							}
+
+						} else [color_r.value, color_g.value, color_b.value] = ["","",""];
+
+					//	TODO: add to undo.
+
+					}
+
+*/
+		</script>
 	</body>
 </html>
