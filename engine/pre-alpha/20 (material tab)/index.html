@@ -199,6 +199,7 @@
 				const clone_button = document.getElementById("clone-material-button");
 				const create_button = document.getElementById("create-material-button");
 				const remove_button = document.getElementById("remove-material-button");
+				const needsUpdate_button = document.getElementById("material-needs-update");
 
 			//	MaterialEditor class (extends THREE.MeshStandardMaterial Class).
 			//	A THREE.Material that holds editor values. Extends THREE.Material.
@@ -1562,11 +1563,11 @@
 							case "dithering":
 							case "premultipliedAlpha":
 							case "visible":
-							case "needsUpdate":
 							case "wireframe":
 							case "skinning":
 							case "morphTargets":
 							case "morphNormals":
+						//	case "needsUpdate":
 							case "sizeAttenuation":
 							//	Bypass watcher.
 								(function(){
@@ -1666,7 +1667,7 @@
 							break;
 
 							default:
-								value_input.value = ""; // disabled on mouse click.
+								value_input.value = editor[key] || ""; // disabled on mouse click.
 							break;
 						}
 
@@ -2353,26 +2354,18 @@
 					
 				//	Vector.
 					watch( editor.normalScale, ["x","y"], function( v, action, value ){
-					//	debugMode && console.log("editor:",{"key":v,"action":action,"value":value});
 						if (material && material.normalScale) material.normalScale[v] = Number(editor.normalScale[v]); // copy.
-					//	clearTimeout( interval );
 					});
 
 				//	Colors.
 					watch( editor.color, ["r","g","b"], function( c, action, value ){
-					//	debugMode && console.log("editor:",{"key":c,"action":action,"value":value});
 						if (material && material.color) material.color[c] = Number(editor.color[c]); // copy.
-					//	clearTimeout( interval );
 					});
 					watch( editor.emissive, ["r","g","b"], function( c, action, value ){
-					//	debugMode && console.log("editor:",{"key":c,"action":action,"value":value});
 						if (material && material.emissive) material.emissive[c] = Number(editor.emissive[c]); // copy.
-					//	clearTimeout( interval );
 					});
 					watch( editor.specular, ["r","g","b"], function( c, action, value ){
-					//	debugMode && console.log("editor:",{"key":c,"action":action,"value":value});
 						if (material && material.specular) material.specular[c] = Number(editor.specular[c]); // copy.
-					//	clearTimeout( interval );
 					});
 
 				//	String.
@@ -2382,6 +2375,7 @@
 					watch( editor, "uuid", function( key, action, value ){
 						if ( material ) material[key] = String(editor[key]); // copy.
 					});
+
 
 				//	Values.
 					watch( editor, "side", function( key, action, value ){
@@ -2417,10 +2411,6 @@
 					});
 					watch( editor, "flatShading", function( key, action, value ){
 						if ( material ) material[key] = Boolean(editor[key]); // copy.
-					});
-
-					watch( editor, "precision", function( key, action, value ){
-						if ( material ) material[key] = String(editor[key]); // copy.
 					});
 
 					watch( editor, "overdraw", function( key, action, value ){
@@ -2467,10 +2457,18 @@
 						if ( material ) material[key] = Number(editor[key]); // copy.
 					});
 
+					watch( editor, "precision", function( key, action, value ){
+						if ( material ) material[key] = String(editor[key]); // copy.
+					});
 
+				//	Material needsUpdate button.
 
-
-
+					watch( editor, "needsUpdate", function( key, action, value ){
+						if ( material ) material[key] = Boolean(editor[key]); // copy.
+					});
+					needsUpdate_button.addEventListener( "click", function(){
+						if ( material ) material.needsUpdate = true;
+					});
 
 				})( editor.reset() ); // important! (reset initializes editor)
 
