@@ -152,7 +152,7 @@
 
 	//	Add a watcher.
 		watch(input, "onchange", function(property, event, value){
-			debugMode && console.log({item:"input",event:event,"value":value});
+			debugMode && console.log({item:"text input",event:event,"value":value});
 		});
 
 	//	Call watchers.
@@ -249,7 +249,7 @@
 
 	//	Add a watcher.
 		watch(input, "onchange", function(property, event, value){
-			debugMode && console.log({item:"input",event:event,"value":value});
+			debugMode && console.log({item:"value input",event:event,"value":value});
 		});
 
 	//	Call watchers.
@@ -340,7 +340,7 @@
 
 	//	Add a watcher.
 		watch(input, "onchange", function(property, event, value){
-			debugMode && console.log({item:"input",event:event,"vector-x":value});
+			debugMode && console.log({item:"vector input",event:event,"x":value});
 		});
 
 	//	Call watchers.
@@ -391,7 +391,7 @@
 
 	//	Add a watcher.
 		watch(input, "onchange", function(property, event, value){
-			debugMode && console.log({item:"input",event:event,"vector-y":value});
+			debugMode && console.log({item:"vector input",event:event,"y":value});
 		});
 
 	//	Call watchers.
@@ -480,7 +480,7 @@
 
 	//	Add a watcher.
 		watch(input, "onchange", function(property, event, value){
-			debugMode && console.log({item:"input",event:event,"color-r":value});
+			debugMode && console.log({item:"color input",event:event,"red":value});
 		});
 
 	//	Call watchers.
@@ -529,7 +529,7 @@
 
 	//	Add a watcher.
 		watch(input, "onchange", function(property, event, value){
-			debugMode && console.log({item:"input",event:event,"color-g":value});
+			debugMode && console.log({item:"color input",event:event,"green":value});
 		});
 
 	//	Call watchers.
@@ -578,7 +578,7 @@
 
 	//	Add a watcher.
 		watch(input, "onchange", function(property, event, value){
-			debugMode && console.log({item:"input",event:event,"color-b":value});
+			debugMode && console.log({item:"color input",event:event,"blue":value});
 		});
 
 	//	Call watchers.
