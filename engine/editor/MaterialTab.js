@@ -596,7 +596,7 @@
 
 	(function( tab ){
 
-	//	Clone material button.
+	//	NeedsUpdate material button.
 	//	var tab = TabUI.Material.tab;
 
 		var row = document.createElement("h3");

@@ -205,7 +205,7 @@
 		+ "font-size:20px;margin-left:10px;margin-right:15px;";
 
 		var keys = "";
-		keys += "uuid,name,flipY,format,rotation,mapping,minFilter,magFilter,anisotropy,wrapS,wrapT";
+		keys += "uuid,name,flipY,format,rotation,mapping,minFilter,magFilter,anisotropy,wrapS,wrapT,needsUpdate";
 
 		keys.split(",").forEach(function( name ){
 			var option = document.createElement("option");
@@ -418,6 +418,25 @@
 		tab.appendChild( row );
 
 	})( TabUI.Texture.tab );
+
+	(function( tab ){
+
+	//	NeedsUpdate texture button.
+	//	var tab = TabUI.Material.tab;
+
+		var row = document.createElement("h3");
+		row.style.cssText = "height:30px;margin-bottom:20px;"
+
+		var button = document.createElement("div");
+		button.id = "texture-needs-update";
+		button.textContent = "Texture needs Update";
+		button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
+		button.style.cssText = "width:-webkit-fill-available;float:right;height:40px;font-size:large;margin-right:15px;";
+
+		row.appendChild( button );
+		tab.appendChild( row );
+
+	})( TabUI.Material.tab );
 
 	(function( tab ){
 
@@ -732,6 +751,7 @@
 		const undo_button = document.getElementById("texture-undo-button");
 		const create_button = document.getElementById("create-texture-button");
 		const replace_button = document.getElementById("replace-image-button");
+		const needsUpdate_button = document.getElementById("texture-needs-update");
 
 	//	texture tab file inputs.
 
@@ -1440,8 +1460,8 @@
 
 		(function( editor ){
 
-			var texture;
 			var interval;
+			var texture; // imporant!
 
 			watch( entity_droplist, "onchange", function( property, event, value ){
 				texture = texture_entities.getTextureById( value ); // id.
@@ -1545,6 +1565,15 @@
 				debugMode && console.log("editor:",{"key":key,"action":action,"value":value});
 				if (texture) texture[ key ] = editor[ key ];
 			//	clearTimeout( interval );
+			});
+
+		//	Texture needsUpdate button.
+
+			watch( editor, "needsUpdate", function( key, action, value ){
+				if ( texture ) texture[key] = Boolean(editor[key]); // copy.
+			});
+			needsUpdate_button.addEventListener( "click", function(){
+				if ( texture ) texture.needsUpdate = true;
 			});
 
 		//	Image. TODO!
