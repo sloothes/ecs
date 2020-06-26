@@ -547,29 +547,38 @@
 						if ( !key || editor[key] == undefined ) 
 							return [ value_input.value, text_input.value ] = ["",""];
 
-						if ( key && editor[key] !== undefined && typeof editor[key] === "string" )
+						if ( key && editor[key] !== undefined && typeof editor[key] === "string" ) {
+
+							debugMode && console.log( typeof editor[key]  ); // debug!
+
 							[text_input.value, value_input.value] = [ editor[key], "" ];
 
-						else if ( key && editor[key] !== undefined && typeof editor[key] === "number" ) {
+						} else if ( key && editor[key] !== undefined && typeof editor[key] === "number" ) {
+							
+							debugMode && console.log( typeof editor[key]  ); // debug!
 
-							if ( "displacementScale,polygonOffsetUnits,polygonOffsetFactor,opacity,"
+							if ( ("displacementScale,polygonOffsetUnits,polygonOffsetFactor,opacity,"
 							+ "alphaTest,reflectivity,refractionRatio,bumpScale,metalness,roughness,displacementBias,"
 							+ "aoMapIntensity,envMapIntensity,emissiveIntensity,lightMapIntensity,wireframeLinewidth,"
-							+ "linewidth,size,scale,gapSize,dashSize,shininess".split(",").includes(key) )
+							+ "linewidth,size,scale,gapSize,dashSize,shininess").split(",").includes(key) ) {
+
+								debugMode && console.log( "number (1):", typeof editor[key]  ); // debug!
 
 								[value_input.value, text_input.value] = [ editor[key].toFixed(2), "" ];
 
-							else if ( key === "rotation" )
+							} else if ( key === "rotation" ) {
 
 								[value_input.value, text_input.value] = [ (RAD2DEG*editor[key]).toFixed(1), "" ];
 
-							else [value_input.value, text_input.value] = [ editor[key].toFixed(0), "" ];
-						}
+							} else [value_input.value, text_input.value] = [ editor[key].toFixed(0), "" ];
 
-						else if ( key && editor[key] !== undefined && typeof editor[key] === "boolean" )
+						} else if ( key && editor[key] !== undefined && typeof editor[key] === "boolean" ) {
+
+							debugMode && console.log( typeof editor[key]  ); // debug!
+
 							[text_input.value, value_input.value] = [ "", editor[key] ];
 
-						else [ value_input.value, text_input.value ] = ["",""];
+						} else [ value_input.value, text_input.value ] = ["",""];
 
 					});
 
@@ -878,10 +887,10 @@
 
 						//	boolean type values.
 
-							} else if ( "fog,lights,flatShading,transparent,depthTest,"
+							} else if ( ("fog,lights,flatShading,transparent,depthTest,"
 							+ "depthWrite,clipIntersection,clipShadows,colorWrite,polygonOffset,"
 							+ "dithering,premultipliedAlpha,visible,needsUpdate,wireframe,"
-							+ "skinning,morphTargets,morphNormals".split(",").includes(key) ) {
+							+ "skinning,morphTargets,morphNormals").split(",").includes(key) ) {
 
 								if ( value === "false" ) value = 0;       // accepts "false" string.
 								else if ( value === "true" ) value = 1;   // accepts "true" string.
@@ -900,10 +909,10 @@
 
 						//	number type values.
 
-							} else if ( "displacementScale,polygonOffsetUnits,polygonOffsetFactor,opacity,overdraw,"
+							} else if ( ("displacementScale,polygonOffsetUnits,polygonOffsetFactor,opacity,overdraw,"
 							+ "alphaTest,reflectivity,refractionRatio,bumpScale,metalness,roughness,displacementBias,"
 							+ "aoMapIntensity,envMapIntensity,emissiveIntensity,lightMapIntensity,wireframeLinewidth,"
-							+ "linewidth,size,scale,gapSize,dashSize,shininess,rotation".split(",").includes(key) ) {
+							+ "linewidth,size,scale,gapSize,dashSize,shininess,rotation").split(",").includes(key) ) {
 
 							//	Before change the editor[key] value add an undo state in undo queue.
 							//	Until now we has adding to Undo after the value has changed. That was mistake/bug! (TO FIX!)
@@ -960,8 +969,8 @@
 
 								value_input.value = editor[ key ]; // display value.
 
-							} else if ( "blending,side,vertexColors,blendDst,blendSrc,blendEquation,depthFunc,"
-							+ "normalMapType,combine,polygonOffsetUnits,polygonOffsetFactor".split(",").includes(key) ) {
+							} else if ( ("blending,side,vertexColors,blendDst,blendSrc,blendEquation,depthFunc,"
+							+ "normalMapType,combine,polygonOffsetUnits,polygonOffsetFactor").split(",").includes(key) ) {
 
 							//	Before change the editor[key] value add an undo state in undo queue.
 							//	Until now we has adding to Undo after the value has changed. That was mistake/bug! (TO FIX!)
@@ -1353,10 +1362,8 @@
 								case "polygonOffsetFactor":
 									updateIntegerNumberValue(-100, 100);
 								break;
-								case "opacity":
-								case "overdraw":
-								case "alphaTest":
-									updateFloatNumberValue(0, 1, 1/100);
+								case "displacementScale":
+									updateFloatNumberValue(-100, 100, 1/100);
 								break;
 								case "bumpScale":
 								case "metalness":
@@ -1364,32 +1371,28 @@
 								case "displacementBias":
 									updateFloatNumberValue(-10, 10, 1/100);
 								break;
-								case "displacementScale":
-									updateFloatNumberValue(-100, 100, 1/100);
-								break;
 								case "refractionRatio":
 									updateFloatNumberValue(-1, 1, 1/100);
 								break;
+								case "opacity":
+								case "overdraw":
+								case "alphaTest":
+								case "reflectivity":
+								case "wireframeLinewidth":
+									updateFloatNumberValue(0, 1, 1/100);
+								break;
+								case "linewidth":
 								case "aoMapIntensity":
 								case "envMapIntensity":
 								case "emissiveIntensity":
 								case "lightMapIntensity":
-								case "wireframeLinewidth":
-									updateFloatNumberValue(-10, 10, 1/100);
-								break;
-								case "reflectivity":
-									updateFloatNumberValue(0, 1, 1/100);
-								break;
-								case "linewidth":
 									updateFloatNumberValue(0, 100, 1/100);
-								break;
-								case "shininess":
-									updateFloatNumberValue(0, 1000, 1/100);
 								break;
 								case "size":
 								case "scale":
 								case "gapSize":
 								case "dashSize":
+								case "shininess":
 									updateFloatNumberValue(0, 1000, 1/100);
 								break;
 								case "rotation":
@@ -1617,14 +1620,13 @@
 							case "combine":
 								updateConstantNumberValue([THREE.MultiplyOperation,THREE.MixOperation,THREE.AddOperation]);
 							break;
+						//
 							case "polygonOffsetUnits":
 							case "polygonOffsetFactor":
 								updateIntegerNumberValue(-100, 100);
 							break;
-							case "opacity":
-							case "overdraw":
-							case "alphaTest":
-								updateFloatNumberValue(0, 1, 1/100);
+							case "displacementScale":
+								updateFloatNumberValue(-100, 100, 1/100);
 							break;
 							case "bumpScale":
 							case "metalness":
@@ -1632,27 +1634,22 @@
 							case "displacementBias":
 								updateFloatNumberValue(-10, 10, 1/100);
 							break;
-							case "displacementScale":
-								updateFloatNumberValue(-100, 100, 1/100);
-							break;
 							case "refractionRatio":
 								updateFloatNumberValue(-1, 1, 1/100);
 							break;
+							case "opacity":
+							case "overdraw":
+							case "alphaTest":
+							case "reflectivity":
+							case "wireframeLinewidth":
+								updateFloatNumberValue(0, 1, 1/100);
+							break;
+							case "linewidth":
 							case "aoMapIntensity":
 							case "envMapIntensity":
 							case "emissiveIntensity":
 							case "lightMapIntensity":
-							case "wireframeLinewidth":
-								updateFloatNumberValue(-10, 10, 1/100);
-							break;
-							case "reflectivity":
-								updateFloatNumberValue(0, 1, 1/100);
-							break;
-							case "linewidth":
 								updateFloatNumberValue(0, 100, 1/100);
-							break;
-							case "shininess":
-								updateFloatNumberValue(0, 1000, 1/100);
 							break;
 							case "depthPacking":
 								//	???
@@ -1661,6 +1658,7 @@
 							case "scale":
 							case "gapSize":
 							case "dashSize":
+							case "shininess":
 								updateFloatNumberValue(0, 1000, 1/100);
 							break;
 							case "rotation":
@@ -2456,6 +2454,18 @@
 						if ( material ) material[key] = Number(editor[key]); // copy.
 					});
 
+					watch( editor, "wireframe", function( key, action, value ){
+						if ( material ) material[key] = Boolean(editor[key]); // copy.
+					});
+					watch( editor, "wireframeLinecap", function( key, action, value ){
+						if ( material ) material[key] = String(editor[key]); // copy.
+					});
+					watch( editor, "wireframeLinejoin", function( key, action, value ){
+						if ( material ) material[key] = String(editor[key]); // copy.
+					});
+					watch( editor, "wireframeLinewidth", function( key, action, value ){
+						if ( material ) material[key] = Number(editor[key]); // copy.
+					});
 
 
 
