@@ -422,7 +422,7 @@
 	(function( tab ){
 
 	//	NeedsUpdate texture button.
-	//	var tab = TabUI.Material.tab;
+	//	var tab = TabUI.Texture.tab;
 
 		var row = document.createElement("h3");
 		row.style.cssText = "height:30px;margin-bottom:20px;"
@@ -436,7 +436,7 @@
 		row.appendChild( button );
 		tab.appendChild( row );
 
-	})( TabUI.Material.tab );
+	})( TabUI.Texture.tab );
 
 	(function( tab ){
 
