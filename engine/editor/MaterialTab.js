@@ -192,7 +192,7 @@
 		keys += "wireframe,wireframeLinecap,wireframeLinejoin,wireframeLinewidth,";
 		keys += "skinning,morphTargets,morphNormals,combine,shininess,";
 		keys += "depthPacking,scale,gapSize,linecap,linejoin,linewidth,";
-		keys += "dashSize,size,rotation,sizeAttenuation";
+		keys += "dashSize,size,rotation,sizeAttenuation,needsUpdate";
 
 		keys.split(",").forEach(function( name ){
 			var option = document.createElement("option");
