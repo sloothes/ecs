@@ -550,20 +550,20 @@
 
 						if ( key && editor[key] !== undefined && typeof editor[key] === "string" ) {
 
-							debugMode && console.log( typeof editor[key]  ); // debug!
+						//	debugMode && console.log( typeof editor[key]  ); // debug!
 
 							[text_input.value, value_input.value] = [ editor[key], "" ];
 
 						} else if ( key && editor[key] !== undefined && typeof editor[key] === "number" ) {
 							
-							debugMode && console.log( typeof editor[key]  ); // debug!
+						//	debugMode && console.log( typeof editor[key]  ); // debug!
 
 							if ( ("displacementScale,polygonOffsetUnits,polygonOffsetFactor,opacity,"
 							+ "alphaTest,reflectivity,refractionRatio,bumpScale,metalness,roughness,displacementBias,"
 							+ "aoMapIntensity,envMapIntensity,emissiveIntensity,lightMapIntensity,wireframeLinewidth,"
 							+ "linewidth,size,scale,gapSize,dashSize,shininess").split(",").includes(key) ) {
 
-								debugMode && console.log( "number (1):", typeof editor[key]  ); // debug!
+							//	debugMode && console.log( "number (1):", typeof editor[key]  ); // debug!
 
 								[value_input.value, text_input.value] = [ editor[key].toFixed(2), "" ];
 
@@ -575,7 +575,7 @@
 
 						} else if ( key && editor[key] !== undefined && typeof editor[key] === "boolean" ) {
 
-							debugMode && console.log( typeof editor[key]  ); // debug!
+						//	debugMode && console.log( typeof editor[key]  ); // debug!
 
 							[text_input.value, value_input.value] = [ "", editor[key] ];
 
