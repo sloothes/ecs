@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+
+		<title>escy demo (pre-alpha)</title>
+
+		<meta charset="utf-8">
+		<meta name="generator" content="Three.js Editor">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+		<link rel="stylesheet" href="/css/joystick.css">
+		<link rel="stylesheet" href="/css/bootstrap.min.css">
+		<link rel="stylesheet" href="/css/bootbox-dialoges.css">
+		<link rel="stylesheet" href="/css/jcrop.css">
+
+		<script src="/js/watch.js"></script>
+		<script src="/js/Objectid.js"></script>
+		<script src="/js/jquery.min.js"></script> 
+		<script src="/js/system.min.js"></script>
+		<script src="/js/signals.min.js"></script>
+		<script src="/js/inflate.min.js"></script>
+		<script src="/js/zangodb.min.js"></script>
+		<script src="/js/bootstrap.min.js"></script>
+		<script src="/js/hold-event.min.js"></script>
+		<script src="/js/jcrop.js"></script>
+
+		<style>
+
+			body {
+				margin: 0px;
+				font-size: 13px;
+				font-family: sans-serif;
+				background-repeat: repeat;
+				background-image: url("https://i.imgur.com/rnZZU0i.png") !important;
+				overflow: hidden;
+			}
+
+			#loading-bar {
+				width:100%;
+				height:100%;
+				top:0; left:0;
+				position:fixed;
+				display:flex;
+				align-items:center;
+				justify-content:center;
+			}
+
+			.middle > * {
+				top:0; 
+				left:0;
+				right:0;
+				bottom:0;
+				margin:auto;
+				position:absolute;
+			}
+
+			#joystick1 {
+				right: calc(40px + 370px);
+			}
+			
+			#jumpButton {
+				right: calc(105px + 370px);
+			}
+
+			.btn-matcap,
+			.btn-terrain {
+				padding:0;
+				float:left;
+				width:55px;
+				height:55px;
+				border:1px solid;
+				border-radius:4px;
+				margin-right:4px;
+				margin-bottom:4px;
+				display:inline-block;
+			}
+
+			.btn-matcap + .btn-matcap,
+			.btn-terrain + .btn-terrain {
+				margin-right:4px;
+			}
+
+		</style>
+	</head>
+
+	<body ontouchstart="">
+
+		<script src="/ecs/js/ecsy.js"></script>
+		<script src="/ecs/js/TabUI.js"></script>
+
+		<script>
+
+			debugMode = true;
+			const Signal = signals.Signal;
+
+		//	TabUI.
+
+			(function(){
+
+				var sidePanel = createSidePanel();
+				document.body.appendChild( sidePanel );
+
+				TabUI.add("Editor", "editor-tab");
+				TabUI.append("Editor");
+				TabUI.Editor.role.classList.add("active");
+				TabUI.Editor.tab.classList.add("in","active");
+
+			})();
+			
+
+		</script>
+
+		<script src="/ecs/js/three.js"></script>
+		<script src="/ecs/js/MeshWalk.js"></script>
+		<script src="/ecs/js/UVsDebug.js"></script>
+		<script src="/ecs/js/FBXLoader.js"></script>
+		<script src="/ecs/js/VirtualInput.js"></script>
+		<script src="/ecs/js/KeyboardState.js"></script>
+		<script src="/ecs/js/EditorControls.js"></script>
+		<script src="/ecs/js/camera-controls.js"></script>
+		<script src="/ecs/js/SubdivisionModifier.js"></script>
+		<script src="/ecs/js/three-pathfinding.umd.js"></script>
+		<script src="/threejs/r96/examples/js/loaders/GLTFLoader.js"></script>
+		<script src="/threejs/r96/examples/js/exporters/GLTFExporter.js"></script>
+		<script src="/threejs/r96/examples/js/exporters/STLExporter.js"></script>
+		<script src="/threejs/r96/examples/js/exporters/OBJExporter.js"></script>
+		<script src="/threejs/r96/examples/js/exporters/ColladaExporter.js"></script>
+
+		<script>
+
+		//	Components.js
+
+		</script>
+
+		<script>
+
+		//	Systems.js
+
+		</script>
+
+		<script>
+
+		//	World.js
+
+			var world = new ECSY.World();
+			debugMode && console.log( world );
+		
+
+
+
+
+
+
+
+
+
+
+
+		</script>
+
+		<script>
+/*
+			TabUI.Material.role.classList.add("active");
+			TabUI.Material.tab.classList.add("in","active");
+
+		//
+
+			localPlayer.controller.movementSpeed = 10;
+
+		//	Entities.
+
+		//	debugMode && (function(){
+		//		var r = 1;
+		//		var geometry = new THREE.BoxGeometry(r,r,r);
+		//		var material = new THREE.MeshLambertMaterial();
+		//		var cube = new THREE.Mesh(geometry, material);
+		//		cube.name = "local player cube";
+		//		var geometry = new THREE.SphereGeometry(0.7,8,12);
+		//		var material = new THREE.MeshLambertMaterial();
+		//		var sphere = new THREE.Mesh(geometry, material);
+		//		sphere.name = "local player sphere";
+		//	//	cube.add( sphere );
+		//		localPlayer.add( cube );
+		//	})();
+
+		//	box coluctions.
+
+			debugMode && (function(){
+
+				var material = new THREE.MeshStandardMaterial({name:"mtl00"});
+				var maps = "map,aoMap,envMap,lightMap,bumpMap,alphaMap,normalMap,specularMap,";
+				maps += "gradientMap,emissiveMap,metalnessMap,roughnessMap,displacementMap";
+				material.envMap = new THREE.CubeTexture();
+				maps.split(",").forEach( function( key ){
+					if ( key !== "envMap" ) material[ key ] = new THREE.Texture();
+				}); debugMode && console.log( material );
+				material_entities.add( material );
+			})();
+
+		//	box coluctions.
+
+			debugMode && (function(){
+
+				(function(){
+					var w = 10; var h = 5;
+					var box = new THREE.BoxGeometry(w,h,w);
+					box.translate(0, h/2, 0);
+					octree.importThreeMesh( new THREE.Mesh(box) );
+					var geometry = new THREE.EdgesGeometry( box );
+					var material = new THREE.LineBasicMaterial( { color: 0x00ff00 } );
+					var segments = new THREE.LineSegments( geometry, material );
+					segments.name = "segments 1";
+					scene.add( segments );
+				})();
+
+				(function(){
+					var w = 10, h = 20;
+					var x = 10, y = h/2, z = -4;
+					var box = new THREE.BoxGeometry(w,h,w);
+					box.translate(0, h/2, 0);
+					var material = new THREE.MeshLambertMaterial();
+					var mesh = new THREE.Mesh(box, material);
+					mesh.name = "building 1";
+					mesh.position.set(x,0,z);
+					octree.importThreeMesh( mesh );
+					var geometry = new THREE.EdgesGeometry( box );
+					var segments = new THREE.LineSegments( geometry, material );
+					segments.name = "segments 2";
+					segments.position.copy( mesh.position );
+					scene.add( mesh );
+					cameraControls.rigidObjects.push( mesh );
+				})();
+
+				(function(){
+					var w = 12, h = 10;
+					var x = 15, y = h/2, z = -11;
+					var box = new THREE.BoxGeometry(w,h,w);
+					box.translate(0, h/2, 0);
+					var material = new THREE.MeshLambertMaterial();
+					var mesh = new THREE.Mesh(box, material);
+					mesh.name = "building 2";
+					mesh.position.set(x,0,z);
+					octree.importThreeMesh( mesh );
+					var geometry = new THREE.EdgesGeometry( box );
+					var segments = new THREE.LineSegments( geometry, material );
+					segments.name = "segments 3";
+					segments.position.copy( mesh.position );
+					scene.add( mesh );
+					cameraControls.rigidObjects.push( mesh );
+				})();
+
+				(function(){
+					var w = 8, h = 10;
+					var x = -9, y = h/2, z = 5;
+					var box = new THREE.BoxGeometry(w,h,w);
+					box.translate(0, h/2, 0);
+					var material = new THREE.MeshLambertMaterial();
+					var mesh = new THREE.Mesh(box, material);
+					mesh.name = "building 3";
+					mesh.position.set(x,0,z);
+					octree.importThreeMesh( mesh );
+					var geometry = new THREE.EdgesGeometry( box );
+					var segments = new THREE.LineSegments( geometry, material );
+					segments.name = "segments 4";
+					segments.position.copy( mesh.position );
+					scene.add( mesh );
+					cameraControls.rigidObjects.push( mesh );
+				})();
+
+				(function(){
+					var w = 12, h = 20, d = 2;
+					var x = -14, y = h/2, z = 10;
+					var box = new THREE.BoxGeometry(w,h,d);
+					box.translate(0, h/2, 0);
+					var material = new THREE.MeshLambertMaterial();
+					var mesh = new THREE.Mesh(box, material);
+					mesh.name = "building 4";
+					mesh.position.set(x,0,z);
+					octree.importThreeMesh( mesh );
+					var geometry = new THREE.EdgesGeometry( box );
+					var segments = new THREE.LineSegments( geometry, material );
+					segments.name = "segments 5";
+					segments.position.copy( mesh.position );
+					scene.add( mesh );
+					cameraControls.rigidObjects.push( mesh );
+				})();
+
+				(function(){
+					var w = 4, h = 20, d = 20;
+					var x = -17, y = h/2, z = 12;
+					var box = new THREE.BoxGeometry(w,h,d);
+					box.translate(0, h/2, 0);
+					var material = new THREE.MeshLambertMaterial();
+					var mesh = new THREE.Mesh(box, material);
+					mesh.name = "building 5";
+					mesh.position.set(x,0,z);
+					octree.importThreeMesh( mesh );
+					var geometry = new THREE.EdgesGeometry( box );
+					var segments = new THREE.LineSegments( geometry, material );
+					segments.name = "segments 6";
+					segments.position.copy( mesh.position );
+					scene.add( mesh );
+					cameraControls.rigidObjects.push( mesh );
+				})();
+
+			//	var groupA = new THREE.Object3D();
+			//	var groupB = new THREE.Object3D();
+
+			//	groupA.add( scene.getObjectByName("building 1").clone() );
+			//	groupA.add( scene.getObjectByName("building 2").clone() );
+			//	groupB.add( scene.getObjectByName("building 3").clone() );
+			//	groupB.add( scene.getObjectByName("building 4").clone() );
+			//	groupB.add( scene.getObjectByName("building 5").clone() );
+
+			})();
+*/
+		</script>
+
+	</body>
+</html>
