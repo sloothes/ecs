@@ -126,6 +126,8 @@
 		<script src="/threejs/r96/examples/js/exporters/OBJExporter.js"></script>
 		<script src="/threejs/r96/examples/js/exporters/ColladaExporter.js"></script>
 
+		<script src="/ecs/escy/scene.js"></script>
+
 		<script>
 
 		//	Components.js
@@ -142,20 +144,10 @@
 
 		//	World.js
 
-			var world = new ECSY.World();
-			debugMode && console.log( world );
+			ECSY.world = new ECSY.World();
+			debugMode && console.log( ECSY.world );
+
 		
-
-
-
-
-
-
-
-
-
-
-
 		</script>
 
 		<script>
