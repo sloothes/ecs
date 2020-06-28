@@ -1763,4 +1763,4 @@ if (hasWindow) {
   }
 }
 
-export { Component, Not, ObjectPool, System, SystemStateComponent, TagComponent, Types, Version, World, Entity as _Entity, cloneArray, cloneClonable, cloneJSON, cloneValue, copyArray, copyCopyable, copyJSON, copyValue, createType, enableRemoteDevtools };
+// export { Component, Not, ObjectPool, System, SystemStateComponent, TagComponent, Types, Version, World, Entity as _Entity, cloneArray, cloneClonable, cloneJSON, cloneValue, copyArray, copyCopyable, copyJSON, copyValue, createType, enableRemoteDevtools };
