@@ -1915,47 +1915,21 @@
 
 			debugMode && console.log( "Types:", Types );
 
-		//	DOM Types.js (TODO).
-
-		//	Types.Event = createType({
-		//		name: "Event",
-		//		default: new window.Event(""),
-		//		copy: null,
-		//		clone: null,
-		//	});
-
 		</script>
 
 		<script>
 
 		//	Components.js
 
-			class MeshWalk extends Component {}
-			MeshWalk.schema = { world: {type: Types.Ref} };
-
-			class Renderer extends Component {}
-			Renderer.schema = { renderer: {type: Types.Ref} };
-
-			class Object3D extends Component {}
-			Object3D.schema = { object: {type: Types.Ref} };
-
-			class Geometry extends Component {}
-			Geometry.schema = { geometry: {type: Types.Ref} };
-
-			class Material extends Component {}
-			Material.schema = { material: {type: Types.Ref} };
-
-			class Texture extends Component {}
-			Texture.schema = {
-				image: {type: Types.Ref},
-				texture: {type: Types.Ref},
+			class Scene extends Component {}
+			Scene.schema = { 
+				object: {type:Types.Ref} 
 			};
 
-			class Scene extends Component {}
-			Scene.schema = { object: {type:Types.Ref} };
-
 			class Camera extends Component {}
-			Camera.schema = { object: {type:Types.Ref} };
+			Camera.schema = {
+				object: {type:Types.Ref},
+			};
 
 			class Light extends Component {}
 			Light.schema = {
@@ -1964,15 +1938,19 @@
 			};
 
 			class Position extends Component {}
-			Position.schema = { vector: {type: Types.Ref} };
+			Position.schema = {
+				vector: {type: Types.Ref},
+			};
 
 			class Rotation extends Component {}
-			Rotation.schema = { vector: {type: Types.Ref} };
+			Rotation.schema = {
+				vector: {type: Types.Ref},
+			};
 
 			class Scale extends Component {}
-			Scale.schema = { vector: {type: Types.Ref} };
-
-		//
+			Scale.schema = {
+				vector: {type: Types.Ref},
+			};
 
 			class Mouse extends Component {}
 			Mouse.schema = { 
@@ -1980,93 +1958,66 @@
 				y: { default:0, type:Types.Number},
 			}
 
-		//	class MouseEvent extends Component {}
-		//	MouseEvent.schema = { 
-		//		e: { type:Types.Event},
-		//	}
-
 		</script>
 
 		<script>
 
 		//	Systems.js
-/*
+
 			class FollowingCameraSystem extends System {
-				
-				init() {
-					try { debugMode && console.log( this ); } catch(err){;}
-				}
 
 				execute() {
 
-				//	We want to bypass this.queries.entities.results;
 					var entities = this.queries.entities.results;
-
 					var length = this.queries.entities.results.length;
 					for (var i = 0; i < length; i++) {
 					//	var entity = entities[i];
-					//	var source = entities[i].getComponent(Camera).object;
-					//	var target = entities[i].getComponent(Object3D).object;
-					//	target.position.copy(source.position);
-					//	var position = entities[i].getMutableComponent(Position).vector;
-					//	entities[i].getComponent(Light).object.position.copy( position );
-					//	debugMode && console.log( "FollowingCameraSystem" );
+						var light = entities[i].getComponent(Light).object;
 						var camera = entities[i].getComponent(Camera).object;
-						var vector = entities[i].getComponent(Position).vector;
-						vector.copy( camera.position );
+						light.position.copy(camera.position);
+					//	debugMode && console.log( "FollowingCameraSystem" );
 					}
 
 				}
-
 			}
 
-		//	FollowingCameraSystem.queries = {
-		//		entities: {
-		//			components: [
-		//				Camera, 
-		//				Position,
-		//				Object3D
-		//			], 
-		//			listen: {
-		//				added: false,
-		//				removed: false,
-		//				changed: false,
-		//			}
-		//		}
-		//	};
-*/
+			FollowingCameraSystem.queries = {
+				entities: {
+					components: [
+						Light, 
+						Camera, 
+						Position
+					], 
+					listen: {
+						added: true,
+						removed: false,
+						changed: [Position],
+					}
+				}
+			};
+
 		</script>
 
 		<script>
 
 		//	ECSY World.js
 
-			const ecsyWorld = new World();
-			debugMode && console.log( ecsyWorld );
+			EcsyWorld = new World();
+			debugMode && console.log( EcsyWorld );
 
 		//	Register Systems.
 
-		//
+			EcsyWorld.registerSystem(FollowingCameraSystem);
 
 		//	Register Components.
 
-			ecsyWorld.registerComponent(MeshWalk);
-			ecsyWorld.registerComponent(Renderer);
-		//
-			ecsyWorld.registerComponent(Texture);
-			ecsyWorld.registerComponent(Geometry);
-			ecsyWorld.registerComponent(Material);
-			ecsyWorld.registerComponent(Object3D);
-		//
-			ecsyWorld.registerComponent(Mouse);
-			ecsyWorld.registerComponent(Scene);
-			ecsyWorld.registerComponent(Light);
-			ecsyWorld.registerComponent(Camera);
-		//
-			ecsyWorld.registerComponent(Scale);
-			ecsyWorld.registerComponent(Position);
-			ecsyWorld.registerComponent(Rotation);
-		//
+			EcsyWorld.registerComponent(Mouse);
+			EcsyWorld.registerComponent(Scene);
+			EcsyWorld.registerComponent(Camera);
+			EcsyWorld.registerComponent(Light);
+			EcsyWorld.registerComponent(Scale);
+			EcsyWorld.registerComponent(Rotation);
+			EcsyWorld.registerComponent(Position);
 
 		</script>
 
@@ -2124,11 +2075,10 @@
 
 			})();
 
-		//	helper.
-
-			function takeCameraLight( target ){
-				cameraLight.target = target;
-			}
+			var entity = EcsyWorld.createEntity();
+			entity.addComponent(Camera, {object:camera});
+			entity.addComponent(Light, {object:cameraLight});
+			entity.addComponent(Position, {vector:camera.position});
 
 			const shadowCameraHelper = (function(){
 				var shadowHelper = new THREE.CameraHelper(cameraLight.shadow.camera);
@@ -2137,6 +2087,12 @@
 			//	scene.add( shadowHelper );
 				return shadowHelper;
 			})();
+
+		//	helper.
+
+			function takeCameraLight( target ){
+				cameraLight.target = target;
+			}
 
 		//  Renderer.
 
@@ -2162,18 +2118,18 @@
 				camera.updateProjectionMatrix();
 			});
 
-		//	(function render(){
-		//		requestFrameID = requestAnimationFrame( render );
-		//		renderer.render( scene, camera );
-		//	})();
+			(function render(){
+				requestFrameID = requestAnimationFrame( render );
+				renderer.render( scene, camera );
+			})();
 
 		//	Mouse.
-		//
-		//	const mouse = new Mouse(); // (component) // new THREE.Vector2();
-		//	renderer.domElement.addEventListener("mousemove", function(e) {
-		//		mouse.x = ( e.clientX / this.clientWidth ) * 2 - 1;
-		//		mouse.y = - ( e.clientY / this.clientHeight ) * 2 + 1;
-		//	});
+
+			const mouse = new Mouse(); // (component) // new THREE.Vector2();
+			renderer.domElement.addEventListener("mousemove", function(e) {
+				mouse.x = ( e.clientX / this.clientWidth ) * 2 - 1;
+				mouse.y = - ( e.clientY / this.clientHeight ) * 2 + 1;
+			});
 
 		//	World - Octree.
 
@@ -2188,6 +2144,16 @@
 			})();
 
 			world.add( octree );
+
+			const clock = new THREE.Clock();
+
+			(function update(){
+				requestFrameID = requestAnimationFrame( update );
+				var delta = clock.getDelta();
+				var elapsedTime = clock.getElapsedTime();
+				world.step( Math.min( delta, 0.02 ) );
+				EcsyWorld.execute(delta, elapsedTime);
+			})();
 
 		//	Ground (component).
 
@@ -2209,18 +2175,6 @@
 			groundHelper.name = "ground helper";
 			scene.add( groundHelper );
 
-		//	Runtime.
-
-			const clock = new THREE.Clock();
-
-			(function update(){
-				requestFrameID = requestAnimationFrame( update );
-				var delta = clock.getDelta();
-				var elapsedTime = clock.getElapsedTime();
-				ecsyWorld.execute(delta, elapsedTime); // ECSY World.
-			//	world.step( Math.min( delta, 0.02 ) ); // MW World is now component.
-			})();
-
 		</script>
 
 		<script src="/ecs/engine/core/helpers.js"></script>
@@ -2233,157 +2187,6 @@
 		<script src="/ecs/engine/editor/EditorTab.js"></script>
 	<!-- script src="/ecs/engine/editor/MaterialTab.js"></script -->
 	<!-- script src="/ecs/engine/editor/TextureTab.js"></script -->
-
-
-		<script>
-
-			(function( camera, object ){
-
-			//	Camera Light entity (demo).
-
-			//	In this demo the wanted was the watcher to add the entity
-			//	to the system queue when the watcher's value has changed 
-			//	(and remove the entity when system done). Instend of this
-			//	the system always update the Position component vector and 
-			//	the wather updates the Object3D component (camera's light)
-			//	object position.
-
-				var entity = ecsyWorld.createEntity("camera light entity");
-				entity.addComponent(Camera,   {object:camera});
-				entity.addComponent(Object3D, {object:object});
-				entity.addComponent(Position, {vector:new THREE.Vector3()});
-
-				class CameraLightSystem extends System {
-
-					init() {
-
-						debugMode && console.log( this );
-
-						watch( entity.getComponent(Position).vector, function(key, action, value){
-						//	debugMode && console.log( entity.name, key, action, value.toFixed(3) );
-							entity.getComponent(Object3D).object.position[key] = value;
-						});
-
-					}
-
-					execute(dt,t) {
-						
-						entity.getComponent(Position).vector.copy( camera.position ); 
-
-					}
-
-				}
-
-			//	Add System.
-
-				ecsyWorld.registerSystem( CameraLightSystem );
-
-			})( camera, cameraLight );
-
-			(function(){
-
-			//	Mouse entity (demo).
-
-			//	const mouse = new Mouse(); // (component) // new THREE.Vector2();
-				var entity = ecsyWorld.createEntity("mouse entity");
-				entity.addComponent(Mouse, {x:0, y:0});
-
-				class MouseTracingSystem extends System {
-
-					init() {
-
-						debugMode && console.log( this );
-
-						var mouse = entity.getComponent(Mouse);
-						renderer.domElement.addEventListener("mousemove", function(e) {
-							mouse.x =   ( e.clientX / this.clientWidth  ) * 2 - 1;
-							mouse.y = - ( e.clientY / this.clientHeight ) * 2 + 1;
-						});
-
-						watch( mouse, function(key, action, value){
-						//	debugMode && console.log( entity.name, key, action, value.toFixed(6) );
-						});
-
-					}
-
-				//	execute(dt,t) {}
-
-				}
-
-			//	Add System.
-
-				ecsyWorld.registerSystem( MouseTracingSystem );
-
-			})();
-
-			(function( world ){
-
-			//	MeshWalk world entity.
-
-				var entity = ecsyWorld.createEntity("MW world entity");
-				entity.addComponent(MeshWalk, {world:world});
-
-				class MeshWalkUpdateSystem extends System {
-
-					execute(dt,t) {
-
-						world.step( Math.min( dt, 0.02 ) ); // MW World.
-
-					}
-
-				}
-
-			//	Add System.
-
-				ecsyWorld.registerSystem( MeshWalkUpdateSystem );
-
-			})( world );
-
-
-			(function( scene, camera, renderer ){
-
-			//	WebGL Renderer entity.
-
-				var entity = ecsyWorld.createEntity("webgl renderer entity");
-				entity.addComponent(Scene, {scene:scene});
-				entity.addComponent(Camera, {camera:camera});
-				entity.addComponent(Renderer, {renderer:renderer});
-
-				class WebGLRenderingSystem extends System {
-
-					execute(dt,t) {
-
-						renderer.render( scene, camera );
-
-					}
-
-				}
-
-			//	Add System.
-
-				ecsyWorld.registerSystem( WebGLRenderingSystem );
-
-			})( scene, camera, renderer );
-
-		</script>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 		<script>
 
