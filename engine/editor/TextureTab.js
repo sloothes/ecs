@@ -1013,20 +1013,28 @@
 			vector_droplist.addEventListener( "change", vector_droplist.blur );
 			entity_droplist.addEventListener( "change", entity_droplist.blur );
 
-			document.getElementById("material-map-droplist").addEventListener( "change", function(){
-				if ( !document.getElementById("material-entities-droplist").value ) return;
+			document.getElementById("material-map-droplist").addEventListener( "change", onSelectChange );
+			document.getElementById("material-entities-droplist").addEventListener( "change", onSelectChange );
 
-				var map = document.getElementById("material-map-droplist").value;
-				var material = material_entities.getMaterialById( Number(this.value) );
+			function onSelectChange(){
 
-				if ( material && map !== "" && material[map] && material[map].isTexture ) {
+				var map_droplist = document.getElementById("material-map-droplist");
+				var material_droplist = document.getElementById("material-entities-droplist");
+
+				if ( !map_droplist || map_droplist.value !== "" ) return;
+				if ( !material_droplist || material_droplist.value !== "" ) return;
+
+				var map = map_droplist.value;
+				var id = Number(material_droplist.value);
+				var material = material_entities.getMaterialById( id );
+				if ( material && material[map] && material[map].isTexture ) {
 
 					callWatchers( entity_droplist, "onchange", "change", 
 					entity_droplist.value = String(material[map].id) );
 
-				} else exitFromEditMode();
+				} // else exitFromEditMode();
 
-			});
+			}
 
 			watch( vector_droplist, "onchange", function( property, event, key ){
 				if ( !key ) [vector_x.value, vector_y.value] = [ "", "" ];
