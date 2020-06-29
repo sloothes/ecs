@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+
+		<title>escy demo (pre-alpha-01)</title>
+
+		<meta charset="utf-8">
+		<meta name="generator" content="Three.js Editor">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+		<link rel="stylesheet" href="/css/joystick.css">
+		<link rel="stylesheet" href="/css/bootstrap.min.css">
+		<link rel="stylesheet" href="/css/bootbox-dialoges.css">
+		<link rel="stylesheet" href="/css/jcrop.css">
+
+		<script src="/js/watch.js"></script>
+		<script src="/js/Objectid.js"></script>
+		<script src="/js/jquery.min.js"></script> 
+	<!-- script src="/js/system.min.js"></script -->
+		<script src="/js/signals.min.js"></script>
+		<script src="/js/inflate.min.js"></script>
+		<script src="/js/zangodb.min.js"></script>
+		<script src="/js/bootstrap.min.js"></script>
+		<script src="/js/hold-event.min.js"></script>
+		<script src="/js/jcrop.js"></script>
+
+		<style>
+
+			body {
+				margin: 0px;
+				font-size: 13px;
+				font-family: sans-serif;
+				background-repeat: repeat;
+				background-image: url("https://i.imgur.com/rnZZU0i.png") !important;
+				overflow: hidden;
+			}
+
+			#loading-bar {
+				width:100%;
+				height:100%;
+				top:0; left:0;
+				position:fixed;
+				display:flex;
+				align-items:center;
+				justify-content:center;
+			}
+
+			.middle > * {
+				top:0; 
+				left:0;
+				right:0;
+				bottom:0;
+				margin:auto;
+				position:absolute;
+			}
+
+			#joystick1 {
+				right: calc(40px + 370px);
+			}
+			
+			#jumpButton {
+				right: calc(105px + 370px);
+			}
+
+			.btn-matcap,
+			.btn-terrain {
+				padding:0;
+				float:left;
+				width:55px;
+				height:55px;
+				border:1px solid;
+				border-radius:4px;
+				margin-right:4px;
+				margin-bottom:4px;
+				display:inline-block;
+			}
+
+			.btn-matcap + .btn-matcap,
+			.btn-terrain + .btn-terrain {
+				margin-right:4px;
+			}
+
+		</style>
+	</head>
+
+	<body ontouchstart="">
+
+		<script src="/ecs/js/TabUI.js"></script>
+
+		<script>
+
+			debugMode = true;
+			const Signal = signals.Signal;
+
+		//	TabUI.
+
+			(function(){
+
+				var sidePanel = createSidePanel();
+				document.body.appendChild( sidePanel );
+
+			})();
+			
+
+		</script>
+
+		<script src="/ecs/js/three.js"></script>
+		<script src="/ecs/ecsy/ecsy.js"></script>
+		<script src="/ecs/js/MeshWalk.js"></script>
+		<script src="/ecs/js/UVsDebug.js"></script>
+		<script src="/ecs/js/FBXLoader.js"></script>
+		<script src="/ecs/js/VirtualInput.js"></script>
+		<script src="/ecs/js/KeyboardState.js"></script>
+		<script src="/ecs/js/EditorControls.js"></script>
+		<script src="/ecs/js/camera-controls.js"></script>
+		<script src="/ecs/js/SubdivisionModifier.js"></script>
+		<script src="/ecs/js/three-pathfinding.umd.js"></script>
+		<script src="/threejs/r96/examples/js/loaders/GLTFLoader.js"></script>
+		<script src="/threejs/r96/examples/js/exporters/GLTFExporter.js"></script>
+		<script src="/threejs/r96/examples/js/exporters/STLExporter.js"></script>
+		<script src="/threejs/r96/examples/js/exporters/OBJExporter.js"></script>
+		<script src="/threejs/r96/examples/js/exporters/ColladaExporter.js"></script>
+
+
+		<script>
+
+		//	THREE Types.js
+
+		//	Create a Vector2 type.
+			Types.Vector2 = createType({
+				name: "Vector2",
+				default: new THREE.Vector2(),
+				copy: THREE.Vector2.prototype.copy,
+				clone: THREE.Vector2.prototype.clone
+			});
+
+		//	Create a Vector3 type.
+			Types.Vector3 = createType({
+				name: "Vector3",
+				default: new THREE.Vector3(),
+				copy: THREE.Vector3.prototype.copy,
+				clone: THREE.Vector3.prototype.clone
+			});
+
+		//	Create a Vector4 type.
+			Types.Vector4 = createType({
+				name: "Vector4",
+				default: new THREE.Vector4(),
+				copy: THREE.Vector4.prototype.copy,
+				clone: THREE.Vector4.prototype.clone
+			});
+
+		//	Create an Euler type.
+			Types.Euler = createType({
+				name: "Euler",
+				default: new THREE.Euler(),
+				copy: THREE.Euler.prototype.copy,
+				clone: THREE.Euler.prototype.clone
+			});
+
+		//	Create an Object3D type.
+			Types.Object3D = createType({
+				name: "Object3D",
+				default: new THREE.Object3D(),
+				copy: THREE.Object3D.prototype.copy,
+				clone: THREE.Object3D.prototype.clone
+			});
+
+		//	Create a Material type.
+			Types.Material = createType({
+				name: "Material",
+				default: new THREE.Material(),
+				toJSON: function(){},
+				fromJSON: function(){},
+				copy: THREE.Material.prototype.copy,
+				clone: THREE.Material.prototype.clone
+			});
+
+		//	Create a Texture type.
+			Types.Texture = createType({
+				name: "Texture",
+				default: new THREE.Texture(),
+				toJSON: function(){},
+				fromJSON: function(){},
+				copy: THREE.Texture.prototype.copy,
+				clone: THREE.Texture.prototype.clone
+			});
+
+			debugMode && console.log( "Types:", Types );
+
+		//	DOM Types.js (TODO).
+
+		//	Types.Event = createType({
+		//		name: "Event",
+		//		default: new window.Event(""),
+		//		copy: null,
+		//		clone: null,
+		//	});
+
+		</script>
+
+		<script>
+
+		//	Components.js
+
+			class MeshWalk extends Component {}
+			MeshWalk.schema = { world: {type: Types.Ref} };
+
+			class Renderer extends Component {}
+			Renderer.schema = { renderer: {type: Types.Ref} };
+
+			class Object3D extends Component {}
+			Object3D.schema = { object: {type: Types.Ref} };
+
+			class Geometry extends Component {}
+			Geometry.schema = { geometry: {type: Types.Ref} };
+
+			class Material extends Component {}
+			Material.schema = { material: {type: Types.Ref} };
+
+			class Texture extends Component {}
+			Texture.schema = {
+				image: {type: Types.Ref},
+				texture: {type: Types.Ref},
+			};
+
+			class Scene extends Component {}
+			Scene.schema = { object: {type:Types.Ref} };
+
+			class Camera extends Component {}
+			Camera.schema = { object: {type:Types.Ref} };
+
+			class Light extends Component {}
+			Light.schema = {
+				target: {type: Types.Ref},
+				object: {type: Types.Ref},
+			};
+
+			class CameraLight extends Light {}
+
+			class Position extends Component {}
+			Position.schema = { vector: {type: Types.Ref} };
+
+			class Rotation extends Component {}
+			Rotation.schema = { vector: {type: Types.Ref} };
+
+			class Scale extends Component {}
+			Scale.schema = { vector: {type: Types.Ref} };
+
+		//
+
+			class Mouse extends Component {}
+			Mouse.schema = { 
+				x: { default:0, type:Types.Number},
+				y: { default:0, type:Types.Number},
+			}
+
+		//	TODO.
+		//	class MouseEvent extends Component {}
+		//	MouseEvent.schema = { 
+		//		e: { type:Types.Event},
+		//	}
+
+		</script>
+
+		<script>
+
+		//	ECSY World.js
+
+			const ecsyWorld = new World();
+			debugMode && console.log( ecsyWorld );
+
+		//	Register Systems.
+
+		//	ecsyWorld.registerSystem(SomeSystem);
+
+		//	Register Components.
+
+			ecsyWorld.registerComponent(MeshWalk);
+			ecsyWorld.registerComponent(Renderer);
+		//
+			ecsyWorld.registerComponent(Texture);
+			ecsyWorld.registerComponent(Geometry);
+			ecsyWorld.registerComponent(Material);
+			ecsyWorld.registerComponent(Object3D);
+		//
+			ecsyWorld.registerComponent(Mouse);
+			ecsyWorld.registerComponent(Scene);
+			ecsyWorld.registerComponent(Light);
+			ecsyWorld.registerComponent(Camera);
+			ecsyWorld.registerComponent(CameraLight);
+
+		//
+			ecsyWorld.registerComponent(Scale);
+			ecsyWorld.registerComponent(Position);
+			ecsyWorld.registerComponent(Rotation);
+		//
+
+		</script>
+
+		<script>
+
+		//	src="/ecs/ecsy/scene.js"
+
+		//	MW.install( THREE ); // important!
+
+		//	## Enviroment ##
+
+		//	Scene.
+
+			const scene = (function(){
+
+				var scene = new THREE.Scene();
+				scene.name = "scene";
+
+				var entity = ecsyWorld.createEntity("scene entity");
+				entity.addComponent(Scene, { object:scene });
+
+				debugMode && console.log( entity );
+			//	return entity.getComponent(Scene).object;
+				return scene;
+
+			})();
+
+		</script>
+
+		<script>
+
+		//	Camera.
+
+			const camera = (function(){
+
+				var camera = (function(){
+					var aspect = (window.innerWidth - 370) / window.innerHeight;
+					return new THREE.PerspectiveCamera( 50, aspect, 1, 10000 );
+				})();
+
+				camera.name = "camera";
+				camera.position.set(0,1,5);
+
+				var entity = ecsyWorld.createEntity("camera entity");
+				entity.addComponent(Camera, { object:camera });
+
+				debugMode && console.log( entity );
+			//	return entity.getComponent(Camera).object;
+				return camera;
+
+			})();
+
+		</script>
+
+		<script>
+
+		//  Camera Light.
+
+			const cameraLight = (function( scene, camera ){
+
+				var cameraLight = new THREE.DirectionalLight( 0xdfebff, 0.75 );
+				cameraLight.name = "camera light";
+				cameraLight.castShadow = true;
+				cameraLight.position.set( 0, 2, 10 );
+				cameraLight.shadow.mapSize.width  = Math.pow(2, 10); // 2048;
+				cameraLight.shadow.mapSize.height = Math.pow(2, 10); // 2048;
+
+
+				var d = 30;
+				cameraLight.shadow.camera.left = - d;
+				cameraLight.shadow.camera.right = d;
+				cameraLight.shadow.camera.top = d;
+				cameraLight.shadow.camera.bottom = - d;
+				cameraLight.shadow.camera.far = 10000;
+				cameraLight.shadow.camera.name = "shadow camera";
+
+				scene.add( cameraLight );
+
+			//	(function update(){
+			//		requestFrameID = requestAnimationFrame( update );
+			//		cameraLight.position.copy( camera.position );
+			//	})();
+			//	return cameraLight;
+
+				var entity = ecsyWorld.createEntity("camera light entity");
+				entity.addComponent(Camera,      {object:camera});
+				entity.addComponent(Position,    {vector:new THREE.Vector3()});
+				entity.addComponent(CameraLight, {object:cameraLight});
+
+				class CameraLightSystem extends System {
+
+					init() {
+
+						debugMode && console.log( this );
+
+						watch( entity.getComponent(Position).vector, function(key, action, value){
+						//	debugMode && console.log( entity.name, key, action, value.toFixed(3) );
+							cameraLight.position.copy( camera.position );
+						});
+
+					}
+
+					execute(dt,t) {
+
+					//	Copies to the position component.
+						entity.getComponent(Position).vector.copy( camera.position ); 
+
+					}
+
+				}
+
+			//	Add System to ecsy world.
+				ecsyWorld.registerSystem( CameraLightSystem );
+
+				debugMode && console.log( entity );
+			//	return entity.getComponent(Object3D).object;
+				return cameraLight;
+
+			})( scene, camera );
+
+		</script>
+
+		<script>
+
+			function takeCameraLight( target ){
+				cameraLight.target = target;
+			}
+/*
+		//	Take camera Light.
+			
+			(function( cameraLight ){
+
+				var entity = ecsyWorld.createEntity("camera light target");
+				entity.addComponent(CameraLight, { 
+					object:cameraLight, 
+					target:null // new THREE.Object3D()
+				});
+
+			//	Define system.
+
+				class ChangeCameraLightTarget extends System {
+
+					init() {
+
+						debugMode && console.log( this );
+
+					}
+
+					execute(dt,t) {
+
+						var system = this;
+						var query = this.queries.target;
+
+						query.changed.forEach( function( entity ){
+							debugMode && conosle.log( entity );
+						//	Get component.
+							var component = entity.getComponent( CameraLight );
+						//	Change light target.
+							component.object.target = component.target;
+						});
+
+					}
+
+				}
+
+			//	Define system queries.
+
+				ChangeCameraLightTarget.queries = {
+
+					target: {
+						components: [ CameraLight ],
+						listen: { 
+							added: false,
+							removed: false,
+							changed: [ CameraLight.target ] 
+						}
+					}
+				}
+
+			//	Add System to ecsy world.
+				ecsyWorld.registerSystem( ChangeCameraLightTarget );
+
+			//
+				debugMode && console.log( entity );
+
+			})( cameraLight );
+*/
+
+		</script>
+
+		<script>
+
+		//	Shadow Camera Helper.
+
+			const shadowCameraHelper = (function( cameraLight ){
+
+				var shadowHelper = new THREE.CameraHelper(cameraLight.shadow.camera);
+				shadowHelper.name = "shadow camera helper";
+				shadowHelper.visible = false;
+			//	scene.add( shadowHelper );
+				return shadowHelper;
+
+			})( cameraLight );
+
+		</script>
+
+		<script>
+
+		//  Renderer.
+
+			const renderer = (function( scene, camera ){
+
+				var renderer = new THREE.WebGLRenderer({
+					alpha: true,  // for transparent rendering set alpha:true, important!
+					antialias: true,
+					preserveDrawingBuffer: true,
+				});
+
+				renderer.gammaInput = true;
+				renderer.gammaOutput = true;
+				renderer.shadowMap.enabled = true;
+				renderer.setClearAlpha( 1 ); // for transparent rendering set clear alpha: 0.
+				renderer.setClearColor( 0x000000, 1 ); // for transparent rendering set clear alpha: 0.
+				renderer.setPixelRatio( window.devicePixelRatio );
+				renderer.setSize( (window.innerWidth - 370), window.innerHeight );
+				renderer.domElement.style.background = "none";  // transparent rendering. important!
+				document.body.appendChild( renderer.domElement );
+
+				window.addEventListener("resize", function onWindowResize() {
+					renderer.setSize( (window.innerWidth - 370), window.innerHeight );
+					camera.aspect = renderer.domElement.clientWidth / renderer.domElement.clientHeight;
+					camera.updateProjectionMatrix();
+				});
+
+			//	(function render(){
+			//		requestFrameID = requestAnimationFrame( render );
+			//		renderer.render( scene, camera );
+			//	})();
+
+			//	WebGL Renderer entity.
+
+				var entity = ecsyWorld.createEntity("webgl renderer entity");
+				entity.addComponent(Scene, {scene:scene});
+				entity.addComponent(Camera, {camera:camera});
+				entity.addComponent(Renderer, {renderer:renderer});
+
+				class WebGLRenderingSystem extends System {
+
+					execute(dt,t) {
+
+						renderer.render( scene, camera );
+
+					}
+
+				}
+
+			//	Add System.
+
+				ecsyWorld.registerSystem( WebGLRenderingSystem );
+
+				debugMode && console.log( entity );
+			//	return entity.getComponent(Object3D).object;
+				return renderer;
+
+			})( scene, camera );
+
+		</script>
+
+		<script>
+
+		//	Mouse.
+
+			(function(){
+
+			//	const mouse = new Mouse(); // (component) // new THREE.Vector2();
+			//	renderer.domElement.addEventListener("mousemove", function(e) {
+			//		mouse.x = ( e.clientX / this.clientWidth ) * 2 - 1;
+			//		mouse.y = - ( e.clientY / this.clientHeight ) * 2 + 1;
+			//	});
+
+			//	Mouse entity.
+
+			//	const mouse = new Mouse(); // (component) // new THREE.Vector2();
+				var entity = ecsyWorld.createEntity("mouse entity");
+				entity.addComponent(Mouse, {x:0, y:0});
+
+				class MouseTracingSystem extends System {
+
+					init() {
+
+						debugMode && console.log( this );
+
+						var mouse = entity.getComponent(Mouse);
+						renderer.domElement.addEventListener("mousemove", function(e) {
+							mouse.x =   ( e.clientX / this.clientWidth  ) * 2 - 1;
+							mouse.y = - ( e.clientY / this.clientHeight ) * 2 + 1;
+						});
+
+						watch( mouse, function(key, action, value){
+						//	debugMode && console.log( entity.name, key, action, value.toFixed(6) );
+						});
+
+					}
+
+				//	execute(dt,t) {}
+
+				}
+
+			//	Add System.
+
+				ecsyWorld.registerSystem( MouseTracingSystem );
+
+				debugMode && console.log( entity );
+
+			})();
+
+		</script>
+
+		<script>
+
+		//	MW World.
+
+			const world = (function( THREE ){
+
+				MW.install( THREE ); // important!
+
+				var world = new MW.World();
+
+			//	MeshWalk world entity.
+
+				var entity = ecsyWorld.createEntity("MW world entity");
+				entity.addComponent(MeshWalk, {world:world});
+
+				class MeshWalkUpdateSystem extends System {
+
+					execute(dt,t) {
+
+						world.step( Math.min( dt, 0.02 ) ); // MW World.
+
+					}
+
+				}
+
+			//	Add System.
+
+				ecsyWorld.registerSystem( MeshWalkUpdateSystem );
+
+				debugMode && console.log( entity );
+			//	return entity.getComponent(MeshWalk).world;
+				return world;
+
+			})( THREE );
+
+		</script>
+
+		<script>
+
+		//	MW Octree.
+
+			const octree = (function( world ){
+
+				var octree = (function(){
+					var x = 150, y = 150, z = 150;
+					var min = new THREE.Vector3( -x, -y, -z );
+					var max = new THREE.Vector3(  x,  y,  z );
+					var partition = 5; // nodes: Math.pow( 8, partition )
+					return new MW.Octree( min, max, partition );
+				})();
+
+				world.add( octree );
+
+				return octree;
+
+			})( world );
+
+		</script>
+
+		<script>
+
+		//	Ground.
+
+			const ground = (function( octree ){
+
+				var ground = new THREE.Mesh(
+					new THREE.PlaneGeometry( 300, 300, 1, 1 ).rotateX(-Math.PI/2),
+					new THREE.MeshLambertMaterial({ 
+						opacity:1, 
+						color:0x829ec4,
+					})
+				);
+
+				ground.name = "ground";
+				ground.position.y = 0;
+				octree.importThreeMesh( ground ); // important!
+
+				return ground;
+
+			})( octree );
+
+
+		</script>
+
+		<script>
+
+		//	Ground Helper.
+
+			const groundHelper = (function( scene ){
+
+				var groundHelper = new THREE.GridHelper( 300, 300, 0x444444, 0x444444 );
+				groundHelper.name = "ground helper";
+				scene.add( groundHelper );
+
+				return groundHelper;
+
+			})( scene );
+
+		</script>
+
+		<script>
+
+		//	Runtime.
+
+			const clock = new THREE.Clock();
+
+			(function update(){
+				requestFrameID = requestAnimationFrame( update );
+				var delta = clock.getDelta();
+				var elapsedTime = clock.getElapsedTime();
+				ecsyWorld.execute(delta, elapsedTime); // ECSY World.
+			//	world.step( Math.min( delta, 0.02 ) ); // MW World is now component.
+			})();
+
+		</script>
+
+		<script src="/ecs/engine/core/helpers.js"></script>
+
+		<script>
+		//	src="/ecs/engine/core/localPlayer.js">
+
+		//	localPlayer.js
+
+			const localPlayer = (function( scene, world ){
+
+				var radius = 0.85;
+
+			//	player.
+				var player = (function(){
+					var player = new THREE.Object3D();
+					player.position.set( 0, 0, 0 );
+					player.name = "localPlayer";
+					scene.add( player );
+					return player;
+				})();
+
+			//	helper.
+				var helper = (function( r ){
+					var sphere = new THREE.SphereGeometry( r, 8, 6 );
+					var geometry = new THREE.EdgesGeometry( sphere );
+					var material = new THREE.LineBasicMaterial( { color: 0x00ff00 } );
+					var segments = new THREE.LineSegments( geometry, material );
+					segments.name = "playerhelper";
+					return segments;
+				})( radius );
+
+				player.add( helper );
+
+			//	controller.
+				player.controller = (function( object, radius ){
+					var h = 2*Math.PI;
+					var controller = new MW.CharacterController( object, radius );
+					controller.movementSpeed = 10;
+					controller.maxSlopeGradient = 0.5;
+					controller.center.set(0, h, 0);
+					world.add( controller );
+					(function reset(){
+						player.requestFrameID = requestAnimationFrame( reset );
+						if ( controller.center.y < -1 ) controller.center.set(0, h, 0);
+					})();
+					return controller;
+				})( player, radius );
+
+			//	rotation.
+				(function update(){
+					player.requestFrameID = requestAnimationFrame( update );
+					player.rotation.y = player.controller.direction + Math.PI;
+				})();
+
+			//	cameraLight control.
+				takeCameraLight( player );
+
+				return player;
+
+			})( scene, world );
+
+		</script>
+
+		<script src="/ecs/engine/core/cameraControls.js"></script>
+		<script src="/ecs/engine/core/keyboardState.js"></script>
+		<script src="/ecs/engine/core/keyInputControls.js"></script>
+		<script src="/ecs/engine/core/joystickControls.js"></script>
+		<script src="/ecs/engine/core/keyboard.js"></script>
+		<script src="/ecs/engine/editor/EditorTab.js"></script>
+	<!-- script src="/ecs/engine/editor/MaterialTab.js"></script -->
+	<!-- script src="/ecs/engine/editor/TextureTab.js"></script -->
+
+
+
+
+
+
+
+
+
+
+
+
+		<script>
+/*
+			(function( camera, object ){
+
+			//	Camera Light entity (demo).
+
+			//	In this demo the wanted was the watcher to add the entity
+			//	to the system queue when the watcher's value has changed 
+			//	(and remove the entity when system done). Instend of this
+			//	the system always update the Position component vector and 
+			//	the wather updates the Object3D component (camera's light)
+			//	object position.
+
+				var entity = ecsyWorld.createEntity("camera light entity");
+				entity.addComponent(Camera,   {object:camera});
+				entity.addComponent(Object3D, {object:object});
+				entity.addComponent(Position, {vector:new THREE.Vector3()});
+
+				class CameraLightSystem extends System {
+
+					init() {
+
+						debugMode && console.log( this );
+
+						watch( entity.getComponent(Position).vector, function(key, action, value){
+						//	debugMode && console.log( entity.name, key, action, value.toFixed(3) );
+							entity.getComponent(Object3D).object.position[key] = value;
+						});
+
+					}
+
+					execute(dt,t) {
+						
+						entity.getComponent(Position).vector.copy( camera.position ); 
+
+					}
+
+				}
+
+			//	Add System.
+
+				ecsyWorld.registerSystem( CameraLightSystem );
+
+			})( camera, cameraLight );
+
+		//
+
+			(function(){
+
+			//	Mouse entity (demo).
+
+			//	const mouse = new Mouse(); // (component) // new THREE.Vector2();
+				var entity = ecsyWorld.createEntity("mouse entity");
+				entity.addComponent(Mouse, {x:0, y:0});
+
+				class MouseTracingSystem extends System {
+
+					init() {
+
+						debugMode && console.log( this );
+
+						var mouse = entity.getComponent(Mouse);
+						renderer.domElement.addEventListener("mousemove", function(e) {
+							mouse.x =   ( e.clientX / this.clientWidth  ) * 2 - 1;
+							mouse.y = - ( e.clientY / this.clientHeight ) * 2 + 1;
+						});
+
+						watch( mouse, function(key, action, value){
+						//	debugMode && console.log( entity.name, key, action, value.toFixed(6) );
+						});
+
+					}
+
+				//	execute(dt,t) {}
+
+				}
+
+			//	Add System.
+
+				ecsyWorld.registerSystem( MouseTracingSystem );
+
+			})();
+			(function( world ){
+
+			//	MeshWalk world entity.
+
+				var entity = ecsyWorld.createEntity("MW world entity");
+				entity.addComponent(MeshWalk, {world:world});
+
+				class MeshWalkUpdateSystem extends System {
+
+					execute(dt,t) {
+
+						world.step( Math.min( dt, 0.02 ) ); // MW World.
+
+					}
+
+				}
+
+			//	Add System.
+
+				ecsyWorld.registerSystem( MeshWalkUpdateSystem );
+
+			})( world );
+
+*/
+/*
+			(function( scene, camera, renderer ){
+
+			//	WebGL Renderer entity.
+
+				var entity = ecsyWorld.createEntity("webgl renderer entity");
+				entity.addComponent(Scene, {scene:scene});
+				entity.addComponent(Camera, {camera:camera});
+				entity.addComponent(Renderer, {renderer:renderer});
+
+				class WebGLRenderingSystem extends System {
+
+					execute(dt,t) {
+
+						renderer.render( scene, camera );
+
+					}
+
+				}
+
+			//	Add System.
+
+				ecsyWorld.registerSystem( WebGLRenderingSystem );
+
+			})( scene, camera, renderer );
+*/
+
+		</script>
+
+		<script>
+
+			TabUI.Editor.role.classList.add("active");
+			TabUI.Editor.tab.classList.add("in","active");
+
+		//	takeCameraLight( scene ); // debug!
+			localPlayer.controller.movementSpeed = 10;
+
+		//	Entities.
+
+		//	debugMode && (function(){
+		//		var r = 1;
+		//		var geometry = new THREE.BoxGeometry(r,r,r);
+		//		var material = new THREE.MeshLambertMaterial();
+		//		var cube = new THREE.Mesh(geometry, material);
+		//		cube.name = "local player cube";
+		//		var geometry = new THREE.SphereGeometry(0.7,8,12);
+		//		var material = new THREE.MeshLambertMaterial();
+		//		var sphere = new THREE.Mesh(geometry, material);
+		//		sphere.name = "local player sphere";
+		//	//	cube.add( sphere );
+		//		localPlayer.add( cube );
+		//	})();
+
+		//	material.
+
+			debugMode && (function(){
+
+				var material = new THREE.MeshStandardMaterial({name:"mtl00"});
+				var maps = "map,aoMap,envMap,lightMap,bumpMap,alphaMap,normalMap,specularMap,";
+				maps += "gradientMap,emissiveMap,metalnessMap,roughnessMap,displacementMap";
+				material.envMap = new THREE.CubeTexture();
+				maps.split(",").forEach( function( key ){
+					if ( key !== "envMap" ) material[ key ] = new THREE.Texture();
+				}); debugMode && console.log( material );
+			//	material_entities.add( material );
+			})();
+
+		//	box coluctions.
+
+			debugMode && (function(){
+
+			//	(function(){
+			//		var w = 10; var h = 5;
+			//		var box = new THREE.BoxGeometry(w,h,w);
+			//		box.translate(0, h/2, 0);
+			//		octree.importThreeMesh( new THREE.Mesh(box) );
+			//		var geometry = new THREE.EdgesGeometry( box );
+			//		var material = new THREE.LineBasicMaterial( { color: 0x00ff00 } );
+			//		var segments = new THREE.LineSegments( geometry, material );
+			//		segments.name = "segments 1";
+			//		scene.add( segments );
+			//	})();
+
+				(function(){
+					var w = 10, h = 20;
+					var x = 10, y = h/2, z = -4;
+					var box = new THREE.BoxGeometry(w,h,w);
+					box.translate(0, h/2, 0);
+					var material = new THREE.MeshLambertMaterial();
+					var mesh = new THREE.Mesh(box, material);
+					mesh.name = "building 1";
+					mesh.position.set(x,0,z);
+					octree.importThreeMesh( mesh );
+					var geometry = new THREE.EdgesGeometry( box );
+					var segments = new THREE.LineSegments( geometry, material );
+					segments.name = "segments 2";
+					segments.position.copy( mesh.position );
+					scene.add( mesh );
+					cameraControls.rigidObjects.push( mesh );
+				})();
+
+				(function(){
+					var w = 12, h = 10;
+					var x = 15, y = h/2, z = -11;
+					var box = new THREE.BoxGeometry(w,h,w);
+					box.translate(0, h/2, 0);
+					var material = new THREE.MeshLambertMaterial();
+					var mesh = new THREE.Mesh(box, material);
+					mesh.name = "building 2";
+					mesh.position.set(x,0,z);
+					octree.importThreeMesh( mesh );
+					var geometry = new THREE.EdgesGeometry( box );
+					var segments = new THREE.LineSegments( geometry, material );
+					segments.name = "segments 3";
+					segments.position.copy( mesh.position );
+					scene.add( mesh );
+					cameraControls.rigidObjects.push( mesh );
+				})();
+
+				(function(){
+					var w = 8, h = 10;
+					var x = -9, y = h/2, z = 5;
+					var box = new THREE.BoxGeometry(w,h,w);
+					box.translate(0, h/2, 0);
+					var material = new THREE.MeshLambertMaterial();
+					var mesh = new THREE.Mesh(box, material);
+					mesh.name = "building 3";
+					mesh.position.set(x,0,z);
+					octree.importThreeMesh( mesh );
+					var geometry = new THREE.EdgesGeometry( box );
+					var segments = new THREE.LineSegments( geometry, material );
+					segments.name = "segments 4";
+					segments.position.copy( mesh.position );
+					scene.add( mesh );
+					cameraControls.rigidObjects.push( mesh );
+				})();
+
+				(function(){
+					var w = 12, h = 20, d = 2;
+					var x = -14, y = h/2, z = 10;
+					var box = new THREE.BoxGeometry(w,h,d);
+					box.translate(0, h/2, 0);
+					var material = new THREE.MeshLambertMaterial();
+					var mesh = new THREE.Mesh(box, material);
+					mesh.name = "building 4";
+					mesh.position.set(x,0,z);
+					octree.importThreeMesh( mesh );
+					var geometry = new THREE.EdgesGeometry( box );
+					var segments = new THREE.LineSegments( geometry, material );
+					segments.name = "segments 5";
+					segments.position.copy( mesh.position );
+					scene.add( mesh );
+					cameraControls.rigidObjects.push( mesh );
+				})();
+
+				(function(){
+					var w = 4, h = 20, d = 20;
+					var x = -17, y = h/2, z = 12;
+					var box = new THREE.BoxGeometry(w,h,d);
+					box.translate(0, h/2, 0);
+					var material = new THREE.MeshLambertMaterial();
+					var mesh = new THREE.Mesh(box, material);
+					mesh.name = "building 5";
+					mesh.position.set(x,0,z);
+					octree.importThreeMesh( mesh );
+					var geometry = new THREE.EdgesGeometry( box );
+					var segments = new THREE.LineSegments( geometry, material );
+					segments.name = "segments 6";
+					segments.position.copy( mesh.position );
+					scene.add( mesh );
+					cameraControls.rigidObjects.push( mesh );
+				})();
+
+			//	var groupA = new THREE.Object3D();
+			//	var groupB = new THREE.Object3D();
+
+			//	groupA.add( scene.getObjectByName("building 1").clone() );
+			//	groupA.add( scene.getObjectByName("building 2").clone() );
+			//	groupB.add( scene.getObjectByName("building 3").clone() );
+			//	groupB.add( scene.getObjectByName("building 4").clone() );
+			//	groupB.add( scene.getObjectByName("building 5").clone() );
+
+			})();
+
+		</script>
+
+	</body>
+</html>

@@ -1,4 +1,4 @@
-//	localPlayer entity.
+//	localPlayer.js
 
 	const localPlayer = (function(){
 
