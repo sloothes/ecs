@@ -776,7 +776,7 @@
 			TextureEditor.prototype = Object.create(THREE.Texture.prototype); // important!
 
 			TextureEditor.prototype.copy = function( source ){ 
-				THREE[ source.type ].prototype.copy.call( this, source ); // important!
+				THREE.Texture.prototype.copy.call( this, source ); // important!
 				return this;
 			};
 
