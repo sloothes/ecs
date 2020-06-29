@@ -475,7 +475,7 @@
 		var input = document.createElement("input");
 		input.type = "file";
 		input.id = "texture-file-input";
-		input.style.cssText = "display:none;";
+	//	input.style.cssText = "display:none;";
 		button.appendChild( input );
 
 		button.addEventListener( "click", function(){
@@ -1021,8 +1021,8 @@
 				var map_droplist = document.getElementById("material-map-droplist");
 				var material_droplist = document.getElementById("material-entities-droplist");
 
-				if ( !map_droplist || map_droplist.value !== "" ) return;
-				if ( !material_droplist || material_droplist.value !== "" ) return;
+				if ( !map_droplist || map_droplist.value === "" ) return;
+				if ( !material_droplist || material_droplist.value === "" ) return;
 
 				var map = map_droplist.value;
 				var id = Number(material_droplist.value);
