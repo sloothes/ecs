@@ -464,7 +464,7 @@
 	//	var tab = TabUI.Texture.tab;
 
 		var row = document.createElement("h3");
-		row.style.cssText = "display:none;height:40px;margin-bottom:20px;"
+		row.style.cssText = "height:40px;margin-bottom:20px;"
 
 		var button = document.createElement("div");
 		button.id = "create-texture-button";
@@ -475,7 +475,7 @@
 		var input = document.createElement("input");
 		input.type = "file";
 		input.id = "texture-file-input";
-	//	input.style.cssText = "display:none;";
+		input.style.cssText = "display:none;";
 		button.appendChild( input );
 
 		button.addEventListener( "click", function(){
