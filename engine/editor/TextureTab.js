@@ -93,7 +93,7 @@
 		const material = (function(){
 			var mesh = new THREE.Mesh(
 				new THREE.PlaneGeometry( 252, 252, 1, 1 ).rotateX(-Math.PI/2),
-				new THREE.MeshLambertMaterial({ opacity:1, color:0x000000 })
+				new THREE.MeshLambertMaterial({ opacity:1, color:0xffffff })
 			);  
 			mesh.name = "texture viewer";
 			mesh.material.name = "TextureViewerMaterial";
