@@ -690,6 +690,8 @@
 
 	};
 
+//	Create texture managers.
+
 	const texture_entities = new TextureManager(); // texture entities array, important!.
 	const removed_textures = new TextureManager(); // texture entities array, important!.
 
@@ -772,6 +774,11 @@
 			}
 
 			TextureEditor.prototype = Object.create(THREE.Texture.prototype); // important!
+
+			TextureEditor.prototype.copy = function( source ){ 
+				THREE[ source.type ].prototype.copy.call( this, source ); // important!
+				return this;
+			};
 
 			TextureEditor.prototype.reset = function(){ 
 				this.copy( new THREE.Texture() ); 
@@ -898,21 +905,9 @@
 
 	//	helpers.
 
-		function getTextureByEntityId( value ){
-
-			if ( arguments.length ) 
-				var id = parseInt( value );
-			else
-				var id = parseInt( texture_droplist.value );
-
-			if ( id === NaN ) return;
-
-			return texture_entities.find( function( texture ){
-				return texture.id === id;
-			});
-		}
-
 		function getMaterialByEntityId( value ){
+
+			var material_droplist = document.getElementById("material-entities-droplist"); // important!
 
 			if ( arguments.length ) 
 				var id = parseInt( value );
@@ -923,6 +918,22 @@
 
 			return material_entities.find( function( material ){
 				return material.id === id;
+			});
+		}
+
+		function getTextureByEntityId( value ){
+
+			var texture_droplist = document.getElementById("texture-entities-droplist"); // important!
+
+			if ( arguments.length ) 
+				var id = parseInt( value );
+			else
+				var id = parseInt( texture_droplist.value );
+
+			if ( id === NaN ) return;
+
+			return texture_entities.find( function( texture ){
+				return texture.id === id;
 			});
 		}
 
@@ -1001,6 +1012,21 @@
 			key_droplist.addEventListener( "change", key_droplist.blur );
 			vector_droplist.addEventListener( "change", vector_droplist.blur );
 			entity_droplist.addEventListener( "change", entity_droplist.blur );
+
+			document.getElementById("material-map-droplist").addEventListener( "change", function(){
+				if ( !document.getElementById("material-entities-droplist").value ) return;
+
+				var map = document.getElementById("material-map-droplist").value;
+				var material = material_entities.getMaterialById( Number(this.value) );
+
+				if ( material && map !== "" && material[map] && material[map].isTexture ) {
+
+					callWatchers( entity_droplist, "onchange", "change", 
+					entity_droplist.value = String(material[map].id) );
+
+				} else exitFromEditMode();
+
+			});
 
 			watch( vector_droplist, "onchange", function( property, event, key ){
 				if ( !key ) [vector_x.value, vector_y.value] = [ "", "" ];
