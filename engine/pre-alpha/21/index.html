@@ -280,7 +280,7 @@
 				return material;
 			})( textureViewerScene );
 
-			const textureViewerPointer = (function( scene ){
+			const textureViewerCenter = (function( scene ){
 
 				var helper = (function(){
 
@@ -2130,11 +2130,11 @@
 
 			(function( 
 				editor,
+				textureViewerCenter,
 				entity_droplist,
 				vector_droplist,
 				texture_entities,
-				textureViewerMaterial,
-				textureViewerPointer 
+				textureViewerMaterial
 			){
 
 			//	Add watchers.
@@ -2147,8 +2147,8 @@
 						textureViewerMaterial.map = null;
 						textureViewerMaterial.needsUpdate = true; // important!
 						textureViewerMaterial.color.setHex(0x000000); // important!
-					//	textureViewerPointer.position.set( 0,0.1,0 ); // important!
-						textureViewerMaterial.position.set(-125, 0.1, 125); // (x,y) = (0,0) <=> (x,z) = (-125,125) important!
+					//	center: (x,y) = (0,0) <=> (x,z) = (-125,125) important!
+						textureViewerCenter.position.set(-125, 0.1, 125); // reset.
 						return;
 					}
 				//
@@ -2157,8 +2157,8 @@
 						textureViewerMaterial.map = null;
 						textureViewerMaterial.needsUpdate = true; // important!
 						textureViewerMaterial.color.setHex(0x000000); // important!
-					//	textureViewerPointer.position.set( 0,0.1,0 ); // important!
-						textureViewerMaterial.position.set(-125, 0.1, 125); // (x,y) = (0,0) <=> (x,z) = (-125,125) important!
+					//	center: (x,y) = (0,0) <=> (x,z) = (-125,125) important!
+						textureViewerCenter.position.set(-125, 0.1, 125); // reset!
 						return;
 					}
 				//
@@ -2177,12 +2177,12 @@
 
 					switch ( key ){
 						case "":
-							textureViewerMaterial.position.set( -125, 0.1, 125); // (x,y) = (0,0) important!
+							textureViewerMaterial.position.set( -125, 0.1, 125); // reset!
 						break;
 					//	case "offset":
 						case "center":
-							textureViewerPointer.position.x = -125 + round(250*editor[ key ].x, 2); // important! (corect)
-							textureViewerPointer.position.z =  125 - round(250*editor[ key ].y, 2); // important! (corect)
+							textureViewerCenter.position.x = -125 + round(250*editor[ key ].x, 2); // important! (corect)
+							textureViewerCenter.position.z =  125 - round(250*editor[ key ].y, 2); // important! (corect)
 						break;
 					}
 
@@ -2199,22 +2199,22 @@
 				//
 					switch ( key ){
 						case "center":
-							textureViewerPointer.position.x = -125 + round(250*editor[ key ].x, 2); // important! (corect)
-							textureViewerPointer.position.z =  125 - round(250*editor[ key ].y, 2); // important! (corect)
+							textureViewerCenter.position.x = -125 + round(250*editor[ key ].x, 2); // important! (corect)
+							textureViewerCenter.position.z =  125 - round(250*editor[ key ].y, 2); // important! (corect)
 						break;
 					}
 				}
 
 			})( 
-				textureEditor,
+				textureEditor, textureViewerCenter,
 				document.getElementById("texture-entities-droplist"),
 				document.getElementById("texture-vector-droplist"),
-				texture_entities, textureViewerMaterial, textureViewerPointer
+				texture_entities, textureViewerMaterial
 			);
 
 		//
 
-			(function( editor,textureViewerPointer,entity_droplist,vector_droplist ){
+			(function( editor,textureViewerCenter,entity_droplist,vector_droplist ){
 
 				var interval;
 
@@ -2255,13 +2255,11 @@
 						if ( key ) (function(){
 
 							if ( button === increase_x || button === decrease_x ) {
-							//	var value = Number(editor[ key ].x); // get value from editor.
-								textureViewerPointer.position.x = -125 + round(250*editor[ key ].x, 2); // important! (corect)
+								textureViewerCenter.position.x = -125 + round(250*editor[ key ].x, 2); // important! (corect)
 							}
 
 							if ( button === increase_y || button === decrease_y ) {
-							//	var value = Number(editor[ key ].y); // get value from editor.
-								textureViewerPointer.position.z =  125 - round(250*editor[ key ].y, 2); // important! (corect)
+								textureViewerCenter.position.z =  125 - round(250*editor[ key ].y, 2); // important! (corect)
 							}
 
 						})();
@@ -2274,7 +2272,7 @@
 				}
 
 			})(
-				textureEditor,textureViewerPointer,
+				textureEditor, textureViewerCenter,
 				document.getElementById("texture-entities-droplist"),
 				document.getElementById("texture-vector-droplist")
 			);
