@@ -3168,7 +3168,8 @@
 
 	//	Material Editor Watchers.
 	//	Watch each object/property individually.
-	//	Synchronize material with editor (brige).
+	//	Synchronize material with material editor (brige).
+	//	KEEP IN MIND: watchers update only if the value has been changed.
 
 		(function( editor ){
 
