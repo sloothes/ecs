@@ -329,6 +329,9 @@
 				return helper;
 			})( textureViewerScene );
 
+		</script>
+
+		<script>
 /*
 			//	Viewer scene.
 
@@ -1295,12 +1298,55 @@
 					return;
 				}
 
+				function resetTextureViewer(){
+					disposeTextureViewerMaterial();
+					textureViewerMaterial.color.setHex(0x000000);
+					textureViewerCenter.position.set(-125, 0.1, 125); // reset!
+				}
+
+				function disposeTextureViewerMaterial(){
+
+				//	dispose textures.
+					(function( material ){
+						material && material.map && material.map.dispose && material.map.dispose();
+						material && material.bumpMap && material.bumpMap.dispose && material.bumpMap.dispose();
+						material && material.alphaMap && material.alphaMap.dispose && material.alphaMap.dispose();
+						material && material.normalMap && material.normalMap.dispose && material.normalMap.dispose();
+						material && material.emissiveMap && material.emissiveMap.dispose && material.emissiveMap.dispose();
+						material && material.roughnessMap && material.roughnessMap.dispose && material.roughnessMap.dispose();
+						material && material.metalnessMap && material.metalnessMap.dispose && material.metalnessMap.dispose();
+						material && material.displacementMap && material.displacementMap.dispose && material.displacementMap.dispose();
+						material && material.lightMap && material.lightMap.dispose && material.lightMap.dispose();
+						material && material.envMap && material.envMap.dispose && material.envMap.dispose();
+						material && material.aoMap && material.aoMap.dispose && material.aoMap.dispose();
+					//	material && material.dispose && material.dispose();
+					})( textureViewerMaterial );
+
+				//	remove textures.
+					(function( material ){
+						material.map = null;
+						material.bumpMap = null;
+						material.alphaMap = null;
+						material.normalMap = null;
+						material.emissiveMap = null;
+						material.roughnessMap = null;
+						material.metalnessMap = null;
+						material.displacementMap = null;
+						material.lightMap = null;
+						material.envMap = null;
+						material.aoMap = null;
+					})( textureViewerMaterial );
+
+					textureViewerMaterial.needsUpdate = true; // important!
+				}
+
 			//	exit from edit mode.
 
 				function exitFromEditMode(){
 					editor.reset();
 					resetUIValues();
 					clearUndoRedo();
+					resetTextureViewer();
 					return;
 				}
 
@@ -2338,7 +2384,7 @@
 
 					switch ( key ){
 						case "":
-							textureViewerMaterial.position.set( -125, 0.1, 125); // reset!
+							textureViewerCenter.position.set( -125, 0.1, 125); // reset!
 						break;
 					//	case "offset":
 						case "center":
