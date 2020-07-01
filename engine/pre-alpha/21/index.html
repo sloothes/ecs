@@ -192,7 +192,7 @@
 				var canvas = document.createElement("canvas");
 				canvas.width = 256; canvas.height = 256;
 				canvas.id = "texture-viewer";
-				canvas.style.cssText = "max-width:300px;max-height:300px;margin:auto;";
+				canvas.style.cssText = "width:256px;height:256px;margin:auto;";
 
 				row.appendChild( canvas );
 				tab.appendChild( row );
@@ -1510,7 +1510,8 @@
 								if ( !isNaN( value ) ) {
 									if ( editor[key] !== THREE.Math.clamp(value,1,-1) ) addtoUndo(); 
 									setTimeout(function(){
-										value_input.value = ( editor[ key ] = THREE.Math.clamp(value,1,-1) ).toFixed(1);
+										editor[ key ] = THREE.Math.clamp(value,1,-1);
+									//	value_input.value = ( editor[ key ] = THREE.Math.clamp(value,1,-1) ).toFixed(1);
 									});
 								} else if ( !isNaN( editor[key]) ) 
 									value_input.value = editor[key].toFixed(2);
@@ -1522,7 +1523,7 @@
 									if ( editor[key] !== THREE.Math.clamp(DEG2RAD*value,-Math.PI, Math.PI) ) addtoUndo(); 
 									setTimeout(function(){
 										editor[key] = THREE.Math.clamp(DEG2RAD*value,-Math.PI, Math.PI);
-										value_input.value = THREE.Math.clamp((value),-180,180).toFixed(1);
+									//	value_input.value = THREE.Math.clamp((value),-180,180).toFixed(1);
 									});
 								} else if ( !isNaN( editor[key]) ) 
 									value_input.value = THREE.Math.clamp((RAD2DEG*editor[key]),-180,180).toFixed(1);
@@ -1547,10 +1548,8 @@
 				//	const key_droplist = document.getElementById("texture-key-droplist");
 				//	const entity_droplist = document.getElementById("texture-entities-droplist");
 
-					increase_x.addEventListener( "mousedown", onfirstMouseDown );
-					decrease_x.addEventListener( "mousedown", onfirstMouseDown );
-					increase_y.addEventListener( "mousedown", onfirstMouseDown );
-					decrease_y.addEventListener( "mousedown", onfirstMouseDown );
+					increase_v.addEventListener( "mousedown", onfirstMouseDown );
+					decrease_v.addEventListener( "mousedown", onfirstMouseDown );
 
 					function onfirstMouseDown(){
 						state = {};
@@ -1608,7 +1607,8 @@
 								var value = Number(editor[ key ]); // get value from editor.
 								if ( button === increase_v ) value = THREE.Math.clamp( value+step, min, max );
 								if ( button === decrease_v ) value = THREE.Math.clamp( value-step, min, max );
-								value_input.value = ( RAD2DEG * ( editor[ key ] = value) ).toFixed(1); // string.
+								editor[ key ] = value; // update editor.
+							//	value_input.value = ( RAD2DEG * ( editor[ key ] = value) ).toFixed(1); // string.
 
 							})();
 
@@ -1618,7 +1618,8 @@
 								var value = Number(editor[ key ]); // get value from editor.
 								if ( button === increase_v ) value = THREE.Math.clamp( value+step, min, max );
 								if ( button === decrease_v ) value = THREE.Math.clamp( value-step, min, max );
-								value_input.value = ( editor[key] = round(value, 2) ).toFixed(2);
+								editor[key] = round(value, 2); // update editor.
+							//	value_input.value = ( editor[key] = round(value, 2) ).toFixed(2);
 
 							})();
 
@@ -1651,6 +1652,7 @@
 							var index = values.findIndex(function( item ){ return item === value; });
 							if ( button === increase_v ) value = values[ ( ++index % max + max ) % max ]; // mod();
 							if ( button === decrease_v ) value = values[ ( --index % max + max ) % max ]; // mod();
+						//	debugMode && console.log( key === state.key && value !== state.value );
 							if ( key === state.key && value !== state.value ) {
 								interval = setTimeout( function(){ 
 									state.json && undo.unshift( state.json ); // Add to undo.
@@ -1659,17 +1661,20 @@
 								}, 250);
 							}
 						//	update editor value.
-							value_input.value = editor[ key ] = value; // number.
+							editor[ key ] = value; // number, (editor watcher updates input value).
+						//	value_input.value = editor[ key ] = value; // number.
 						}
 
 						switch ( key ){
 
 							case "uuid": 
-								text_input.value = editor[ key ] = THREE.Math.generateUUID(); // string.
+								editor[ key ] = THREE.Math.generateUUID(); // string, (editor watcher updates input value).
+							//	text_input.value = editor[ key ] = THREE.Math.generateUUID(); // string.
 							break;
 
 							case "flipY":
-								value_input.value = editor[ key ] = !editor[ key ]; // boolean.
+								editor[ key ] = !editor[ key ]; // boolean, (editor watcher updates input value).
+							//	value_input.value = editor[ key ] = !editor[ key ]; // boolean.
 							break;
 
 							case "format":
@@ -1721,7 +1726,8 @@
 											button.addEventListener( "mousedown", onfirstMouseDown ); // important!
 										}, 250);
 									}
-									value_input.value = ( RAD2DEG * ( editor[ key ] = value) ).toFixed(1); // string.
+									editor[ key ] = value; // (editor watcher updates input value).
+								//	value_input.value = ( RAD2DEG * ( editor[ key ] = value) ).toFixed(1); // string.
 								})();
 							break;
 
@@ -1738,7 +1744,8 @@
 											button.addEventListener( "mousedown", onfirstMouseDown ); // important!
 										}, 250);
 									}
-									value_input.value = ( editor[key] = round(value, 2) ).toFixed(2);
+									editor[key] = round(value, 2); // (editor watcher updates input value).
+								//	value_input.value = ( editor[key] = round(value, 2) ).toFixed(2);
 								})();
 							break;
 
@@ -2044,108 +2051,89 @@
 
 				//	Vectors.
 					watch( editor.center, function( key, action, value, oldValue ){
-						debugMode && console.log("editor:",{"key":key,"action":action,"value":value});
 						if (texture) texture.center[ key ] = editor.center[ key ];
-					//	clearTimeout( interval );
 					});
 					watch( editor.offset, function( key, action, value, oldValue ){
-						debugMode && console.log("editor:",{"key":key,"action":action,"value":value});
 						if (texture) texture.offset[ key ] = editor.offset[ key ];
-					//	clearTimeout( interval );
 					});
 					watch( editor.repeat, function( key, action, value, oldValue ){
-						debugMode && console.log("editor:",{"key":key,"action":action,"value":value});
 						if (texture) texture.repeat[ key ] = editor.repeat[ key ];
-					//	clearTimeout( interval );
 					});
 
 				//	Numbers.
 					watch( editor, "anisotropy", function( key, action, value, oldValue ){
-						debugMode && console.log("editor:",{"key":key,"action":action,"value":value});
 						if (texture) texture[ key ] = editor[ key ];
-					//	clearTimeout( interval );
+						if ( key_droplist.value === key ) value_input.value = editor[ key ].toFixed(2);
 					});
 					watch( editor, "rotation", function( key, action, value, oldValue ){
-						debugMode && console.log("editor:",{"key":key,"action":action,"value":value});
 						if (texture) texture[ key ] = editor[ key ];
-					//	clearTimeout( interval );
+						if ( key_droplist.value === key ) 
+							value_input.value = (RAD2DEG*editor[key]).toFixed(1); // string.
 					});
 
 				//	Strings.
-					watch( editor, "name", function( key, action, value, oldValue ){
-						debugMode && console.log("editor:",{"key":key,"action":action,"value":value});
+					watch( editor, "name", function( key, action, value ){
 						if (texture) texture[ key ] = editor[ key ];
-					//	clearTimeout( interval );
+						if ( key_droplist.value === key ) text_input.value = editor[ key ];
 					});
-					watch( editor, "uuid", function( key, action, value, oldValue ){
-						debugMode && console.log("editor:",{"key":key,"action":action,"value":value});
+					watch( editor, "uuid", function( key, action, value ){
 						if (texture) texture[ key ] = editor[ key ];
-					//	clearTimeout( interval );
+						if ( key_droplist.value === key ) text_input.value = editor[ key ];
 					});
 
 				//	Constants.
 					watch( editor, "format", function( key, action, value, oldValue ){
-						debugMode && console.log("editor:",{"key":key,"action":action,"value":value});
 						if (texture) texture[ key ] = editor[ key ];
-					//	clearTimeout( interval );
+						if ( key_droplist.value === key ) value_input.value = editor[ key ];
 					});
 					watch( editor, "mapping", function( key, action, value, oldValue ){
-						debugMode && console.log("editor:",{"key":key,"action":action,"value":value});
 						if (texture) texture[ key ] = editor[ key ];
-					//	clearTimeout( interval );
+						if ( key_droplist.value === key ) value_input.value = editor[ key ];
 					});
 					watch( editor, "wrapS", function( key, action, value, oldValue ){
-						debugMode && console.log("editor:",{"key":key,"action":action,"value":value});
 						if (texture) texture[ key ] = editor[ key ];
-					//	clearTimeout( interval );
+						if ( key_droplist.value === key ) value_input.value = editor[ key ];
 					});
 					watch( editor, "wrapT", function( key, action, value, oldValue ){
-						debugMode && console.log("editor:",{"key":key,"action":action,"value":value});
 						if (texture) texture[ key ] = editor[ key ];
-					//	clearTimeout( interval );
+						if ( key_droplist.value === key ) value_input.value = editor[ key ];
 					});
 					watch( editor, "minFilter", function( key, action, value, oldValue ){
-						debugMode && console.log("editor:",{"key":key,"action":action,"value":value});
 						if (texture) texture[ key ] = editor[ key ];
-					//	clearTimeout( interval );
+						if ( key_droplist.value === key ) value_input.value = editor[ key ];
 					});
 					watch( editor, "magFilter", function( key, action, value, oldValue ){
-						debugMode && console.log("editor:",{"key":key,"action":action,"value":value});
 						if (texture) texture[ key ] = editor[ key ];
-					//	clearTimeout( interval );
+						if ( key_droplist.value === key ) value_input.value = editor[ key ];
 					});
 					watch( editor, "type", function( key, action, value, oldValue ){
-						debugMode && console.log("editor:",{"key":key,"action":action,"value":value});
 						if (texture) texture[ key ] = editor[ key ];
-					//	clearTimeout( interval );
+						if ( key_droplist.value === key ) value_input.value = editor[ key ];
 					});
 
 				//	Boolean.
 					watch( editor, "flipY", function( key, action, value, oldValue ){
-						debugMode && console.log("editor:",{"key":key,"action":action,"value":value});
 						if (texture) texture[ key ] = editor[ key ];
-					//	clearTimeout( interval );
+						if ( key_droplist.value === key ) value_input.value = editor[ key ];
 					});
 					watch( editor, "premultiplyAlpha", function( key, action, value, oldValue ){
-						debugMode && console.log("editor:",{"key":key,"action":action,"value":value});
 						if (texture) texture[ key ] = editor[ key ];
-					//	clearTimeout( interval );
+						if ( key_droplist.value === key ) value_input.value = editor[ key ];
 					});
 					watch( editor, "matrixAutoUpdate", function( key, action, value, oldValue ){
-						debugMode && console.log("editor:",{"key":key,"action":action,"value":value});
 						if (texture) texture[ key ] = editor[ key ];
-					//	clearTimeout( interval );
+						if ( key_droplist.value === key ) value_input.value = editor[ key ];
 					});
 					watch( editor, "generateMipmaps", function( key, action, value, oldValue ){
-						debugMode && console.log("editor:",{"key":key,"action":action,"value":value});
 						if (texture) texture[ key ] = editor[ key ];
-					//	clearTimeout( interval );
+						if ( key_droplist.value === key ) value_input.value = editor[ key ];
 					});
 
 				//	Texture needsUpdate button.
 
 					watch( editor, "needsUpdate", function( key, action, value ){
 						if ( texture ) texture[key] = Boolean(editor[key]); // copy.
+						if ( key_droplist.value === key ) value_input.value = editor[ key ];
 					});
 					needsUpdate_button.addEventListener( "click", function(){
 						if ( texture ) texture.needsUpdate = true;
