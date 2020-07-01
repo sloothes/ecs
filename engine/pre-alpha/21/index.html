@@ -1438,8 +1438,11 @@
 						if ( key === "uuid" ) text_input.value = editor[ key ];
 						else if ( !key_droplist.value ) text_input.value = "";
 						else if ( !entity_droplist.value ) text_input.value = "";
-						else if ( key === "name" ) editor[ key ] = text_input.value;
-						else text_input.value = "";
+						else if ( key === "name" ) {
+							if ( text_input.value === "" ) return;
+							if ( editor[ key ] !== text_input.value ) addtoUndo();
+							setTimeout(function(){ editor[ key ] = text_input.value; });
+						} else text_input.value = "";
 
 					});
 
@@ -1454,6 +1457,8 @@
 						if ( isNaN( value ) || key === "uuid" || key === "name") value = "";
 
 					//	enabled on key change.
+					//	Before change the editor[key] value add an undo state in undo queue.
+					//	Until now we has adding to Undo after the value has changed. That was mistake/bug! (TO FIX!)
 
 						switch ( key ){
 
@@ -1462,47 +1467,63 @@
 							break;
 
 							case "format":
-								if ( [1021, 1022, 1023, 1024, 1025, 1026, 1027].includes( value ) ) editor[ key ] = Number(value);
-								else if ( !isNaN( editor[key]) ) value_input.value = editor[key];
+								if ( [1021, 1022, 1023, 1024, 1025, 1026, 1027].includes( value ) ) {
+									if ( editor[ key ] !== Number(value) ) addtoUndo();
+									setTimeout( function(){ editor[ key ] = Number(value); });
+								} else if ( !isNaN( editor[key]) ) value_input.value = editor[key];
 								else value_input.value = editor[key] = 1023; // reset.
 							break;
 
 							case "mapping":
-								if ( [300, 301, 302, 303, 304, 305, 306, 307].includes( value ) ) editor[ key ] = Number(value);
-								else if ( !isNaN( editor[key]) ) value_input.value = editor[key];
+								if ( [300, 301, 302, 303, 304, 305, 306, 307].includes( value ) ) {
+									if ( editor[ key ] !== Number(value) ) addtoUndo();
+									setTimeout( function(){ editor[ key ] = Number(value); });
+								} else if ( !isNaN( editor[key]) ) value_input.value = editor[key];
 								else value_input.value = editor[key] = 300; // reset.
 							break;
 
 							case "encoding":
-								if ( [3000, 3001, 3007, 3002, 3003, 3004, 3005, 3006, 3200, 3201].includes( value ) ) editor[ key ] = Number(value);
-								else if ( !isNaN( editor[key]) ) value_input.value = editor[key];
+								if ( [3000, 3001, 3007, 3002, 3003, 3004, 3005, 3006, 3200, 3201].includes( value ) ) {
+									if ( editor[ key ] !== Number(value) ) addtoUndo();
+									setTimeout( function(){ editor[ key ] = Number(value); });
+								} else if ( !isNaN( editor[key]) ) value_input.value = editor[key];
 								else value_input.value = editor[key] = 3000; // reset.
 							break;
 
 							case "magFilter":
-								if ( [1003, 1006].includes( value ) )editor[ key ] = Number(value);
-								else if ( !isNaN( editor[key]) ) value_input.value = editor[key];
+								if ( [1003, 1006].includes( value ) ) {
+									if ( editor[ key ] !== Number(value) ) addtoUndo();
+									setTimeout( function(){ editor[ key ] = Number(value); });
+								} else if ( !isNaN( editor[key]) ) value_input.value = editor[key];
 								else value_input.value = editor[key] = 1006; // reset.
 							break;
 
 							case "minFilter":
-								if ( [1003, 1004, 1005, 1006, 1007, 1008].includes( value ) )editor[ key ] = Number(value);
-								else if ( !isNaN( editor[key]) ) value_input.value = editor[key];
+								if ( [1003, 1004, 1005, 1006, 1007, 1008].includes( value ) ) {
+									if ( editor[ key ] !== Number(value) ) addtoUndo();
+									setTimeout( function(){ editor[ key ] = Number(value); });
+								} else if ( !isNaN( editor[key]) ) value_input.value = editor[key];
 								else value_input.value = editor[key] = 1008; // reset.
 							break;
 
 							case "anisotropy":
-								if ( !isNaN( value ) ) 
-									value_input.value = ( editor[ key ] = THREE.Math.clamp(value,1,-1) ).toFixed(1);
-								else if ( !isNaN( editor[key]) ) 
+								if ( !isNaN( value ) ) {
+									if ( editor[key] !== THREE.Math.clamp(value,1,-1) ) addtoUndo(); 
+									setTimeout(function(){
+										value_input.value = ( editor[ key ] = THREE.Math.clamp(value,1,-1) ).toFixed(1);
+									});
+								} else if ( !isNaN( editor[key]) ) 
 									value_input.value = editor[key].toFixed(2);
 								else value_input.value = editor[key] = 1; // reset.
 							break;
 
 							case "rotation":
-								if ( !isNaN( value ) ) {
-									editor[key] = THREE.Math.clamp(DEG2RAD*value,-Math.PI, Math.PI);
-									value_input.value = THREE.Math.clamp((value),-180,180).toFixed(1);
+								if ( !isNaN( value ) ) { 
+									if ( editor[key] !== THREE.Math.clamp(DEG2RAD*value,-Math.PI, Math.PI) ) addtoUndo(); 
+									setTimeout(function(){
+										editor[key] = THREE.Math.clamp(DEG2RAD*value,-Math.PI, Math.PI);
+										value_input.value = THREE.Math.clamp((value),-180,180).toFixed(1);
+									});
 								} else if ( !isNaN( editor[key]) ) 
 									value_input.value = THREE.Math.clamp((RAD2DEG*editor[key]),-180,180).toFixed(1);
 								else value_input.value = editor[key] = 0; // reset.
@@ -1517,6 +1538,7 @@
 
 				(function(){
 
+					var state;
 					var interval;
 
 				//	const increase_v = document.getElementById("texture-value-increase");
@@ -1524,6 +1546,24 @@
 				//	const value_input = document.getElementById("texture-value-input");
 				//	const key_droplist = document.getElementById("texture-key-droplist");
 				//	const entity_droplist = document.getElementById("texture-entities-droplist");
+
+					increase_x.addEventListener( "mousedown", onfirstMouseDown );
+					decrease_x.addEventListener( "mousedown", onfirstMouseDown );
+					increase_y.addEventListener( "mousedown", onfirstMouseDown );
+					decrease_y.addEventListener( "mousedown", onfirstMouseDown );
+
+					function onfirstMouseDown(){
+						state = {};
+						var key = key_droplist.value;
+						state.key = key_droplist.value;
+						state.value = editor[ key ];
+						state.json = editor.toJSON(); // editor json.
+					//	Remove on firstMouseDown event listener.
+						this.removeEventListener( "mousedown", onfirstMouseDown ); // important!
+						debugMode && console.log( "state:", state, "undo:", undo.length, "redo:", redo.length );
+					};
+
+				//
 
 					increase_v.addEventListener( "mousedown", onMouseDown );
 					decrease_v.addEventListener( "mousedown", onMouseDown );
@@ -1611,6 +1651,14 @@
 							var index = values.findIndex(function( item ){ return item === value; });
 							if ( button === increase_v ) value = values[ ( ++index % max + max ) % max ]; // mod();
 							if ( button === decrease_v ) value = values[ ( --index % max + max ) % max ]; // mod();
+							if ( key === state.key && value !== state.value ) {
+								interval = setTimeout( function(){ 
+									state.json && undo.unshift( state.json ); // Add to undo.
+									debugMode && console.log( "undo:", undo.length, "redo:", redo.length ); 
+									button.addEventListener( "mousedown", onfirstMouseDown ); // important!
+								}, 250);
+							}
+						//	update editor value.
 							value_input.value = editor[ key ] = value; // number.
 						}
 
@@ -1666,6 +1714,13 @@
 									var value = Number(editor[ key ]); // get value from editor.
 									if ( button === increase_v ) value = THREE.Math.clamp( value+step, min, max );
 									if ( button === decrease_v ) value = THREE.Math.clamp( value-step, min, max );
+									if ( key === state.key && value !== state.value ) {
+										interval = setTimeout( function(){ 
+											state.json && undo.unshift( state.json ); // Add to undo.
+											debugMode && console.log( "undo:", undo.length, "redo:", redo.length ); 
+											button.addEventListener( "mousedown", onfirstMouseDown ); // important!
+										}, 250);
+									}
 									value_input.value = ( RAD2DEG * ( editor[ key ] = value) ).toFixed(1); // string.
 								})();
 							break;
@@ -1676,6 +1731,13 @@
 									var value = Number(editor[ key ]); // get value from editor.
 									if ( button === increase_v ) value = THREE.Math.clamp( value+step, min, max );
 									if ( button === decrease_v ) value = THREE.Math.clamp( value-step, min, max );
+									if ( key === state.key && value !== state.value ) {
+										interval = setTimeout( function(){ 
+											state.json && undo.unshift( state.json ); // Add to undo.
+											debugMode && console.log( "undo:", undo.length, "redo:", redo.length ); 
+											button.addEventListener( "mousedown", onfirstMouseDown ); // important!
+										}, 250);
+									}
 									value_input.value = ( editor[key] = round(value, 2) ).toFixed(2);
 								})();
 							break;
@@ -1690,10 +1752,10 @@
 						}
 
 					//	add undo.
-						interval = setTimeout( function(){
-							entity_droplist.value && addtoUndo();
-							debugMode && console.log( "undo:", undo.length, "redo:", redo.length );
-						}, 250);
+					//	interval = setTimeout( function(){
+					//		entity_droplist.value && addtoUndo();
+					//		debugMode && console.log( "undo:", undo.length, "redo:", redo.length );
+					//	}, 250);
 
 						debugMode && console.log( "on Mouse Click:", interval );
 
@@ -1705,6 +1767,7 @@
 
 				(function(){
 
+					var state;
 					var interval;
 
 				//	const vector_x   = document.getElementById("texture-vector-x-input");
@@ -1751,6 +1814,7 @@
 
 							var value = THREE.Math.clamp( Number(value), -100, 100 ); // number.
 
+						//	Add undo.
 							if ( editor[key].x !== Number(value) ) { 
 								addtoUndo(); editor[key].x = Number(value); // important!
 								debugMode && console.log( "undo:", undo.length, "redo:", redo.length, "value:", value );
@@ -1818,6 +1882,26 @@
 
 
 				//	mouse inputs.
+
+				//	keep first, ignore next events.
+
+					increase_x.addEventListener( "mousedown", onfirstMouseDown );
+					decrease_x.addEventListener( "mousedown", onfirstMouseDown );
+					increase_y.addEventListener( "mousedown", onfirstMouseDown );
+					decrease_y.addEventListener( "mousedown", onfirstMouseDown );
+
+					function onfirstMouseDown(){
+						state = {};
+						var key = vector_droplist.value;
+						state.key = vector_droplist.value;
+						state.value = editor[ key ];
+						state.json = editor.toJSON(); // editor json.
+					//	Remove on firstMouseDown event listener.
+						this.removeEventListener( "mousedown", onfirstMouseDown ); // important!
+						debugMode && console.log( "state:", state, "undo:", undo.length, "redo:", redo.length );
+					};
+
+				//
 
 					increase_x.addEventListener( "mousedown", onMouseDown );
 					decrease_x.addEventListener( "mousedown", onMouseDown );
@@ -1891,6 +1975,8 @@
 						var key = vector_droplist.value;
 
 					//	enabled on mouse click.
+					//	Before change the editor[key] value add an undo state in undo queue.
+					//	Until now we has adding to Undo after the value has changed. That was mistake/bug! (TO FIX!)
 
 						if ( key ) (function(){
 
@@ -1900,25 +1986,43 @@
 								var value = Number(editor[ key ].x); // get value from editor.
 								if ( button === increase_x ) value = THREE.Math.clamp( value+step, min, max );
 								if ( button === decrease_x ) value = THREE.Math.clamp( value-step, min, max );
-								vector_x.value = ( editor[ key ].x = round(value, 2) ).toFixed(2);
+								if ( key === state.key && value !== state.value ) {
+									interval = setTimeout( function(){ 
+										state.json && undo.unshift( state.json ); // Add to undo.
+										debugMode && console.log( "undo:", undo.length, "redo:", redo.length ); 
+										button.addEventListener( "mousedown", onfirstMouseDown ); // important!
+									}, 250);
+								}
+								vector_x.value = ( editor[ key ].x = round(value, 2) ).toFixed(2); // display.
 							//	callWatchers(vector_x, "onchange", "change", value);
+
 							}
 
 							else if ( button === increase_y || button === decrease_y ) {
 								var value = Number(editor[ key ].y); // get value from editor.
 								if ( button === increase_y ) value = THREE.Math.clamp( value+step, min, max );
 								if ( button === decrease_y ) value = THREE.Math.clamp( value-step, min, max );
-								vector_y.value = ( editor[ key ].y = round(value, 2) ).toFixed(2);
+								if ( key === state.key && value !== state.value ) {
+									interval = setTimeout( function(){ 
+										state.json && undo.unshift( state.json ); // Add to undo.
+										debugMode && console.log( "undo:", undo.length, "redo:", redo.length ); 
+										button.addEventListener( "mousedown", onfirstMouseDown ); // important!
+									}, 250);
+								}
+								vector_y.value = ( editor[ key ].y = round(value, 2) ).toFixed(2); // display.
 							//	callWatchers(vector_y, "onchange", "change", value);
 							}
 
-						})();
+						//	Add to undo.
+						//	if ( value !== state.value ) {
+						//		interval = setTimeout( function(){ 
+						//			state.json && undo.unshift( state.json ); // Add to undo.
+						//			debugMode && console.log( "undo:", undo.length, "redo:", redo.length ); 
+						//			button.addEventListener( "mousedown", onfirstMouseDown ); // important!
+						//		}, 250);
+						//	}
 
-					//	add undo.
-						interval = setTimeout( function(){
-							entity_droplist.value && addtoUndo();
-							debugMode && console.log( "undo:", undo.length, "redo:", redo.length );
-						}, 250);
+						})();
 
 						debugMode && console.log( "on Mouse Click:", interval );
 
