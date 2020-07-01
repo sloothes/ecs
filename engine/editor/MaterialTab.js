@@ -1636,8 +1636,8 @@
 
 				else if ( typeof editor[key] === "boolean" ) {
 
-					if ( value === "false" ) value = 0;     // accept "false" string.
-					else if ( value === "true" ) value = 1; // accept "true" string.
+					if ( value.toLowerCase() === "false" ) value = 0;     // accept "false" string.
+					else if ( value.toLowerCase() === "true" ) value = 1; // accept "true" string.
 					else if ( isNaN(value) ) return value_input.value = editor[ key ]; // avoid to pass NaN value!
 					else value = Number(value); // convert to number, important!
 
