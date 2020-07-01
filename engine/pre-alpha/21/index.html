@@ -134,6 +134,89 @@
 
 		<script>
 
+		//	Texture Viewer.
+
+			(function(){
+
+				var input = document.getElementById("texture-file-input");
+				var texture_droplist = document.getElementById("texture-entities-droplist");
+
+				input.addEventListener( "change", function(){
+
+					if ( input.files.length == 0 ) return;
+
+					var img = new Image();
+
+					img.addEventListener("load", function(){
+						textureViewerMaterial.color.setHex(0xffffff); // important!
+						debugMode && console.log( img );
+						var texture = new THREE.Texture(img);
+						debugMode && console.log( texture );
+						texture.name = file.name;
+						texture.sourceFile = file.name;
+						texture.wrapS = texture.wrapT = 1000; // THREE.RepeatWrapping.
+						texture_entities.add( texture );
+						textureViewerMaterial.map = texture;
+						textureViewerMaterial.needsUpdate = true; // important!
+						textureViewerMaterial.map.needsUpdate = true; // important!
+					//	texture_droplist.value = String(texture.id);
+					//	textureEditor.update( texture.id );
+					});
+
+					var file = input.files[0];
+					var reader = new FileReader();
+					reader.addEventListener("load", function() {
+						img.name = file.name;
+						img.src = reader.result;
+					});
+
+					reader.readAsDataURL(file);
+
+				});
+
+				function makePowerOfTwo( image ) {
+
+					if ( image instanceof HTMLImageElement || image instanceof HTMLCanvasElement || image instanceof ImageBitmap ) {
+
+						if ( _canvas === undefined ) _canvas = document.createElementNS( 'http://www.w3.org/1999/xhtml', 'canvas' );
+
+						_canvas.width = _Math.floorPowerOfTwo( image.width );
+						_canvas.height = _Math.floorPowerOfTwo( image.height );
+
+						var context = _canvas.getContext( '2d' );
+						context.drawImage( image, 0, 0, _canvas.width, _canvas.height );
+
+						console.warn( 'THREE.WebGLRenderer: image is not power of two (' + image.width + 'x' + image.height + '). Resized to ' + _canvas.width + 'x' + _canvas.height );
+
+						return _canvas;
+
+					}
+
+					return image;
+
+				}
+
+			})();
+
+			(function(){
+
+				var entity_droplist = document.getElementById("texture-entities-droplist");
+
+			//	Add watcher.
+				watch( entity_droplist, "onchange", function( property, event, value ){
+					var texture = texture_entities.getTextureById( value );
+					debugMode && console.log( texture );
+					textureViewerMaterial.map = texture;
+					textureViewerMaterial.needsUpdate = true; // important!
+					textureViewerMaterial.map.needsUpdate = true; // important!
+				});
+
+			})();
+
+		</script>
+
+		<script>
+
 			TabUI.Material.role.classList.add("active");
 			TabUI.Material.tab.classList.add("in","active");
 		//
