@@ -134,12 +134,27 @@
 		<script src="/ecs/engine/core/keyInputControls.js"></script>
 		<script src="/ecs/engine/core/joystickControls.js"></script>
 		<script src="/ecs/engine/core/keyboard.js"></script>
+
 		<script src="/ecs/engine/editor/EditorTab.js"></script>
 		<script src="/ecs/engine/editor/MaterialTab.js"></script>
 	<!-- script src="/ecs/engine/editor/TextureTab.js"></script -->
 
+		<script src="/ecs/engine/src/editors/editor-helpers.js"></script>
 		<script src="/ecs/engine/src/editors/texture-editor/textureTab.js"></script>
 		<script src="/ecs/engine/src/editors/texture-editor/textureViewer.js"></script>
+		<script src="/ecs/engine/src/editors/texture-editor/undo-redo-ui.js"></script>
+		<script src="/ecs/engine/src/editors/texture-editor/text-input-ui.js"></script>
+		<script src="/ecs/engine/src/editors/texture-editor/key-droplist-ui.js"></script>
+		<script src="/ecs/engine/src/editors/texture-editor/value-input-ui.js"></script>
+		<script src="/ecs/engine/src/editors/texture-editor/vector-droplist-ui.js"></script>
+		<script src="/ecs/engine/src/editors/texture-editor/vector-x-ui.js"></script>
+		<script src="/ecs/engine/src/editors/texture-editor/vector-y-ui.js"></script>
+		<script src="/ecs/engine/src/editors/texture-editor/needs-update-ui.js"></script>
+		<script src="/ecs/engine/src/editors/texture-editor/create-texture-ui.js"></script>
+		<script src="/ecs/engine/src/editors/texture-editor/clone-texture-ui.js"></script>
+		<script src="/ecs/engine/src/editors/texture-editor/replace-image-ui.js"></script>
+		<script src="/ecs/engine/src/editors/texture-editor/exit-editor-ui.js"></script>
+		<script src="/ecs/engine/src/editors/texture-editor/TextureManager.js"></script>
 
 		<script src="/ecs/engine/editor/ViewportTab.js"></script>
 
@@ -320,8 +335,8 @@
 
 		//	Viewport tab.
 
-			TabUI.Texture.role.classList.remove("active");
-			TabUI.Texture.tab.classList.remove("in","active");
+			TabUI.Texture.role.classList.add("active");
+			TabUI.Texture.tab.classList.add("in","active");
 		//	TabUI.Viewport.role.classList.add("active");
 		//	TabUI.Viewport.tab.classList.add("in","active");
 
