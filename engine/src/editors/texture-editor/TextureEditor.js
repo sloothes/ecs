@@ -132,8 +132,8 @@
 
 	};
 
-//
+//	Create texture editor.
 
 	const textureEditor = new TextureEditor();
 
-//
+

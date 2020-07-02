@@ -2,7 +2,14 @@
 
 	(function( editor,viewer,getTextureByEntityId,vector_x,vector_y,vector_droplist,entity_droplist){
 
+		watch( vector_droplist, "onchange", function( property, event, value ){
+
+			callWatchers( entity_droplist, "onchange", property, event, entity_droplist.value );
+
+		});
+
 		watch( entity_droplist, "onchange", function( property, event, value ){
+			debugMode && console.log({item:"entity_droplist",event:event,"value":value});
 
 			if ( value === "" ) {
 
@@ -36,12 +43,6 @@
 		//	Update viewer center helper.
 			viewer.center.position.x = -125 + (250 * editor.center.x);
 			viewer.center.position.z =  125 - (250 * editor.center.y);
-
-		});
-
-		watch( vector_droplist, "onchange", function( property, event, value ){
-
-			callWatchers( entity_droplist, "onchange", property, event, entity_droplist.value );
 
 		});
 
