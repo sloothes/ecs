@@ -152,7 +152,7 @@
 
 		watch( vector_droplist, "onchange", function( property, event, value ){
 
-			callWatchers( entity_droplist, "onchange", property, event, entity_droplist.value );
+			callWatchers( entity_droplist, "onchange", event, entity_droplist.value );
 
 		});
 
