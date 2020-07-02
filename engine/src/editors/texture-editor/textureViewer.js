@@ -1,4 +1,4 @@
-//	textureViewer.js
+//	TextureViewer.js
 
 	const textureViewer = {
 

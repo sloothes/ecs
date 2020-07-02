@@ -1,4 +1,4 @@
-//	Texture tab.
+//	texture-tab.js
 
 	TabUI.add( "Texture", "texture-tab" );
 	TabUI.append( "Texture" );

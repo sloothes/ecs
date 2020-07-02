@@ -1,4 +1,4 @@
-//	textureViewerCenter.js
+//	TextureViewerCenter.js
 
 	(function( editor,viewer,getTextureByEntityId,vector_x,vector_y,vector_droplist,entity_droplist){
 
