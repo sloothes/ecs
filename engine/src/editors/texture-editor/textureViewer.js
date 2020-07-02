@@ -1,30 +1,3 @@
-/*	======================================================================================  */
-
-
-//	Texture Viewer.
-
-	(function( tab ){
-
-	//	Texture viewer.
-	//	var tab = TabUI.Texture.tab;
-
-		var row = document.createElement("h3");
-		row.style.cssText = "height:260px;border:none;text-align:center;";
-
-		var canvas = document.createElement("canvas");
-		canvas.width = 256; canvas.height = 256;
-		canvas.id = "texture-viewer";
-		canvas.style.cssText = "width:256px;height:256px;margin:auto;";
-
-		row.appendChild( canvas );
-		tab.appendChild( row );
-
-	})( TabUI.Texture.tab );
-
-
-/*	======================================================================================  */
-
-
 //	textureViewer.js
 
 	const textureViewer = {
@@ -217,7 +190,7 @@
 //	if not texture entity selected ( !entity_droplist.value )
 //	move texture viewer center but not update texture editor.
 
-	setTimeout(function(viewer,vector_x,vector_y,increase_x,decrease_x,increase_y,decrease_y,droplist){
+	(function(viewer,vector_x,vector_y,increase_x,decrease_x,increase_y,decrease_y,droplist){
 
 	//	var viewer     = textureViewer;
 	//	var vector_x   = document.querySelector("input#texture-vector-x-input");
@@ -275,7 +248,7 @@
 			clearTimeout( interval ); // important!
 		});
 
-	}, null,
+	})(
 		textureViewer,
 		document.querySelector("input#texture-vector-x-input"), // vector_x,
 		document.querySelector("input#texture-vector-y-input"), // vector_y,
@@ -299,7 +272,7 @@
 //	var vector_droplist = document.querySelector("select#texture-vector-droplist"); // vector_droplist,
 //	var entity_droplist = document.querySelector("select#texture-entities-droplist") // entity_droplist,
 
-	setTimeout(function(viewer,vector_x,vector_y,vector_droplist,entity_droplist){
+	(function(viewer,vector_x,vector_y,vector_droplist,entity_droplist){
 
 		watch( entity_droplist, "onchange", function( property, event, value ){
 
@@ -321,7 +294,7 @@
 		//		vector_y.value = (0.5 - (viewer.center.position.z/250)).toFixed(2); // display center value (z).
 		//	}
 
-	},null, 
+	})(
 		textureViewer, // viewer
 		document.querySelector("input#texture-vector-x-input"), // vector_x,
 		document.querySelector("input#texture-vector-y-input"), // vector_y,
