@@ -127,6 +127,45 @@
 		<script src="/ecs/engine/core/keyInputControls.js"></script>
 		<script src="/ecs/engine/core/joystickControls.js"></script>
 		<script src="/ecs/engine/core/keyboard.js"></script>
+
+		<script> // src="/ecs/engine/src/editors/editor-helpers.js">
+
+		//	helpers.
+
+			function getMaterialByEntityId( value ){
+
+				var material_droplist = document.querySelector("select#material-entities-droplist"); // important!
+
+				if ( arguments.length ) 
+					var id = parseInt( value );
+				else
+					var id = parseInt( material_droplist.value );
+
+				if ( id === NaN ) return;
+
+				return material_entities.find( function( material ){
+					return material.id === id;
+				});
+			}
+
+			function getTextureByEntityId( value ){
+
+				var texture_droplist = document.querySelector("select#texture-entities-droplist"); // important!
+
+				if ( arguments.length ) 
+					var id = parseInt( value );
+				else
+					var id = parseInt( texture_droplist.value );
+
+				if ( id === NaN ) return;
+
+				return texture_entities.find( function( texture ){
+					return texture.id === id;
+				});
+			}
+
+		</script>
+
 		<!-- script src="/ecs/engine/editor/EditorTab.js"></script -->
 		<!-- script src="/ecs/engine/editor/MaterialTab.js"></script -->
 		<!-- script src="/ecs/engine/editor/TextureTab.js"></script -->
@@ -177,6 +216,10 @@
 
 			})( TabUI.Texture.tab );
 
+		</script>
+
+		<script> // src="/ecs/engine/src/editors/texture-editor/textureViewer.js">
+
 		//	Texture Viewer.
 
 			(function( tab ){
@@ -203,10 +246,12 @@
 
 		<script> // src="/ecs/engine/src/editors/texture-editor/textureViewer.js">
 
-		// textureViewer.js
+		//	textureViewer.js
 
 			const textureViewer = {
-				canvas: document.getElementById("texture-viewer"),
+
+				canvas: document.querySelector("canvas#texture-viewer"),
+
 			};
 
 		//	Texture Viewer scene.
@@ -1020,44 +1065,6 @@
 
 			const texture_entities = new TextureManager(); // texture entities array, important!.
 			const removed_textures = new TextureManager(); // texture entities array, important!.
-
-		</script>
-
-		<script> // src="/ecs/engine/src/editors/helpers.js">
-
-		//	helpers.
-
-			function getMaterialByEntityId( value ){
-
-				var material_droplist = document.querySelector("select#material-entities-droplist"); // important!
-
-				if ( arguments.length ) 
-					var id = parseInt( value );
-				else
-					var id = parseInt( material_droplist.value );
-
-				if ( id === NaN ) return;
-
-				return material_entities.find( function( material ){
-					return material.id === id;
-				});
-			}
-
-			function getTextureByEntityId( value ){
-
-				var texture_droplist = document.querySelector("select#texture-entities-droplist"); // important!
-
-				if ( arguments.length ) 
-					var id = parseInt( value );
-				else
-					var id = parseInt( texture_droplist.value );
-
-				if ( id === NaN ) return;
-
-				return texture_entities.find( function( texture ){
-					return texture.id === id;
-				});
-			}
 
 		</script>
 
