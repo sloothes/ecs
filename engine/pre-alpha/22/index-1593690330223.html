@@ -2127,6 +2127,72 @@
 
 				})();
 
+				(function(){
+
+				//	DEMO.
+
+				//	Experimental (Independent texture viewer center helper).
+				//	if not texture entity selected ( !entity_droplist.value )
+				//	move texture viewer center but not update texture editor.
+
+					var interval;
+
+					increase_x.addEventListener( "mousedown", onDemoMouseDown );
+					decrease_x.addEventListener( "mousedown", onDemoMouseDown );
+					increase_y.addEventListener( "mousedown", onDemoMouseDown );
+					decrease_y.addEventListener( "mousedown", onDemoMouseDown );
+
+					window.addEventListener( "mouseup", function (){
+					//	debugMode && console.log( "on MouseUp:", interval );
+						clearTimeout( interval ); // important!
+					});
+
+					function onDemoMouseDown(){ 
+
+						if ( entity_droplist.value ) return;
+
+						var button = this;
+						var clock = new THREE.Clock();
+
+						interval = setTimeout( function update() {
+
+							var step = 1, max = 125, min = -125;
+
+							if ( button === increase_x || button === decrease_x ) {
+								var value = textureViewer.center.position.x; // get value from center helper.
+								if ( button === increase_x ) value = THREE.Math.clamp( value+step, min, max );
+								if ( button === decrease_x ) value = THREE.Math.clamp( value-step, min, max );
+								textureViewer.center.position.x = value; // bypass editor.
+								vector_x.value = value.toFixed(2); // bypass editor.
+							}
+
+							else if ( button === increase_y || button === decrease_y ) {
+								var value = textureViewer.center.position.z; // get value from center helper.
+								if ( button === increase_y ) value = THREE.Math.clamp( value-step, min, max );
+								if ( button === decrease_y ) value = THREE.Math.clamp( value+step, min, max );
+								textureViewer.center.position.z = value; // bypass editor (z).
+								vector_y.value = value.toFixed(2); // bypass editor (z).
+							}
+
+							var dt = clock.getDelta();
+							interval = setTimeout( update, dt );
+							debugMode && console.log( "on demo update:", interval );
+
+						}, 500);
+
+					}
+
+					//	if ( key === "x" ) 
+					//		textureViewer.center.position.x = -125 + round(250*editor.center[key], 2); // important! (corect)
+					//	if ( key === "y" ) 
+					//		textureViewer.center.position.z =  125 - round(250*editor.center[key], 2); // important! (corect)
+					//	if ( vector_droplist.value === "center" ) {
+					//		if ( key === "x" ) vector_x.value = editor.center[key].toFixed(2); // display.
+					//		if ( key === "y" ) vector_y.value = editor.center[key].toFixed(2); // display.
+					//	}
+
+				})();
+
 			//	Texture Editor Watchers.
 			//	Watch each object/property individually.
 			//	Synchronize texture with texture editor (brige).
@@ -2341,7 +2407,7 @@
 
 	<!-- Texture Viewer -->
 
-		<script> // src="/ecs/engine/src/editors/texture-editor/create-texture-input-watcher.js">
+		<script> // src="/ecs/engine/src/editors/texture-editor/create-texture-button.js">
 
 			(function(viewer,input,droplist,entities){
 
@@ -2405,9 +2471,9 @@
 
 		</script>
 
-		<script> // src="/ecs/engine/src/editors/texture-editor/replace-texture-image-watcher.js">
+		<script> // src="/ecs/engine/src/editors/texture-editor/replace-image-button.js">
 
-		//	Replace image watcher.
+		//	Replace image.
 
 			(function(viewer,input,droplist){
 
@@ -2467,7 +2533,7 @@
 
 		</script>
 
-		<script> // src="/ecs/engine/src/editors/texture-editor/texture-viewer-center-watcher.js">
+		<script> // src="/ecs/engine/src/editors/texture-editor/texture-viewer-center.js">
 
 		//	Texture Viewer center watcher.
 
@@ -2524,132 +2590,25 @@
 
 		</script>
 
-		<script> // src="/ecs/engine/src/editors/texture-editor/texture-viewer-center-watcher.js">
-
-		//	EXPERIMENTAL.
-
-		//	Experimental (Independent texture viewer center helper).
-		//	if not texture entity selected ( !entity_droplist.value )
-		//	move texture viewer center but not update texture editor.
-
-			(function(viewer,vector_x,vector_y,increase_x,decrease_x,increase_y,decrease_y,droplist){
-
-			//	var viewer     = textureViewer;
-			//	var vector_x   = document.querySelector("input#texture-vector-x-input");
-			//	var vector_y   = document.querySelector("input#texture-vector-y-input");
-			//	var increase_x = document.querySelector("li#texture-vector-x-increase");
-			//	var decrease_x = document.querySelector("li#texture-vector-x-decrease");
-			//	var increase_y = document.querySelector("li#texture-vector-y-increase");
-			//	var decrease_y = document.querySelector("li#texture-vector-y-decrease");
-			//	var droplist   = document.querySelector("select#texture-entities-droplist");
-
-				var interval;
-
-				increase_x.addEventListener( "mousedown", onDemoMouseDown );
-				decrease_x.addEventListener( "mousedown", onDemoMouseDown );
-				increase_y.addEventListener( "mousedown", onDemoMouseDown );
-				decrease_y.addEventListener( "mousedown", onDemoMouseDown );
-
-				window.addEventListener( "mouseup", function (){
-				//	debugMode && console.log( "on MouseUp:", interval );
-					clearTimeout( interval ); // important!
-				});
-
-				function onDemoMouseDown(){ 
-
-					if ( droplist.value ) return; // important!
-
-					var button = this;
-					var clock = new THREE.Clock();
-
-					interval = setTimeout( function update() {
-
-						var step = 1, max = 125, min = -125;
-
-						if ( button === increase_x || button === decrease_x ) {
-							var value = viewer.center.position.x; // get value from center position (x).
-							if ( button === increase_x ) value = THREE.Math.clamp( value+step, min, max );
-							if ( button === decrease_x ) value = THREE.Math.clamp( value-step, min, max );
-							viewer.center.position.x = value;  // bypass editor (x).
-							vector_x.value = (0.5 + (value/250)).toFixed(2); // bypass editor (x).
-						}
-
-						else if ( button === increase_y || button === decrease_y ) {
-							var value = viewer.center.position.z; // get value from center position (z).
-							if ( button === increase_y ) value = THREE.Math.clamp( value-step, min, max );
-							if ( button === decrease_y ) value = THREE.Math.clamp( value+step, min, max );
-							viewer.center.position.z = value;  // bypass editor (z).
-							vector_y.value = (0.5 - (value/250)).toFixed(2); // bypass editor (z).
-						}
-
-						var dt = clock.getDelta();
-						interval = setTimeout( update, dt );
-					//	debugMode && console.log( "on center update:", interval );
-
-					}, 500);
-
-				}
-
-			})(
-				textureViewer,
-				document.querySelector("input#texture-vector-x-input"), // vector_x,
-				document.querySelector("input#texture-vector-y-input"), // vector_y,
-				document.querySelector("li#texture-vector-x-increase"), // increase_x,
-				document.querySelector("li#texture-vector-x-decrease"), // decrease_x,
-				document.querySelector("li#texture-vector-y-increase"), // increase_y,
-				document.querySelector("li#texture-vector-y-decrease"), // decrease_y,
-				document.querySelector("select#texture-entities-droplist") // entity_droplist,
-			);
-
-		</script>
-
-		<script> // src="/ecs/engine/src/editors/texture-editor/texture-viewer-center-watcher.js">
-
-		//	EXPERIMENTAL.
-		//	Overwrite vector inputs reset.
-
-		//	Vector droplist on change watchers (Experimental).
-		//	Experimental (Independent texture viewer center helper).
-		//	if not texture entity selected ( !entity_droplist.value )
-		//	always display the texture viewer center helper value.
-
-			(function(viewer,vector_x,vector_y,vector_droplist,entity_droplist){
-
-			//	var viewer   = textureViewer;
-			//	var vector_x = document.querySelector("input#texture-vector-x-input"); // vector_x,
-			//	var vector_y = document.querySelector("input#texture-vector-y-input"); // vector_y,
-			//	var vector_droplist = document.querySelector("select#texture-vector-droplist"); // vector_droplist,
-			//	var entity_droplist = document.querySelector("select#texture-entities-droplist") // entity_droplist,
-
-				watch( vector_droplist, "onchange", function( property, event, value ){
-
-					if ( entity_droplist.value === "" ) {
-						vector_x.value = (0.5 + (viewer.center.position.x/250)).toFixed(2); // display center value (x).
-						vector_y.value = (0.5 - (viewer.center.position.z/250)).toFixed(2); // display center value (z).
-					}
-
-				});
-
-				watch( entity_droplist, "onchange", function( property, event, value ){
-
-					if ( value === "" ) {
-						vector_x.value = (0.5 + (viewer.center.position.x/250)).toFixed(2); // display center value (x).
-						vector_y.value = (0.5 - (viewer.center.position.z/250)).toFixed(2); // display center value (z).
-					}
-
-				});
-
-			})(
-				textureViewer, // viewer
-				document.querySelector("input#texture-vector-x-input"), // vector_x,
-				document.querySelector("input#texture-vector-y-input"), // vector_y,
-				document.querySelector("select#texture-vector-droplist"), // vector_droplist,
-				document.querySelector("select#texture-entities-droplist") // entity_droplist,
-			);
-
-		</script>
-
 		<script src="/ecs/engine/editor/ViewportTab.js"></script>
+
+
+		<script>
+
+			//	function makePowerOfTwo( image ) {
+			//		if ( image instanceof HTMLImageElement || image instanceof HTMLCanvasElement || image instanceof ImageBitmap ) {
+			//			if ( _canvas === undefined ) _canvas = document.createElementNS( 'http://www.w3.org/1999/xhtml', 'canvas' );
+			//			_canvas.width = _Math.floorPowerOfTwo( image.width );
+			//			_canvas.height = _Math.floorPowerOfTwo( image.height );
+			//			var context = _canvas.getContext( '2d' );
+			//			context.drawImage( image, 0, 0, _canvas.width, _canvas.height );
+			//			console.warn( 'THREE.WebGLRenderer: image is not power of two (' + image.width + 'x' + image.height + '). Resized to ' + _canvas.width + 'x' + _canvas.height );
+			//			return _canvas;
+			//		}
+			//		return image;
+			//	}
+
+		</script>
 
 		<script>
 /*
@@ -2930,22 +2889,6 @@
 */
 		</script>
 
-		<script>
-
-			//	function makePowerOfTwo( image ) {
-			//		if ( image instanceof HTMLImageElement || image instanceof HTMLCanvasElement || image instanceof ImageBitmap ) {
-			//			if ( _canvas === undefined ) _canvas = document.createElementNS( 'http://www.w3.org/1999/xhtml', 'canvas' );
-			//			_canvas.width = _Math.floorPowerOfTwo( image.width );
-			//			_canvas.height = _Math.floorPowerOfTwo( image.height );
-			//			var context = _canvas.getContext( '2d' );
-			//			context.drawImage( image, 0, 0, _canvas.width, _canvas.height );
-			//			console.warn( 'THREE.WebGLRenderer: image is not power of two (' + image.width + 'x' + image.height + '). Resized to ' + _canvas.width + 'x' + _canvas.height );
-			//			return _canvas;
-			//		}
-			//		return image;
-			//	}
-
-		</script>
 
 		<script>
 
