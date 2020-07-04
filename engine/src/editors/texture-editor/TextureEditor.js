@@ -375,35 +375,37 @@
 
 	//	onchange.
 
-		watch( text_input, "onchange", function(property, event, value){
-			var key = key_droplist.value; // important!
-			debugMode && console.log({item:"text_input",event:event,key:key,"value":value});
-			if ( key === "uuid" ) text_input.value = editor[ key ];
-			else if ( !key_droplist.value ) text_input.value = "";
-			else if ( !entity_droplist.value ) text_input.value = "";
-			else if ( key === "name" ) {
-				if ( value === "" ) return; // text_input.value, string.
-				if ( editor[ key ] !== value ) try {
-					addtoUndo(); // text_input.value, string.
-				} catch(err) { console.error("addtoUndo();"); }
-				editor[ key ] = value; // debug!
-			//	setTimeout(function(){ editor[ key ] = value; }); // text_input.value, string. infinity Loop!!!
-			} else text_input.value = "";
-
-		});
-
-//		text_input.addEventListener( "change", function(){
-//			var key = key_droplist.value;
+//		EXPERIMANTAL.
+//		watch( text_input, "onchange", function(property, event, value){
+//			var key = key_droplist.value; // important!
+//			debugMode && console.log({item:"text_input",event:event,key:key,"value":value});
 //			if ( key === "uuid" ) text_input.value = editor[ key ];
 //			else if ( !key_droplist.value ) text_input.value = "";
 //			else if ( !entity_droplist.value ) text_input.value = "";
 //			else if ( key === "name" ) {
-//				if ( text_input.value === "" ) return;
-//				if ( editor[ key ] !== text_input.value ) addtoUndo();
-//				setTimeout(function(){ editor[ key ] = text_input.value; });
+//				if ( value === "" ) return; // text_input.value, string.
+//				if ( editor[ key ] !== value ) try {
+//					addtoUndo(); // text_input.value, string.
+//				} catch(err) { console.error("addtoUndo();"); }
+//				setTimeout(function(){ editor[ key ] = value; }); // infinity Loop!!!
 //			} else text_input.value = "";
 //
 //		});
+
+		text_input.addEventListener( "change", function(){
+
+			var key = key_droplist.value;
+
+			if ( key === "uuid" ) text_input.value = editor[ key ];
+			else if ( !key_droplist.value ) text_input.value = "";
+			else if ( !entity_droplist.value ) text_input.value = "";
+			else if ( key === "name" ) {
+				if ( text_input.value === "" ) return;
+				if ( editor[ key ] !== text_input.value ) addtoUndo();
+				setTimeout(function(){ editor[ key ] = text_input.value; });
+			} else text_input.value = "";
+
+		});
 
 
 
