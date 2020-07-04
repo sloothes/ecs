@@ -251,7 +251,7 @@
 			document.getElementById("texture-exit-mode"),   // exit_button,
 			document.getElementById("texture-undo-button"), // undo_button,
 			document.getElementById("texture-redo-button"),  // redo_button,
-			document.querySelector("select#texture-entities-droplist") // entity_droplist.
+			document.querySelector("select#texture-entities-droplist") // entity_droplist
 		);
 
 		return editor;
@@ -289,8 +289,8 @@
 //	Synchronize texture with texture editor (brige).
 //	KEEP IN MIND: watchers update only if the value has been changed.
 
-/*
-	(function( editor,viewer,entity_droplist,getTextureByEntityId ){
+
+	(function( editor,viewer,needsUpdate_button,entity_droplist,getTextureByEntityId, ){
 
 		var texture; // imporant!
 
@@ -299,6 +299,20 @@
 		});
 
 	//	.......................................................................
+
+
+
+
+
+
+
+
+	//	Texture needsUpdate button.
+
+		needsUpdate_button.addEventListener( "click", function(){
+			if ( texture && texture.image ) texture.needsUpdate = true;
+		});
+
 
 	//	Image. TODO!
 		watch( editor.image, function( key, action, value, oldValue ){
@@ -309,10 +323,11 @@
 	})( 
 		textureEditor, // editor,
 		textureViewer, // viewer,
+		document.querySelector("div#texture-needs-update"), // needsUpdate_button,
 		document.querySelector("select#texture-entities-droplist"), // entity_droplist,
 		getTextureByEntityId // function helper,
 	);
-*/
+
 
 /*  ========================================================================================  */
 
