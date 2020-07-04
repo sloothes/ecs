@@ -223,12 +223,42 @@
 			return;
 		}
 
+	//	Undo/Redo/Exit buttons.
+
+		(function(undo,redo,exit_button,undo_button,redo_button,entity_droplist){
+
+			var interval;
+
+			exit_button.addEventListener( "click", function(){
+				clearTimeout( interval ); 
+				interval = setTimeout( exitFromEditMode, 250);
+			});
+
+			undo_button.addEventListener( "click", function(){
+				debugMode && console.log("undo:",undo.length,"redo:",redo.length);
+				if ( !entity_droplist.value ) clearUndoRedo();
+				else undo.length && editor.undo(); // undo.
+			});
+
+			redo_button.addEventListener( "click", function(){
+				debugMode && console.log("undo:",undo.length,"redo:",redo.length);
+				if ( !entity_droplist.value ) clearUndoRedo();
+				else redo.length && editor.redo(); // redo.
+			});
+
+		})(
+			undo, redo,
+			document.getElementById("texture-exit-mode"),   // exit_button,
+			document.getElementById("texture-undo-button"), // undo_button,
+			document.getElementById("texture-redo-button"),  // redo_button,
+			document.querySelector("select#texture-entities-droplist") // entity_droplist.
+		);
+
 		return editor;
 
 	})( texture_entities, textureViewer );
 
 /*  ========================================================================================  */
-
 
 
 
@@ -284,6 +314,9 @@
 	);
 */
 
+/*  ========================================================================================  */
+
+
 //	textureEditorVectorInputWatchers.js
 
 	(function( editor,vector_x,vector_y,vector_droplist,getTextureByEntityId ){
@@ -334,6 +367,8 @@
 		getTextureByEntityId // function helper,
 	);
 
+/*  ========================================================================================  */
+
 
 //	textureEditorTextInputStringWatchers.js
 
@@ -362,6 +397,8 @@
 		document.querySelector("select#texture-key-droplist"), // key_droplist,
 		getTextureByEntityId // function helper,
 	);
+
+/*  ========================================================================================  */
 
 
 //	textureEditorValueInputNumberWatchers.js
@@ -396,6 +433,8 @@
 		document.querySelector("select#texture-key-droplist"), // key_droplist,
 		getTextureByEntityId // function helper,
 	);
+
+/*  ========================================================================================  */
 
 
 //	textureEditorValueInputConstantWatchers.js
@@ -492,6 +531,8 @@
 		getTextureByEntityId // function helper,
 	);
 
+/*  ========================================================================================  */
+
 
 //	textureEditorValueInputBooleanWatchers.js
 
@@ -553,3 +594,5 @@
 		document.querySelector("select#texture-key-droplist"), // key_droplist,
 		getTextureByEntityId // function helper,
 	);
+
+/*  ========================================================================================  */
