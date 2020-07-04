@@ -300,15 +300,7 @@
 
 	//	.......................................................................
 
-
-
-
-
-
-
-
 	//	Texture needsUpdate button.
-
 		needsUpdate_button.addEventListener( "click", function(){
 			if ( texture && texture.image ) texture.needsUpdate = true;
 		});
