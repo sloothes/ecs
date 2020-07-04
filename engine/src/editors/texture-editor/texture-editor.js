@@ -5,8 +5,8 @@
 		const RAD2DEG = THREE.Math.RAD2DEG;
 		const DEG2RAD = THREE.Math.DEG2RAD;
 
-		const undo = new UndoArray(); debugMode && console.log( {"undo": undo} );
-		const redo = new UndoArray(); debugMode && console.log( {"redo": redo} );
+		const undo = new UndoArray(); debugMode && console.log( {"undo": undo} ); // we could attach undo array on undo_button.
+		const redo = new UndoArray(); debugMode && console.log( {"redo": redo} ); // we could attach redo array on redo_button.
 
 	//	droplists.
 
@@ -91,21 +91,32 @@
 
 			var interval;
 
-			exit_button.addEventListener( "click", function(){
-				clearTimeout( interval ); 
-				interval = setTimeout( exitFromEditMode, 250);
-			});
+			undo_button.undo = undo; // we attach undo array on undo_button.undo to parse in functions.
+			redo_button.redo = redo; // we attach redo array on redo_button.redo to parse in functions.
 
 			undo_button.addEventListener( "click", function(){
-				debugMode && console.log("undo:",undo.length,"redo:",redo.length);
-				if ( !entity_droplist.value ) clearUndoRedo();
-				else undo.length && editor.undo(); // undo.
+				debugMode && console.log("undo:",undo_button.undo.length,"redo:",redo_button.redo.length);
+				if ( entity_droplist.value === "" ) { 
+				//	clearUndoRedo();
+					undo_button.undo.clear();
+					redo_button.redo.clear();
+				}
+				else undo_button.undo.length && editor.undo(); // undo.
 			});
 
 			redo_button.addEventListener( "click", function(){
-				debugMode && console.log("undo:",undo.length,"redo:",redo.length);
-				if ( !entity_droplist.value ) clearUndoRedo();
-				else redo.length && editor.redo(); // redo.
+				debugMode && console.log("undo:",undo_button.undo.length,"redo:",redo_button.redo.length);
+				if ( entity_droplist.value === "" ) { 
+				//	clearUndoRedo();
+					undo_button.undo.clear();
+					redo_button.redo.clear();
+				}
+				else redo_button.redo.length && editor.redo(); // redo.
+			});
+
+			exit_button.addEventListener( "click", function(){
+				clearTimeout( interval ); 
+				interval = setTimeout( exitFromEditMode, 250);
 			});
 
 		})(
