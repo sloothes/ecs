@@ -258,7 +258,7 @@
 
 //	textureEditorValueInputBooleanWatchers.js
 
-	(function( editor,viewer,input,droplist,getTextureByEntityId ){
+	(function( editor,viewer,input,key_droplist,entity_droplist,getTextureByEntityId ){
 
 	//	var texture; // imporant!
 	//	watch( entity_droplist, "onchange", function( property, event, value ){
@@ -266,7 +266,7 @@
 	//	});
 
 		watch( editor, "flipY", function( key, action, value ){
-			var texture = getTextureByEntityId( value ); // id.
+			var texture = getTextureByEntityId( entity_droplist.value ); // id.
 
 			debugMode && console.log({
 				editor:editor, texture:texture,
@@ -275,7 +275,7 @@
 			});
 
 			if (texture) texture[ key ] = Boolean(editor[key]);
-			if ( droplist.value === key ) input.value = editor[ key ];
+			if ( key_droplist.value === key ) input.value = editor[ key ];
 			if ( viewer.material && viewer.material.map ) {
 				viewer.material.needsUpdate = true;
 				if (viewer.material.map.image !== undefined) 
@@ -286,7 +286,7 @@
 		watch( editor, "premultiplyAlpha", function( key, action, value ){
 			var texture = getTextureByEntityId( value ); // id.
 			if (texture) texture[ key ] = Boolean(editor[key]);
-			if ( droplist.value === key ) input.value = editor[ key ];
+			if ( key_droplist.value === key ) input.value = editor[ key ];
 			if ( viewer.material && viewer.material.map ) {
 				viewer.material.needsUpdate = true;
 				if (viewer.material.map.image !== undefined) 
@@ -297,7 +297,7 @@
 		watch( editor, "matrixAutoUpdate", function( key, action, value ){
 			var texture = getTextureByEntityId( value ); // id.
 			if (texture) texture[ key ] = Boolean(editor[key]);
-			if ( droplist.value === key ) input.value = editor[ key ];
+			if ( key_droplist.value === key ) input.value = editor[ key ];
 			if ( viewer.material && viewer.material.map ) {
 				viewer.material.needsUpdate = true;
 				if (viewer.material.map.image !== undefined) 
@@ -308,7 +308,7 @@
 		watch( editor, "generateMipmaps", function( key, action, value ){
 			var texture = getTextureByEntityId( value ); // id.
 			if (texture) texture[ key ] = Boolean(editor[key]);
-			if ( droplist.value === key ) input.value = editor[ key ];
+			if ( key_droplist.value === key ) input.value = editor[ key ];
 			if ( viewer.material && viewer.material.map ) {
 				viewer.material.needsUpdate = true;
 				if (viewer.material.map.image !== undefined) 
@@ -321,6 +321,7 @@
 		textureViewer, // viewer,
 		document.querySelector("input#texture-value-input"), // value_input,
 		document.querySelector("select#texture-key-droplist"), // key_droplist,
+		document.querySelector("select#texture-entities-droplist"), // entity_droplist,
 		getTextureByEntityId // function helper,
 	);
 
