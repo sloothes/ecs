@@ -341,7 +341,7 @@
 
 	(function(editor,keyInputControls,text_input,value_input,vector_x,vector_y,key_droplist,vector_droplist,entity_droplist){
 
-		var interval;
+	//	var interval;
 
 		const RAD2DEG = 57.29577951308232;
 		const DEG2RAD = 0.017453292519943295;
@@ -384,7 +384,7 @@
 //		EXPERIMANTAL.
 		watch( text_input, "onchange", function(property, event, value){
 			var key = key_droplist.value; // important!
-			debugMode && console.log({tab:"texture",item:"text input",event:event,key:key,"value":value});
+			debugMode && console.log({tab:"Texture",item:"text input",event:event,key:key,"value":value});
 			if ( key === "uuid" ) text_input.value = editor[ key ];
 			else if ( !key_droplist.value ) text_input.value = "";
 			else if ( !entity_droplist.value ) text_input.value = "";
@@ -430,6 +430,46 @@
 
 	(function(editor,keyInputControls,text_input,value_input,vector_x,vector_y,key_droplist,vector_droplist,entity_droplist){
 
+		const RAD2DEG = 57.29577951308232;
+		const DEG2RAD = 0.017453292519943295;
+
+		function addtoUndo(){
+			var json = editor.toJSON();
+			json && undo.unshift( json );
+			return;
+		}
+
+	//	blur.
+
+		vector_x.addEventListener( "change", vector_x.blur );
+		vector_y.addEventListener( "change", vector_y.blur );
+		value_input.addEventListener( "change", value_input.blur );
+
+	//	keyInputControls.
+
+		function enableKeyInputControls(){
+			keyInputControls.isDisabled = false;
+		}
+
+		function disableKeyInputControls(){
+			keyInputControls.isDisabled = true;
+		}
+
+		vector_x.addEventListener( "blur", enableKeyInputControls );
+		vector_y.addEventListener( "blur", enableKeyInputControls );
+		value_input.addEventListener( "blur", enableKeyInputControls );
+
+		vector_x.addEventListener( "focus", disableKeyInputControls );
+		vector_y.addEventListener( "focus", disableKeyInputControls );
+		value_input.addEventListener( "focus", disableKeyInputControls );
+
+	//	onchange.
+
+
+
+
+
+
 
 
 
@@ -460,6 +500,9 @@
 		document.querySelector("select#texture-entities-droplist") // entity_droplist.
 	);
 
+//	vector-x-input-onchange-watcher.js
+
+//	vector-y-input-onchange-watcher.js
 
 
 /*  ========================================================================================  */
