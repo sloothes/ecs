@@ -3,6 +3,8 @@
 	(function(editor,vector_x,vector_y,vector_droplist){
 
 		watch( vector_droplist, "onchange", function( property, event, key ){
+			debugMode && console.log({tab:"Texture",item:"vector droplist",event:event,"key":key});
+
 			if ( !key ) [vector_x.value, vector_y.value] = [ "", "" ];
 			else [vector_x.value, vector_y.value] = [editor[key].x, editor[key].y];
 		});
