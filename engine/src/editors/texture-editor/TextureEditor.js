@@ -262,7 +262,7 @@
 
 //	Texture Tab droplists watchers.
 
-	(function(vector_x,vector_y,vector_droplist){
+	(function(editor,vector_x,vector_y,vector_droplist){
 
 		watch( vector_droplist, "onchange", function( property, event, key ){
 			if ( !key ) [vector_x.value, vector_y.value] = [ "", "" ];
@@ -270,6 +270,7 @@
 		});
 
 	})(
+		textureEditor, // editor,
 		document.querySelector("input#texture-vector-x-input"),  // vector_x,
 		document.querySelector("input#texture-vector-y-input"),  // vector_y,
 		document.querySelector("select#texture-vector-droplist") // vector_droplist.
@@ -277,7 +278,7 @@
 
 //
 
-	(function(text_input,value_input,key_droplist){
+	(function(editor,text_input,value_input,key_droplist){
 
 		const RAD2DEG = 57.29577951308232;
 		const DEG2RAD = 0.017453292519943295;
@@ -296,6 +297,7 @@
 		});
 
 	})(
+		textureEditor, // editor,
 		document.querySelector("input#texture-text-input"), // text_input,
 		document.querySelector("input#texture-value-input"), // value_input,
 		document.querySelector("select#texture-key-droplist") // key_droplist.
