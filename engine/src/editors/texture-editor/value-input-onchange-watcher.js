@@ -47,17 +47,23 @@
 
 		//	disabled on input change.
 
-			if ( key === "" ) value = ""; // string.
-			if ( key === "name") value = ""; // string.
-			if ( key === "uuid" ) value = ""; // string.
-		//	if ( isNaN( Number(value) ) ) value = ""; // string.
-			if ( entity_droplist.value === "" ) value = ""; // string.
+		//	if ( key === "" ) value_input.value = value = ""; // string.
+		//	if ( key === "name") value_input.value = value = ""; // string.
+		//	if ( key === "uuid" ) value_input.value = value = ""; // string.
+		//	if ( isNaN( Number(value) ) ) value_input.value = value = ""; // string.
+			if ( entity_droplist.value === "" ) value_input.value = value = ""; // string.
 
 		//	enabled on input change.
 		//	Before change the editor[key] value, add an undo state in undo queue.
 		//	Until now we has adding to Undo after the value has changed. That was mistake/bug! (FIXED!)
 
 			switch ( key ){
+
+				case "":
+				case "name":
+				case "uuid":
+					value_input.value = value = ""; // dispbled.
+				break;
 
 				case "flipY":
 
