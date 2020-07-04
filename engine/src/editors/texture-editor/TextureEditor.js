@@ -336,7 +336,7 @@
 /*  ========================================================================================  */
 
 //	Texture Tab keyboard input watchers.
-
+/*
 //	text-input-onchange-watcher.js
 
 	(function(editor,keyInputControls,text_input,value_input,vector_x,vector_y,key_droplist,vector_droplist,entity_droplist){
@@ -465,28 +465,9 @@
 
 	//	onchange.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+		watch( value_input, "onchange", function(property, event, value){
+		//	...............................................................
+		});
 
 	})(
 		textureEditor, // editor,
@@ -503,11 +484,11 @@
 //	vector-x-input-onchange-watcher.js
 
 //	vector-y-input-onchange-watcher.js
-
+*/
 
 /*  ========================================================================================  */
-
-//	textureEditorWatchers.js
+/*
+//	texture-editor-watchers.js
 
 //	Texture Editor Watchers.
 //	Watch each object/property individually.
@@ -545,7 +526,7 @@
 	);
 
 
-/*  ========================================================================================  */
+//  ========================================================================================  //
 
 
 //	textureEditorVectorInputWatchers.js
@@ -598,7 +579,7 @@
 		getTextureByEntityId // function helper,
 	);
 
-/*  ========================================================================================  */
+//  ========================================================================================  //
 
 
 //	textureEditorTextInputStringWatchers.js
@@ -629,7 +610,7 @@
 		getTextureByEntityId // function helper,
 	);
 
-/*  ========================================================================================  */
+//  ========================================================================================  //
 
 
 //	textureEditorValueInputNumberWatchers.js
@@ -665,7 +646,7 @@
 		getTextureByEntityId // function helper,
 	);
 
-/*  ========================================================================================  */
+//  ========================================================================================  //
 
 
 //	textureEditorValueInputConstantWatchers.js
@@ -762,7 +743,7 @@
 		getTextureByEntityId // function helper,
 	);
 
-/*  ========================================================================================  */
+//  ========================================================================================  //
 
 
 //	textureEditorValueInputBooleanWatchers.js
@@ -825,5 +806,5 @@
 		document.querySelector("select#texture-key-droplist"), // key_droplist,
 		getTextureByEntityId // function helper,
 	);
-
-/*  ========================================================================================  */
+*/
+//  ========================================================================================  //
