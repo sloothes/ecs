@@ -28,7 +28,7 @@
 
 	//	Add a watcher.
 		watch(select, "onchange", function(property, event, value){
-		//	debugMode && console.log({item:"vector droplist",event:event,"vector":value});
+		//	debugMode && console.log({item:select,event:event,vector:value});
 		});
 
 	//	Call watchers.

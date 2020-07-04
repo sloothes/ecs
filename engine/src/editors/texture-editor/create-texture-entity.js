@@ -1,4 +1,4 @@
-//	createTextureButton.js
+//	create-texture-entity.js
 
 //	Create texture file input watcher.
 

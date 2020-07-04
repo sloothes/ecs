@@ -1,4 +1,4 @@
-//	replaceImageButton.js
+//	replace_texture-image.js
 
 //	Replace image file input watcher.
 

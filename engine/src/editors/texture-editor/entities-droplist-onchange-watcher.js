@@ -2,9 +2,13 @@
 
 	//	blur.
 
-		key_droplist.addEventListener( "change", key_droplist.blur );
-		vector_droplist.addEventListener( "change", vector_droplist.blur );
-		entity_droplist.addEventListener( "change", entity_droplist.blur );
+	//	key_droplist.addEventListener( "change", key_droplist.blur );
+	//	vector_droplist.addEventListener( "change", vector_droplist.blur );
+	//	entity_droplist.addEventListener( "change", entity_droplist.blur );
+
+		watch( key_droplist, "onchange", function(){ key_droplist.blur(); }); // EXPERIMANTAL!
+		watch( vector_droplist, "onchange", function(){ vector_droplist.blur(); }); // EXPERIMANTAL!
+		watch( entity_droplist, "onchange", function(){ entity_droplist.blur(); }); // EXPERIMANTAL!
 
 	//	watcher.
 

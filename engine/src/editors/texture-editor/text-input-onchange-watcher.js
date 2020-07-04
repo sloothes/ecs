@@ -9,8 +9,8 @@
 		}
 
 	//	blur.
-		watch( text_input, "onchange", function(){ text_input.blur(); }); // EXPERIMANTAL!
 	//	text_input.addEventListener( "change", text_input.blur );
+		watch( text_input, "onchange", function(){ text_input.blur(); }); // EXPERIMANTAL!
 
 	//	keyInputControls.
 
@@ -29,7 +29,7 @@
 
 	//	EXPERIMANTAL.
 		watch( text_input, "onchange", function(property, event, value){
-			debugMode && console.log({tab:"Texture",item:"text input",event:event,key:key_droplist.value,"value":value});
+			debugMode && console.log({item:text_input,event:event,key:key_droplist.value,value:value});
 
 			if ( key_droplist.value === "" ) text_input.value = value = "";
 			if ( entity_droplist.value === "" ) text_input.value = value = "";

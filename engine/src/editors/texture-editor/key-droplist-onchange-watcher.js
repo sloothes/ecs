@@ -6,7 +6,7 @@
 		const DEG2RAD = 0.017453292519943295;
 
 		watch( key_droplist, "onchange", function( property, event, key ){
-			debugMode && console.log({tab:"Texture",item:"key droplist",event:event,"key":key});
+			debugMode && console.log({item:key_droplist,event:event,key:key});
 
 			if ( !key ) [ value_input.value, text_input.value ] = ["", ""];
 			else if ( key == "name" || key == "uuid" ) {

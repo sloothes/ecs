@@ -42,7 +42,7 @@
 
 	//	EXPERIMANTAL.
 		watch( value_input, "onchange", function(property, event, value){
-			debugMode && console.log({tab:"Texture",item:"value input",event:event,key:key_droplist.value,"value":value});
+			debugMode && console.log({item:value_input,event:event,key:key_droplist.value,value:value});
 
 			if ( entity_droplist.value === "" ) value_input.value = value = ""; // string.
 

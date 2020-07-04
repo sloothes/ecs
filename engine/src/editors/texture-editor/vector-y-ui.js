@@ -33,7 +33,7 @@
 
 	//	Add a watcher.
 		watch(input, "onchange", function(property, event, value){
-			debugMode && console.log({item:"input",event:event,"vector-y":value});
+			debugMode && console.log({item:input,event:event,y:value});
 		});
 
 	//	Call watchers.

@@ -3,7 +3,7 @@
 	(function( editor,viewer,getTextureByEntityId,vector_x,vector_y,vector_droplist,entity_droplist){
 
 		watch( entity_droplist, "onchange", function( property, event, value ){
-		//	debugMode && console.log({item:"entity_droplist",event:event,"value":value});
+		//	debugMode && console.log({item:entity_droplist,event:event,value:value});
 
 			if ( value === "" ) {
 
