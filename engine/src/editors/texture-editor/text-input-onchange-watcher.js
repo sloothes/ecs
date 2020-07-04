@@ -244,14 +244,14 @@
 
 				case "anisotropy":
 					if ( !isNaN( Number(value) ) ) {
-						if ( editor[key] !== THREE.Math.clamp(value,1,-1) ) 
+						if ( editor[key] !== THREE.Math.clamp(value,-1,1) ) 
 						if ( editor[key] !== Number(value) ) 
 							try { addtoUndo(); } catch(err) { console.error("addtoUndo();"); } // debug!
 					//	editor watcher updates input only if the editor value has changed,
 					//	so in this case we must explicitly update the input value manualy.
 						else value_input.value = editor[key].toFixed(2); // number as string.
 					//	editor watcher updates value input.
-						setTimeout(function(){ editor[ key ] = THREE.Math.clamp(value,1,-1); });
+						setTimeout(function(){ editor[ key ] = THREE.Math.clamp(value,-1,1); });
 					} 
 					else if ( !isNaN( editor[key]) ) 
 						value_input.value = editor[key].toFixed(2);
