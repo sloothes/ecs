@@ -36,8 +36,8 @@
 	//	focus.
 	//	vector_x.addEventListener( "focus", disableKeyInputControls );
 	//	vector_y.addEventListener( "focus", disableKeyInputControls );
-		text_input.addEventListener( "focus", disableKeyInputControls );
 	//	value_input.addEventListener( "focus", disableKeyInputControls );
+		text_input.addEventListener( "focus", disableKeyInputControls );
 
 	//	onchange.
 
@@ -281,7 +281,7 @@
 
 	})(
 		textureEditor, // editor,
-	//	keyInputControls, // keyInputControls,
+		keyInputControls, // keyInputControls,
 		document.querySelector("input#texture-text-input"), // text_input,
 		document.querySelector("input#texture-value-input"), // value_input,
 	//	document.querySelector("input#texture-vector-x-input"), // vector_x,
