@@ -64,7 +64,7 @@
 					}
 					if ( editor[ key ] !== value ) try {
 						addtoUndo(); // text_input.value, string.
-					} catch(err) { console.error("TODO:addtoUndo();"); }
+					} catch(err) { console.warn("TODO:addtoUndo();"); }
 					setTimeout(function(){ editor[ key ] = value; }); // text_input.value, string.
 				break;
 

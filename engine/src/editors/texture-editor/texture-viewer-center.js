@@ -79,6 +79,7 @@
 			state.key = vector_droplist.value;
 			state.value = editor[ key ];
 			state.json = editor.toJSON(); // editor json.
+			debugMode && console.log( "state:",state ); // debug!
 		//	Remove on firstMouseDown event listener.
 			this.removeEventListener( "mousedown", onfirstMouseDown ); // important!
 		//	TODO: You must pass editor undo/redo arrays!
