@@ -15,7 +15,7 @@
 			debugMode && console.log({ item:entity_droplist,entity:texture,"entity.id":value });
 		});
 
-	//	.......................... add watchers here! ........................
+	//	.......................... add watchers here! ........................  //
 
 	//	Texture needsUpdate button.
 		needsUpdate_button.addEventListener( "click", function(){
@@ -37,8 +37,6 @@
 	);
 
 
-/*  ========================================================================================  */
-
 
 //	textureEditorVectorInputWatchers.js
 
@@ -52,7 +50,7 @@
 
 		watch( editor.center, function( key, action, value ){
 		//	debugMode && console.log( "editor.center:", key, action, value );
-			var texture = getTextureByEntityId( entity_droplist.value ); // id.
+			var texture = getTextureByEntityId(); // id, entity_droplist.value.
 			if (texture) texture.center[ key ] = editor.center[ key ];
 			if ( key === "x" ) viewer.center.position.x = -125 + round(250*editor.center[key], 2); // important! (corect)
 			if ( key === "y" ) viewer.center.position.z =  125 - round(250*editor.center[key], 2); // important! (corect)
@@ -64,7 +62,7 @@
 
 		watch( editor.offset, function( key, action, value ){
 		//	debugMode && console.log( "editor.offset:", key, action, value );
-			var texture = getTextureByEntityId( entity_droplist.value ); // id.
+			var texture = getTextureByEntityId(); // id, entity_droplist.value.
 			if (texture) texture.offset[ key ] = editor.offset[ key ];
 			if ( vector_droplist.value === "offset" ) {
 				if ( key === "x" ) vector_x.value = editor.offset[key].toFixed(2);
@@ -74,7 +72,7 @@
 
 		watch( editor.repeat, function( key, action, value ){
 		//	debugMode && console.log( "editor.repeat:", key, action, value );
-			var texture = getTextureByEntityId( entity_droplist.value ); // id.
+			var texture = getTextureByEntityId(); // id, entity_droplist.value.
 			if (texture) texture.repeat[ key ] = editor.repeat[ key ];
 			if ( vector_droplist.value === "repeat" ) {
 				if ( key === "x" ) vector_x.value = editor.repeat[key].toFixed(2);
@@ -92,7 +90,6 @@
 		getTextureByEntityId // function helper,
 	);
 
-/*  ========================================================================================  */
 
 
 //	textureEditorTextInputStringWatchers.js
@@ -106,13 +103,13 @@
 	//	});
 
 		watch( editor, "name", function( key, action, value ){
-			var texture = getTextureByEntityId( entity_droplist.value ); // id.
+			var texture = getTextureByEntityId(); // id, entity_droplist.value.
 			if (texture) texture[ key ] = editor[ key ];
 			if ( key_droplist.value === key ) input.value = editor[ key ];
 		});
 
 		watch( editor, "uuid", function( key, action, value ){
-			var texture = getTextureByEntityId( entity_droplist.value ); // id.
+			var texture = getTextureByEntityId(); // id, entity_droplist.value.
 			if (texture) texture[ key ] = editor[ key ];
 			if ( key_droplist.value === key ) input.value = editor[ key ];
 		});
@@ -125,7 +122,6 @@
 		getTextureByEntityId // function helper,
 	);
 
-/*  ========================================================================================  */
 
 
 //	textureEditorValueInputNumberWatchers.js
@@ -140,7 +136,7 @@
 
 		watch( editor, "anisotropy", function( key, action, value ){
 		//	debugMode && console.log( "editor:", key, action, value );
-			var texture = getTextureByEntityId( entity_droplist.value ); // id.
+			var texture = getTextureByEntityId(); // id, entity_droplist.value.
 			if (texture) texture[ key ] = editor[ key ];
 			if ( key_droplist.value === key ) inpt.value = editor[ key ].toFixed(2);
 		});
@@ -149,7 +145,7 @@
 		//	debugMode && console.log( "editor:", key, action, value );
 			const RAD2DEG = 57.29577951308232;
 			const DEG2RAD = 0.017453292519943295;
-			var texture = getTextureByEntityId( entity_droplist.value ); // id.
+			var texture = getTextureByEntityId(); // id, entity_droplist.value.
 			if (texture) texture[ key ] = editor[ key ];
 			if ( key_droplist.value === key ) input.value = (RAD2DEG*editor[key]).toFixed(1); // string.
 		});
@@ -163,7 +159,6 @@
 		getTextureByEntityId // function helper,
 	);
 
-/*  ========================================================================================  */
 
 
 //	textureEditorValueInputConstantWatchers.js
@@ -177,7 +172,7 @@
 	//	});
 
 		watch( editor, "format", function( key, action, value ){
-			var texture = getTextureByEntityId( entity_droplist.value ); // id.
+			var texture = getTextureByEntityId(); // id, entity_droplist.value.
 			if (texture) texture[ key ] = editor[ key ];
 			if ( key_droplist.value === key ) input.value = editor[ key ];
 			if ( viewer.material && viewer.material.map ) {
@@ -188,7 +183,7 @@
 		});
 
 		watch( editor, "mapping", function( key, action, value ){
-			var texture = getTextureByEntityId( entity_droplist.value ); // id.
+			var texture = getTextureByEntityId(); // id, entity_droplist.value.
 			if (texture) texture[ key ] = editor[ key ];
 			if ( key_droplist.value === key ) input.value = editor[ key ];
 			if ( viewer.material && viewer.material.map ) {
@@ -199,7 +194,7 @@
 		});
 
 		watch( editor, "wrapS", function( key, action, value ){
-			var texture = getTextureByEntityId( entity_droplist.value ); // id.
+			var texture = getTextureByEntityId(); // id, entity_droplist.value.
 			if (texture) texture[ key ] = editor[ key ];
 			if ( key_droplist.value === key ) input.value = editor[ key ];
 			if ( viewer.material && viewer.material.map ) {
@@ -210,7 +205,7 @@
 		});
 
 		watch( editor, "wrapT", function( key, action, value ){
-			var texture = getTextureByEntityId( entity_droplist.value ); // id.
+			var texture = getTextureByEntityId(); // id, entity_droplist.value.
 			if (texture) texture[ key ] = editor[ key ];
 			if ( key_droplist.value === key ) input.value = editor[ key ];
 			if ( viewer.material && viewer.material.map ) {
@@ -221,7 +216,7 @@
 		});
 
 		watch( editor, "minFilter", function( key, action, value ){
-			var texture = getTextureByEntityId( entity_droplist.value ); // id.
+			var texture = getTextureByEntityId(); // id, entity_droplist.value.
 			if (texture) texture[ key ] = editor[ key ];
 			if ( key_droplist.value === key ) input.value = editor[ key ];
 			if ( viewer.material && viewer.material.map ) {
@@ -232,7 +227,7 @@
 		});
 
 		watch( editor, "magFilter", function( key, action, value ){
-			var texture = getTextureByEntityId( entity_droplist.value ); // id.
+			var texture = getTextureByEntityId(); // id, entity_droplist.value.
 			if (texture) texture[ key ] = editor[ key ];
 			if ( key_droplist.value === key ) input.value = editor[ key ];
 			if ( viewer.material && viewer.material.map ) {
@@ -243,7 +238,7 @@
 		});
 
 		watch( editor, "type", function( key, action, value ){
-			var texture = getTextureByEntityId( entity_droplist.value ); // id.
+			var texture = getTextureByEntityId(); // id, entity_droplist.value.
 			if (texture) texture[ key ] = editor[ key ];
 			if ( key_droplist.value === key ) input.value = editor[ key ];
 			if ( viewer.material && viewer.material.map ) {
@@ -262,7 +257,6 @@
 		getTextureByEntityId // function helper,
 	);
 
-/*  ========================================================================================  */
 
 
 //	textureEditorValueInputBooleanWatchers.js
@@ -276,7 +270,7 @@
 	//	});
 
 		watch( editor, "flipY", function( key, action, value ){
-			var texture = getTextureByEntityId( entity_droplist.value ); // id.
+			var texture = getTextureByEntityId(); // id, entity_droplist.value.
 
 			debugMode && console.log({
 				entity:texture,
@@ -294,7 +288,7 @@
 		});
 
 		watch( editor, "premultiplyAlpha", function( key, action, value ){
-			var texture = getTextureByEntityId( entity_droplist.value ); // id.
+			var texture = getTextureByEntityId(); // id, entity_droplist.value.
 			if (texture) texture[ key ] = Boolean(editor[key]);
 			if ( key_droplist.value === key ) input.value = editor[ key ];
 			if ( viewer.material && viewer.material.map ) {
@@ -305,7 +299,7 @@
 		});
 
 		watch( editor, "matrixAutoUpdate", function( key, action, value ){
-			var texture = getTextureByEntityId( entity_droplist.value ); // id.
+			var texture = getTextureByEntityId(); // id, entity_droplist.value.
 			if (texture) texture[ key ] = Boolean(editor[key]);
 			if ( key_droplist.value === key ) input.value = editor[ key ];
 			if ( viewer.material && viewer.material.map ) {
@@ -316,7 +310,7 @@
 		});
 
 		watch( editor, "generateMipmaps", function( key, action, value ){
-			var texture = getTextureByEntityId( entity_droplist.value ); // id.
+			var texture = getTextureByEntityId(); // id, entity_droplist.value.
 			if (texture) texture[ key ] = Boolean(editor[key]);
 			if ( key_droplist.value === key ) input.value = editor[ key ];
 			if ( viewer.material && viewer.material.map ) {
@@ -335,4 +329,3 @@
 		getTextureByEntityId // function helper,
 	);
 
-/*  ========================================================================================  */
