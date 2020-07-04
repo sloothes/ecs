@@ -75,6 +75,8 @@
 
 		function onfirstMouseDown(){
 			state = {};
+			if ( entity_droplist.value === "" ) return; // important!
+			if ( vector_droplist !== "center" ) return; // important!
 			var key = vector_droplist.value;
 			state.key = vector_droplist.value;
 			state.value = editor[ key ];
@@ -104,8 +106,8 @@
 
 			clearTimeout( interval ); // important!
 
-			if ( entity_droplist.value === "" ) return;
-			if ( vector_droplist !== "center" ) return;
+			if ( entity_droplist.value === "" ) return; // important!
+			if ( vector_droplist !== "center" ) return; // important!
 
 			var button = this;
 			var clock = new THREE.Clock();
@@ -143,8 +145,8 @@
 
 			clearTimeout( interval ); // important!
 
-			if ( entity_droplist.value === "" ) return;
-			if ( vector_droplist !== "center" ) return;
+			if ( entity_droplist.value === "" ) return; // important!
+			if ( vector_droplist !== "center" ) return; // important!
 
 			var button = this;
 
