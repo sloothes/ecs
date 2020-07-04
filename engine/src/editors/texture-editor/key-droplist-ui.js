@@ -27,7 +27,7 @@
 
 	//	Add a watcher.
 		watch(select, "onchange", function(property, event, value){
-			debugMode && console.log({item:"droplist",event:event,"key":value});
+			debugMode && console.log({item:"key droplist",event:event,"key":value});
 		});
 
 	//	Call watchers.
