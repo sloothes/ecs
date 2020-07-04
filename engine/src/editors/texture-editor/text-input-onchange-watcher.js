@@ -282,7 +282,7 @@
 	})(
 		textureEditor, // editor,
 		keyInputControls, // keyInputControls,
-		document.querySelector("input#texture-text-input"), // text_input,
+	//	document.querySelector("input#texture-text-input"), // text_input,
 		document.querySelector("input#texture-value-input"), // value_input,
 	//	document.querySelector("input#texture-vector-x-input"), // vector_x,
 	//	document.querySelector("input#texture-vector-y-input"), // vector_y,
