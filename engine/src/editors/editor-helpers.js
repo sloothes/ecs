@@ -2,12 +2,12 @@
 
 	function getMaterialByEntityId( value ){
 
-		var material_droplist = document.querySelector("select#material-entities-droplist");
+		var entity_droplist = document.querySelector("select#material-entities-droplist");
 
 		if ( arguments.length ) 
 			var id = parseInt( value );
 		else
-			var id = parseInt( material_droplist.value );
+			var id = parseInt( entity_droplist.value );
 
 		if ( isNaN(id) ) return;
 
@@ -18,12 +18,12 @@
 
 	function getTextureByEntityId( value ){
 
-		var texture_droplist = document.querySelector("select#texture-entities-droplist");
+		var entity_droplist = document.querySelector("select#texture-entities-droplist");
 
 		if ( arguments.length ) 
 			var id = parseInt( value );
 		else
-			var id = parseInt( texture_droplist.value );
+			var id = parseInt( entity_droplist.value );
 
 		if ( isNaN(id) ) return;
 
