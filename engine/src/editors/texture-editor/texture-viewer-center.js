@@ -169,7 +169,7 @@
 					//	Add on firstMouseDown event listener.
 						button.addEventListener( "mousedown", onfirstMouseDown ); // important!
 					//	TODO: You must pass editor undo/redo arrays!
-					//	try { state.json && undo.unshift( state.json ); // Add to undo.
+					//	try { state.meta && undo.unshift( state.meta ); // Add to undo.
 					//		debugMode && console.log( "undo:", undo.length, "redo:", redo.length ); 
 					//	} catch(err){ console.error("TODO:You must pass undo/redo arrays."); }
 					}, 250);
@@ -186,7 +186,7 @@
 					//	Add on firstMouseDown event listener.
 						button.addEventListener( "mousedown", onfirstMouseDown ); // important!
 					//	TODO: You must pass editor undo/redo arrays!
-					//	try { state.json && undo.unshift( state.json ); // Add to undo.
+					//	try { state.meta && undo.unshift( state.meta ); // Add to undo.
 					//		debugMode && console.log( "undo:", undo.length, "redo:", redo.length ); 
 					//	} catch(err){ console.error("TODO:You must pass undo/redo arrays."); }
 					}, 250);
@@ -208,8 +208,10 @@
 		document.querySelector("li#texture-vector-y-increase"), // increase_y,
 		document.querySelector("li#texture-vector-y-decrease"), // decrease_y,
 		document.querySelector("select#texture-vector-droplist"), // vector_droplist,
-		document.querySelector("select#texture-entities-droplist") // entity_droplist,
-	//	undo, redo // TODO: pass editor undo/redo arrays.
+		document.querySelector("select#texture-entities-droplist"), // entity_droplist,
+	//	TODO: pass editor undo/redo arrays.
+		document.querySelector("div#texture-undo-button").undo, // undo array,
+		document.querySelector("div#texture-redo-button").redo // redo array.
 	);
 
 

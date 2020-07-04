@@ -109,6 +109,16 @@
 					var value = Number(editor[ key ].x); // get value from editor.
 					if ( button === increase_x ) value = THREE.Math.clamp( value+step, min, max );
 					if ( button === decrease_x ) value = THREE.Math.clamp( value-step, min, max );
+					if ( key === state.key && value !== state.value ) {
+						interval = setTimeout( function(){ 
+						//	Add on firstMouseDown event listener.
+							button.addEventListener( "mousedown", onfirstMouseDown ); // important!
+						//	TODO: You must pass editor undo/redo arrays!
+						//	try { state.meta && state.meta.textures && undo.unshift( state.meta ); // Add to undo.
+						//		debugMode && console.log( "undo:", undo.length, "redo:", redo.length ); 
+						//	} catch(err){ console.error("TODO:You must pass undo/redo arrays."); }
+						}, 250);
+					}
 					editor[ key ].x = round(value, 2); // editor watcher updates vector_x input value.
 				}
 
@@ -116,6 +126,16 @@
 					var value = Number(editor[ key ].y); // get value from editor.
 					if ( button === increase_y ) value = THREE.Math.clamp( value+step, min, max );
 					if ( button === decrease_y ) value = THREE.Math.clamp( value-step, min, max );
+					if ( key === state.key && value !== state.value ) {
+						interval = setTimeout( function(){ 
+						//	Add on firstMouseDown event listener.
+							button.addEventListener( "mousedown", onfirstMouseDown ); // important!
+						//	TODO: You must pass editor undo/redo arrays!
+						//	try { state.meta && state.meta.textures && undo.unshift( state.meta ); // Add to undo.
+						//		debugMode && console.log( "undo:", undo.length, "redo:", redo.length ); 
+						//	} catch(err){ console.error("TODO:You must pass undo/redo arrays."); }
+						}, 250);
+					}
 					editor[ key ].y = round(value, 2); // editor watcher updates vector_y input value.
 				}
 
@@ -135,6 +155,8 @@
 		document.querySelector("li#texture-vector-y-increase"), // increase_y,
 		document.querySelector("li#texture-vector-y-decrease"), // decrease_y,
 		document.querySelector("select#texture-vector-droplist"), // vector_droplist,
-		document.querySelector("select#texture-entities-droplist") // entity_droplist,
-	//	undo, redo // TODO: pass editor undo/redo arrays.
+		document.querySelector("select#texture-entities-droplist"), // entity_droplist,
+	//	TODO: pass editor undo/redo arrays.
+		document.querySelector("div#texture-undo-button").undo, // undo array,
+		document.querySelector("div#texture-redo-button").redo // redo array.
 	);
