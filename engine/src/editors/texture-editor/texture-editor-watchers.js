@@ -6,7 +6,7 @@
 //	KEEP IN MIND: watchers update only if the value has been changed.
 
 
-	(function( editor,viewer,needsUpdate_button,entity_droplist,getTextureByEntityId, ){
+	(function( editor,viewer,needsUpdate_button,entity_droplist,getTextureByEntityId ){
 
 		var texture; // imporant!
 	//	You can add a watcher to get texture only when entity droplist changes.
