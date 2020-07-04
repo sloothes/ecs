@@ -1,6 +1,6 @@
-//	TextureViewerCenter.js
+//	texture-viewer-center.js
 
-	(function( editor,viewer,getTextureByEntityId,vector_x,vector_y,vector_droplist,entity_droplist){
+	(function( editor,viewer,vector_x,vector_y,vector_droplist,entity_droplist,getTextureByEntityId ){
 
 		watch( entity_droplist, "onchange", function( property, event, value ){
 		//	debugMode && console.log({item:entity_droplist,event:event,value:value});
@@ -16,16 +16,19 @@
 				return;
 			}
 
-			if ( !getTextureByEntityId(value) )  {
+			if ( getTextureByEntityId(value) === undefined )  {
 
 				viewer.material.map = null;
 				viewer.material.needsUpdate = true;
 				viewer.material.color.setHex(0x000000);
-				viewer.center.position.set(-125, 0.1, 125);
+			//	viewer.center.position.set(-125, 0.1, 125);
+				vector_x.value = (0.5 + (viewer.center.position.x/250)).toFixed(2); // display center value (x).
+				vector_y.value = (0.5 - (viewer.center.position.z/250)).toFixed(2); // display center value (z).
 				return;
 			}
 
-			var texture = getTextureByEntityId( value ); // debugMode && console.log( texture );
+			var texture = getTextureByEntityId( value ); // not need variable (value)!
+			//	debugMode && console.log( texture );
 
 			viewer.material.map = texture;
 			viewer.material.needsUpdate = true;
@@ -50,11 +53,11 @@
 	})( 
 		textureEditor, 
 		textureViewer, 
-		getTextureByEntityId, // helper function.
 		document.querySelector("input#texture-vector-x-input"), // vector_x,
 		document.querySelector("input#texture-vector-y-input"), // vector_y,
 		document.querySelector("select#texture-vector-droplist"), // vector_droplist,
-		document.querySelector("select#texture-entities-droplist") // entity_droplist.
+		document.querySelector("select#texture-entities-droplist"), // entity_droplist.
+		getTextureByEntityId // helper function.
 	);
 
 //	Experimental (Independent texture viewer center helper).
