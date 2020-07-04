@@ -9,7 +9,7 @@
 		else
 			var id = parseInt( material_droplist.value );
 
-		if ( id === NaN ) return;
+		if ( isNaN(id) ) return;
 
 		return material_entities.find( function( material ){
 			return material.id === id;
@@ -25,7 +25,7 @@
 		else
 			var id = parseInt( texture_droplist.value );
 
-		if ( id === NaN ) return;
+		if ( isNaN(id) ) return;
 
 		return texture_entities.find( function( texture ){
 			return texture.id === id;
