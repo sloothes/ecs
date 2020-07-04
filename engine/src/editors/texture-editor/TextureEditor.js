@@ -331,12 +331,18 @@
 
 //	Texture Tab keyboard inputs.
 
-	(function(addtoUndo,editor,keyInputControls,text_input,value_input,vector_x,vector_y,key_droplist,vector_droplist,entity_droplist){
+	(function(editor,keyInputControls,text_input,value_input,vector_x,vector_y,key_droplist,vector_droplist,entity_droplist){
 
 		var interval;
 
 		const RAD2DEG = 57.29577951308232;
 		const DEG2RAD = 0.017453292519943295;
+
+		function addtoUndo(){
+			var json = editor.toJSON();
+			json && undo.unshift( json );
+			return;
+		}
 
 	//	blur.
 
@@ -413,7 +419,6 @@
 
 
 	})(
-		addtoUndo, // editor helper,
 		textureEditor, // editor,
 		keyInputControls, // keyInputControls,
 		document.querySelector("input#texture-text-input"), // text_input,
@@ -423,7 +428,6 @@
 		document.querySelector("select#texture-key-droplist"), // key_droplist
 		document.querySelector("select#texture-vector-droplist"), // vector_droplist,
 		document.querySelector("select#texture-entities-droplist") // entity_droplist.
-
 	);
 
 
