@@ -135,8 +135,8 @@
 
 /*  ========================================================================================  */
 
-
-//	textureEditor.js
+/*
+//	texture-editor.js
 
 	const textureEditor = (function( entities,viewer ){
 
@@ -257,10 +257,13 @@
 		return editor;
 
 	})( texture_entities, textureViewer );
+*/
 
 /*  ========================================================================================  */
 
 //	Texture Tab droplists watchers.
+/*
+//	vector-droplist-onchange-watcher.js
 
 	(function(editor,vector_x,vector_y,vector_droplist){
 
@@ -276,7 +279,7 @@
 		document.querySelector("select#texture-vector-droplist") // vector_droplist.
 	);
 
-//
+//	key-droplist-onchange-watcher.js
 
 	(function(editor,text_input,value_input,key_droplist){
 
@@ -303,7 +306,7 @@
 		document.querySelector("select#texture-key-droplist") // key_droplist.
 	);
 
-//
+//	entities-droplist-onchange-watcher.js
 
 	(function(editor,key_droplist,vector_droplist,entity_droplist){
 
@@ -328,10 +331,13 @@
 		document.querySelector("select#texture-vector-droplist"), // vector_droplist,
 		document.querySelector("select#texture-entities-droplist") // entity_droplist.
 	);
+*/
 
 /*  ========================================================================================  */
 
-//	Texture Tab keyboard inputs.
+//	Texture Tab keyboard input watchers.
+
+//	text-input-onchange-watcher.js
 
 	(function(editor,keyInputControls,text_input,value_input,vector_x,vector_y,key_droplist,vector_droplist,entity_droplist){
 
@@ -378,7 +384,7 @@
 //		EXPERIMANTAL.
 		watch( text_input, "onchange", function(property, event, value){
 			var key = key_droplist.value; // important!
-			debugMode && console.log({item:"text_input",event:event,key:key,"value":value});
+			debugMode && console.log({tab:"texture",item:"text input",event:event,key:key,"value":value});
 			if ( key === "uuid" ) text_input.value = editor[ key ];
 			else if ( !key_droplist.value ) text_input.value = "";
 			else if ( !entity_droplist.value ) text_input.value = "";
@@ -408,6 +414,25 @@
 //		});
 //
 
+	})(
+		textureEditor, // editor,
+		keyInputControls, // keyInputControls,
+		document.querySelector("input#texture-text-input"), // text_input,
+		document.querySelector("input#texture-value-input"), // value_input,
+		document.querySelector("input#texture-vector-x-input"), // vector_x,
+		document.querySelector("input#texture-vector-y-input"), // vector_y,
+		document.querySelector("select#texture-key-droplist"), // key_droplist
+		document.querySelector("select#texture-vector-droplist"), // vector_droplist,
+		document.querySelector("select#texture-entities-droplist") // entity_droplist.
+	);
+
+//	value-input-onchange-watcher.js
+
+	(function(editor,keyInputControls,text_input,value_input,vector_x,vector_y,key_droplist,vector_droplist,entity_droplist){
+
+
+
+
 
 
 
@@ -434,6 +459,7 @@
 		document.querySelector("select#texture-vector-droplist"), // vector_droplist,
 		document.querySelector("select#texture-entities-droplist") // entity_droplist.
 	);
+
 
 
 /*  ========================================================================================  */

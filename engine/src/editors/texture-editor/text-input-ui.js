@@ -18,7 +18,7 @@
 
 	//	Add a watcher.
 		watch(input, "onchange", function(property, event, value){
-			debugMode && console.log({item:"input",event:event,"value":value});
+		//	debugMode && console.log({item:"input",event:event,"value":value});
 		});
 
 	//	Call watchers.
