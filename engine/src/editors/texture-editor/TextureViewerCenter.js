@@ -40,6 +40,7 @@
 
 		});
 
+//		Stack overflow!!!
 //		watch( vector_droplist, "onchange", function( property, event, value ){
 //
 //			callWatchers( entity_droplist, "onchange", event, entity_droplist.value );
