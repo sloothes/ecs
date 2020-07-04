@@ -228,6 +228,7 @@
 
 //  ==========================================================================================  //
 
+//	vector-input-onchange-watcher.js
 
 //	vector-x-input-onchange-watcher.js
 
@@ -256,11 +257,9 @@
 
 	//	onblur.
 		vector_x.addEventListener( "blur", enableKeyInputControls );
-	//	vector_y.addEventListener( "blur", enableKeyInputControls );
 
 	//	onfocus.
 		vector_x.addEventListener( "focus", disableKeyInputControls );
-	//	vector_y.addEventListener( "focus", disableKeyInputControls );
 
 	//	onchange.
 
