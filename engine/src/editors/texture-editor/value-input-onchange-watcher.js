@@ -305,8 +305,8 @@
 					if ( editor[key].x !== Number(value) ) 
 						try { addtoUndo(); } catch(err) { console.error("TODO:addtoUndo();"); } // debug!
 				//	editor watcher updates value input.
-					editor[key].x = Number(value);
-				//	setTimeout(function(){ editor[key].x = Number(value); }); // important!
+				//	editor[key].x = Number(value);
+					setTimeout(function(){ editor[key].x = Number(value); }); // important!
 				break;
 
 				default:
@@ -406,8 +406,8 @@
 					if ( editor[key].y !== Number(value) ) 
 						try { addtoUndo(); } catch(err) { console.error("TODO:addtoUndo();"); } // debug!
 				//	editor watcher updates value input.
-					editor[key].y = Number(value);
-				//	setTimeout(function(){ editor[key].y = Number(value); }); // important!
+				//	editor[key].y = Number(value);
+					setTimeout(function(){ editor[key].y = Number(value); }); // important!
 				break;
 
 				default:
