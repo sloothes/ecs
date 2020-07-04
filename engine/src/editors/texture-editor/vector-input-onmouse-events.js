@@ -19,7 +19,8 @@
 			var key = vector_droplist.value;
 			state.key = vector_droplist.value;
 			state.value = editor[ key ];
-			state.json = editor.toJSON(); // editor json.
+			state.meta = {images:{},textures:{}};
+			state.json = editor.toJSON(state.meta); // editor json.
 			debugMode && console.log( "state:",state ); // debug!
 		//	Remove on firstMouseDown event listener.
 			this.removeEventListener( "mousedown", onfirstMouseDown ); // important!
