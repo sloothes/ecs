@@ -76,7 +76,7 @@
 		function onfirstMouseDown(){
 			state = {};
 			if ( entity_droplist.value === "" ) return; // important!
-			if ( vector_droplist !== "center" ) return; // important!
+			if ( vector_droplist.value !== "center" ) return; // important!
 			var key = vector_droplist.value;
 			state.key = vector_droplist.value;
 			state.value = editor[ key ];
@@ -107,7 +107,7 @@
 			clearTimeout( interval ); // important!
 
 			if ( entity_droplist.value === "" ) return; // important!
-			if ( vector_droplist !== "center" ) return; // important!
+			if ( vector_droplist.value !== "center" ) return; // important!
 
 			var button = this;
 			var clock = new THREE.Clock();
@@ -146,7 +146,7 @@
 			clearTimeout( interval ); // important!
 
 			if ( entity_droplist.value === "" ) return; // important!
-			if ( vector_droplist !== "center" ) return; // important!
+			if ( vector_droplist.value !== "center" ) return; // important!
 
 			var button = this;
 
@@ -191,6 +191,8 @@
 				}
 				editor.center.y = round(value, 2); // editor watcher updates vector_y input value.
 			}
+
+			debugMode && console.log( "on Mouse Click:", interval ); // debug!
 
 		} // end onMouseClick.
 
