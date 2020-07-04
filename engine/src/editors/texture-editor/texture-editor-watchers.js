@@ -279,9 +279,9 @@
 			var texture = getTextureByEntityId( entity_droplist.value ); // id.
 
 			debugMode && console.log({
-				editor:editor, texture:texture,
-				key:key, action:action, value:value,
-				"editor value":editor[key]
+				entity:texture,
+				key:key, value:value,
+				"editor value":editor[key],
 			});
 
 			if (texture) texture[ key ] = Boolean(editor[key]);
