@@ -386,7 +386,8 @@
 				if ( editor[ key ] !== value ) try {
 					addtoUndo(); // text_input.value, string.
 				} catch(err) { console.error("addtoUndo();"); }
-				setTimeout(function(){ editor[ key ] = value; }); // text_input.value, string.
+				editor[ key ] = value; // debug!
+			//	setTimeout(function(){ editor[ key ] = value; }); // text_input.value, string. infinity Loop!!!
 			} else text_input.value = "";
 
 		});
