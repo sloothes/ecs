@@ -9,8 +9,8 @@
 		}
 
 	//	blur.
+		watch( text_input, "onchange", function(){ text_input.blur(); }); // EXPERIMANTAL!
 	//	text_input.addEventListener( "change", text_input.blur );
-		watch( text_input, "onchange", function(){ text_input.blur(); });
 
 	//	keyInputControls.
 
@@ -27,12 +27,15 @@
 
 	//	onchange.
 
-//		EXPERIMANTAL.
+	//	EXPERIMANTAL.
 		watch( text_input, "onchange", function(property, event, value){
 			debugMode && console.log({tab:"Texture",item:"text input",event:event,key:key_droplist.value,"value":value});
 
-			var key = key_droplist.value; // important!
+			if ( key_droplist.value === "" ) text_input.value = value = "";
+			if ( entity_droplist.value === "" ) text_input.value = value = "";
 
+//			var key = key_droplist.value; // important!
+//
 //			if ( key === "uuid" ) text_input.value = editor[ key ];
 //			else if ( key_droplist.value === "" ) text_input.value = "";
 //			else if ( entity_droplist.value === "" ) text_input.value = "";
@@ -46,8 +49,7 @@
 //				setTimeout(function(){ editor[ key ] = value; }); // text_input.value, string.
 //			} else text_input.value = "";
 
-			if ( key_droplist.value === "" ) text_input.value = value = "";
-			if ( entity_droplist.value === "" ) text_input.value = value = "";
+			var key = key_droplist.value; // important!
 
 			switch ( key ){
 

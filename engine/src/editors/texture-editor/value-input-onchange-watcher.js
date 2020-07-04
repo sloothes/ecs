@@ -15,7 +15,8 @@
 	//	blur.
 	//	vector_x.addEventListener( "change", vector_x.blur );
 	//	vector_y.addEventListener( "change", vector_y.blur );
-		value_input.addEventListener( "change", value_input.blur );
+	//	value_input.addEventListener( "change", value_input.blur );
+		watch( value_input, "onchange", function(){ value_input.blur(); }); // EXPERIMANTAL!
 
 	//	keyInputControls.
 
@@ -39,8 +40,11 @@
 
 	//	onchange.
 
+	//	EXPERIMANTAL.
 		watch( value_input, "onchange", function(property, event, value){
 			debugMode && console.log({tab:"Texture",item:"value input",event:event,key:key_droplist.value,"value":value});
+
+			if ( entity_droplist.value === "" ) value_input.value = value = ""; // string.
 
 			var key = key_droplist.value; // important!
 		//	var value = Number(value_input.value); // value, number!
@@ -51,7 +55,7 @@
 		//	if ( key === "name") value_input.value = value = ""; // string.
 		//	if ( key === "uuid" ) value_input.value = value = ""; // string.
 		//	if ( isNaN( Number(value) ) ) value_input.value = value = ""; // string.
-			if ( entity_droplist.value === "" ) value_input.value = value = ""; // string.
+		//	if ( entity_droplist.value === "" ) value_input.value = value = ""; // string.
 
 		//	enabled on input change.
 		//	Before change the editor[key] value, add an undo state in undo queue.
@@ -66,7 +70,6 @@
 				break;
 
 				case "flipY":
-
 					if ( value.toLowerCase() === "false" ) value = 0;      // accept "false" string.
 					else if ( value.toLowerCase() === "true" ) value = 1;  // accept "true" string.
 					else if ( isNaN(value) ) value = Boolean(editor[key]); // avoid to pass NaN value!
@@ -156,6 +159,22 @@
 					else value_input.value = editor[key] = 1008; // reset.
 				break;
 
+				case "wrapS":
+				case "wrapT":
+					if ( [1000, 1001, 1002].includes( Number(value) ) ) {
+						if ( editor[key] !== Number(value) ) 
+							try { addtoUndo(); } catch(err) { console.error("TODO:addtoUndo();"); } // debug!
+					//	editor watcher updates input only if the editor value has changed,
+					//	so in this case we must explicitly update the input value manualy.
+						else value_input.value = editor[key]; // number as string.
+					//	editor watcher updates value input.
+						setTimeout( function(){ editor[ key ] = Number(value); });
+					} 
+					else if ( !isNaN( editor[key]) ) 
+						value_input.value = editor[key];
+					else value_input.value = editor[key] = 1000; // reset.
+				break;
+
 				case "anisotropy":
 					if ( !isNaN( Number(value) ) ) {
 						if ( editor[key] !== THREE.Math.clamp(value,-1,1) ) 
@@ -185,6 +204,10 @@
 					else if ( !isNaN( editor[key]) ) 
 						value_input.value = THREE.Math.clamp((RAD2DEG*editor[key]),-180,180).toFixed(1);
 					else value_input.value = editor[key] = 0; // reset.
+				break;
+
+				default:
+					value_input.value = value = "";
 				break;
 
 			} // end switch.
