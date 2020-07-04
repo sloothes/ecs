@@ -302,16 +302,14 @@
 
 	//	Texture needsUpdate button.
 		needsUpdate_button.addEventListener( "click", function(){
-			var texture = getTextureByEntityId( value ); // id.
 			if ( texture && texture.image ) texture.needsUpdate = true;
 		});
 
-
 	//	Image. TODO!
-		watch( editor.image, function( key, action, value, oldValue ){
-			debugMode && console.log("editor:",{"key":key,"action":action,"value":value,"devNote":"TODO"});
-		//	clearTimeout( interval );
-		});
+	//	watch( editor.image, function( key, action, value, oldValue ){
+	//		debugMode && console.log("editor:",{"key":key,"action":action,"value":value,"devNote":"TODO"});
+	//	//	clearTimeout( interval );
+	//	});
 
 	})( 
 		textureEditor, // editor,
