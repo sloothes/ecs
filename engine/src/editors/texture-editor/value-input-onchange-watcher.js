@@ -64,10 +64,12 @@
 				break;
 
 				case "flipY":
-					if ( value.toLowerCase() === "false" ) value = 0;      // accept "false" string.
+					if ( value === "0" ) value = Number(value);            // accept "0", string.
+					else if ( value === "1" ) value = Number(value);       // accept "1", string.
 					else if ( value.toLowerCase() === "true" ) value = 1;  // accept "true" string.
+					else if ( value.toLowerCase() === "false" ) value = 0; // accept "false" string.
 					else if ( isNaN(value) ) value = Boolean(editor[key]); // avoid to pass NaN value!
-					else value = Boolean(value); // convert to boolean, important!
+					else value = Boolean(editor[key]); // return editor value, important!
 
 					if ( editor[key] !== Boolean(value) ) 
 						try { addtoUndo(); } catch(err) { console.warn("TODO:addtoUndo();"); } // debug!
