@@ -42,7 +42,7 @@
 
 //	textureEditorVectorInputWatchers.js
 
-	(function( editor,vector_x,vector_y,vector_droplist,entity_droplist,getTextureByEntityId ){
+	(function( editor,viewer,vector_x,vector_y,vector_droplist,entity_droplist,getTextureByEntityId ){
 
 	//	var texture; // imporant!
 	//	You can add a watcher to get texture only when entity droplist changes.
@@ -54,8 +54,8 @@
 		//	debugMode && console.log( "editor.center:", key, action, value );
 			var texture = getTextureByEntityId( entity_droplist.value ); // id.
 			if (texture) texture.center[ key ] = editor.center[ key ];
-			if ( key === "x" ) textureViewer.center.position.x = -125 + round(250*editor.center[key], 2); // important! (corect)
-			if ( key === "y" ) textureViewer.center.position.z =  125 - round(250*editor.center[key], 2); // important! (corect)
+			if ( key === "x" ) viewer.center.position.x = -125 + round(250*editor.center[key], 2); // important! (corect)
+			if ( key === "y" ) viewer.center.position.z =  125 - round(250*editor.center[key], 2); // important! (corect)
 			if ( vector_droplist.value === "center" ) {
 				if ( key === "x" ) vector_x.value = editor.center[key].toFixed(2); // display.
 				if ( key === "y" ) vector_y.value = editor.center[key].toFixed(2); // display.
