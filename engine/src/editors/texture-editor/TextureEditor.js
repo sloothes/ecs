@@ -302,6 +302,7 @@
 
 	//	Texture needsUpdate button.
 		needsUpdate_button.addEventListener( "click", function(){
+			var texture = getTextureByEntityId( value ); // id.
 			if ( texture && texture.image ) texture.needsUpdate = true;
 		});
 
