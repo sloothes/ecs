@@ -2,6 +2,11 @@
 
 	(function( editor,viewer,vector_x,vector_y,vector_droplist,entity_droplist,getTextureByEntityId ){
 
+//		Stack overflow!!!
+//		watch( vector_droplist, "onchange", function( property, event, value ){
+//			callWatchers( entity_droplist, "onchange", event, entity_droplist.value );
+//		});
+
 		watch( entity_droplist, "onchange", function( property, event, value ){
 		//	debugMode && console.log({item:entity_droplist,event:event,value:value});
 
@@ -42,13 +47,6 @@
 			viewer.center.position.z =  125 - (250 * editor.center.y);
 
 		});
-
-//		Stack overflow!!!
-//		watch( vector_droplist, "onchange", function( property, event, value ){
-//
-//			callWatchers( entity_droplist, "onchange", event, entity_droplist.value );
-//
-//		});
 
 	})( 
 		textureEditor, 
