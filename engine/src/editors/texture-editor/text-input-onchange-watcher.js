@@ -48,13 +48,15 @@
 			var key = key_droplist.value; // important!
 
 			if ( key === "uuid" ) text_input.value = editor[ key ];
-			else if ( !key_droplist.value === "" ) text_input.value = "";
-			else if ( !entity_droplist.value === "" ) text_input.value = "";
+			else if ( key_droplist.value === "" ) text_input.value = "";
+			else if ( entity_droplist.value === "" ) text_input.value = "";
 			else if ( key === "name" ) {
-				if ( value === "" ) return; // text_input.value, string.
+				if ( value === "" ) {
+					text_input.value = editor[ key ]; return; // text_input.value, string.
+				}
 				if ( editor[ key ] !== value ) try {
 					addtoUndo(); // text_input.value, string.
-				} catch(err) { console.error("addtoUndo();"); }
+				} catch(err) { console.error("TODO:addtoUndo();"); }
 				setTimeout(function(){ editor[ key ] = value; }); // text_input.value, string.
 			} else text_input.value = "";
 
@@ -159,7 +161,7 @@
 					else value = Boolean(value); // convert to boolean, important!
 
 					if ( editor[key] !== Boolean(value) ) 
-						try { addtoUndo(); } catch(err) { console.error("addtoUndo();"); } // debug!
+						try { addtoUndo(); } catch(err) { console.error("TODO:addtoUndo();"); } // debug!
 				//	editor watcher updates input only if the editor value has changed,
 				//	so in this case we must explicitly update the input value manualy.
 					else value_input.value = editor[key]; // boolean as string.
@@ -170,7 +172,7 @@
 				case "format":
 					if ( [1021, 1022, 1023, 1024, 1025, 1026, 1027].includes( Number(value) ) ) {
 						if ( editor[key] !== Number(value) ) 
-							try { addtoUndo(); } catch(err) { console.error("addtoUndo();"); } // debug!
+							try { addtoUndo(); } catch(err) { console.error("TODO:addtoUndo();"); } // debug!
 					//	editor watcher updates input only if the editor value has changed,
 					//	so in this case we must explicitly update the input value manualy.
 						else value_input.value = editor[key]; // number as string.
@@ -185,7 +187,7 @@
 				case "mapping":
 					if ( [300, 301, 302, 303, 304, 305, 306, 307].includes( Number(value) ) ) {
 						if ( editor[key] !== Number(value) ) 
-							try { addtoUndo(); } catch(err) { console.error("addtoUndo();"); } // debug!
+							try { addtoUndo(); } catch(err) { console.error("TODO:addtoUndo();"); } // debug!
 					//	editor watcher updates input only if the editor value has changed,
 					//	so in this case we must explicitly update the input value manualy.
 						else value_input.value = editor[key]; // number as string.
@@ -200,7 +202,7 @@
 				case "encoding":
 					if ( [3000, 3001, 3007, 3002, 3003, 3004, 3005, 3006, 3200, 3201].includes( Number(value) ) ) {
 						if ( editor[key] !== Number(value) ) 
-							try { addtoUndo(); } catch(err) { console.error("addtoUndo();"); } // debug!
+							try { addtoUndo(); } catch(err) { console.error("TODO:addtoUndo();"); } // debug!
 					//	editor watcher updates input only if the editor value has changed,
 					//	so in this case we must explicitly update the input value manualy.
 						else value_input.value = editor[key]; // number as string.
@@ -230,7 +232,7 @@
 				case "minFilter":
 					if ( [1003, 1004, 1005, 1006, 1007, 1008].includes( Number(value) ) ) {
 						if ( editor[key] !== Number(value) ) 
-							try { addtoUndo(); } catch(err) { console.error("addtoUndo();"); } // debug!
+							try { addtoUndo(); } catch(err) { console.error("TODO:addtoUndo();"); } // debug!
 					//	editor watcher updates input only if the editor value has changed,
 					//	so in this case we must explicitly update the input value manualy.
 						else value_input.value = editor[key]; // number as string.
@@ -246,7 +248,7 @@
 					if ( !isNaN( Number(value) ) ) {
 						if ( editor[key] !== THREE.Math.clamp(value,-1,1) ) 
 						if ( editor[key] !== Number(value) ) 
-							try { addtoUndo(); } catch(err) { console.error("addtoUndo();"); } // debug!
+							try { addtoUndo(); } catch(err) { console.error("TODO:addtoUndo();"); } // debug!
 					//	editor watcher updates input only if the editor value has changed,
 					//	so in this case we must explicitly update the input value manualy.
 						else value_input.value = editor[key].toFixed(2); // number as string.
@@ -261,7 +263,7 @@
 				case "rotation":
 					if ( !isNaN( Number(value) ) ) { 
 						if ( editor[key] !== THREE.Math.clamp(DEG2RAD*value,-Math.PI, Math.PI) ) 
-							try { addtoUndo(); } catch(err) { console.error("addtoUndo();"); } // debug!
+							try { addtoUndo(); } catch(err) { console.error("TODO:addtoUndo();"); } // debug!
 					//	editor watcher updates input only if the editor value has changed,
 					//	so in this case we must explicitly update the input value manualy.
 						else value_input.value = (RAD2DEG*editor[key]).toFixed(1); // number as string.
