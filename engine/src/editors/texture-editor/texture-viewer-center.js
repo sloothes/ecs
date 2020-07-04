@@ -80,9 +80,9 @@
 			var key = vector_droplist.value;
 			state.key = vector_droplist.value;
 			state.value = editor[ key ];
-			state.meta = {images:{},textures:{}};
-			var json = editor.toJSON(state.meta); // editor json.
-		//	state.json = editor.toJSON(state.meta); // editor json.
+		//	state.meta = {images:{},textures:{}};
+		//	var json = editor.toJSON(state.meta); // editor json.
+			state.json = editor.toJSON(); // editor json.
 			debugMode && console.log( "state:",state ); // debug!
 		//	Remove on firstMouseDown event listener.
 			this.removeEventListener( "mousedown", onfirstMouseDown ); // important!
@@ -164,7 +164,7 @@
 				var value = Number(editor.center.x); // get value from editor.
 				if ( button === increase_x ) value = THREE.Math.clamp( value+step, min, max );
 				if ( button === decrease_x ) value = THREE.Math.clamp( value-step, min, max );
-				if ( key === state.key && value !== state.value ) {
+				if ( key === state.key && value !== state.value.x ) {
 					interval = setTimeout( function(){ 
 					//	Add on firstMouseDown event listener.
 						button.addEventListener( "mousedown", onfirstMouseDown ); // important!
@@ -181,7 +181,7 @@
 				var value = Number(editor.center.y); // get value from editor.
 				if ( button === increase_y ) value = THREE.Math.clamp( value+step, min, max );
 				if ( button === decrease_y ) value = THREE.Math.clamp( value-step, min, max );
-				if ( key === state.key && value !== state.value ) {
+				if ( key === state.key && value !== state.value.y ) {
 					interval = setTimeout( function(){ 
 					//	Add on firstMouseDown event listener.
 						button.addEventListener( "mousedown", onfirstMouseDown ); // important!
