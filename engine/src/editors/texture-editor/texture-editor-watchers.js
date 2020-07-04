@@ -267,6 +267,13 @@
 
 		watch( editor, "flipY", function( key, action, value ){
 			var texture = getTextureByEntityId( value ); // id.
+
+			debugMode && console.log({
+				editor:editor, texture:texture,
+				key:key, action:action, value:value,
+				"editor value":editor[key]
+			});
+
 			if (texture) texture[ key ] = Boolean(editor[key]);
 			if ( droplist.value === key ) input.value = editor[ key ];
 			if ( viewer.material && viewer.material.map ) {
