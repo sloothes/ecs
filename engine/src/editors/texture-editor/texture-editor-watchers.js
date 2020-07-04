@@ -12,7 +12,7 @@
 	//	You can add a watcher to get texture only when entity droplist changes.
 		watch( entity_droplist, "onchange", function( property, event, value ){
 			texture = getTextureByEntityId( value ); // id.
-			debugMode && console.log({ editor:editor,item:entity_droplist,"texture.id":value,texture:texture });
+			debugMode && console.log({ item:entity_droplist,entity:texture,"entity.id":value });
 		});
 
 	//	.......................... add watchers here! ........................
