@@ -109,7 +109,7 @@
 					var value = Number(editor[ key ].x); // get value from editor.
 					if ( button === increase_x ) value = THREE.Math.clamp( value+step, min, max );
 					if ( button === decrease_x ) value = THREE.Math.clamp( value-step, min, max );
-					if ( key === state.key && value !== state.value ) {
+					if ( key === state.key && value !== state.value.x ) {
 						interval = setTimeout( function(){ 
 						//	Add on firstMouseDown event listener.
 							button.addEventListener( "mousedown", onfirstMouseDown ); // important!
@@ -126,7 +126,7 @@
 					var value = Number(editor[ key ].y); // get value from editor.
 					if ( button === increase_y ) value = THREE.Math.clamp( value+step, min, max );
 					if ( button === decrease_y ) value = THREE.Math.clamp( value-step, min, max );
-					if ( key === state.key && value !== state.value ) {
+					if ( key === state.key && value !== state.value.y ) {
 						interval = setTimeout( function(){ 
 						//	Add on firstMouseDown event listener.
 							button.addEventListener( "mousedown", onfirstMouseDown ); // important!
