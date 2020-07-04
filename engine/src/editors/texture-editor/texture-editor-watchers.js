@@ -9,12 +9,13 @@
 	(function( editor,viewer,needsUpdate_button,entity_droplist,getTextureByEntityId, ){
 
 		var texture; // imporant!
-
+	//	You can add a watcher to get texture only when entity droplist changes.
 		watch( entity_droplist, "onchange", function( property, event, value ){
 			texture = getTextureByEntityId( value ); // id.
+			debugMode && console.log({ editor:editor,item:entity_droplist,"texture.id":value,texture:texture });
 		});
 
-	//	.......................................................................
+	//	.......................... add watchers here! ........................
 
 	//	Texture needsUpdate button.
 		needsUpdate_button.addEventListener( "click", function(){
@@ -44,6 +45,7 @@
 	(function( editor,vector_x,vector_y,vector_droplist,entity_droplist,getTextureByEntityId ){
 
 	//	var texture; // imporant!
+	//	You can add a watcher to get texture only when entity droplist changes.
 	//	watch( entity_droplist, "onchange", function( property, event, value ){
 	//		texture = getTextureByEntityId( value ); // id.
 	//	});
@@ -98,6 +100,7 @@
 	(function( editor,input,key_droplist,entity_droplist,getTextureByEntityId ){
 
 	//	var texture; // imporant!
+	//	You can add a watcher to get texture only when entity droplist changes.
 	//	watch( entity_droplist, "onchange", function( property, event, value ){
 	//		texture = getTextureByEntityId( value ); // id.
 	//	});
@@ -130,6 +133,7 @@
 	(function( editor,viewer,input,key_droplist,entity_droplist,getTextureByEntityId ){
 
 	//	var texture; // imporant!
+	//	You can add a watcher to get texture only when entity droplist changes.
 	//	watch( entity_droplist, "onchange", function( property, event, value ){
 	//		texture = getTextureByEntityId( value ); // id.
 	//	});
@@ -167,6 +171,7 @@
 	(function( editor,viewer,input,key_droplist,entity_droplist,getTextureByEntityId ){
 
 	//	var texture; // imporant!
+	//	You can add a watcher to get texture only when entity droplist changes.
 	//	watch( entity_droplist, "onchange", function( property, event, value ){
 	//		texture = getTextureByEntityId( value ); // id.
 	//	});
@@ -265,6 +270,7 @@
 	(function( editor,viewer,input,key_droplist,entity_droplist,getTextureByEntityId ){
 
 	//	var texture; // imporant!
+	//	You can add a watcher to get texture only when entity droplist changes.
 	//	watch( entity_droplist, "onchange", function( property, event, value ){
 	//		texture = getTextureByEntityId( value ); // id.
 	//	});
