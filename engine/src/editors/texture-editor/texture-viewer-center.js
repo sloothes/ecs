@@ -59,7 +59,7 @@
 	);
 
 
-//	texture viewer center: on mouse input events.
+//	vector-center-input-onmouse-events.js
 
 	(function( editor,viewer,vector_x,vector_y,increase_x,decrease_x,increase_y,decrease_y,vector_droplist,entity_droplist,undo,redo ){
 
@@ -123,14 +123,14 @@
 					var value = Number(editor.center.x); // get value from editor.
 					if ( button === increase_x ) value = THREE.Math.clamp( value+step, min, max );
 					if ( button === decrease_x ) value = THREE.Math.clamp( value-step, min, max );
-					editor.center.x = round(value, 2); // editor watcher updates vector_x value.
+					editor.center.x = round(value, 2); // editor watcher updates vector_x input value.
 				}
 
 				else if ( button === increase_y || button === decrease_y ) {
 					var value = Number(editor.center.y); // get value from editor.
 					if ( button === increase_y ) value = THREE.Math.clamp( value+step, min, max );
 					if ( button === decrease_y ) value = THREE.Math.clamp( value-step, min, max );
-					editor.center.y = round(value, 2); // editor watcher updates vector_y value.
+					editor.center.y = round(value, 2); // editor watcher updates vector_y input value.
 				}
 
 				var dt = clock.getDelta();
@@ -209,8 +209,6 @@
 		document.querySelector("select#texture-entities-droplist") // entity_droplist,
 	//	undo, redo // TODO: pass editor undo/redo arrays.
 	);
-
-
 
 
 //	Experimental (Independent texture viewer center helper).
