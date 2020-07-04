@@ -13,8 +13,6 @@
 		}
 
 	//	blur.
-	//	vector_x.addEventListener( "change", vector_x.blur );
-	//	vector_y.addEventListener( "change", vector_y.blur );
 	//	value_input.addEventListener( "change", value_input.blur );
 		watch( value_input, "onchange", function(){ value_input.blur(); }); // EXPERIMANTAL!
 
@@ -29,13 +27,9 @@
 		}
 
 	//	onblur.
-	//	vector_x.addEventListener( "blur", enableKeyInputControls );
-	//	vector_y.addEventListener( "blur", enableKeyInputControls );
 		value_input.addEventListener( "blur", enableKeyInputControls );
 
 	//	onfocus.
-	//	vector_x.addEventListener( "focus", disableKeyInputControls );
-	//	vector_y.addEventListener( "focus", disableKeyInputControls );
 		value_input.addEventListener( "focus", disableKeyInputControls );
 
 	//	onchange.
@@ -76,7 +70,7 @@
 					else value = Boolean(value); // convert to boolean, important!
 
 					if ( editor[key] !== Boolean(value) ) 
-						try { addtoUndo(); } catch(err) { console.error("TODO:addtoUndo();"); } // debug!
+						try { addtoUndo(); } catch(err) { console.warn("TODO:addtoUndo();"); } // debug!
 				//	editor watcher updates input only if the editor value has changed,
 				//	so in this case we must explicitly update the input value manualy.
 					else value_input.value = editor[key]; // boolean as string.
@@ -87,7 +81,7 @@
 				case "format":
 					if ( [1021, 1022, 1023, 1024, 1025, 1026, 1027].includes( Number(value) ) ) {
 						if ( editor[key] !== Number(value) ) 
-							try { addtoUndo(); } catch(err) { console.error("TODO:addtoUndo();"); } // debug!
+							try { addtoUndo(); } catch(err) { console.warn("TODO:addtoUndo();"); } // debug!
 					//	editor watcher updates input only if the editor value has changed,
 					//	so in this case we must explicitly update the input value manualy.
 						else value_input.value = editor[key]; // number as string.
@@ -102,7 +96,7 @@
 				case "mapping":
 					if ( [300, 301, 302, 303, 304, 305, 306, 307].includes( Number(value) ) ) {
 						if ( editor[key] !== Number(value) ) 
-							try { addtoUndo(); } catch(err) { console.error("TODO:addtoUndo();"); } // debug!
+							try { addtoUndo(); } catch(err) { console.warn("TODO:addtoUndo();"); } // debug!
 					//	editor watcher updates input only if the editor value has changed,
 					//	so in this case we must explicitly update the input value manualy.
 						else value_input.value = editor[key]; // number as string.
@@ -117,7 +111,7 @@
 				case "encoding":
 					if ( [3000, 3001, 3007, 3002, 3003, 3004, 3005, 3006, 3200, 3201].includes( Number(value) ) ) {
 						if ( editor[key] !== Number(value) ) 
-							try { addtoUndo(); } catch(err) { console.error("TODO:addtoUndo();"); } // debug!
+							try { addtoUndo(); } catch(err) { console.warn("TODO:addtoUndo();"); } // debug!
 					//	editor watcher updates input only if the editor value has changed,
 					//	so in this case we must explicitly update the input value manualy.
 						else value_input.value = editor[key]; // number as string.
@@ -132,7 +126,7 @@
 				case "magFilter":
 					if ( [1003, 1006].includes( Number(value) ) ) {
 						if ( editor[key] !== Number(value) ) 
-							try { addtoUndo(); } catch(err) { console.error("addtoUndo();"); } // debug!
+							try { addtoUndo(); } catch(err) { console.warn("addtoUndo();"); } // debug!
 					//	editor watcher updates input only if the editor value has changed,
 					//	so in this case we must explicitly update the input value manualy.
 						else value_input.value = editor[key]; // number as string.
@@ -147,7 +141,7 @@
 				case "minFilter":
 					if ( [1003, 1004, 1005, 1006, 1007, 1008].includes( Number(value) ) ) {
 						if ( editor[key] !== Number(value) ) 
-							try { addtoUndo(); } catch(err) { console.error("TODO:addtoUndo();"); } // debug!
+							try { addtoUndo(); } catch(err) { console.warn("TODO:addtoUndo();"); } // debug!
 					//	editor watcher updates input only if the editor value has changed,
 					//	so in this case we must explicitly update the input value manualy.
 						else value_input.value = editor[key]; // number as string.
@@ -163,7 +157,7 @@
 				case "wrapT":
 					if ( [1000, 1001, 1002].includes( Number(value) ) ) {
 						if ( editor[key] !== Number(value) ) 
-							try { addtoUndo(); } catch(err) { console.error("TODO:addtoUndo();"); } // debug!
+							try { addtoUndo(); } catch(err) { console.warn("TODO:addtoUndo();"); } // debug!
 					//	editor watcher updates input only if the editor value has changed,
 					//	so in this case we must explicitly update the input value manualy.
 						else value_input.value = editor[key]; // number as string.
@@ -178,7 +172,7 @@
 				case "anisotropy":
 					if ( !isNaN( Number(value) ) ) {
 						if ( editor[key] !== THREE.Math.clamp(value,-1,1) ) 
-							try { addtoUndo(); } catch(err) { console.error("TODO:addtoUndo();"); } // debug!
+							try { addtoUndo(); } catch(err) { console.warn("TODO:addtoUndo();"); } // debug!
 					//	editor watcher updates input only if the editor value has changed,
 					//	so in this case we must explicitly update the input value manualy.
 						else value_input.value = editor[key].toFixed(2); // number as string.
@@ -193,7 +187,7 @@
 				case "rotation":
 					if ( !isNaN( Number(value) ) ) { 
 						if ( editor[key] !== THREE.Math.clamp(DEG2RAD*value,-Math.PI, Math.PI) ) 
-							try { addtoUndo(); } catch(err) { console.error("TODO:addtoUndo();"); } // debug!
+							try { addtoUndo(); } catch(err) { console.warn("TODO:addtoUndo();"); } // debug!
 					//	editor watcher updates input only if the editor value has changed,
 					//	so in this case we must explicitly update the input value manualy.
 						else value_input.value = (RAD2DEG*editor[key]).toFixed(1); // number as string.
@@ -230,7 +224,7 @@
 
 //	vector-input-onchange-watchers.js
 
-//	vector-x-input-onchange-watcher.js
+//	vector-x input.
 
 	(function(editor,keyInputControls,vector_x,vector_droplist,entity_droplist){
 
@@ -293,20 +287,20 @@
 				case "center":
 					var value = THREE.Math.clamp( Number(value), 0, 1 ); // important!
 					if ( editor[key].x !== Number(value) ) 
-						try { addtoUndo(); } catch(err) { console.error("TODO:addtoUndo();"); } // debug!
+						try { addtoUndo(); } catch(err) { console.warn("TODO:addtoUndo();"); } // debug!
 				//	editor watcher updates value input.
-					editor[key].x = Number(value);
-				//	setTimeout(function(){ editor[key].x = Number(value); }); // important!
+					setTimeout(function(){ editor[key].x = Number(value); }); // important!
+				//	editor[key].x = Number(value);
 				break;
 
 				case "offset":
 				case "repeat":
 					var value = THREE.Math.clamp( Number(value), -100, 100 ); // number.
 					if ( editor[key].x !== Number(value) ) 
-						try { addtoUndo(); } catch(err) { console.error("TODO:addtoUndo();"); } // debug!
+						try { addtoUndo(); } catch(err) { console.warn("TODO:addtoUndo();"); } // debug!
 				//	editor watcher updates value input.
-				//	editor[key].x = Number(value);
 					setTimeout(function(){ editor[key].x = Number(value); }); // important!
+				//	editor[key].x = Number(value);
 				break;
 
 				default:
@@ -328,10 +322,8 @@
 		document.querySelector("select#texture-entities-droplist") // entity_droplist.
 	);
 
-//  ==========================================================================================  //
 
-
-//	vector-y-input-onchange-watcher.js
+//	vector-y input.
 
 	(function(editor,keyInputControls,vector_y,vector_droplist,entity_droplist){
 
@@ -394,20 +386,20 @@
 				case "center":
 					var value = THREE.Math.clamp( Number(value), 0, 1 ); // important!
 					if ( editor[key].y !== Number(value) ) 
-						try { addtoUndo(); } catch(err) { console.error("TODO:addtoUndo();"); } // debug!
+						try { addtoUndo(); } catch(err) { console.warn("TODO:addtoUndo();"); } // debug!
 				//	editor watcher updates value input.
-					editor[key].y = Number(value);
-				//	setTimeout(function(){ editor[key].y = Number(value); }); // important!
+					setTimeout(function(){ editor[key].y = Number(value); }); // important!
+				//	editor[key].y = Number(value);
 				break;
 
 				case "offset":
 				case "repeat":
 					var value = THREE.Math.clamp( Number(value), -100, 100 ); // number.
 					if ( editor[key].y !== Number(value) ) 
-						try { addtoUndo(); } catch(err) { console.error("TODO:addtoUndo();"); } // debug!
+						try { addtoUndo(); } catch(err) { console.warn("TODO:addtoUndo();"); } // debug!
 				//	editor watcher updates value input.
-				//	editor[key].y = Number(value);
 					setTimeout(function(){ editor[key].y = Number(value); }); // important!
+				//	editor[key].y = Number(value);
 				break;
 
 				default:
