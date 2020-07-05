@@ -25,8 +25,8 @@
 			debugMode && console.log( "state:",state ); // debug!
 		//	Remove on firstMouseDown event listener.
 			this.removeEventListener( "mousedown", onfirstMouseDown ); // important!
-		//	TODO: You must pass editor undo/redo arrays!
-		//	debugMode && console.log( {"state":state,"undo":undo.length,"redo":redo.length} );
+		//	TODO: You must pass editor undo/redo arrays! (done)
+			debugMode && console.log( "state:", state, "undo:", undo.length, "redo:", redo.length );
 		};
 
 		increase_x.addEventListener( "mousedown", onMouseDown );
@@ -113,10 +113,9 @@
 						interval = setTimeout( function(){ 
 						//	Add on firstMouseDown event listener.
 							button.addEventListener( "mousedown", onfirstMouseDown ); // important!
-						//	TODO: You must pass editor undo/redo arrays!
-						//	try { state.meta && state.meta.textures && undo.unshift( state.meta ); // Add to undo.
-						//		debugMode && console.log( "undo:", undo.length, "redo:", redo.length ); 
-						//	} catch(err){ console.error("TODO:You must pass undo/redo arrays."); }
+						//	Add to undo.
+							state.json && undo.unshift( state.json ); // add to undo.
+							debugMode && console.log( "undo:", undo.length, "redo:", redo.length ); 
 						}, 250);
 					}
 					editor[ key ].x = round(value, 2); // editor watcher updates vector_x input value.
@@ -130,10 +129,9 @@
 						interval = setTimeout( function(){ 
 						//	Add on firstMouseDown event listener.
 							button.addEventListener( "mousedown", onfirstMouseDown ); // important!
-						//	TODO: You must pass editor undo/redo arrays!
-						//	try { state.meta && state.meta.textures && undo.unshift( state.meta ); // Add to undo.
-						//		debugMode && console.log( "undo:", undo.length, "redo:", redo.length ); 
-						//	} catch(err){ console.error("TODO:You must pass undo/redo arrays."); }
+						//	Add to undo.
+							state.json && undo.unshift( state.json ); // add to undo.
+							debugMode && console.log( "undo:", undo.length, "redo:", redo.length ); 
 						}, 250);
 					}
 					editor[ key ].y = round(value, 2); // editor watcher updates vector_y input value.
