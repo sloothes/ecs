@@ -1,10 +1,11 @@
 //	text-input-onchange-watcher.js
 
-	(function(editor,keyInputControls,text_input,key_droplist,entity_droplist){
+	(function(editor,keyInputControls,text_input,key_droplist,entity_droplist,undo,redo){
 
 		function addtoUndo(){
 			var json = editor.toJSON();
 			json && undo.unshift( json );
+			debugMode && console.log( "undo:", undo.length, "redo:", redo.length ); 
 			return;
 		}
 
@@ -34,21 +35,6 @@
 			if ( key_droplist.value === "" ) text_input.value = value = "";
 			if ( entity_droplist.value === "" ) text_input.value = value = "";
 
-//			var key = key_droplist.value; // important!
-//
-//			if ( key === "uuid" ) text_input.value = editor[ key ];
-//			else if ( key_droplist.value === "" ) text_input.value = "";
-//			else if ( entity_droplist.value === "" ) text_input.value = "";
-//			else if ( key === "name" ) {
-//				if ( value === "" ) {
-//					text_input.value = editor[ key ]; return; // text_input.value, string.
-//				}
-//				if ( editor[ key ] !== value ) try {
-//					addtoUndo(); // text_input.value, string.
-//				} catch(err) { console.error("TODO:addtoUndo();"); }
-//				setTimeout(function(){ editor[ key ] = value; }); // text_input.value, string.
-//			} else text_input.value = "";
-
 			var key = key_droplist.value; // important!
 
 			switch ( key ){
@@ -58,14 +44,17 @@
 				break;
 
 				case "name":
+
 					if ( value === "" ) {
 						text_input.value = editor[ key ]; // text_input.value, string.
 						break;
 					}
-					if ( editor[ key ] !== value ) try {
-						addtoUndo(); // text_input.value, string.
-					} catch(err) { console.warn("TODO:addtoUndo();"); }
+
+				//	Before change the editor[key] value add an undo state in undo queue.
+				//	Until now we has adding to Undo after the value has changed. (FIXED!)
+					if ( editor[ key ] !== value ) addtoUndo(); // add to undo.
 					setTimeout(function(){ editor[ key ] = value; }); // text_input.value, string.
+
 				break;
 
 				default:
@@ -74,6 +63,18 @@
 			}
 
 		});
+
+	})(
+		textureEditor, // editor,
+		keyInputControls, // keyInputControls,
+		document.querySelector("input#texture-text-input"), // text_input,
+		document.querySelector("select#texture-key-droplist"), // key_droplist
+		document.querySelector("select#texture-entities-droplist"), // entity_droplist.
+		document.querySelector("div#texture-undo-button").undo, // undo array,
+		document.querySelector("div#texture-redo-button").redo // redo array.
+	);
+
+
 
 //		text_input.addEventListener( "change", function(){
 //
@@ -90,12 +91,16 @@
 //
 //		});
 
-	})(
-		textureEditor, // editor,
-		keyInputControls, // keyInputControls,
-		document.querySelector("input#texture-text-input"), // text_input,
-		document.querySelector("select#texture-key-droplist"), // key_droplist
-		document.querySelector("select#texture-entities-droplist") // entity_droplist.
-	);
 
-
+//			var key = key_droplist.value; // important!
+//
+//			if ( key === "uuid" ) text_input.value = editor[ key ];
+//			else if ( key_droplist.value === "" ) text_input.value = "";
+//			else if ( entity_droplist.value === "" ) text_input.value = "";
+//			else if ( key === "name" ) {
+//				if ( value === "" ) {
+//					text_input.value = editor[ key ]; return; // text_input.value, string.
+//				}
+//				if ( editor[ key ] !== value ) addtoUndo(); // add to undo.
+//				setTimeout(function(){ editor[ key ] = value; }); // text_input.value, string.
+//			} else text_input.value = "";

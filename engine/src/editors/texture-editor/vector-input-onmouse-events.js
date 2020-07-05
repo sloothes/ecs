@@ -98,9 +98,6 @@
 			var key = vector_droplist.value;
 			if ( key === "center" ) return;
 
-		//	Before change the editor[key] value add an undo state in undo queue.
-		//	Until now we has adding to Undo after the value has changed. (FIXED!)
-
 			if ( key ) {
 
 				var step = 1/100, min = -100, max = 100;
@@ -113,7 +110,8 @@
 						interval = setTimeout( function(){ 
 						//	Add on firstMouseDown event listener.
 							button.addEventListener( "mousedown", onfirstMouseDown ); // important!
-						//	Add to undo.
+						//	Before change the editor[key] value add an undo state in undo queue.
+						//	Until now we has adding to Undo after the value has changed. (FIXED!)
 							state.json && undo.unshift( state.json ); // add to undo.
 							debugMode && console.log( "undo:", undo.length, "redo:", redo.length ); 
 						}, 250);
@@ -129,7 +127,8 @@
 						interval = setTimeout( function(){ 
 						//	Add on firstMouseDown event listener.
 							button.addEventListener( "mousedown", onfirstMouseDown ); // important!
-						//	Add to undo.
+						//	Before change the editor[key] value add an undo state in undo queue.
+						//	Until now we has adding to Undo after the value has changed. (FIXED!)
 							state.json && undo.unshift( state.json ); // add to undo.
 							debugMode && console.log( "undo:", undo.length, "redo:", redo.length ); 
 						}, 250);
@@ -154,7 +153,6 @@
 		document.querySelector("li#texture-vector-y-decrease"), // decrease_y,
 		document.querySelector("select#texture-vector-droplist"), // vector_droplist,
 		document.querySelector("select#texture-entities-droplist"), // entity_droplist,
-	//	TODO: pass editor undo/redo arrays.
 		document.querySelector("div#texture-undo-button").undo, // undo array,
 		document.querySelector("div#texture-redo-button").redo // redo array.
 	);

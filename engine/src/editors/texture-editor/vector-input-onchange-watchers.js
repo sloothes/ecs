@@ -3,7 +3,7 @@
 
 //	vector-x input onchange.
 
-	(function(editor,keyInputControls,vector_x,vector_droplist,entity_droplist){
+	(function(editor,keyInputControls,vector_x,vector_droplist,entity_droplist,undo,redo){
 
 		function addtoUndo(){
 			var json = editor.toJSON();
@@ -13,8 +13,8 @@
 		}
 
 	//	blur.
-	//	vector_x.addEventListener( "change", vector_x.blur );
 		watch( vector_x, "onchange", function(){ vector_x.blur(); }); // EXPERIMANTAL!
+	//	vector_x.addEventListener( "change", vector_x.blur );
 
 	//	keyInputControls.
 
@@ -56,15 +56,14 @@
 			if ( isNaN(value) ) return vector_x.value = editor[key].x.toFixed(2);
 
 		//	enabled on key change.
-		//	Before change the editor[key] value add an undo state in undo queue.
-		//	Until now we has adding to Undo after the value has changed. (FIXED!)
 
 			switch (key) {
 
 				case "center":
 					var value = THREE.Math.clamp( Number(value), 0, 1 ); // important!
-					if ( editor[key].x !== Number(value) ) 
-						try { addtoUndo(); } catch(err) { console.warn("TODO:addtoUndo();"); } // debug!
+				//	Before change the editor[key] value add an undo state in undo queue.
+				//	Until now we has adding to Undo after the value has changed. (FIXED!)
+					if ( editor[key].x !== Number(value) ) addtoUndo(); // add to undo.
 				//	editor watcher updates value input.
 					setTimeout(function(){ editor[key].x = Number(value); }); // important!
 				//	editor[key].x = Number(value);
@@ -73,8 +72,9 @@
 				case "offset":
 				case "repeat":
 					var value = THREE.Math.clamp( Number(value), -100, 100 ); // number.
-					if ( editor[key].x !== Number(value) ) 
-						try { addtoUndo(); } catch(err) { console.warn("TODO:addtoUndo();"); } // debug!
+				//	Before change the editor[key] value add an undo state in undo queue.
+				//	Until now we has adding to Undo after the value has changed. (FIXED!)
+					if ( editor[key].x !== Number(value) ) addtoUndo(); // add to undo.
 				//	editor watcher updates value input.
 					setTimeout(function(){ editor[key].x = Number(value); }); // important!
 				//	editor[key].x = Number(value);
@@ -92,13 +92,15 @@
 		keyInputControls, // keyInputControls,
 		document.querySelector("input#texture-vector-x-input"), // vector_x,
 		document.querySelector("select#texture-vector-droplist"), // vector_droplist,
-		document.querySelector("select#texture-entities-droplist") // entity_droplist.
+		document.querySelector("select#texture-entities-droplist"), // entity_droplist.
+		document.querySelector("div#texture-undo-button").undo, // undo array,
+		document.querySelector("div#texture-redo-button").redo // redo array.
 	);
 
 
 //	vector-y input onchange.
 
-	(function(editor,keyInputControls,vector_y,vector_droplist,entity_droplist){
+	(function(editor,keyInputControls,vector_y,vector_droplist,entity_droplist,undo,redo){
 
 		function addtoUndo(){
 			var json = editor.toJSON();
@@ -108,8 +110,8 @@
 		}
 
 	//	blur.
-	//	vector_y.addEventListener( "change", vector_y.blur );
 		watch( vector_y, "onchange", function(){ vector_y.blur(); }); // EXPERIMANTAL!
+	//	vector_y.addEventListener( "change", vector_y.blur );
 
 	//	keyInputControls.
 
@@ -151,15 +153,14 @@
 			if ( isNaN(value) ) return vector_y.value = editor[key].y.toFixed(2);
 
 		//	enabled on key change.
-		//	Before change the editor[key] value add an undo state in undo queue.
-		//	Until now we has adding to Undo after the value has changed. (FIXED!)
 
 			switch (key) {
 
 				case "center":
 					var value = THREE.Math.clamp( Number(value), 0, 1 ); // important!
-					if ( editor[key].y !== Number(value) ) 
-						try { addtoUndo(); } catch(err) { console.warn("TODO:addtoUndo();"); } // debug!
+				//	Before change the editor[key] value add an undo state in undo queue.
+				//	Until now we has adding to Undo after the value has changed. (FIXED!)
+					if ( editor[key].y !== Number(value) ) addtoUndo();
 				//	editor watcher updates value input.
 					setTimeout(function(){ editor[key].y = Number(value); }); // important!
 				//	editor[key].y = Number(value);
@@ -168,8 +169,9 @@
 				case "offset":
 				case "repeat":
 					var value = THREE.Math.clamp( Number(value), -100, 100 ); // number.
-					if ( editor[key].y !== Number(value) ) 
-						try { addtoUndo(); } catch(err) { console.warn("TODO:addtoUndo();"); } // debug!
+				//	Before change the editor[key] value add an undo state in undo queue.
+				//	Until now we has adding to Undo after the value has changed. (FIXED!)
+					if ( editor[key].y !== Number(value) ) addtoUndo();
 				//	editor watcher updates value input.
 					setTimeout(function(){ editor[key].y = Number(value); }); // important!
 				//	editor[key].y = Number(value);
@@ -187,5 +189,7 @@
 		keyInputControls, // keyInputControls,
 		document.querySelector("input#texture-vector-y-input"), // vector_y,
 		document.querySelector("select#texture-vector-droplist"), // vector_droplist,
-		document.querySelector("select#texture-entities-droplist") // entity_droplist.
+		document.querySelector("select#texture-entities-droplist"), // entity_droplist.
+		document.querySelector("div#texture-undo-button").undo, // undo array,
+		document.querySelector("div#texture-redo-button").redo // redo array.
 	);

@@ -113,7 +113,8 @@
 					interval = setTimeout( function(){ 
 					//	Add on firstMouseDown event listener.
 						button.addEventListener( "mousedown", onfirstMouseDown ); // important!
-					//	Add to undo.
+					//	Before change the editor[key] value add an undo state in undo queue.
+					//	Until now we has adding to Undo after the value has changed. (FIXED!)
 						state.json && undo.unshift( state.json ); // add to undo.
 						debugMode && console.log( "undo:", undo.length, "redo:", redo.length ); 
 					}, 250);
@@ -183,7 +184,8 @@
 							interval = setTimeout( function(){ 
 							//	Add on firstMouseDown event listener.
 								button.addEventListener( "mousedown", onfirstMouseDown ); // important!
-							//	Add to undo.
+							//	Before change the editor[key] value add an undo state in undo queue.
+							//	Until now we has adding to Undo after the value has changed. (FIXED!)
 								state.json && undo.unshift( state.json ); // add to undo.
 								debugMode && console.log( "undo:", undo.length, "redo:", redo.length ); 
 							}, 250);
@@ -203,7 +205,8 @@
 							interval = setTimeout( function(){ 
 							//	Add on firstMouseDown event listener.
 								button.addEventListener( "mousedown", onfirstMouseDown ); // important!
-							//	Add to undo.
+							//	Before change the editor[key] value add an undo state in undo queue.
+							//	Until now we has adding to Undo after the value has changed. (FIXED!)
 								state.json && undo.unshift( state.json ); // add to undo.
 								debugMode && console.log( "undo:", undo.length, "redo:", redo.length ); 
 							}, 250);
@@ -225,7 +228,6 @@
 		document.querySelector("li#texture-value-decrease"), // decrease_v,
 		document.querySelector("select#texture-key-droplist"), // key_droplist,
 		document.querySelector("select#texture-entities-droplist"), // entity_droplist,
-	//	TODO: pass editor undo/redo arrays.
 		document.querySelector("div#texture-undo-button").undo, // undo array,
 		document.querySelector("div#texture-redo-button").redo // redo array.
 	);
