@@ -138,7 +138,7 @@
 		//	debugMode && console.log( "editor:", key, action, value );
 			var texture = getTextureByEntityId(); // id, entity_droplist.value.
 			if (texture) texture[ key ] = editor[ key ];
-			if ( key_droplist.value === key ) inpt.value = editor[ key ].toFixed(2);
+			if ( key_droplist.value === key ) input.value = editor[ key ].toFixed(2);
 		});
 
 		watch( editor, "rotation", function( key, action, value ){
