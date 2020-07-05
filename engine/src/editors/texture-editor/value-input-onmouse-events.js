@@ -14,9 +14,10 @@
 			state.key = key_droplist.value;
 			state.value = editor[ key ];
 			state.json = editor.toJSON(); // editor json.
+			debugMode && console.log( "state:",state ); // debug!
 		//	Remove on firstMouseDown event listener.
 			this.removeEventListener( "mousedown", onfirstMouseDown ); // important!
-			debugMode && console.log( "state:", state, "undo:", undo.length, "redo:", redo.length );
+		//	debugMode && console.log( "state:", state, "undo:", undo.length, "redo:", redo.length );
 		};
 
 		increase_v.addEventListener( "mousedown", onMouseDown );

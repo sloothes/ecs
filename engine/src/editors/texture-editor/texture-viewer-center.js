@@ -87,7 +87,7 @@
 		//	Remove on firstMouseDown event listener.
 			this.removeEventListener( "mousedown", onfirstMouseDown ); // important!
 		//	TODO: You must pass editor undo/redo arrays! (done)
-			debugMode && console.log( "state:", state, "undo:", undo.length, "redo:", redo.length );
+		//	debugMode && console.log( "state:", state, "undo:", undo.length, "redo:", redo.length );
 		};
 
 		increase_x.addEventListener( "mousedown", onMouseDown );
