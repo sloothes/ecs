@@ -1,5 +1,19 @@
 //	entity helpers.
 
+	function getObjectByEntityId( value ){
+
+		var entity_droplist = document.querySelector("select#entities-droplist");
+
+		if ( arguments.length ) 
+			var id = parseInt( value );
+		else
+			var id = parseInt( entity_droplist.value );
+
+		if ( isNaN(id) ) return;
+
+		return scene.getObjectById( id );
+	}
+
 	function getMaterialByEntityId( value ){
 
 		var entity_droplist = document.querySelector("select#material-entities-droplist");

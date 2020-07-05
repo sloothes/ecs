@@ -1312,7 +1312,7 @@
 			else
 				var id = parseInt( entities_droplist.value );
 
-			if ( id === NaN ) return;
+			if ( isNaN(id) ) return;
 
 			return scene.getObjectById( id );
 		}
@@ -1326,7 +1326,7 @@
 			else
 				var id = parseInt( material_droplist.value );
 
-			if ( id === NaN ) return;
+			if ( isNaN(id) ) return;
 
 			return material_entities.find( function( material ){
 				return material.id === id;
