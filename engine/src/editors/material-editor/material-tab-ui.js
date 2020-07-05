@@ -44,6 +44,8 @@
 
 	})( TabUI.Material.tab );
 
+//	map-droplist-ui.js
+
 	(function( tab ){
 
 	//	Material map droplist.
@@ -85,30 +87,7 @@
 
 	})( TabUI.Material.tab );
 
-	(function( tab ){
-
-	//	Import map texture button.
-	//	var tab = TabUI.Material.tab;
-
-		var row = document.createElement("h3");
-		row.style.cssText = "display:none;height:40px;margin-bottom:20px;"
-
-		var button = document.createElement("div");
-		button.id = "material-map-import-button";
-		button.textContent = "Import Texture";
-		button.style.cssText = "width:295px;float:right;height:40px;font-size:large;margin-right:15px;";
-		button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
-
-		var input = document.createElement("input");
-		input.type = "file";
-		input.id = "material-map-file-input";
-		input.style.cssText = "display:none;";
-		button.appendChild( input );
-
-		row.appendChild( button );
-		tab.appendChild( row );
-
-	})( TabUI.Material.tab );
+//	undo-redo-ui.js
 
 	(function( tab ){
 
@@ -135,6 +114,8 @@
 		tab.appendChild( row );
 
 	})( TabUI.Material.tab );
+
+//	text-input-ui.js
 
 	(function( tab ){
 
@@ -165,6 +146,8 @@
 		tab.appendChild( row );
 
 	})( TabUI.Material.tab );
+
+//	key-droplist-ui.js
 
 	(function( tab ){
 
@@ -217,6 +200,8 @@
 
 	})( TabUI.Material.tab );
 
+//	value-input-ui.js
+
 	(function( tab ){
 
 	//	Value input.
@@ -266,6 +251,8 @@
 
 	})( TabUI.Material.tab );
 
+//	vector-droplist-ui.js
+
 	(function( tab ){
 
 	//	Vector mode droplist.
@@ -305,6 +292,8 @@
 		tab.appendChild( row );
 
 	})( TabUI.Material.tab );
+
+//	vector-x-ui.js
 
 	(function( tab ){
 
@@ -357,6 +346,8 @@
 
 	})( TabUI.Material.tab );
 
+//	vector-y-ui.js
+
 	(function( tab ){
 
 	//	vector y.
@@ -408,6 +399,8 @@
 
 	})( TabUI.Material.tab );
 
+//	color-droplist-ui.js
+
 	(function( tab ){
 
 	//	Color mode droplist.
@@ -447,6 +440,8 @@
 		tab.appendChild( row );
 
 	})( TabUI.Material.tab );
+
+//	color-r-ui.js
 
 	(function( tab ){
 
@@ -497,6 +492,8 @@
 
 	})( TabUI.Material.tab );
 
+//	color-g-ui.js
+
 	(function( tab ){
 
 	//	color green (g).
@@ -545,6 +542,8 @@
 		tab.appendChild( row );
 
 	})( TabUI.Material.tab );
+
+//	color-b-ui.js
 
 	(function( tab ){
 
@@ -595,6 +594,8 @@
 
 	})( TabUI.Material.tab );
 
+//	needs-update-ui.js
+
 	(function( tab ){
 
 	//	NeedsUpdate material button.
@@ -614,24 +615,7 @@
 
 	})( TabUI.Material.tab );
 
-	(function( tab ){
-
-	//	Clone material button.
-	//	var tab = TabUI.Material.tab;
-
-		var row = document.createElement("h3");
-		row.style.cssText = "display:none;height:40px;margin-bottom:20px;"
-
-		var button = document.createElement("div");
-		button.id = "material-clone-button";
-		button.textContent = "Clone Material";
-		button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
-		button.style.cssText = "width:-webkit-fill-available;float:right;height:40px;font-size:large;margin-right:15px;";
-
-		row.appendChild( button );
-		tab.appendChild( row );
-
-	})( TabUI.Material.tab );
+//	exit-editor-ui.js
 
 	(function( tab ){
 
@@ -653,6 +637,8 @@
 	})( TabUI.Material.tab );
 
 //	===================================================================================================================  //
+
+//	type-droplist-ui.js
 
 	(function( tab ){
 
@@ -697,6 +683,8 @@
 
 	})( TabUI.Material.tab );
 
+//	create-material-ui.js
+
 	(function( tab ){
 
 	//	Create material entity button.
@@ -716,6 +704,8 @@
 
 	})( TabUI.Material.tab );
 
+//	clone-material-ui.js
+
 	(function( tab ){
 
 	//	Clone material button.
@@ -734,6 +724,8 @@
 		tab.appendChild( row );
 
 	})( TabUI.Material.tab );
+
+//	remove-material-ui.js
 
 	(function( tab ){
 
