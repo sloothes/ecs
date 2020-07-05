@@ -44,7 +44,7 @@
 	//	Get materials/ids.
 		for ( var i in arguments ) {
 			var param = arguments[i];
-			if ( typeof param === "object" && param.isTexture && param.id !== undefined )
+			if ( typeof param === "object" && param.isMaterial && param.id !== undefined )
 				materials.push( param );  // meterial;
 			else 
 				continue;
@@ -94,7 +94,7 @@
 			var param = arguments[i];
 			if ( typeof param === "number" && param % 1 === 0 ) // integer. 
 				remove_ids.unshift( param );    // remove_ids.push( param );
-			else if ( typeof param === "object" && param.isTexture && param.id !== undefined )
+			else if ( typeof param === "object" && param.isMaterial && param.id !== undefined )
 				remove_ids.unshift( param.id ); // remove_ids.push( param.id );
 			else 
 				continue;
@@ -147,7 +147,7 @@
 	MaterialManager.prototype.getMaterialById = function( value ){
 
 		var id = parseInt( value );
-		if ( id === NaN ) return;
+		if ( isNaN( id ) ) return;
 
 		return this.find( function( material ){
 			return material.id === id;
