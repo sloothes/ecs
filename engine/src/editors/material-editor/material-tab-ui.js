@@ -74,7 +74,7 @@
 
 	//	Add a watcher.
 		watch(select, "onchange", function(property, event, value){
-		//	debugMode && console.log({item:select,event:event,"map":value});
+		//	debugMode && console.log({item:select,event:event,map:value});
 		});
 
 	//	Call watchers.
@@ -134,7 +134,7 @@
 
 	//	Add a watcher.
 		watch(input, "onchange", function(property, event, value){
-			debugMode && console.log({item:input,event:event,"value":value});
+		//	debugMode && console.log({item:input,event:event,value:value});
 		});
 
 	//	Call watchers.
@@ -187,7 +187,7 @@
 
 	//	Add a watcher.
 		watch(select, "onchange", function(property, event, value){
-		//	debugMode && console.log({item:select,event:event,"key":value});
+		//	debugMode && console.log({item:select,event:event,key:value});
 		});
 
 	//	Call watchers.
@@ -235,7 +235,7 @@
 
 	//	Add a watcher.
 		watch(input, "onchange", function(property, event, value){
-			debugMode && console.log({item:input,event:event,"value":value});
+		//	debugMode && console.log({item:input,event:event,value:value});
 		});
 
 	//	Call watchers.
@@ -280,7 +280,7 @@
 
 	//	Add a watcher.
 		watch(select, "onchange", function(property, event, value){
-		//	debugMode && console.log({item:select,event:event,"vector":value});
+		//	debugMode && console.log({item:select,event:event,vector:value});
 		});
 
 	//	Call watchers.
@@ -330,7 +330,7 @@
 
 	//	Add a watcher.
 		watch(input, "onchange", function(property, event, value){
-			debugMode && console.log({item:input,event:event,"x":value});
+		//	debugMode && console.log({item:input,event:event,x:value});
 		});
 
 	//	Call watchers.
@@ -383,7 +383,7 @@
 
 	//	Add a watcher.
 		watch(input, "onchange", function(property, event, value){
-			debugMode && console.log({item:input,event:event,"y":value});
+		//	debugMode && console.log({item:input,event:event,y:value});
 		});
 
 	//	Call watchers.
@@ -428,7 +428,7 @@
 
 	//	Add a watcher.
 		watch(select, "onchange", function(property, event, value){
-		//	debugMode && console.log({item:select,event:event,"color":value});
+		//	debugMode && console.log({item:select,event:event,color:value});
 		});
 
 	//	Call watchers.
@@ -476,7 +476,7 @@
 
 	//	Add a watcher.
 		watch(input, "onchange", function(property, event, value){
-			debugMode && console.log({item:input,event:event,"red":value});
+		//	debugMode && console.log({item:input,event:event,red:value});
 		});
 
 	//	Call watchers.
@@ -527,7 +527,7 @@
 
 	//	Add a watcher.
 		watch(input, "onchange", function(property, event, value){
-			debugMode && console.log({item:input,event:event,"green":value});
+		//	debugMode && console.log({item:input,event:event,green:value});
 		});
 
 	//	Call watchers.
@@ -578,7 +578,7 @@
 
 	//	Add a watcher.
 		watch(input, "onchange", function(property, event, value){
-			debugMode && console.log({item:input,event:event,"blue":value});
+		//	debugMode && console.log({item:input,event:event,blue:value});
 		});
 
 	//	Call watchers.
