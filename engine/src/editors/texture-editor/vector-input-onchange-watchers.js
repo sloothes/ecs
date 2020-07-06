@@ -1,20 +1,12 @@
 //	vector-input-onchange-watchers.js
 
+//	vector-x input.
 
-//	vector-x input onchange.
-
-	(function(editor,keyInputControls,vector_x,vector_droplist,entity_droplist,undo,redo){
-
-		function addtoUndo(){
-			var json = editor.toJSON();
-			json && undo.unshift( json );
-			debugMode && console.log( "undo:", undo.length, "redo:", redo.length ); 
-			return;
-		}
+	(function(editor,keyInputControls,vector_x,vector_droplist,entity_droplist,undo_button,redo_button){
 
 	//	blur.
+
 		watch( vector_x, "onchange", function(){ vector_x.blur(); }); // EXPERIMANTAL!
-	//	vector_x.addEventListener( "change", vector_x.blur );
 
 	//	keyInputControls.
 
@@ -26,11 +18,21 @@
 			keyInputControls.isDisabled = true;
 		}
 
-	//	onblur.
 		vector_x.addEventListener( "blur", enableKeyInputControls );
-
-	//	onfocus.
 		vector_x.addEventListener( "focus", disableKeyInputControls );
+
+	//	add undo.
+
+		function addtoUndo(editor,key,value,undo_button,redo_button){
+			if ( editor[ key ] === value ) return;
+			var json = editor.toJSON();
+			json && undo_button.undo.unshift( json );
+			try { debugMode && console.log( 
+				"undo:", undo_button.undo.length, 
+				"redo:", redo_button.redo.length 
+			); } catch(err){;}
+			return;
+		}
 
 	//	onchange.
 
@@ -63,10 +65,9 @@
 					var value = THREE.Math.clamp( Number(value), 0, 1 ); // important!
 				//	Before change the editor[key] value add an undo state in undo queue.
 				//	Until now we has adding to Undo after the value has changed. (FIXED!)
-					if ( editor[key].x !== Number(value) ) addtoUndo(); // add to undo.
-				//	editor watcher updates value input.
+					addtoUndo( editor,key,value,undo_button,redo_button ); // add to undo.
 					setTimeout(function(){ editor[key].x = Number(value); }); // important!
-				//	editor[key].x = Number(value);
+				//	editor[key].x = Number(value); // editor watcher updates value input.
 				break;
 
 				case "offset":
@@ -74,10 +75,9 @@
 					var value = THREE.Math.clamp( Number(value), -100, 100 ); // number.
 				//	Before change the editor[key] value add an undo state in undo queue.
 				//	Until now we has adding to Undo after the value has changed. (FIXED!)
-					if ( editor[key].x !== Number(value) ) addtoUndo(); // add to undo.
-				//	editor watcher updates value input.
+					addtoUndo( editor,key,value,undo_button,redo_button ); // add to undo.
 					setTimeout(function(){ editor[key].x = Number(value); }); // important!
-				//	editor[key].x = Number(value);
+				//	editor[key].x = Number(value); // editor watcher updates value input.
 				break;
 
 				default:
@@ -93,25 +93,18 @@
 		document.querySelector("input#texture-vector-x-input"), // vector_x,
 		document.querySelector("select#texture-vector-droplist"), // vector_droplist,
 		document.querySelector("select#texture-entities-droplist"), // entity_droplist.
-		document.querySelector("div#texture-undo-button").undo, // undo array,
-		document.querySelector("div#texture-redo-button").redo // redo array.
+		document.querySelector("div#texture-undo-button"), // undo_button,
+		document.querySelector("div#texture-redo-button")  // redo_button (only needed for the debug console.log).
 	);
 
 
-//	vector-y input onchange.
+//	vector-y input.
 
-	(function(editor,keyInputControls,vector_y,vector_droplist,entity_droplist,undo,redo){
-
-		function addtoUndo(){
-			var json = editor.toJSON();
-			json && undo.unshift( json );
-			debugMode && console.log( "undo:", undo.length, "redo:", redo.length ); 
-			return;
-		}
+	(function(editor,keyInputControls,vector_y,vector_droplist,entity_droplist,undo_button,redo_button){
 
 	//	blur.
+
 		watch( vector_y, "onchange", function(){ vector_y.blur(); }); // EXPERIMANTAL!
-	//	vector_y.addEventListener( "change", vector_y.blur );
 
 	//	keyInputControls.
 
@@ -123,11 +116,21 @@
 			keyInputControls.isDisabled = true;
 		}
 
-	//	onblur.
 		vector_y.addEventListener( "blur", enableKeyInputControls );
-
-	//	onfocus.
 		vector_y.addEventListener( "focus", disableKeyInputControls );
+
+	//	add undo.
+
+		function addtoUndo(editor,key,value,undo_button,redo_button){
+			if ( editor[ key ] === value ) return;
+			var json = editor.toJSON();
+			json && undo_button.undo.unshift( json );
+			try { debugMode && console.log( 
+				"undo:", undo_button.undo.length, 
+				"redo:", redo_button.redo.length 
+			); } catch(err){;}
+			return;
+		}
 
 	//	onchange.
 
@@ -160,10 +163,9 @@
 					var value = THREE.Math.clamp( Number(value), 0, 1 ); // important!
 				//	Before change the editor[key] value add an undo state in undo queue.
 				//	Until now we has adding to Undo after the value has changed. (FIXED!)
-					if ( editor[key].y !== Number(value) ) addtoUndo();
-				//	editor watcher updates value input.
+					addtoUndo( editor,key,value,undo_button,redo_button ); // add to undo.
 					setTimeout(function(){ editor[key].y = Number(value); }); // important!
-				//	editor[key].y = Number(value);
+				//	editor[key].y = Number(value); // editor watcher updates value input.
 				break;
 
 				case "offset":
@@ -171,10 +173,9 @@
 					var value = THREE.Math.clamp( Number(value), -100, 100 ); // number.
 				//	Before change the editor[key] value add an undo state in undo queue.
 				//	Until now we has adding to Undo after the value has changed. (FIXED!)
-					if ( editor[key].y !== Number(value) ) addtoUndo();
-				//	editor watcher updates value input.
+					addtoUndo( editor,key,value,undo_button,redo_button ); // add to undo.
 					setTimeout(function(){ editor[key].y = Number(value); }); // important!
-				//	editor[key].y = Number(value);
+				//	editor[key].y = Number(value); // editor watcher updates value input.
 				break;
 
 				default:
@@ -190,6 +191,10 @@
 		document.querySelector("input#texture-vector-y-input"), // vector_y,
 		document.querySelector("select#texture-vector-droplist"), // vector_droplist,
 		document.querySelector("select#texture-entities-droplist"), // entity_droplist.
-		document.querySelector("div#texture-undo-button").undo, // undo array,
-		document.querySelector("div#texture-redo-button").redo // redo array.
+		document.querySelector("div#texture-undo-button"), // undo_button,
+		document.querySelector("div#texture-redo-button")  // redo_button (only needed for the debug console.log).
 	);
+
+
+	//	vector_x.addEventListener( "change", vector_x.blur );
+	//	vector_y.addEventListener( "change", vector_y.blur );
