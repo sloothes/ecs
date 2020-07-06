@@ -24,7 +24,7 @@
 	})(
 		materialEditor, // editor,
 		document.querySelector("select#material-map-droplist"),     // map_droplist.
-		document.querySelector("select#material-key-droplist"),     // key_droplist.
+		document.querySelector("select#material-keys-droplist"),    // key_droplist.
 		document.querySelector("select#material-vector-droplist"),  // vector_droplist.
 		document.querySelector("select#material-color-droplist"),   // vector_droplist.
 		document.querySelector("select#material-entities-droplist") // entity_droplist.

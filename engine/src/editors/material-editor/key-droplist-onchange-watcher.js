@@ -53,5 +53,5 @@
 		materialEditor, // editor,
 		document.querySelector("input#material-text-input"), // text_input,
 		document.querySelector("input#material-value-input"), // value_input,
-		document.querySelector("select#material-key-droplist") // key_droplist.
+		document.querySelector("select#material-keys-droplist") // key_droplist.
 	);
