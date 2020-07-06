@@ -18,7 +18,6 @@
 		this.uuid = THREE.Math.generateUUID();
 	};
 
-/*
 	TextureEditor.prototype.fromJSON = function( json ){
 	//	param: a texture json {object}
 	//	the missing TextureLoader.parse;
@@ -52,6 +51,7 @@
 
 	};
 
+/*
 	TextureEditor.prototype.undo = function(){
 
 		var editor = this;
