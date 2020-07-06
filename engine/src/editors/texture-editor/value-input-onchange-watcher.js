@@ -5,15 +5,8 @@
 		const RAD2DEG = 57.29577951308232;
 		const DEG2RAD = 0.017453292519943295;
 
-		function addtoUndo(){
-			var json = editor.toJSON();
-			json && undo.unshift( json );
-			debugMode && console.log( "undo:", undo.length, "redo:", redo.length ); 
-			return;
-		}
-
 	//	blur.
-	//	value_input.addEventListener( "change", value_input.blur );
+
 		watch( value_input, "onchange", function(){ value_input.blur(); }); // EXPERIMANTAL!
 
 	//	keyInputControls.
@@ -26,15 +19,24 @@
 			keyInputControls.isDisabled = true;
 		}
 
-	//	onblur.
 		value_input.addEventListener( "blur", enableKeyInputControls );
-
-	//	onfocus.
 		value_input.addEventListener( "focus", disableKeyInputControls );
 
-	//	onchange.
+	//	add undo.
 
-	//	EXPERIMANTAL.
+		function addtoUndo(editor,key,value,undo_button,redo_button){
+			if ( editor[ key ] === value ) return;
+			var json = editor.toJSON();
+			json && undo_button.undo.unshift( json );
+			try { debugMode && console.log( 
+				"undo:", undo_button.undo.length, 
+				"redo:", redo_button.redo.length 
+			); } catch(err){;}
+			return;
+		}
+
+	//	onchange (EXPERIMANTAL).
+
 		watch( value_input, "onchange", function(property, event, value){
 			debugMode && console.log({item:value_input,event:event,key:key_droplist.value,value:value});
 
@@ -53,7 +55,7 @@
 
 		//	enabled on input change.
 		//	Before change the editor[key] value, add an undo state in undo queue.
-		//	Until now we has adding to Undo after the value has changed. (FIXED!)
+		//	Until now we was adding to undo after the value has changed. (FIXED!)
 
 			switch ( key ){
 
@@ -217,3 +219,12 @@
 		document.querySelector("select#texture-entities-droplist") // entity_droplist.
 	);
 
+
+	//	function addtoUndo(){
+	//		var json = editor.toJSON();
+	//		json && undo.unshift( json );
+	//		debugMode && console.log( "undo:", undo.length, "redo:", redo.length ); 
+	//		return;
+	//	}
+
+	//	value_input.addEventListener( "change", value_input.blur );

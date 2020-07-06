@@ -1588,7 +1588,7 @@
 				switch ( key ){
 
 				//	Before change the editor[key] value add an undo state in undo queue.
-				//	Until now we has adding to Undo after the value has changed. That was mistake/bug! (TO FIX!)
+				//	Until now we was adding to undo after the value has changed. (FIXED!)
 
 					case "name":
 						if ( editor[key] !== value ) {
@@ -1642,7 +1642,7 @@
 					else value = Number(value); // convert to number, important!
 
 				//	Before change the editor[key] value add an undo state in undo queue.
-				//	Until now we has adding to Undo after the value has changed. That was mistake/bug! (TO FIX!)
+				//	Until now we was adding to undo after the value has changed. (FIXED!)
 
 					if ( editor[key] !== Boolean(value) ) {
 						addtoUndo(); editor[key] = Boolean(value); // important!
@@ -1658,7 +1658,7 @@
 					if ( isNaN(editor[key]) ) return value_input.value = ""; // avoid to pass NaN value!
 
 				//	Before change the editor[key] value add an undo state in undo queue.
-				//	Until now we has adding to Undo after the value has changed. That was mistake/bug! (TO FIX!)
+				//	Until now we was adding to undo after the value has changed. (FIXED!)
 
 					switch ( key ) {
 
@@ -1788,7 +1788,7 @@
 						else value = Number(value); // convert to number, important!
 
 					//	Before change the editor[key] value add an undo state in undo queue.
-					//	Until now we has adding to Undo after the value has changed. That was mistake/bug! (TO FIX!)
+					//	Until now we was adding to undo after the value has changed. (FIXED!)
 
 						if ( editor[key] !== Boolean(value) ) {
 							addtoUndo(); editor[key] = Boolean(value); // important!
@@ -1805,7 +1805,7 @@
 					+ "linewidth,size,scale,gapSize,dashSize,shininess,rotation").split(",").includes(key) ) {
 
 					//	Before change the editor[key] value add an undo state in undo queue.
-					//	Until now we has adding to Undo after the value has changed. That was mistake/bug! (TO FIX!)
+					//	Until now we was adding to undo after the value has changed. (FIXED!)
 
 						if ( isNaN(value) ) return value_input.value = ""; // avoid to pass NaN value!
 
@@ -1863,7 +1863,7 @@
 					+ "normalMapType,combine,polygonOffsetUnits,polygonOffsetFactor").split(",").includes(key) ) {
 
 					//	Before change the editor[key] value add an undo state in undo queue.
-					//	Until now we has adding to Undo after the value has changed. That was mistake/bug! (TO FIX!)
+					//	Until now we was adding to undo after the value has changed. (FIXED!)
 
 						switch ( key ) {
 
@@ -1941,7 +1941,7 @@
 
 			//	enabled on key change.
 			//	Before change the editor[key] value add an undo state in undo queue.
-			//	Until now we has adding to Undo after the value has changed. That was mistake/bug! (TO FIX!)
+			//	Until now we was adding to undo after the value has changed. (FIXED!)
 
 				else if ( ["normalScale"].includes(key) ) {
 
@@ -1982,7 +1982,7 @@
 
 			//	enabled on key change.
 			//	Before change the editor[key] value add an undo state in undo queue.
-			//	Until now we has adding to Undo after the value has changed. That was mistake/bug! (TO FIX!)
+			//	Until now we was adding to undo after the value has changed. (FIXED!)
 
 				else if ( ["normalScale"].includes(key) ) {
 
@@ -2021,7 +2021,7 @@
 
 			//	enabled on key change.
 			//	Before change the editor[key] value add an undo state in undo queue.
-			//	Until now we has adding to Undo after the value has changed. That was mistake/bug! (TO FIX!)
+			//	Until now we was adding to undo after the value has changed. (FIXED!)
 
 				else if ( ["color","emissive","specular"].includes(key) ) {
 
@@ -2059,7 +2059,7 @@
 
 			//	enabled on key change.
 			//	Before change the editor[key] value add an undo state in undo queue.
-			//	Until now we has adding to Undo after the value has changed. That was mistake/bug! (TO FIX!)
+			//	Until now we was adding to undo after the value has changed. (FIXED!)
 
 				else if ( ["color","emissive","specular"].includes(key) ) {
 
@@ -2097,7 +2097,7 @@
 
 			//	enabled on key change.
 			//	Before change the editor[key] value add an undo state in undo queue.
-			//	Until now we has adding to Undo after the value has changed. That was mistake/bug! (TO FIX!)
+			//	Until now we was adding to undo after the value has changed. (FIXED!)
 
 				else if ( ["color","emissive","specular"].includes(key) ) {
 
@@ -2266,7 +2266,7 @@
 
 
 			//	Before change the editor[key] value add an undo state in undo queue.
-			//	Until now we has adding to Undo after the value has changed. That was mistake/bug! (TO FIX!)
+			//	Until now we was adding to undo after the value has changed. (FIXED!)
 
 				function updateFloatRotationValue(){
 					var step = 0.1 * Math.PI/180; // 0.1 deg.

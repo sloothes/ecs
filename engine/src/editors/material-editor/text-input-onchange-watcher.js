@@ -45,6 +45,7 @@
 
 			switch ( key ){
 
+				case "":
 				case "uuid":
 				case "type":
 				case "linecap":
@@ -82,5 +83,5 @@
 		document.querySelector("select#material-keys-droplist"), // key_droplist
 		document.querySelector("select#material-entities-droplist"), // entity_droplist.
 		document.querySelector("div#material-undo-button"), // undo_button,
-		document.querySelector("div#material-redo-button") // redo_button (is needed only for the debug console.log).
+		document.querySelector("div#material-redo-button")  // redo_button (only needed for the debug console.log).
 	);

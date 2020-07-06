@@ -45,6 +45,7 @@
 
 			switch ( key ){
 
+				case "":
 				case "uuid":
 					[text_input.value, value_input.value] = [ editor[key], "" ];
 				break;
