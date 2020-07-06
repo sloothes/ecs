@@ -1,6 +1,6 @@
 //	texture-editor.js
 
-	const textureEditor = new TextureEditor();
+//	const textureEditor = new TextureEditor();
 
 /*
 	const textureEditor = (function( entities,viewer ){

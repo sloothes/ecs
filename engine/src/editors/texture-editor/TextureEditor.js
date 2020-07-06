@@ -81,6 +81,8 @@
 
 	};
 
+	const textureEditor = new TextureEditor();
+
 /*
 	TextureEditor.prototype.undo = function(){
 

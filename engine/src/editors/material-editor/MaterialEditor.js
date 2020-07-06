@@ -149,6 +149,8 @@
 
 	};
 
+	const materialEditor = new MaterialEditor();
+
 /*
 	MaterialEditor.prototype.undo = function(){
 

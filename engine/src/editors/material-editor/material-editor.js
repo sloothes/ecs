@@ -1,6 +1,6 @@
 //	material-editor.js
 
-	const materialEditor = new MaterialEditor();
+//	const materialEditor = new MaterialEditor();
 
 /*
 	const materialEditor = (function(){
