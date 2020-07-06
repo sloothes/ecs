@@ -8,8 +8,8 @@
 		const RAD2DEG = THREE.Math.RAD2DEG;
 		const DEG2RAD = THREE.Math.DEG2RAD;
 
-	//	const undo = new UndoArray(); debugMode && console.log( {"undo": undo} ); // we could attach undo array on undo_button.
-	//	const redo = new UndoArray(); debugMode && console.log( {"redo": redo} ); // we could attach redo array on redo_button.
+		const undo = new UndoArray(); debugMode && console.log( {"undo": undo} ); // we could attach undo array on undo_button.
+		const redo = new UndoArray(); debugMode && console.log( {"redo": redo} ); // we could attach redo array on redo_button.
 
 	//	droplists.
 
