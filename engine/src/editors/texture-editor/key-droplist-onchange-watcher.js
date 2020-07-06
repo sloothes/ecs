@@ -8,16 +8,25 @@
 		watch( key_droplist, "onchange", function( property, event, key ){
 			debugMode && console.log({item:key_droplist,event:event,key:key});
 
-			if ( !key ) [ value_input.value, text_input.value ] = ["", ""];
-			else if ( key == "name" || key == "uuid" ) {
-				[ value_input.value, text_input.value ] = [ "", editor[key] ];
-			} else if ( key == "rotation" ) {
-				[ value_input.value, text_input.value ] = [ (RAD2DEG*editor[key]).toFixed(1), "" ];
-			} else if ( key == "anisotropy" ) {
-				[ value_input.value, text_input.value ] = [ editor[key].toFixed(2), "" ];
-			} else {
-				[ value_input.value, text_input.value ] = [ editor[key], "" ];
+			switch ( key ) {
+				case "":
+					[ value_input.value, text_input.value ] = ["", ""];
+				break;
+				case "name":
+				case "uuid":
+					[ value_input.value, text_input.value ] = [ "", editor[key] ];
+				break;
+				case "anisotropy":
+					[ value_input.value, text_input.value ] = [ editor[key].toFixed(2), "" ];
+				break;
+				case "rotation":
+					[ value_input.value, text_input.value ] = [ (RAD2DEG*editor[key]).toFixed(1), "" ];
+				break;
+				default:
+					[ value_input.value, text_input.value ] = [ editor[key], "" ];
+				break;
 			}
+
 		});
 
 	})(
@@ -26,3 +35,14 @@
 		document.querySelector("input#texture-value-input"), // value_input,
 		document.querySelector("select#texture-key-droplist") // key_droplist.
 	);
+
+//			if ( key === "" ) [ value_input.value, text_input.value ] = ["", ""];
+//			else if ( key == "name" || key == "uuid" ) {
+//				[ value_input.value, text_input.value ] = [ "", editor[key] ];
+//			} else if ( key == "rotation" ) {
+//				[ value_input.value, text_input.value ] = [ (RAD2DEG*editor[key]).toFixed(1), "" ];
+//			} else if ( key == "anisotropy" ) {
+//				[ value_input.value, text_input.value ] = [ editor[key].toFixed(2), "" ];
+//			} else {
+//				[ value_input.value, text_input.value ] = [ editor[key], "" ];
+//			}
