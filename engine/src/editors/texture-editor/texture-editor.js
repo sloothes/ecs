@@ -99,8 +99,6 @@
 
 	(function(editor,undo_button,redo_button,entity_droplist){
 
-		var interval;
-
 		undo_button.undo = undo; // we attach undo array on undo_button.undo to parse in functions.
 		redo_button.redo = redo; // we attach redo array on redo_button.redo to parse in functions.
 
