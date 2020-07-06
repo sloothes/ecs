@@ -646,7 +646,7 @@
 	//	var tab = TabUI.Material.tab;
 
 		var row = document.createElement("h3");
-		row.textContent = "Material:";
+		row.textContent = "type:";
 		row.style.cssText = "height:40px;margin-top:40px;"
 
 		var select = document.createElement("select");
