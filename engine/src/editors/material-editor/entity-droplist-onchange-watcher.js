@@ -18,7 +18,7 @@
 			callWatchers( key_droplist, "onchange", "change", key_droplist.value );
 			callWatchers( vector_droplist, "onchange", "change", vector_droplist.value );
 			callWatchers( color_droplist, "onchange", "change", color_droplist.value );
-			callWatchers( entity_droplist, "onchange", "change", entity_droplist.value );
+		//	callWatchers( entity_droplist, "onchange", "change", entity_droplist.value );  // stack overflow!
 		});
 
 	})(
