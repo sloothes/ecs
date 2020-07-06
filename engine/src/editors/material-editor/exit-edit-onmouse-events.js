@@ -32,6 +32,8 @@
 					entity_droplist.value = "";
 				})();
 
+				debugMode && console.log("exit material edit mode.");
+
 				return;
 
 			}, 250);

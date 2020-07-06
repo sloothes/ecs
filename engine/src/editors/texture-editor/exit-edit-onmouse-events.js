@@ -28,6 +28,8 @@
 					entity_droplist.value = "";
 				})();
 
+				debugMode && console.log("exit texture edit mode.");
+
 				return;
 
 			}, 250);
