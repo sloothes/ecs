@@ -21,9 +21,12 @@
 
 			clearTimeout( interval );
 			interval = setTimeout( function(){
+				try {
 
-			//	Copy texture state (undo).
-				editor.fromJSON( json ); // update.
+				//	Copy texture state (undo).
+					editor.fromJSON( json ); // update.
+
+				} catch(err){ debugMode && console.error(err); }
 
 				debugMode && console.log( "undo:", undo_button.undo.length, "redo:", redo_button.redo.length );
 
@@ -45,9 +48,12 @@
 
 			clearTimeout( interval );
 			interval = setTimeout( function(){
+				try {
 
-			//	Copy texture state (redo).
-				editor.fromJSON( json ); // update.
+				//	Copy texture state (redo).
+					editor.fromJSON( json ); // update.
+
+				} catch(err){ debugMode && console.error(err); }
 
 				debugMode && console.log( "undo:", undo_button.undo.length, "redo:", redo_button.redo.length );
 

@@ -21,11 +21,14 @@
 
 			clearTimeout( interval );
 			interval = setTimeout( function(){
+				try {
 
-			//	Copy material state (undo).
-				var loader = new THREE.MaterialLoader();
-				var material = loader.parse( material );
-				editor.copy( material ); // update.
+				//	Copy material state (undo).
+					var loader = new THREE.MaterialLoader();
+					var material = loader.parse( material );
+					editor.copy( material ); // update.
+
+				} catch(err){ debugMode && console.error(err); }
 
 				debugMode && console.log( "undo:", undo_button.undo.length, "redo:", redo_button.redo.length );
 
@@ -47,11 +50,14 @@
 
 			clearTimeout( interval );
 			interval = setTimeout( function(){
+				try {
 
-			//	Copy material state (undo).
-				var loader = new THREE.MaterialLoader();
-				var material = loader.parse( material );
-				editor.copy( material ); // update.
+				//	Copy material state (undo).
+					var loader = new THREE.MaterialLoader();
+					var material = loader.parse( material );
+					editor.copy( material ); // update.
+
+				} catch(err){ debugMode && console.error(err); }
 
 				debugMode && console.log( "undo:", undo_button.undo.length, "redo:", redo_button.redo.length );
 
