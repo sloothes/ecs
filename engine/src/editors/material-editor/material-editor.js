@@ -13,48 +13,48 @@
 
 	//	droplists.
 
-		const key_droplist = document.getElementById("material-keys-droplist");
-		const type_droplist = document.getElementById("material-type-droplist");
-		const color_droplist = document.getElementById("material-color-droplist");
-		const vector_droplist = document.getElementById("material-vector-droplist");
-		const entity_droplist = document.getElementById("material-entities-droplist");
-		const texture_droplist = document.getElementById("material-map-droplist");
+		const key_droplist = document.querySelector("select#material-keys-droplist");
+		const type_droplist = document.querySelector("select#material-type-droplist");
+		const color_droplist = document.querySelector("select#material-color-droplist");
+		const vector_droplist = document.querySelector("select#material-vector-droplist");
+		const entity_droplist = document.querySelector("select#material-entities-droplist");
+		const texture_droplist = document.querySelector("select#material-map-droplist");
 
 	//	mouse inputs.
 
-		const increase_v = document.getElementById("material-value-increase");
-		const decrease_v = document.getElementById("material-value-decrease");
-		const increase_x = document.getElementById("material-vector-x-increase");
-		const increase_y = document.getElementById("material-vector-y-increase");
-		const decrease_x = document.getElementById("material-vector-x-decrease");
-		const decrease_y = document.getElementById("material-vector-y-decrease");
+		const increase_v = document.querySelector("li#material-value-increase");
+		const decrease_v = document.querySelector("li#material-value-decrease");
+		const increase_x = document.querySelector("li#material-vector-x-increase");
+		const increase_y = document.querySelector("li#material-vector-y-increase");
+		const decrease_x = document.querySelector("li#material-vector-x-decrease");
+		const decrease_y = document.querySelector("li#material-vector-y-decrease");
 
-		const increase_r = document.getElementById("material-color-r-increase");
-		const increase_g = document.getElementById("material-color-g-increase");
-		const increase_b = document.getElementById("material-color-b-increase");
-		const decrease_r = document.getElementById("material-color-r-decrease");
-		const decrease_g = document.getElementById("material-color-g-decrease");
-		const decrease_b = document.getElementById("material-color-b-decrease");
+		const increase_r = document.querySelector("li#material-color-r-increase");
+		const increase_g = document.querySelector("li#material-color-g-increase");
+		const increase_b = document.querySelector("li#material-color-b-increase");
+		const decrease_r = document.querySelector("li#material-color-r-decrease");
+		const decrease_g = document.querySelector("li#material-color-g-decrease");
+		const decrease_b = document.querySelector("li#material-color-b-decrease");
 
 	//	keyboard inputs.
 
-		const color_r = document.getElementById("material-color-r-input");
-		const color_g = document.getElementById("material-color-g-input");
-		const color_b = document.getElementById("material-color-b-input");
-		const vector_x = document.getElementById("material-vector-x-input");
-		const vector_y = document.getElementById("material-vector-y-input");
-		const text_input  = document.getElementById("material-text-input");
-		const value_input = document.getElementById("material-value-input");
+		const color_r = document.querySelector("input#material-color-r-input");
+		const color_g = document.querySelector("input#material-color-g-input");
+		const color_b = document.querySelector("input#material-color-b-input");
+		const vector_x = document.querySelector("input#material-vector-x-input");
+		const vector_y = document.querySelector("input#material-vector-y-input");
+		const text_input  = document.querySelector("input#material-text-input");
+		const value_input = document.querySelector("input#material-value-input");
 
 	//	material tab buttons.
 
-		const exit_button = document.getElementById("material-exit-mode");
-		const redo_button = document.getElementById("material-redo-button");
-		const undo_button = document.getElementById("material-undo-button");
-		const clone_button = document.getElementById("clone-material-button");
-		const create_button = document.getElementById("create-material-button");
-		const remove_button = document.getElementById("remove-material-button");
-		const needsUpdate_button = document.getElementById("material-needs-update");
+		const exit_button = document.querySelector("div#material-exit-mode");
+		const redo_button = document.querySelector("div#material-redo-button");
+		const undo_button = document.querySelector("div#material-undo-button");
+		const clone_button = document.querySelector("div#clone-material-button");
+		const create_button = document.querySelector("div#create-material-button");
+		const remove_button = document.querySelector("div#remove-material-button");
+		const needsUpdate_button = document.querySelector("div#material-needs-update");
 
 	//	material editor.
 
@@ -95,7 +95,7 @@
 		function exitFromEditMode(){
 			editor.reset();
 			resetUIValues();
-		//	clearUndoRedo();
+			clearUndoRedo();
 			return;
 		}
 
