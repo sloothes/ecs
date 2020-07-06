@@ -99,8 +99,8 @@
 
 	(function(editor,undo_button,redo_button,entity_droplist){
 
-		undo_button.undo = undo; // we attach undo array on undo_button.undo to parse in functions.
-		redo_button.redo = redo; // we attach redo array on redo_button.redo to parse in functions.
+		undo_button.undo = new UndoArray(); // we attach undo array on undo_button.undo to parse in functions.
+		redo_button.redo = new UndoArray(); // we attach redo array on redo_button.redo to parse in functions.
 
 		undo_button.addEventListener( "click", function(){
 			debugMode && console.log("undo:",undo_button.undo.length,"redo:",redo_button.redo.length);
