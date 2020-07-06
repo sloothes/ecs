@@ -51,6 +51,36 @@
 
 	};
 
+	TextureEditor.prototype.update = function( value ){
+
+	//	Copies the values of the target texture of textures
+	//	entity manager. Does not updates the target texture.
+	//	dependences: texture_entities {texture manager},
+	//	param: a texture id {string or number},
+
+		var editor = this;
+
+	//	get target texture.
+		var texture = getTextureByEntityId( value );
+	//	debugMode && console.log( "target texture:", texture );
+
+		if ( !texture ) {
+			editor.reset();
+			console.log("editor update:", false);
+			return false; // important!
+		}
+
+	//	copy texture (update).
+		editor.copy( texture );
+		editor.name = texture.name;
+		editor.uuid = texture.uuid;
+
+	//	return true.
+		console.log("editor update:", true);
+		return true; // important!
+
+	};
+
 /*
 	TextureEditor.prototype.undo = function(){
 
@@ -103,35 +133,4 @@
 		}, 250);
 	};
 */
-
-	TextureEditor.prototype.update = function( value ){
-
-	//	Copies the values of the target texture of textures
-	//	entity manager. Does not updates the target texture.
-	//	dependences: texture_entities {texture manager},
-	//	param: a texture id {string or number},
-
-		var editor = this;
-
-	//	get target texture.
-		var texture = getTextureByEntityId( value );
-	//	debugMode && console.log( "target texture:", texture );
-
-		if ( !texture ) {
-			editor.reset();
-			console.log("editor update:", false);
-			return false; // important!
-		}
-
-	//	copy texture (update).
-		editor.copy( texture );
-		editor.name = texture.name;
-		editor.uuid = texture.uuid;
-
-	//	return true.
-		console.log("editor update:", true);
-		return true; // important!
-
-	};
-
 

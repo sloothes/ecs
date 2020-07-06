@@ -115,7 +115,41 @@
 		editor.uuid = material.uuid;
 
 	};
+*/
 
+	MaterialEditor.prototype.update = function( value ){
+
+	//	Copies the values of the target material of material
+	//	entity manager. Does not updates the target material.
+	//	dependences: material_entities {material manager},
+	//	param: a material id {string or number},
+
+		var editor = this;
+
+		editor.reset(); // important!
+
+	//	get target material.
+		var material = material_entities.getMaterialById( value );
+	//	debugMode && console.log( "editor material:", material );
+
+		if ( !material ) {
+			editor.reset();
+			console.log("editor update:", false);
+			return false; // important!
+		}
+
+	//	copy material (update).
+		editor.copy( material );
+		editor.type = material.type;
+		editor.uuid = material.uuid;
+
+	//	return true.
+		console.log("editor update:", true);
+		return true; // important!
+
+	};
+
+/*
 	MaterialEditor.prototype.undo = function(){
 
 		var editor = this;
@@ -167,35 +201,3 @@
 		}, 250);
 	};
 */
-
-	MaterialEditor.prototype.update = function( value ){
-
-	//	Copies the values of the target material of material
-	//	entity manager. Does not updates the target material.
-	//	dependences: material_entities {material manager},
-	//	param: a material id {string or number},
-
-		var editor = this;
-
-		editor.reset(); // important!
-
-	//	get target material.
-		var material = material_entities.getMaterialById( value );
-	//	debugMode && console.log( "editor material:", material );
-
-		if ( !material ) {
-			editor.reset();
-			console.log("editor update:", false);
-			return false; // important!
-		}
-
-	//	copy material (update).
-		editor.copy( material );
-		editor.type = material.type;
-		editor.uuid = material.uuid;
-
-	//	return true.
-		console.log("editor update:", true);
-		return true; // important!
-
-	};
