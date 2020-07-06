@@ -29,5 +29,5 @@
 		textureEditor, // editor,
 		document.querySelector("div#texture-undo-button"), // undo_button,
 		document.querySelector("div#texture-redo-button"),  // redo_button,
-		document.querySelector("select#select#texture-entities-droplist") // entity_droplist
+		document.querySelector("select#texture-entities-droplist") // entity_droplist
 	);

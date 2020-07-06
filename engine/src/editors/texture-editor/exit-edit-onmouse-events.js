@@ -45,6 +45,6 @@
 		document.querySelector("input#texture-vector-y-input"), // vector_y,
 		document.querySelector("select#texture-key-droplist"), // key_droplist,
 		document.querySelector("select#texture-vector-droplist"), // vector_droplist,
-		document.querySelector("select#select#texture-entities-droplist") // entity_droplist
+		document.querySelector("select#texture-entities-droplist") // entity_droplist
 	);
 
