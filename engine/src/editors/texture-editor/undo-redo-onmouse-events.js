@@ -56,7 +56,7 @@
 		};
 
 		undo_button.addEventListener( "click", function(){
-			debugMode && console.log("undo:",undo_button.undo.length,"redo:",redo_button.redo.length);
+		//	debugMode && console.log("undo:",undo_button.undo.length,"redo:",redo_button.redo.length);
 			if ( entity_droplist.value === "" ) { 
 			//	clearUndoRedo();
 				undo_button.undo.clear();
@@ -66,7 +66,7 @@
 		});
 
 		redo_button.addEventListener( "click", function(){
-			debugMode && console.log("undo:",undo_button.undo.length,"redo:",redo_button.redo.length);
+		//	debugMode && console.log("undo:",undo_button.undo.length,"redo:",redo_button.redo.length);
 			if ( entity_droplist.value === "" ) { 
 			//	clearUndoRedo();
 				undo_button.undo.clear();
