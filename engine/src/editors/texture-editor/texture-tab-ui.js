@@ -27,7 +27,7 @@
 
 	//	Add a watcher.
 		watch(select, "onchange", function(property, event, value){
-		//	debugMode && console.log({item:select,event:event,"texture.id":value});
+		//	debugMode && console.log({item:select,event:event,"texture id":value});
 		});
 
 	//	Call watchers.
