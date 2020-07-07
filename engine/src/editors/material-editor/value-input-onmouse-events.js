@@ -140,9 +140,24 @@
 
 		} // end onMouseDown
 
+	//	add undo.
 
+		function addtoUndo(state,key,value,undo_button,redo_button){
+			if ( state.key !== key ) return;
+			if ( state.value === value ) return;
+			state.json && undo_button.undo.unshift( state.json );
+			try { debugMode && console.log( 
+				"undo:", undo_button.undo.length, 
+				"redo:", redo_button.redo.length 
+			); } catch(err){;}
+			return;
+		}
 
+		function onMouseClick(){
 
+			debugMode && console.log( "on Mouse Click:", interval );
+
+		} // end onMouseClick
 
 	})(
 		materialEditor, // editor,
