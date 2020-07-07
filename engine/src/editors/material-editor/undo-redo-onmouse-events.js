@@ -25,7 +25,7 @@
 
 				//	Copy material state (undo).
 					var loader = new THREE.MaterialLoader();
-					var material = loader.parse( material );
+					var material = loader.parse( json );
 					editor.copy( material ); // update.
 
 				} catch(err){ debugMode && console.error(err); }
@@ -54,7 +54,7 @@
 
 				//	Copy material state (undo).
 					var loader = new THREE.MaterialLoader();
-					var material = loader.parse( material );
+					var material = loader.parse( json );
 					editor.copy( material ); // update.
 
 				} catch(err){ debugMode && console.error(err); }
