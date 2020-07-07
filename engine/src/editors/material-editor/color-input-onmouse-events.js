@@ -61,8 +61,6 @@
 						if ( button === decrease_r ) value = THREE.Math.clamp( value-step, min, max );
 						editor[ key ].r = value;  // editor watcher updates input value.
 						interval = setTimeout( update, clock.getDelta() );
-						debugMode && console.log("on mousedown:", editor[ key ].r);
-
 					//	color_r.value = parseInt( 255 * ( editor[ key ].r = value ));
 					break;
 				}
@@ -78,6 +76,7 @@
 	//	add undo.
 
 		function addtoUndo(state,key,r,value,undo_button,redo_button){
+			debugMode && console.log({state:state,key:key,value:value});
 			if ( state.key !== key ) return;
 			if ( state.value[r] === value ) return;
 			state.json && undo_button.undo.unshift( state.json );
@@ -114,7 +113,6 @@
 						addtoUndo(state,key,"r",value,undo_button,redo_button); // add to undo.
 					}, 250);
 					editor[ key ].r = value; // editor watcher updates input value.
-					debugMode && console.log( "on Mouse Click:", interval );
 				//	color_r.value = parseInt( 255 * ( editor[ key ].r = value ));
 				break;
 
