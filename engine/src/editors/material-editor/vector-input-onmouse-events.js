@@ -112,7 +112,6 @@
 			}
 
 			debugMode && console.log( "on Mouse Click:", interval );
-
 		}
 
 	})(
@@ -237,7 +236,6 @@
 			}
 
 			debugMode && console.log( "on Mouse Click:", interval );
-
 		}
 
 	})(
