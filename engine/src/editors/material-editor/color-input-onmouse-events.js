@@ -189,8 +189,8 @@
 					case "specular":
 						var min = 0, max = 1, step = 1/255;
 						var value = Number(editor[ key ].g); // get value from editor.
-						if ( button === increase_r ) value = THREE.Math.clamp( value+step, min, max );
-						if ( button === decrease_r ) value = THREE.Math.clamp( value-step, min, max );
+						if ( button === increase_g ) value = THREE.Math.clamp( value+step, min, max );
+						if ( button === decrease_g ) value = THREE.Math.clamp( value-step, min, max );
 						editor[ key ].g = value;  // editor watcher updates input value.
 						interval = setTimeout( update, clock.getDelta() );
 					//	color_g.value = parseInt( 255 * ( editor[ key ].g = value ));
@@ -235,8 +235,8 @@
 				case "specular":
 					var min = 0, max = 1, step = 1/255;
 					var value = Number(editor[ key ].g); // get value from editor.
-					if ( button === increase_r ) value = THREE.Math.clamp( value+step, min, max );
-					if ( button === decrease_r ) value = THREE.Math.clamp( value-step, min, max );
+					if ( button === increase_g ) value = THREE.Math.clamp( value+step, min, max );
+					if ( button === decrease_g ) value = THREE.Math.clamp( value-step, min, max );
 					interval = setTimeout( function(){ 
 					//	Add on firstMouseDown event listener.
 						button.addEventListener( "mousedown", onfirstMouseDown ); // important!
@@ -321,8 +321,8 @@
 					case "specular":
 						var min = 0, max = 1, step = 1/255;
 						var value = Number(editor[ key ].b); // get value from editor.
-						if ( button === increase_r ) value = THREE.Math.clamp( value+step, min, max );
-						if ( button === decrease_r ) value = THREE.Math.clamp( value-step, min, max );
+						if ( button === increase_b ) value = THREE.Math.clamp( value+step, min, max );
+						if ( button === decrease_b ) value = THREE.Math.clamp( value-step, min, max );
 						editor[ key ].b = value;  // editor watcher updates input value.
 						interval = setTimeout( update, clock.getDelta() );
 					//	color_b.value = parseInt( 255 * ( editor[ key ].b = value ));
@@ -367,8 +367,8 @@
 				case "specular":
 					var min = 0, max = 1, step = 1/255;
 					var value = Number(editor[ key ].b); // get value from editor.
-					if ( button === increase_r ) value = THREE.Math.clamp( value+step, min, max );
-					if ( button === decrease_r ) value = THREE.Math.clamp( value-step, min, max );
+					if ( button === increase_b ) value = THREE.Math.clamp( value+step, min, max );
+					if ( button === decrease_b ) value = THREE.Math.clamp( value-step, min, max );
 					interval = setTimeout( function(){ 
 					//	Add on firstMouseDown event listener.
 						button.addEventListener( "mousedown", onfirstMouseDown ); // important!
