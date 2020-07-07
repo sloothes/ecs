@@ -38,7 +38,6 @@
 		decrease_r.addEventListener( "click", onMouseClick );
 
 		function onMouseDown(){ 
-			console.log("on mousedown!");
 
 			clearTimeout( interval ); // important!
 
@@ -62,6 +61,8 @@
 						if ( button === decrease_r ) value = THREE.Math.clamp( value-step, min, max );
 						editor[ key ].r = value;  // editor watcher updates input value.
 						interval = setTimeout( update, clock.getDelta() );
+						debugMode && console.log("on mousedown:", editor[ key ].r);
+
 					//	color_r.value = parseInt( 255 * ( editor[ key ].r = value ));
 					break;
 				}
