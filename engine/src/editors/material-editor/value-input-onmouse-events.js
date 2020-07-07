@@ -17,7 +17,7 @@
 			state.key = key_droplist.value;
 			state.value = editor[ key ];
 			state.json = editor.toJSON(); // editor json.
-			debugMode && console.log( "state:",state ); // debug!
+			debugMode && console.log( "state:", state ); // debug!
 		//	Remove on firstMouseDown event listener.
 			this.removeEventListener( "mousedown", onfirstMouseDown ); // important!
 		};
@@ -144,13 +144,12 @@
 
 		function addtoUndo(state,key,value,undo_button,redo_button){
 			debugMode && console.log({
-				key:key, "state key":state.key,
-				value:value, "state value":state.value,
-				"a: state.key !== key":state.key !== key,
-				"b: state.value === value":state.value === value,
-				"a or b": state.key !== key || state.value === value,
+				state:state, key:key, value:value, 
+				"a(state.key != key)":state.key != key,
+				"b(state.value == value)":state.value == value,
+				"a or b": state.key != key || state.value == value,
 			}); // debug!
-			if ( state.key !== key || state.value === value ) return;
+			if ( state.key != key || state.value == value ) return;
 			state.json && undo_button.undo.unshift( state.json );
 			try { debugMode && console.log( 
 				"undo:", undo_button.undo.length, 
@@ -188,7 +187,7 @@
 					button.addEventListener( "mousedown", onfirstMouseDown ); // important!
 				//	Before change the editor[key] value add an undo state in undo queue.
 				//	Until now we was adding to undo after the value has changed. (FIXED!)
-					addtoUndo( editor,key,value,undo_button,redo_button ); // add to undo.
+					addtoUndo( state,key,value,undo_button,redo_button ); // add to undo.
 				}, 250);
 				editor[ key ] = Number(value); // editor watcher updates value input.
 			//	value_input.value = (RAD2DEG*editor[key]).toFixed(1); // display.
@@ -204,7 +203,7 @@
 					button.addEventListener( "mousedown", onfirstMouseDown ); // important!
 				//	Before change the editor[key] value add an undo state in undo queue.
 				//	Until now we was adding to undo after the value has changed. (FIXED!)
-					addtoUndo( editor,key,value,undo_button,redo_button ); // add to undo.
+					addtoUndo( state,key,value,undo_button,redo_button ); // add to undo.
 				}, 250);
 				editor[ key ] = Number(value); // editor watcher updates value input.
 			//	value_input.value = editor[key].toFixed(2); // display.
@@ -220,7 +219,7 @@
 					button.addEventListener( "mousedown", onfirstMouseDown ); // important!
 				//	Before change the editor[key] value add an undo state in undo queue.
 				//	Until now we was adding to undo after the value has changed. (FIXED!)
-					addtoUndo( editor,key,value,undo_button,redo_button ); // add to undo.
+					addtoUndo( state,key,value,undo_button,redo_button ); // add to undo.
 				}, 250);
 				editor[ key ] = parseInt(value); // editor watcher updates value input.
 			}
@@ -236,7 +235,7 @@
 					button.addEventListener( "mousedown", onfirstMouseDown ); // important!
 				//	Before change the editor[key] value add an undo state in undo queue.
 				//	Until now we was adding to undo after the value has changed. (FIXED!)
-					addtoUndo( editor,key,value,undo_button,redo_button ); // add to undo.
+					addtoUndo( state,key,value,undo_button,redo_button ); // add to undo.
 				}, 250);
 				editor[ key ] = String(value); // editor watcher updates value input.
 			}
@@ -252,7 +251,7 @@
 					button.addEventListener( "mousedown", onfirstMouseDown ); // important!
 				//	Before change the editor[key] value add an undo state in undo queue.
 				//	Until now we was adding to undo after the value has changed. (FIXED!)
-					addtoUndo( editor,key,value,undo_button,redo_button ); // add to undo.
+					addtoUndo( state,key,value,undo_button,redo_button ); // add to undo.
 				}, 250);
 				editor[ key ] = Number(value); // editor watcher updates value input.
 			}
@@ -274,7 +273,7 @@
 							button.addEventListener( "mousedown", onfirstMouseDown ); // important!
 						//	Before change the editor[key] value add an undo state in undo queue.
 						//	Until now we was adding to undo after the value has changed. (FIXED!)
-							addtoUndo( editor,key,value,undo_button,redo_button ); // add to undo.
+							addtoUndo( state,key,value,undo_button,redo_button ); // add to undo.
 						}, 250);
 						text_input.value = editor[ key ] = value; // editor watcher updates value input.
 					})();
@@ -317,7 +316,7 @@
 							button.addEventListener( "mousedown", onfirstMouseDown ); // important!
 						//	Before change the editor[key] value add an undo state in undo queue.
 						//	Until now we was adding to undo after the value has changed. (FIXED!)
-							addtoUndo( editor,key,value,undo_button,redo_button ); // add to undo.
+							addtoUndo( state,key,value,undo_button,redo_button ); // add to undo.
 						}, 250);
 						value_input.value = editor[ key ] = value; // editor watcher updates value input.
 					})();
