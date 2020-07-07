@@ -23,10 +23,16 @@
 					vector_y.value = "";
 					text_input.value = "";
 					value_input.value = "";
-					key_droplist.value = "";
-					vector_droplist.value = "";
+					key_droplist.value = "name";
+					vector_droplist.value = "center";
 					entity_droplist.value = "";
 				})();
+
+			//	call watchers.
+				callWatchers(entity_droplist, "onchange", "change", entity_droplist.value);
+				//	it will call: editor.update(""); // false;
+				//	callWatchers( key_droplist, "onchange", "change", key_droplist.value );
+				//	callWatchers( vector_droplist, "onchange", "change", vector_droplist.value );
 
 				debugMode && console.log("exit texture edit mode.");
 
