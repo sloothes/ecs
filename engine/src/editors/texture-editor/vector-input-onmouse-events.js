@@ -1,6 +1,6 @@
 //	vector-input-onmouse-events.js
 
-	(function( editor,viewer,vector_x,vector_y,increase_x,decrease_x,increase_y,decrease_y,vector_droplist,entity_droplist,undo,redo ){
+	(function( editor,viewer,vector_x,vector_y,increase_x,decrease_x,increase_y,decrease_y,vector_droplist,entity_droplist,undo_button,redo_button ){
 
 		var state;
 		var interval;
@@ -153,6 +153,6 @@
 		document.querySelector("li#texture-vector-y-decrease"), // decrease_y,
 		document.querySelector("select#texture-vector-droplist"), // vector_droplist,
 		document.querySelector("select#texture-entities-droplist"), // entity_droplist,
-		document.querySelector("div#texture-undo-button").undo, // undo array,
-		document.querySelector("div#texture-redo-button").redo // redo array.
+		document.querySelector("div#texture-undo-button"), // undo_button,
+		document.querySelector("div#texture-redo-button")  // redo_button, (only needed for the debug console.log).
 	);

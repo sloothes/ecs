@@ -10,6 +10,7 @@
 
 		function onfirstMouseDown(){
 			state = {};
+			if ( entity_droplist.value === "" ) return; // important!
 			var key = key_droplist.value;
 			state.key = key_droplist.value;
 			state.value = editor[ key ];
@@ -102,7 +103,7 @@
 
 			clearTimeout( interval ); // important!
 
-			if ( entity_droplist.value === "" ) return;
+			if ( entity_droplist.value === "" ) return; // important!
 
 		//	disabled on mouse click.
 

@@ -2,8 +2,8 @@
 
 	(function( editor,increase_v,decrease_v,text_input,value_input,key_droplist,entity_droplist,undo_button,redo_button ){
 
-		const RAD2DEG = 57.29577951308232;
-		const DEG2RAD = 0.017453292519943295;
+	//	const RAD2DEG = 57.29577951308232;
+	//	const DEG2RAD = 0.017453292519943295;
 
 		var state;
 		var interval;
@@ -13,6 +13,7 @@
 
 		function onfirstMouseDown(){
 			state = {};
+			if ( entity_droplist.value === "" ) return; // important!
 			var key = key_droplist.value;
 			state.key = key_droplist.value;
 			state.value = editor[ key ];
@@ -36,7 +37,7 @@
 
 			clearTimeout( interval ); // important!
 
-			if ( entity_droplist.value === "" ) return;
+			if ( entity_droplist.value === "" ) return; // important!
 
 		//	disabled on mouse down.
 
