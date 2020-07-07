@@ -4,23 +4,6 @@
 
 	(function(editor,keyInputControls,vector_x,vector_droplist,entity_droplist,undo_button,redo_button){
 
-	//	blur.
-
-		watch( vector_x, "onchange", function(){ vector_x.blur(); }); // EXPERIMANTAL!
-
-	//	keyInputControls.
-
-		function enableKeyInputControls(){
-			keyInputControls.isDisabled = false;
-		}
-
-		function disableKeyInputControls(){
-			keyInputControls.isDisabled = true;
-		}
-
-		vector_x.addEventListener( "blur", enableKeyInputControls );
-		vector_x.addEventListener( "focus", disableKeyInputControls );
-
 	//	add undo.
 
 		function addtoUndo(editor,key,x,value,undo_button,redo_button){
@@ -96,23 +79,6 @@
 
 	(function(editor,keyInputControls,vector_y,vector_droplist,entity_droplist,undo_button,redo_button){
 
-	//	blur.
-
-		watch( vector_y, "onchange", function(){ vector_y.blur(); }); // EXPERIMANTAL!
-
-	//	keyInputControls.
-
-		function enableKeyInputControls(){
-			keyInputControls.isDisabled = false;
-		}
-
-		function disableKeyInputControls(){
-			keyInputControls.isDisabled = true;
-		}
-
-		vector_y.addEventListener( "blur", enableKeyInputControls );
-		vector_y.addEventListener( "focus", disableKeyInputControls );
-
 	//	add undo.
 
 		function addtoUndo(editor,key,y,value,undo_button,redo_button){
@@ -184,5 +150,37 @@
 	);
 
 
-	//	vector_x.addEventListener( "change", vector_x.blur );
-	//	vector_y.addEventListener( "change", vector_y.blur );
+	//	blur.
+
+	//	watch( vector_x, "onchange", function(){ vector_x.blur(); }); // EXPERIMANTAL!
+
+	//	keyInputControls.
+
+	//	function enableKeyInputControls(){
+	//		keyInputControls.isDisabled = false;
+	//	}
+
+	//	function disableKeyInputControls(){
+	//		keyInputControls.isDisabled = true;
+	//	}
+
+	//	vector_x.addEventListener( "blur", enableKeyInputControls );
+	//	vector_x.addEventListener( "focus", disableKeyInputControls );
+
+
+	//	blur.
+
+	//	watch( vector_y, "onchange", function(){ vector_y.blur(); }); // EXPERIMANTAL!
+
+	//	keyInputControls.
+
+	//	function enableKeyInputControls(){
+	//		keyInputControls.isDisabled = false;
+	//	}
+
+	//	function disableKeyInputControls(){
+	//		keyInputControls.isDisabled = true;
+	//	}
+
+	//	vector_y.addEventListener( "blur", enableKeyInputControls );
+	//	vector_y.addEventListener( "focus", disableKeyInputControls );

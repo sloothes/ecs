@@ -1,7 +1,5 @@
 //	replace_texture-image.js
 
-//	Replace image file input watcher.
-
 	(function(viewer,input,droplist){
 
 	//	Add watcher.

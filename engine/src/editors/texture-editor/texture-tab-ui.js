@@ -25,13 +25,9 @@
 			select.appendChild( option );
 		})();
 
-	//	Add a watcher.
-		watch(select, "onchange", function(property, event, value){
-		//	debugMode && console.log({item:select,event:event,"texture id":value});
-		});
-
 	//	Call watchers.
 		select.addEventListener( "change", function(){
+			this.blur(); // important!
 			callWatchers(this, "onchange", "change", this.value );
 		});
 
@@ -108,15 +104,15 @@
 		input.style.cssText = "width:-webkit-fill-available;color:#000;display:inline;"
 		+ "margin:0px 5px;text-align:center;font-size:large;font-weigth:bold;background:none;";
 
-	//	Add a watcher.
-		watch(input, "onchange", function(property, event, value){
-		//	debugMode && console.log({item:input,event:event,value:value});
-		});
-
 	//	Call watchers.
 		input.addEventListener( "change", function(){
+			this.blur(); // important!
 			callWatchers(this, "onchange", "change", this.value );
 		});
+
+	//	keyInputControls.
+		input.addEventListener( "blur", enableKeyInputControls );
+		input.addEventListener( "focus", disableKeyInputControls );
 
 		row.appendChild(input);
 		tab.appendChild( row );
@@ -150,13 +146,9 @@
 			select.appendChild( option );
 		});
 
-	//	Add a watcher.
-		watch(select, "onchange", function(property, event, value){
-		//	debugMode && console.log({item:select,event:event,key:value});
-		});
-
 	//	Call watchers.
 		select.addEventListener( "change", function(){
+			this.blur(); // important!
 			callWatchers(this, "onchange", "change", this.value );
 		});
 
@@ -198,15 +190,15 @@
 		input.style.cssText = "color:#000;border:none;display:inline;width:80px;"
 		+ "margin:0px 5px;text-align:center;font-size:large;font-weigth:bold;background:none;";
 
-	//	Add a watcher.
-		watch(input, "onchange", function(property, event, value){
-		//	debugMode && console.log({item:input,event:event,value:value});
-		});
-
 	//	Call watchers.
 		input.addEventListener( "change", function(){
+			this.blur(); // important!
 			callWatchers(this, "onchange", "change", this.value );
 		});
+
+	//	keyInputControls.
+		input.addEventListener( "blur", enableKeyInputControls );
+		input.addEventListener( "focus", disableKeyInputControls );
 
 		vect.appendChild(prev);
 		vect.appendChild(input);
@@ -244,13 +236,9 @@
 			select.appendChild( option );
 		});
 
-	//	Add a watcher.
-		watch(select, "onchange", function(property, event, value){
-		//	debugMode && console.log({item:select,event:event,vector:value});
-		});
-
 	//	Call watchers.
 		select.addEventListener( "change", function(){
+			this.blur(); // important!
 			callWatchers(this, "onchange", "change", this.value );
 		});
 
@@ -292,15 +280,15 @@
 		input.style.cssText = "color:#000;border:none;display:inline;width:80px;"
 			+ "margin:0px 5px;text-align:center;font-size:large;font-weigth:bold;background:none;";
 
-	//	Add a watcher.
-		watch(input, "onchange", function(property, event, value){
-			debugMode && console.log({item:input,event:event,x:value});
-		});
-
 	//	Call watchers.
 		input.addEventListener( "change", function(){
+			this.blur(); // important!
 			callWatchers(this, "onchange", "change", this.value );
 		});
+
+	//	keyInputControls.
+		input.addEventListener( "blur", enableKeyInputControls );
+		input.addEventListener( "focus", disableKeyInputControls );
 
 		vect.appendChild(prev);
 		vect.appendChild(input);
@@ -343,15 +331,15 @@
 		input.style.cssText = "color:#000;border:none;display:inline;width:80px;"
 			+ "margin:0px 5px;text-align:center;font-size:large;font-weigth:bold;background:none;";
 
-	//	Add a watcher.
-		watch(input, "onchange", function(property, event, value){
-			debugMode && console.log({item:input,event:event,y:value});
-		});
-
 	//	Call watchers.
 		input.addEventListener( "change", function(){
+			this.blur(); // important!
 			callWatchers(this, "onchange", "change", this.value );
 		});
+
+	//	keyInputControls.
+		input.addEventListener( "blur", enableKeyInputControls );
+		input.addEventListener( "focus", disableKeyInputControls );
 
 		vect.appendChild(prev);
 		vect.appendChild(input);
@@ -429,11 +417,6 @@
 			input.files.length = 0; input.click();
 		});
 
-	//	Add a watcher.
-		watch( input, "onchange", function(property, event, value){
-			debugMode && console.log({item:"input",event:event,"files":value});
-		});
-
 	//	Call watchers.
 		input.addEventListener( "change", function(){
 			callWatchers( this, "onchange", "change", this.files );
@@ -489,11 +472,6 @@
 
 		button.addEventListener( "click", function(){
 			input.files.length = 0; input.click();
-		});
-
-	//	Add a watcher.
-		watch( input, "onchange", function(property, event, value){
-			debugMode && console.log({item:"input",event:event,"files":value});
 		});
 
 	//	Call watchers.

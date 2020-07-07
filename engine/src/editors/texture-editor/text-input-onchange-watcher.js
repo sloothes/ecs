@@ -2,23 +2,6 @@
 
 	(function(editor,keyInputControls,text_input,value_input,key_droplist,entity_droplist,undo_button,redo_button){
 
-	//	blur.
-
-		watch( text_input, "onchange", function(){ text_input.blur(); }); // EXPERIMANTAL!
-
-	//	keyInputControls.
-
-		function enableKeyInputControls(){
-			keyInputControls.isDisabled = false;
-		}
-
-		function disableKeyInputControls(){
-			keyInputControls.isDisabled = true;
-		}
-
-		text_input.addEventListener( "blur", enableKeyInputControls );
-		text_input.addEventListener( "focus", disableKeyInputControls );
-
 	//	add undo.
 
 		function addtoUndo(editor,key,value,undo_button,redo_button){
@@ -84,32 +67,50 @@
 
 
 
-//		text_input.addEventListener( "change", function(){
-//
-//			var key = key_droplist.value;
-//
-//			if ( key === "uuid" ) text_input.value = editor[ key ];
-//			else if ( !key_droplist.value ) text_input.value = "";
-//			else if ( !entity_droplist.value ) text_input.value = "";
-//			else if ( key === "name" ) {
-//				if ( text_input.value === "" ) return;
-//				if ( editor[ key ] !== text_input.value ) addtoUndo();
-//				setTimeout(function(){ editor[ key ] = text_input.value; });
-//			} else text_input.value = "";
-//
-//		});
+	//	blur.
 
-//		text_input.addEventListener( "change", text_input.blur );
+	//	watch( text_input, "onchange", function(){ text_input.blur(); }); // EXPERIMANTAL!
 
-//			var key = key_droplist.value; // important!
-//
-//			if ( key === "uuid" ) text_input.value = editor[ key ];
-//			else if ( key_droplist.value === "" ) text_input.value = "";
-//			else if ( entity_droplist.value === "" ) text_input.value = "";
-//			else if ( key === "name" ) {
-//				if ( value === "" ) {
-//					text_input.value = editor[ key ]; return; // text_input.value, string.
-//				}
-//				if ( editor[ key ] !== value ) addtoUndo(); // add to undo.
-//				setTimeout(function(){ editor[ key ] = value; }); // text_input.value, string.
-//			} else text_input.value = "";
+	//	keyInputControls.
+
+	//	function enableKeyInputControls(){
+	//		keyInputControls.isDisabled = false;
+	//	}
+
+	//	function disableKeyInputControls(){
+	//		keyInputControls.isDisabled = true;
+	//	}
+
+	//	text_input.addEventListener( "blur", enableKeyInputControls );
+	//	text_input.addEventListener( "focus", disableKeyInputControls );
+
+
+	//	text_input.addEventListener( "change", function(){
+	//
+	//		var key = key_droplist.value;
+	//
+	//		if ( key === "uuid" ) text_input.value = editor[ key ];
+	//		else if ( !key_droplist.value ) text_input.value = "";
+	//		else if ( !entity_droplist.value ) text_input.value = "";
+	//		else if ( key === "name" ) {
+	//			if ( text_input.value === "" ) return;
+	//			if ( editor[ key ] !== text_input.value ) addtoUndo();
+	//			setTimeout(function(){ editor[ key ] = text_input.value; });
+	//		} else text_input.value = "";
+	//
+	//	});
+
+	//	text_input.addEventListener( "change", text_input.blur );
+
+	//		var key = key_droplist.value; // important!
+	//
+	//		if ( key === "uuid" ) text_input.value = editor[ key ];
+	//		else if ( key_droplist.value === "" ) text_input.value = "";
+	//		else if ( entity_droplist.value === "" ) text_input.value = "";
+	//		else if ( key === "name" ) {
+	//			if ( value === "" ) {
+	//				text_input.value = editor[ key ]; return; // text_input.value, string.
+	//			}
+	//			if ( editor[ key ] !== value ) addtoUndo(); // add to undo.
+	//			setTimeout(function(){ editor[ key ] = value; }); // text_input.value, string.
+	//		} else text_input.value = "";

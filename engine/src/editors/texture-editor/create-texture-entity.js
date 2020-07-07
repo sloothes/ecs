@@ -1,7 +1,5 @@
 //	create-texture-entity.js
 
-//	Create texture file input watcher.
-
 	(function(viewer,input,droplist,entities){
 
 	//	Add watcher.

@@ -36,13 +36,13 @@
 		document.querySelector("select#texture-key-droplist") // key_droplist.
 	);
 
-//			if ( key === "" ) [ value_input.value, text_input.value ] = ["", ""];
-//			else if ( key == "name" || key == "uuid" ) {
-//				[ value_input.value, text_input.value ] = [ "", editor[key] ];
-//			} else if ( key == "rotation" ) {
-//				[ value_input.value, text_input.value ] = [ (RAD2DEG*editor[key]).toFixed(1), "" ];
-//			} else if ( key == "anisotropy" ) {
-//				[ value_input.value, text_input.value ] = [ editor[key].toFixed(2), "" ];
-//			} else {
-//				[ value_input.value, text_input.value ] = [ editor[key], "" ];
-//			}
+	//	if ( key === "" ) [ value_input.value, text_input.value ] = ["", ""];
+	//	else if ( key == "name" || key == "uuid" ) {
+	//		[ value_input.value, text_input.value ] = [ "", editor[key] ];
+	//	} else if ( key == "rotation" ) {
+	//		[ value_input.value, text_input.value ] = [ (RAD2DEG*editor[key]).toFixed(1), "" ];
+	//	} else if ( key == "anisotropy" ) {
+	//		[ value_input.value, text_input.value ] = [ editor[key].toFixed(2), "" ];
+	//	} else {
+	//		[ value_input.value, text_input.value ] = [ editor[key], "" ];
+	//	}

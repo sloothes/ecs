@@ -61,7 +61,7 @@
 
 //	vector-center-input-onmouse-events.js
 
-	(function( editor,viewer,vector_x,vector_y,increase_x,decrease_x,increase_y,decrease_y,vector_droplist,entity_droplist,undo,redo ){
+	(function( editor,viewer,vector_x,vector_y,increase_x,decrease_x,increase_y,decrease_y,vector_droplist,entity_droplist,undo_button,redo_button ){
 
 		var state;
 		var interval;
@@ -125,23 +125,36 @@
 					var value = Number(editor.center.x); // get value from editor.
 					if ( button === increase_x ) value = THREE.Math.clamp( value+step, min, max );
 					if ( button === decrease_x ) value = THREE.Math.clamp( value-step, min, max );
-					editor.center.x = round(value, 2); // editor watcher updates vector_x input value.
+					editor.center.x = round(value, 2); // editor watcher updates input value.
 				}
 
 				else if ( button === increase_y || button === decrease_y ) {
 					var value = Number(editor.center.y); // get value from editor.
 					if ( button === increase_y ) value = THREE.Math.clamp( value+step, min, max );
 					if ( button === decrease_y ) value = THREE.Math.clamp( value-step, min, max );
-					editor.center.y = round(value, 2); // editor watcher updates vector_y input value.
+					editor.center.y = round(value, 2); // editor watcher updates input value.
 				}
 
 				var dt = clock.getDelta();
 				interval = setTimeout( update, dt );
 			//	debugMode && console.log( "on update:", interval );
 
-			}, 500);
+			}, 250);
 
 		} // end onMouseDown.
+
+	//	add undo.
+
+		function addtoUndo(state,key,v,value,undo_button,redo_button){
+			if ( state.key !== key ) return;
+			if ( state.value[v] === value ) return;
+			state.json && undo_button.undo.unshift( state.json );
+			try { debugMode && console.log( 
+				"undo:", undo_button.undo.length, 
+				"redo:", redo_button.redo.length 
+			); } catch(err){;}
+			return;
+		}
 
 		function onMouseClick(){
 
@@ -161,34 +174,32 @@
 				var value = Number(editor.center.x); // get value from editor.
 				if ( button === increase_x ) value = THREE.Math.clamp( value+step, min, max );
 				if ( button === decrease_x ) value = THREE.Math.clamp( value-step, min, max );
-				if ( key === state.key && value !== state.value.x ) {
-					interval = setTimeout( function(){ 
-					//	Add on firstMouseDown event listener.
-						button.addEventListener( "mousedown", onfirstMouseDown ); // important!
-					//	Before change the editor[key] value add an undo state in undo queue.
-					//	Until now we has adding to Undo after the value has changed. (FIXED!)
-						state.json && undo.unshift( state.json ); // add to undo.
-						debugMode && console.log( "undo:", undo.length, "redo:", redo.length ); 
-					}, 250);
-				}
-				editor.center.x = round(value, 2); // editor watcher updates vector_x input value.
+			//	if ( key === state.key && value !== state.value.x ) {
+				interval = setTimeout( function(){ 
+				//	Add on firstMouseDown event listener.
+					button.addEventListener( "mousedown", onfirstMouseDown ); // important!
+				//	Before change the editor[key] value add an undo state in undo queue.
+				//	Until now we was adding to undo after the value has changed. (FIXED!)
+					addtoUndo( state,key,"x",value,undo_button,redo_button );
+				}, 250);
+			//	}
+				editor.center.x = round(value, 2); // editor watcher updates input value.
 			}
 
 			else if ( button === increase_y || button === decrease_y ) {
 				var value = Number(editor.center.y); // get value from editor.
 				if ( button === increase_y ) value = THREE.Math.clamp( value+step, min, max );
 				if ( button === decrease_y ) value = THREE.Math.clamp( value-step, min, max );
-				if ( key === state.key && value !== state.value.y ) {
-					interval = setTimeout( function(){ 
-					//	Add on firstMouseDown event listener.
-						button.addEventListener( "mousedown", onfirstMouseDown ); // important!
-					//	Before change the editor[key] value add an undo state in undo queue.
-					//	Until now we has adding to Undo after the value has changed. (FIXED!)
-						state.json && undo.unshift( state.json ); // add to undo.
-						debugMode && console.log( "undo:", undo.length, "redo:", redo.length ); 
-					}, 250);
-				}
-				editor.center.y = round(value, 2); // editor watcher updates vector_y input value.
+			//	if ( key === state.key && value !== state.value.y ) {
+				interval = setTimeout( function(){ 
+				//	Add on firstMouseDown event listener.
+					button.addEventListener( "mousedown", onfirstMouseDown ); // important!
+				//	Before change the editor[key] value add an undo state in undo queue.
+				//	Until now we was adding to undo after the value has changed. (FIXED!)
+					addtoUndo( state,key,"y",value,undo_button,redo_button );
+				}, 250);
+			//	}
+				editor.center.y = round(value, 2); // editor watcher updates input value.
 			}
 
 			debugMode && console.log( "on Mouse Click:", interval ); // debug!
@@ -206,8 +217,8 @@
 		document.querySelector("li#texture-vector-y-decrease"), // decrease_y,
 		document.querySelector("select#texture-vector-droplist"), // vector_droplist,
 		document.querySelector("select#texture-entities-droplist"), // entity_droplist,
-		document.querySelector("div#texture-undo-button").undo, // undo array,
-		document.querySelector("div#texture-redo-button").redo // redo array.
+		document.querySelector("div#texture-undo-button"), // undo_button,
+		document.querySelector("div#texture-redo-button")  // redo_button.
 	);
 
 
@@ -259,7 +270,7 @@
 				interval = setTimeout( update, dt );
 			//	debugMode && console.log( "on center update:", interval );
 
-			}, 500);
+			}, 250);
 
 		}
 
@@ -274,48 +285,49 @@
 		document.querySelector("select#texture-entities-droplist") // entity_droplist,
 	);
 
-//	Overwrite vector inputs reset.
 /*
-//	Vector droplist on change watchers (Experimental).
-//	Experimental (Independent texture viewer center helper).
-//	if not texture entity selected ( !entity_droplist.value )
-//	always display the texture viewer center helper value.
+//	Overwrite vector inputs reset.
 
-//	var viewer   = textureViewer;
-//	var vector_x = document.querySelector("input#texture-vector-x-input"); // vector_x,
-//	var vector_y = document.querySelector("input#texture-vector-y-input"); // vector_y,
-//	var vector_droplist = document.querySelector("select#texture-vector-droplist"); // vector_droplist,
-//	var entity_droplist = document.querySelector("select#texture-entities-droplist") // entity_droplist,
+	//	Vector droplist on change watchers (Experimental).
+	//	Experimental (Independent texture viewer center helper).
+	//	if not texture entity selected ( !entity_droplist.value )
+	//	always display the texture viewer center helper value.
 
-	(function(viewer,vector_x,vector_y,vector_droplist,entity_droplist){
+	//	var viewer   = textureViewer;
+	//	var vector_x = document.querySelector("input#texture-vector-x-input"); // vector_x,
+	//	var vector_y = document.querySelector("input#texture-vector-y-input"); // vector_y,
+	//	var vector_droplist = document.querySelector("select#texture-vector-droplist"); // vector_droplist,
+	//	var entity_droplist = document.querySelector("select#texture-entities-droplist") // entity_droplist,
 
-		watch( entity_droplist, "onchange", function( property, event, value ){
+		(function(viewer,vector_x,vector_y,vector_droplist,entity_droplist){
 
-			if ( value === "" ) {
-				vector_x.value = (0.5 + (viewer.center.position.x/250)).toFixed(2); // display center value (x).
-				vector_y.value = (0.5 - (viewer.center.position.z/250)).toFixed(2); // display center value (z).
-			}
+			watch( entity_droplist, "onchange", function( property, event, value ){
 
-		});
+				if ( value === "" ) {
+					vector_x.value = (0.5 + (viewer.center.position.x/250)).toFixed(2); // display center value (x).
+					vector_y.value = (0.5 - (viewer.center.position.z/250)).toFixed(2); // display center value (z).
+				}
 
-	//	watch( vector_droplist, "onchange", function( property, event, value ){
-	//		if ( entity_droplist.value === "" ) {
-	//			vector_x.value = (0.5 + (viewer.center.position.x/250)).toFixed(2); // display center value (x).
-	//			vector_y.value = (0.5 - (viewer.center.position.z/250)).toFixed(2); // display center value (z).
-	//		}
-	//	});
+			});
 
-		watch( vector_droplist, "onchange", function( property, event, value ){
+		//	watch( vector_droplist, "onchange", function( property, event, value ){
+		//		if ( entity_droplist.value === "" ) {
+		//			vector_x.value = (0.5 + (viewer.center.position.x/250)).toFixed(2); // display center value (x).
+		//			vector_y.value = (0.5 - (viewer.center.position.z/250)).toFixed(2); // display center value (z).
+		//		}
+		//	});
 
-			callWatchers( entity_droplist, "onchange", event, entity_droplist.value );
+			watch( vector_droplist, "onchange", function( property, event, value ){
 
-		});
+				callWatchers( entity_droplist, "onchange", event, entity_droplist.value );
 
-	})(
-		textureViewer, // viewer
-		document.querySelector("input#texture-vector-x-input"), // vector_x,
-		document.querySelector("input#texture-vector-y-input"), // vector_y,
-		document.querySelector("select#texture-vector-droplist"), // vector_droplist,
-		document.querySelector("select#texture-entities-droplist") // entity_droplist,
-	);
+			});
+
+		})(
+			textureViewer, // viewer
+			document.querySelector("input#texture-vector-x-input"), // vector_x,
+			document.querySelector("input#texture-vector-y-input"), // vector_y,
+			document.querySelector("select#texture-vector-droplist"), // vector_droplist,
+			document.querySelector("select#texture-entities-droplist") // entity_droplist,
+		);
 */

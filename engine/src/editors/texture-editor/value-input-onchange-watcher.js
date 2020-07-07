@@ -5,23 +5,6 @@
 		const RAD2DEG = 57.29577951308232;
 		const DEG2RAD = 0.017453292519943295;
 
-	//	blur.
-
-		watch( value_input, "onchange", function(){ value_input.blur(); }); // EXPERIMANTAL!
-
-	//	keyInputControls.
-
-		function enableKeyInputControls(){
-			keyInputControls.isDisabled = false;
-		}
-
-		function disableKeyInputControls(){
-			keyInputControls.isDisabled = true;
-		}
-
-		value_input.addEventListener( "blur", enableKeyInputControls );
-		value_input.addEventListener( "focus", disableKeyInputControls );
-
 	//	add undo.
 
 		function addtoUndo(editor,key,value,undo_button,redo_button){
@@ -240,12 +223,19 @@
 		document.querySelector("div#texture-redo-button")  // redo_button.
 	);
 
+	//	blur.
 
-	//	function addtoUndo(){
-	//		var json = editor.toJSON();
-	//		json && undo.unshift( json );
-	//		debugMode && console.log( "undo:", undo.length, "redo:", redo.length ); 
-	//		return;
+	//	watch( value_input, "onchange", function(){ value_input.blur(); }); // EXPERIMANTAL!
+
+	//	keyInputControls.
+
+	//	function enableKeyInputControls(){
+	//		keyInputControls.isDisabled = false;
 	//	}
 
-	//	value_input.addEventListener( "change", value_input.blur );
+	//	function disableKeyInputControls(){
+	//		keyInputControls.isDisabled = true;
+	//	}
+
+	//	value_input.addEventListener( "blur", enableKeyInputControls );
+	//	value_input.addEventListener( "focus", disableKeyInputControls );
