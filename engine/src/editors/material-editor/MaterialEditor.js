@@ -40,7 +40,7 @@
 			switch ( key ){
 
 				case "name":
-					editor.name = "editor";
+					editor.name = "material editor";
 				break;
 
 				case "color":

@@ -15,7 +15,7 @@
 
 	TextureEditor.prototype.reset = function(){ 
 		this.copy( new THREE.Texture() ); 
-		this.name = "editor";
+		this.name = "texture editor";
 		this.uuid = THREE.Math.generateUUID();
 	};
 

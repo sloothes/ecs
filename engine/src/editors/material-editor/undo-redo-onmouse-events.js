@@ -23,8 +23,6 @@
 			interval = setTimeout( function(){
 				try {
 
-				//	var loader = new THREE.MaterialLoader();
-				//	var material = loader.parse( json );
 				//	Parse editor state (undo).
 					editor.parse( json ); // update.
 
@@ -52,8 +50,6 @@
 			interval = setTimeout( function(){
 				try {
 
-				//	var loader = new THREE.MaterialLoader();
-				//	var material = loader.parse( json );
 				//	Parse editor state (undo).
 					editor.parse( json ); // update.
 
