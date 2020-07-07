@@ -143,8 +143,12 @@
 	//	add undo.
 
 		function addtoUndo(state,key,value,undo_button,redo_button){
-			if ( state.key !== key ) return;
-			if ( state.value === value ) return;
+			debugMode && console.log({
+				key:key, "state key":state.key,
+				value:value, "state value":state.value,
+				"abord": state.key !== key || state.value === value,
+			}); // debug!
+			if ( state.key !== key || state.value === value ) return;
 			state.json && undo_button.undo.unshift( state.json );
 			try { debugMode && console.log( 
 				"undo:", undo_button.undo.length, 
