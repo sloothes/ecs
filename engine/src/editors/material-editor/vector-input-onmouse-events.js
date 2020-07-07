@@ -20,7 +20,7 @@
 			if ( entity_droplist.value === "" ) return; // important!
 			var key = vector_droplist.value;
 			state.key = vector_droplist.value; // key.
-			state.value = editor[key];   // important!
+			state.value = editor[key].x;   // important!
 			state.json = editor.toJSON(); // editor json.
 			debugMode && console.log( "state:",state ); // debug!
 		//	Remove on firstMouseDown event listener.
@@ -72,9 +72,9 @@
 
 	//	add undo.
 
-		function addtoUndo(state,key,x,value,undo_button,redo_button){
+		function addtoUndo(state,key,value,undo_button,redo_button){
 			if ( state.key !== key ) return;
-			if ( state.value[x] === value ) return;
+			if ( state.value === value ) return;
 			state.json && undo_button.undo.unshift( state.json );
 			try { debugMode && console.log( 
 				"undo:", undo_button.undo.length, 
@@ -104,7 +104,7 @@
 						button.addEventListener( "mousedown", onfirstMouseDown ); // important!
 					//	Before change the editor[key] value add an undo state in undo queue.
 					//	Until now we was adding to undo after the value has changed. (FIXED!)
-						addtoUndo(state,key,"x",value,undo_button,redo_button); // add to undo.
+						addtoUndo(state,key,value,undo_button,redo_button); // add to undo.
 					}, 250);
 					editor[ key ].x = round(value, 2); // editor watcher updates input value.
 				break;
@@ -146,7 +146,7 @@
 			if ( entity_droplist.value === "" ) return; // important!
 			var key = vector_droplist.value;
 			state.key = vector_droplist.value;
-			state.value = editor[ key ];
+			state.value = editor[ key ].y;
 			state.json = editor.toJSON(); // editor json.
 			debugMode && console.log( "state:",state ); // debug!
 		//	Remove on firstMouseDown event listener.
@@ -198,9 +198,9 @@
 
 	//	add undo.
 
-		function addtoUndo(state,key,y,value,undo_button,redo_button){
+		function addtoUndo(state,key,value,undo_button,redo_button){
 			if ( state.key !== key ) return;
-			if ( state.value[y] === value ) return;
+			if ( state.value === value ) return;
 			state.json && undo_button.undo.unshift( state.json );
 			try { debugMode && console.log( 
 				"undo:", undo_button.undo.length, 
@@ -230,7 +230,7 @@
 						button.addEventListener( "mousedown", onfirstMouseDown ); // important!
 					//	Before change the editor[key] value add an undo state in undo queue.
 					//	Until now we was adding to undo after the value has changed. (FIXED!)
-						addtoUndo(state,key,"y",value,undo_button,redo_button); // add to undo.
+						addtoUndo(state,key,value,undo_button,redo_button); // add to undo.
 					}, 250);
 					editor[ key ].y = round(value, 2); // editor watcher updates input value.
 				break;
