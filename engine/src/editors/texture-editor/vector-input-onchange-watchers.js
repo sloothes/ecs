@@ -57,7 +57,7 @@
 			}
 
 		//	Before change the editor[key] value add an undo state in undo queue.
-		//	Until now we has adding to Undo after the value has changed. (FIXED!)
+		//	Until now we was adding to undo after the value has changed. (FIXED!)
 			addtoUndo( editor,key,"x",value,undo_button,redo_button ); // add to undo.
 			setTimeout(function(){ editor[key].x = Number(value); }); // important!
 		//	editor[key].x = Number(value); // editor watcher updates value input.
@@ -131,7 +131,7 @@
 			}
 
 		//	Before change the editor[key] value add an undo state in undo queue.
-		//	Until now we has adding to Undo after the value has changed. (FIXED!)
+		//	Until now we was adding to undo after the value has changed. (FIXED!)
 			addtoUndo( editor,key,"y",value,undo_button,redo_button ); // add to undo.
 			setTimeout(function(){ editor[key].y = Number(value); }); // important!
 		//	editor[key].y = Number(value); // editor watcher updates value input.
