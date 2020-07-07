@@ -2,7 +2,7 @@
 
 //	vector-x input.
 
-	(function(editor,keyInputControls,vector_x,vector_droplist,entity_droplist,undo_button,redo_button){
+	(function(editor,vector_x,vector_droplist,entity_droplist,undo_button,redo_button){
 
 	//	add undo.
 
@@ -66,7 +66,6 @@
 
 	})(
 		textureEditor, // editor,
-		keyInputControls, // keyInputControls,
 		document.querySelector("input#texture-vector-x-input"), // vector_x,
 		document.querySelector("select#texture-vector-droplist"), // vector_droplist,
 		document.querySelector("select#texture-entities-droplist"), // entity_droplist.
@@ -77,7 +76,7 @@
 
 //	vector-y input.
 
-	(function(editor,keyInputControls,vector_y,vector_droplist,entity_droplist,undo_button,redo_button){
+	(function(editor,vector_y,vector_droplist,entity_droplist,undo_button,redo_button){
 
 	//	add undo.
 
@@ -141,7 +140,6 @@
 
 	})(
 		textureEditor, // editor,
-		keyInputControls, // keyInputControls,
 		document.querySelector("input#texture-vector-y-input"), // vector_y,
 		document.querySelector("select#texture-vector-droplist"), // vector_droplist,
 		document.querySelector("select#texture-entities-droplist"), // entity_droplist.

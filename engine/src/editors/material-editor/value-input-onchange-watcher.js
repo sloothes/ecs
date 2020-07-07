@@ -1,6 +1,6 @@
 //	value-input-onchange-watcher.js
 
-	(function(editor,keyInputControls,text_input,value_input,key_droplist,entity_droplist,undo_button,redo_button){
+	(function(editor,text_input,value_input,key_droplist,entity_droplist,undo_button,redo_button){
 
 		const RAD2DEG = 57.29577951308232;
 		const DEG2RAD = 0.017453292519943295;
@@ -179,7 +179,6 @@
 
 	})(
 		materialEditor, // editor,
-		keyInputControls, // keyInputControls,
 		document.querySelector("input#material-text-input"), // text_input,
 		document.querySelector("input#material-value-input"), // value_input,
 		document.querySelector("select#material-keys-droplist"), // key_droplist

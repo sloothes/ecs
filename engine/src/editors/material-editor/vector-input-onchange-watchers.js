@@ -2,7 +2,7 @@
 
 //	vector-x input.
 
-	(function(editor,keyInputControls,vector_x,vector_droplist,entity_droplist,undo_button,redo_button){
+	(function(editor,vector_x,vector_droplist,entity_droplist,undo_button,redo_button){
 
 	//	add undo.
 
@@ -58,7 +58,6 @@
 
 	})(
 		materialEditor, // editor,
-		keyInputControls, // keyInputControls,
 		document.querySelector("input#material-vector-x-input"), // vector_x,
 		document.querySelector("select#material-vector-droplist"), // vector_droplist,
 		document.querySelector("select#material-entities-droplist"), // entity_droplist.
@@ -69,7 +68,7 @@
 
 //	vector-y input.
 
-	(function(editor,keyInputControls,vector_y,vector_droplist,entity_droplist,undo_button,redo_button){
+	(function(editor,vector_y,vector_droplist,entity_droplist,undo_button,redo_button){
 
 	//	add undo.
 
@@ -125,7 +124,6 @@
 
 	})(
 		materialEditor, // editor,
-		keyInputControls, // keyInputControls,
 		document.querySelector("input#material-vector-y-input"), // vector_y,
 		document.querySelector("select#material-vector-droplist"), // vector_droplist,
 		document.querySelector("select#material-entities-droplist"), // entity_droplist.

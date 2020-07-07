@@ -1,6 +1,6 @@
 //	text-input-onchange-watcher.js
 
-	(function(editor,keyInputControls,text_input,value_input,key_droplist,entity_droplist,undo_button,redo_button){
+	(function(editor,text_input,value_input,key_droplist,entity_droplist,undo_button,redo_button){
 
 	//	add undo.
 
@@ -60,7 +60,6 @@
 
 	})(
 		materialEditor, // editor,
-		keyInputControls, // keyInputControls,
 		document.querySelector("input#material-text-input"), // text_input,
 		document.querySelector("input#material-value-input"), // value_input,
 		document.querySelector("select#material-keys-droplist"), // key_droplist

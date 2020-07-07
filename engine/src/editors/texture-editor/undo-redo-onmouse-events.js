@@ -23,7 +23,7 @@
 			interval = setTimeout( function(){
 				try {
 
-				//	Parse texture state (undo).
+				//	Parse editor state (undo).
 					editor.parse( json ); // update.
 
 				} catch(err){ debugMode && console.error(err); }
@@ -50,7 +50,7 @@
 			interval = setTimeout( function(){
 				try {
 
-				//	Parse texture state (redo).
+				//	Parse editor state (redo).
 					editor.parse( json ); // update.
 
 				} catch(err){ debugMode && console.error(err); }

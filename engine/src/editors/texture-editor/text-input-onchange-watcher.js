@@ -1,6 +1,6 @@
 //	text-input-onchange-watcher.js
 
-	(function(editor,keyInputControls,text_input,value_input,key_droplist,entity_droplist,undo_button,redo_button){
+	(function(editor,text_input,value_input,key_droplist,entity_droplist,undo_button,redo_button){
 
 	//	add undo.
 
@@ -56,7 +56,6 @@
 
 	})(
 		textureEditor, // editor,
-		keyInputControls, // keyInputControls,
 		document.querySelector("input#texture-text-input"), // text_input,
 		document.querySelector("input#texture-value-input"), // value_input,
 		document.querySelector("select#texture-key-droplist"), // key_droplist

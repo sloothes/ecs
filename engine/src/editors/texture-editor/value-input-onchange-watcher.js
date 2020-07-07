@@ -1,6 +1,6 @@
 //	value-input-onchange-watcher.js
 
-	(function(editor,keyInputControls,value_input,key_droplist,entity_droplist,undo_button,redo_button){
+	(function(editor,value_input,key_droplist,entity_droplist,undo_button,redo_button){
 
 		const RAD2DEG = 57.29577951308232;
 		const DEG2RAD = 0.017453292519943295;
@@ -215,7 +215,6 @@
 
 	})(
 		textureEditor, // editor,
-		keyInputControls, // keyInputControls,
 		document.querySelector("input#texture-value-input"), // value_input,
 		document.querySelector("select#texture-key-droplist"), // key_droplist
 		document.querySelector("select#texture-entities-droplist"), // entity_droplist.
