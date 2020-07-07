@@ -23,8 +23,8 @@
 
 	//	add undo.
 
-		function addtoUndo(editor,key,value,undo_button,redo_button){
-			if ( editor[ key ] === value ) return;
+		function addtoUndo(editor,key,x,value,undo_button,redo_button){
+			if ( editor[key][x] === value ) return;
 			var json = editor.toJSON();
 			json && undo_button.undo.unshift( json );
 			try { debugMode && console.log( 
@@ -37,22 +37,20 @@
 	//	onchange.
 
 		watch( vector_x, "onchange", function(property, event, value){
-		//	debugMode && console.log({item:vector_x,event:event,key:vector_droplist.value,x:value});
+			debugMode && console.log({item:vector_x,event:event,key:vector_droplist.value,x:value});
+
+			var key = vector_droplist.value;
+		//	var value = vector_x.value; // value;
 
 			if ( entity_droplist.value === "" ) return vector_x.value = "";
 			if ( vector_droplist.value === "" ) return vector_x.value = "";
 
-		//	"value" always comes as typeof "string".
+		//	"value" always comes as typeof "string", (ecxept NaN, undefined?)
 
-			if ( value === undefined ) return vector_x.value = "";
 			if ( value === "" ) return vector_x.value = "";
 			if ( value === "NaN" ) return vector_x.value = "";
+			if ( value === undefined ) return vector_x.value = "";
 			if ( value === "undefined" ) return vector_x.value = "";
-
-			var key = vector_droplist.value;
-
-		//	disabled on key change.
-
 			if ( editor[key] === undefined ) return vector_x.value = "";
 			if ( !editor[key].isVector2 ) return vector_x.value = "";
 			if ( isNaN(value) ) return vector_x.value = editor[key].x.toFixed(2);
@@ -62,28 +60,24 @@
 			switch (key) {
 
 				case "center":
-					var value = THREE.Math.clamp( Number(value), 0, 1 ); // important!
-				//	Before change the editor[key] value add an undo state in undo queue.
-				//	Until now we has adding to Undo after the value has changed. (FIXED!)
-					addtoUndo( editor,key,value,undo_button,redo_button ); // add to undo.
-					setTimeout(function(){ editor[key].x = Number(value); }); // important!
-				//	editor[key].x = Number(value); // editor watcher updates value input.
+					value = THREE.Math.clamp( Number(value), 0, 1 ); // number.
 				break;
 
 				case "offset":
 				case "repeat":
-					var value = THREE.Math.clamp( Number(value), -100, 100 ); // number.
-				//	Before change the editor[key] value add an undo state in undo queue.
-				//	Until now we has adding to Undo after the value has changed. (FIXED!)
-					addtoUndo( editor,key,value,undo_button,redo_button ); // add to undo.
-					setTimeout(function(){ editor[key].x = Number(value); }); // important!
-				//	editor[key].x = Number(value); // editor watcher updates value input.
+					value = THREE.Math.clamp( Number(value), -100, 100 ); // number.
 				break;
 
 				default:
-					vector_x.value = "";
+					vector_x.value = ""; return;
 				break;
 			}
+
+		//	Before change the editor[key] value add an undo state in undo queue.
+		//	Until now we has adding to Undo after the value has changed. (FIXED!)
+			addtoUndo( editor,key,"x",value,undo_button,redo_button ); // add to undo.
+			setTimeout(function(){ editor[key].x = Number(value); }); // important!
+		//	editor[key].x = Number(value); // editor watcher updates value input.
 
 		});
 
@@ -121,8 +115,8 @@
 
 	//	add undo.
 
-		function addtoUndo(editor,key,value,undo_button,redo_button){
-			if ( editor[ key ] === value ) return;
+		function addtoUndo(editor,key,y,value,undo_button,redo_button){
+			if ( editor[key][y] === value ) return;
 			var json = editor.toJSON();
 			json && undo_button.undo.unshift( json );
 			try { debugMode && console.log( 
@@ -135,22 +129,20 @@
 	//	onchange.
 
 		watch( vector_y, "onchange", function(property, event, value){
-		//	debugMode && console.log({item:vector_y,event:event,key:vector_droplist.value,y:value});
+			debugMode && console.log({item:vector_y,event:event,key:vector_droplist.value,y:value});
+
+			var key = vector_droplist.value;
+		//	var value = vector_y.value; // value;
 
 			if ( entity_droplist.value === "" ) return vector_y.value = "";
 			if ( vector_droplist.value === "" ) return vector_y.value = "";
 
-		//	"value" always comes as typeof "string".
+		//	"value" always comes as typeof "string", (ecxept NaN, undefined?)
 
-			if ( value === undefined ) return vector_y.value = "";
 			if ( value === "" ) return vector_y.value = "";
 			if ( value === "NaN" ) return vector_y.value = "";
+			if ( value === undefined ) return vector_y.value = "";
 			if ( value === "undefined" ) return vector_y.value = "";
-
-			var key = vector_droplist.value;
-
-		//	disabled on key change.
-
 			if ( editor[key] === undefined ) return vector_y.value = "";
 			if ( !editor[key].isVector2 ) return vector_y.value = "";
 			if ( isNaN(value) ) return vector_y.value = editor[key].y.toFixed(2);
@@ -160,28 +152,24 @@
 			switch (key) {
 
 				case "center":
-					var value = THREE.Math.clamp( Number(value), 0, 1 ); // important!
-				//	Before change the editor[key] value add an undo state in undo queue.
-				//	Until now we has adding to Undo after the value has changed. (FIXED!)
-					addtoUndo( editor,key,value,undo_button,redo_button ); // add to undo.
-					setTimeout(function(){ editor[key].y = Number(value); }); // important!
-				//	editor[key].y = Number(value); // editor watcher updates value input.
+					value = THREE.Math.clamp( Number(value), 0, 1 ); // number.
 				break;
 
 				case "offset":
 				case "repeat":
-					var value = THREE.Math.clamp( Number(value), -100, 100 ); // number.
-				//	Before change the editor[key] value add an undo state in undo queue.
-				//	Until now we has adding to Undo after the value has changed. (FIXED!)
-					addtoUndo( editor,key,value,undo_button,redo_button ); // add to undo.
-					setTimeout(function(){ editor[key].y = Number(value); }); // important!
-				//	editor[key].y = Number(value); // editor watcher updates value input.
+					value = THREE.Math.clamp( Number(value), -100, 100 ); // number.
 				break;
 
 				default:
-					vector_y.value = "";
+					vector_y.value = ""; return;
 				break;
 			}
+
+		//	Before change the editor[key] value add an undo state in undo queue.
+		//	Until now we has adding to Undo after the value has changed. (FIXED!)
+			addtoUndo( editor,key,"y",value,undo_button,redo_button ); // add to undo.
+			setTimeout(function(){ editor[key].y = Number(value); }); // important!
+		//	editor[key].y = Number(value); // editor watcher updates value input.
 
 		});
 
