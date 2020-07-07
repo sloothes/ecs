@@ -27,11 +27,6 @@
 			select.appendChild( option );
 		})();
 
-	//	Add a watcher.
-	//	watch(select, "onchange", function(property, event, value){
-	//	//	debugMode && console.log({item:select,event:event,"material id":value});
-	//	});
-
 	//	Call watchers.
 		select.addEventListener( "change", function(){
 			this.blur(); // important!
@@ -72,11 +67,6 @@
 			option.value = name;
 			select.appendChild( option );
 		});
-
-	//	Add a watcher.
-	//	watch(select, "onchange", function(property, event, value){
-	//	//	debugMode && console.log({item:select,event:event,map:value});
-	//	});
 
 	//	Call watchers.
 		select.addEventListener( "change", function(){
@@ -134,11 +124,6 @@
 		input.style.cssText = "width:-webkit-fill-available;color:#000;display:inline;"
 		+ "margin:0px 5px;text-align:center;font-size:large;font-weigth:bold;background:none;";
 
-	//	Add a watcher.
-	//	watch(input, "onchange", function(property, event, value){
-	//	//	debugMode && console.log({item:input,event:event,value:value});
-	//	});
-
 	//	Call watchers.
 		input.addEventListener( "change", function(){
 			this.blur(); // important!
@@ -192,11 +177,6 @@
 			select.appendChild( option );
 		});
 
-	//	Add a watcher.
-	//	watch(select, "onchange", function(property, event, value){
-	//	//	debugMode && console.log({item:select,event:event,key:value});
-	//	});
-
 	//	Call watchers.
 		select.addEventListener( "change", function(){
 			this.blur(); // important!
@@ -240,11 +220,6 @@
 		input.classList.add("form-control","text-center");
 		input.style.cssText = "color:#000;border:none;display:inline;width:80px;"
 		+ "margin:0px 5px;text-align:center;font-size:large;font-weigth:bold;background:none;";
-
-	//	Add a watcher.
-	//	watch(input, "onchange", function(property, event, value){
-	//	//	debugMode && console.log({item:input,event:event,value:value});
-	//	});
 
 	//	Call watchers.
 		input.addEventListener( "change", function(){
@@ -291,11 +266,6 @@
 			select.appendChild( option );
 		});
 
-	//	Add a watcher.
-	//	watch(select, "onchange", function(property, event, value){
-	//	//	debugMode && console.log({item:select,event:event,vector:value});
-	//	});
-
 	//	Call watchers.
 		select.addEventListener( "change", function(){
 			this.blur(); // important!
@@ -341,11 +311,6 @@
 		input.classList.add("form-control","text-center");
 		input.style.cssText = "color:#000;border:none;display:inline;width:80px;"
 		+ "margin:0px 5px;text-align:center;font-size:large;font-weigth:bold;background:none;";
-
-	//	Add a watcher.
-	//	watch(input, "onchange", function(property, event, value){
-	//	//	debugMode && console.log({item:input,event:event,x:value});
-	//	});
 
 	//	Call watchers.
 		input.addEventListener( "change", function(){
@@ -400,11 +365,6 @@
 		input.style.cssText = "color:#000;border:none;display:inline;width:80px;"
 		+ "margin:0px 5px;text-align:center;font-size:large;font-weigth:bold;background:none;";
 
-	//	Add a watcher.
-	//	watch(input, "onchange", function(property, event, value){
-	//	//	debugMode && console.log({item:input,event:event,y:value});
-	//	});
-
 	//	Call watchers.
 		input.addEventListener( "change", function(){
 			this.blur(); // important!
@@ -450,11 +410,6 @@
 			select.appendChild( option );
 		});
 
-	//	Add a watcher.
-	//	watch(select, "onchange", function(property, event, value){
-	//	//	debugMode && console.log({item:select,event:event,color:value});
-	//	});
-
 	//	Call watchers.
 		select.addEventListener( "change", function(){
 			this.blur(); // important!
@@ -498,11 +453,6 @@
 		input.classList.add("form-control","text-center");
 		input.style.cssText = "color:#000;border:none;display:inline;width:80px;"
 		+ "margin:0px 5px;text-align:center;font-size:large;font-weigth:bold;background:none;";
-
-	//	Add a watcher.
-	//	watch(input, "onchange", function(property, event, value){
-	//	//	debugMode && console.log({item:input,event:event,red:value});
-	//	});
 
 	//	Call watchers.
 		input.addEventListener( "change", function(){
@@ -555,11 +505,6 @@
 		input.style.cssText = "color:#000;border:none;display:inline;width:80px;"
 		+ "margin:0px 5px;text-align:center;font-size:large;font-weigth:bold;background:none;";
 
-	//	Add a watcher.
-	//	watch(input, "onchange", function(property, event, value){
-	//	//	debugMode && console.log({item:input,event:event,green:value});
-	//	});
-
 	//	Call watchers.
 		input.addEventListener( "change", function(){
 			this.blur(); // important!
@@ -610,11 +555,6 @@
 		input.classList.add("form-control","text-center");
 		input.style.cssText = "color:#000;border:none;display:inline;width:80px;"
 		+ "margin:0px 5px;text-align:center;font-size:large;font-weigth:bold;background:none;";
-
-	//	Add a watcher.
-	//	watch(input, "onchange", function(property, event, value){
-	//	//	debugMode && console.log({item:input,event:event,blue:value});
-	//	});
 
 	//	Call watchers.
 		input.addEventListener( "change", function(){
@@ -705,11 +645,6 @@
 			option.text = name;
 			option.value = name;
 			select.appendChild( option );
-		});
-
-	//	Add a watcher.
-		watch(select, "onchange", function(property, event, value){
-			debugMode && console.log({item:"droplist",event:event,"type":value});
 		});
 
 	//	Call watchers.
