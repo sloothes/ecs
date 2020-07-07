@@ -2153,7 +2153,7 @@
 
 				clearTimeout( interval ); // important!
 
-				if ( !entity_droplist.value === "" ) return;
+				if ( entity_droplist.value === "" ) return;
 
 			//	disabled on mouse down.
 
@@ -2249,7 +2249,7 @@
 
 				clearTimeout( interval ); // important!
 
-				if ( !entity_droplist.value === "" ) return;
+				if ( entity_droplist.value === "" ) return;
 
 			//	disabled on mouse click.
 

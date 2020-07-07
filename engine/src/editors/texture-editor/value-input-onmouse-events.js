@@ -33,7 +33,7 @@
 
 			clearTimeout( interval ); // important!
 
-			if ( !entity_droplist.value ) return;
+			if ( entity_droplist.value === "" ) return;
 
 		//	disabled on mouse down.
 
@@ -100,19 +100,18 @@
 
 		function onMouseClick(){
 
-			var button = this;
-
 			clearTimeout( interval ); // important!
 
-			if ( !entity_droplist.value ) return;
-
-			var key = key_droplist.value;
+			if ( entity_droplist.value === "" ) return;
 
 		//	disabled on mouse click.
 
-			if ( key === "name" ) return;
+			if ( key_droplist.value === "name" ) return;
 
 		//	enabled on mouse click.
+
+			var button = this;
+			var key = key_droplist.value;
 
 			function updateConstantInputValue( values ){
 				var min = 0, max = values.length;
