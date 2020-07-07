@@ -197,11 +197,12 @@
 						if ( button === increase_y ) value = THREE.Math.clamp( value+step, min, max );
 						if ( button === decrease_y ) value = THREE.Math.clamp( value-step, min, max );
 						editor[ key ].y = round(value, 2); // editor watcher updates vector_y input value.
+						interval = setTimeout( update, clock.getDelta() );
 					break;
 				}
 
-				var dt = clock.getDelta();
-				interval = setTimeout( update, dt );
+			//	var dt = clock.getDelta();
+			//	interval = setTimeout( update, dt );
 			//	debugMode && console.log( "on update:", interval );
 
 			}, 500);
