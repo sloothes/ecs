@@ -23,10 +23,10 @@
 			interval = setTimeout( function(){
 				try {
 
-				//	Copy material state (undo).
-					var loader = new THREE.MaterialLoader();
-					var material = loader.parse( json );
-					editor.copy( material ); // update.
+				//	var loader = new THREE.MaterialLoader();
+				//	var material = loader.parse( json );
+				//	Parse editor state (undo).
+					editor.parse( json ); // update.
 
 				} catch(err){ debugMode && console.error(err); }
 
@@ -52,10 +52,10 @@
 			interval = setTimeout( function(){
 				try {
 
-				//	Copy material state (undo).
-					var loader = new THREE.MaterialLoader();
-					var material = loader.parse( json );
-					editor.copy( material ); // update.
+				//	var loader = new THREE.MaterialLoader();
+				//	var material = loader.parse( json );
+				//	Parse editor state (undo).
+					editor.parse( json ); // update.
 
 				} catch(err){ debugMode && console.error(err); }
 

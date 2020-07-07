@@ -19,7 +19,7 @@
 		this.uuid = THREE.Math.generateUUID();
 	};
 
-	TextureEditor.prototype.fromJSON = function( json ){
+	TextureEditor.prototype.parse = function( json ){
 	//	param: a texture json {object}
 	//	the missing TextureLoader.parse;
 
@@ -49,6 +49,13 @@
 				break;
 			}
 		}
+
+	};
+
+	TextureEditor.prototype.fromJSON = function( json ){
+		console.warn( "DEPRECATED: TextureEditor.fromJSON(json) is deprecated. Use insteand TextureEditor.parse(json)" );
+
+		this.parse( json ); 
 
 	};
 
