@@ -114,12 +114,13 @@
 						addtoUndo(state,key,"r",value,undo_button,redo_button); // add to undo.
 					}, 250);
 					editor[ key ].r = value; // editor watcher updates input value.
+					debugMode && console.log( "on Mouse Click:", interval );
 				//	color_r.value = parseInt( 255 * ( editor[ key ].r = value ));
 				break;
 
 			}
 
-			debugMode && console.log( "on Mouse Click:", interval );
+		//	debugMode && console.log( "on Mouse Click:", interval );
 
 		}
 
