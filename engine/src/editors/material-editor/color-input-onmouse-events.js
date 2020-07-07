@@ -20,7 +20,7 @@
 			if ( entity_droplist.value === "" ) return; // important!
 			var key = color_droplist.value;
 			state.key = color_droplist.value; // key.
-			state.value = editor[key];   // important!
+			state.value = editor[key].r;   // important!
 			state.json = editor.toJSON(); // editor json.
 			debugMode && console.log( "state:",state ); // debug!
 		//	Remove on firstMouseDown event listener.
@@ -78,7 +78,7 @@
 		function addtoUndo(state,key,r,value,undo_button,redo_button){
 			debugMode && console.log({state:state,key:key,value:value});
 			if ( state.key !== key ) return;
-			if ( state.value[r] === value ) return;
+			if ( state.value === value ) return;
 			state.json && undo_button.undo.unshift( state.json );
 			try { debugMode && console.log( 
 				"undo:", undo_button.undo.length, 
@@ -118,7 +118,7 @@
 
 			}
 
-		//	debugMode && console.log( "on Mouse Click:", interval );
+			debugMode && console.log( "on Mouse Click:", interval );
 
 		}
 
