@@ -35,7 +35,7 @@
 
 	//	normalScale.
 
-		watch( editor.normalScale, function( key, action, value ){
+		watch( editor, "normalScale", function( key, action, value ){
 			var material = getMaterialByEntityId(); if ( !material ) return;
 		//	Update material.
 			if (material && material.normalScale) 
@@ -67,7 +67,7 @@
 
 	//	color.
 
-		watch( editor.color, function( key, action, value ){
+		watch( editor, "color", function( key, action, value ){
 			var material = getMaterialByEntityId(); if ( !material ) return;
 		//	Update material.
 			if (material && material.color) 
@@ -82,7 +82,7 @@
 
 	//	emissive.
 
-		watch( editor.emissive, function( key, action, value ){
+		watch( editor, "emissive", function( key, action, value ){
 			var material = getMaterialByEntityId(); if ( !material ) return;
 		//	Update material.
 			if (material && material.emissive) 
@@ -97,7 +97,7 @@
 
 	//	specular.
 
-		watch( editor.specular, function( key, action, value ){
+		watch( editor, "specular", function( key, action, value ){
 			var material = getMaterialByEntityId(); if ( !material ) return;
 		//	Update material.
 			if (material && material.specular) 
