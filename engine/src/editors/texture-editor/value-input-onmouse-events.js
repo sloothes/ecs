@@ -230,6 +230,6 @@
 		document.querySelector("li#texture-value-decrease"), // decrease_v,
 		document.querySelector("select#texture-key-droplist"), // key_droplist,
 		document.querySelector("select#texture-entities-droplist"), // entity_droplist,
-		document.querySelector("div#texture-undo-button").undo, // undo array,
-		document.querySelector("div#texture-redo-button").redo // redo array, (only needed for the debug console.log).
+		document.querySelector("div#texture-undo-button"), // undo_button,
+		document.querySelector("div#texture-redo-button") // redo_button, (only needed for the debug console.log).
 	);
