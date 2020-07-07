@@ -2015,8 +2015,8 @@
 
 			//	disabled on key change.
 
-				if ( editor[key] === undefined ) value_input.value = "";
-				else if ( !editor[key].isColor ) value_input.value = "";
+				if ( editor[key] === undefined ) color_r.value = "";
+				else if ( !editor[key].isColor ) color_r.value = "";
 				else if ( isNaN(value) ) color_r.value = (255*editor[key].r).toFixed(0);
 
 			//	enabled on key change.
@@ -2053,8 +2053,8 @@
 
 			//	disabled on key change.
 
-				if ( editor[key] === undefined ) value_input.value = "";
-				else if ( !editor[key].isColor ) value_input.value = "";
+				if ( editor[key] === undefined ) color_g.value = "";
+				else if ( !editor[key].isColor ) color_g.value = "";
 				else if ( isNaN(value) ) color_g.value = (255*editor[key].g).toFixed(0);
 
 			//	enabled on key change.
@@ -2091,8 +2091,8 @@
 
 			//	disabled on key change.
 
-				if ( editor[key] === undefined ) value_input.value = "";
-				else if ( !editor[key].isColor ) value_input.value = "";
+				if ( editor[key] === undefined ) color_b.value = "";
+				else if ( !editor[key].isColor ) color_b.value = "";
 				else if ( isNaN(value) ) color_b.value = (255*editor[key].b).toFixed(0);
 
 			//	enabled on key change.
