@@ -75,7 +75,7 @@
 
 	//	add undo.
 
-		function addtoUndo(state,key,r,value,undo_button,redo_button){
+		function addtoUndo(state,key,value,undo_button,redo_button){
 			debugMode && console.log({state:state,key:key,value:value});
 			if ( state.key !== key ) return;
 			if ( state.value === value ) return;
@@ -110,7 +110,7 @@
 						button.addEventListener( "mousedown", onfirstMouseDown ); // important!
 					//	Before change the editor[key] value add an undo state in undo queue.
 					//	Until now we was adding to undo after the value has changed. (FIXED!)
-						addtoUndo(state,key,"r",value,undo_button,redo_button); // add to undo.
+						addtoUndo(state,key,value,undo_button,redo_button); // add to undo.
 					}, 250);
 					editor[ key ].r = value; // editor watcher updates input value.
 				//	color_r.value = parseInt( 255 * ( editor[ key ].r = value ));
