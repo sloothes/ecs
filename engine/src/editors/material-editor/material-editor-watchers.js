@@ -74,9 +74,9 @@
 				material.color[key] = Number(editor.color[key]);
 		//	Display value.
 			if ( color_droplist.value === "color" ) {
-				if ( key === "r" ) color_r.value = 255*editor.color[key];
-				if ( key === "g" ) color_g.value = 255*editor.color[key];
-				if ( key === "b" ) color_b.value = 255*editor.color[key];
+				if ( key === "r" ) color_r.value = (255*editor.color[key]).toFixed(0);
+				if ( key === "g" ) color_g.value = (255*editor.color[key]).toFixed(0);
+				if ( key === "b" ) color_b.value = (255*editor.color[key]).toFixed(0);
 			}
 		});
 
@@ -89,9 +89,9 @@
 				material.emissive[key] = Number(editor.emissive[key]);
 		//	Display value.
 			if ( color_droplist.value === "emissive" ) {
-				if ( key === "r" ) color_r.value = 255*editor.emissive[key];
-				if ( key === "g" ) color_g.value = 255*editor.emissive[key];
-				if ( key === "b" ) color_b.value = 255*editor.emissive[key];
+				if ( key === "r" ) color_r.value = (255*editor.emissive[key]).toFixed(0);
+				if ( key === "g" ) color_g.value = (255*editor.emissive[key]).toFixed(0);
+				if ( key === "b" ) color_b.value = (255*editor.emissive[key]).toFixed(0);
 			}
 		});
 
@@ -104,9 +104,9 @@
 				material.specular[key] = Number(editor.specular[key]);
 		//	Display value.
 			if ( color_droplist.value === "specular" ) {
-				if ( key === "r" ) color_r.value = 255*editor.specular[key];
-				if ( key === "g" ) color_g.value = 255*editor.specular[key];
-				if ( key === "b" ) color_b.value = 255*editor.specular[key];
+				if ( key === "r" ) color_r.value = (255*editor.specular[key]).toFixed(0);
+				if ( key === "g" ) color_g.value = (255*editor.specular[key]).toFixed(0);
+				if ( key === "b" ) color_b.value = (255*editor.specular[key]).toFixed(0);
 			}
 		});
 
