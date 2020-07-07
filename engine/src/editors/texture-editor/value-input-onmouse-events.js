@@ -1,6 +1,6 @@
 //	value-input-onmouse-events.js
 
-	(function(editor,increase_v,decrease_v,key_droplist,entity_droplist,undo,redo){
+	(function(editor,increase_v,decrease_v,key_droplist,entity_droplist,undo_button,redo_button){
 
 		var state;
 		var interval;
@@ -17,7 +17,6 @@
 			debugMode && console.log( "state:",state ); // debug!
 		//	Remove on firstMouseDown event listener.
 			this.removeEventListener( "mousedown", onfirstMouseDown ); // important!
-		//	debugMode && console.log( "state:", state, "undo:", undo.length, "redo:", redo.length );
 		};
 
 		increase_v.addEventListener( "mousedown", onMouseDown );
@@ -86,6 +85,19 @@
 
 		} // end onMouseDown
 
+	//	add undo.
+
+		function addtoUndo(state,key,value,undo_button,redo_button){
+			if ( state.key !== key ) return;
+			if ( state.value === value ) return;
+			state.json && undo_button.undo.unshift( state.json );
+			try { debugMode && console.log( 
+				"undo:", undo_button.undo.length, 
+				"redo:", redo_button.redo.length 
+			); } catch(err){;}
+			return;
+		}
+
 		function onMouseClick(){
 
 			var button = this;
@@ -109,17 +121,14 @@
 				if ( button === increase_v ) value = values[ ( ++index % max + max ) % max ]; // mod();
 				if ( button === decrease_v ) value = values[ ( --index % max + max ) % max ]; // mod();
 			//	debugMode && console.log( key === state.key && value !== state.value );
-				if ( key === state.key && value !== state.value ) {
-					interval = setTimeout( function(){ 
-					//	Add on firstMouseDown event listener.
-						button.addEventListener( "mousedown", onfirstMouseDown ); // important!
-					//	Before change the editor[key] value add an undo state in undo queue.
-					//	Until now we has adding to Undo after the value has changed. (FIXED!)
-						state.json && undo.unshift( state.json ); // add to undo.
-						debugMode && console.log( "undo:", undo.length, "redo:", redo.length ); 
-					}, 250);
-				}
-				editor[ key ] = value; // number, editor watcher updates input value.
+				interval = setTimeout( function(){ 
+				//	Add on firstMouseDown event listener.
+					button.addEventListener( "mousedown", onfirstMouseDown ); // important!
+				//	Before change the editor[key] value add an undo state in undo queue.
+				//	Until now we was adding to undo after the value has changed. (FIXED!)
+					addtoUndo( editor,key,value,undo_button,redo_button ); // add to undo.
+				}, 250); 
+				editor[ key ] = value; // number, editor watcher updates value input.
 			}
 
 			switch ( key ){
@@ -180,16 +189,13 @@
 						var value = Number(editor[ key ]); // get value from editor.
 						if ( button === increase_v ) value = THREE.Math.clamp( value+step, min, max );
 						if ( button === decrease_v ) value = THREE.Math.clamp( value-step, min, max );
-						if ( key === state.key && value !== state.value ) {
-							interval = setTimeout( function(){ 
-							//	Add on firstMouseDown event listener.
-								button.addEventListener( "mousedown", onfirstMouseDown ); // important!
-							//	Before change the editor[key] value add an undo state in undo queue.
-							//	Until now we has adding to Undo after the value has changed. (FIXED!)
-								state.json && undo.unshift( state.json ); // add to undo.
-								debugMode && console.log( "undo:", undo.length, "redo:", redo.length ); 
-							}, 250);
-						}
+						interval = setTimeout( function(){ 
+						//	Add on firstMouseDown event listener.
+							button.addEventListener( "mousedown", onfirstMouseDown ); // important!
+						//	Before change the editor[key] value add an undo state in undo queue.
+						//	Until now we was adding to undo after the value has changed. (FIXED!)
+							addtoUndo( editor,key,value,undo_button,redo_button ); // add to undo.
+						}, 250);
 						editor[ key ] = round(value, 2); // editor watcher updates input value.
 					})();
 				break;
@@ -201,16 +207,13 @@
 						var value = Number(editor[ key ]); // get value from editor.
 						if ( button === increase_v ) value = THREE.Math.clamp( value+step, min, max );
 						if ( button === decrease_v ) value = THREE.Math.clamp( value-step, min, max );
-						if ( key === state.key && value !== state.value ) {
-							interval = setTimeout( function(){ 
-							//	Add on firstMouseDown event listener.
-								button.addEventListener( "mousedown", onfirstMouseDown ); // important!
-							//	Before change the editor[key] value add an undo state in undo queue.
-							//	Until now we has adding to Undo after the value has changed. (FIXED!)
-								state.json && undo.unshift( state.json ); // add to undo.
-								debugMode && console.log( "undo:", undo.length, "redo:", redo.length ); 
-							}, 250);
-						}
+						interval = setTimeout( function(){ 
+						//	Add on firstMouseDown event listener.
+							button.addEventListener( "mousedown", onfirstMouseDown ); // important!
+						//	Before change the editor[key] value add an undo state in undo queue.
+						//	Until now we was adding to undo after the value has changed. (FIXED!)
+							addtoUndo( editor,key,value,undo_button,redo_button ); // add to undo.
+						}, 250);
 						editor[ key ] = value; // editor watcher updates input value.
 					})();
 				break;
@@ -229,5 +232,5 @@
 		document.querySelector("select#texture-key-droplist"), // key_droplist,
 		document.querySelector("select#texture-entities-droplist"), // entity_droplist,
 		document.querySelector("div#texture-undo-button").undo, // undo array,
-		document.querySelector("div#texture-redo-button").redo // redo array.
+		document.querySelector("div#texture-redo-button").redo // redo array, (only needed for the debug console.log).
 	);

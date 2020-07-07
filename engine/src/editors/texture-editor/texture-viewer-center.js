@@ -4,7 +4,7 @@
 
 //		Stack overflow!!!
 //		watch( vector_droplist, "onchange", function( property, event, value ){
-//			callWatchers( entity_droplist, "onchange", event, entity_droplist.value );
+//			callWatchers( entity_droplist, "onchange", event, entity_droplist.value ); // stack overflow!
 //		});
 
 		watch( entity_droplist, "onchange", function( property, event, value ){
@@ -218,7 +218,7 @@
 		document.querySelector("select#texture-vector-droplist"), // vector_droplist,
 		document.querySelector("select#texture-entities-droplist"), // entity_droplist,
 		document.querySelector("div#texture-undo-button"), // undo_button,
-		document.querySelector("div#texture-redo-button")  // redo_button.
+		document.querySelector("div#texture-redo-button")  // redo_button, (only needed for the debug console.log).
 	);
 
 

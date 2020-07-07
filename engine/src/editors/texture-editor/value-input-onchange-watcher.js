@@ -219,7 +219,7 @@
 		document.querySelector("select#texture-key-droplist"), // key_droplist
 		document.querySelector("select#texture-entities-droplist"), // entity_droplist.
 		document.querySelector("div#texture-undo-button"), // undo_button,
-		document.querySelector("div#texture-redo-button")  // redo_button.
+		document.querySelector("div#texture-redo-button")  // redo_button, (only needed for the debug console.log).
 	);
 
 	//	blur.
