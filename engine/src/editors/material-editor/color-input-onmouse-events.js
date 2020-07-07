@@ -38,6 +38,7 @@
 		decrease_r.addEventListener( "click", onMouseClick );
 
 		function onMouseDown(){ 
+			console.log("on mousedown!");
 
 			clearTimeout( interval ); // important!
 
