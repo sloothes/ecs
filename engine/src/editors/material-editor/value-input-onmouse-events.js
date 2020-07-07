@@ -146,7 +146,9 @@
 			debugMode && console.log({
 				key:key, "state key":state.key,
 				value:value, "state value":state.value,
-				"abord": state.key !== key || state.value === value,
+				"a: state.key !== key":state.key !== key,
+				"b: state.value === value":state.value === value,
+				"a or b": state.key !== key || state.value === value,
 			}); // debug!
 			if ( state.key !== key || state.value === value ) return;
 			state.json && undo_button.undo.unshift( state.json );
