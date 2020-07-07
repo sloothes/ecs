@@ -26,11 +26,19 @@
 					text_input.value = "";
 					value_input.value = "";
 					map_droplist.value = "";
-					key_droplist.value = "";
-					color_droplist.value = "";
-					vector_droplist.value = "";
+					key_droplist.value = "name";
+					color_droplist.value = "color";
+					vector_droplist.value = "normalScale";
 					entity_droplist.value = "";
 				})();
+
+			//	call watchers.
+				callWatchers(entity_droplist, "onchange", "change", entity_droplist.value);
+				//	it will call: editor.update(""); // false;
+				//	callWatchers( map_droplist, "onchange", "change", map_droplist.value );
+				//	callWatchers( key_droplist, "onchange", "change", key_droplist.value );
+				//	callWatchers( vector_droplist, "onchange", "change", vector_droplist.value );
+				//	callWatchers( color_droplist, "onchange", "change", color_droplist.value );
 
 				debugMode && console.log("exit material edit mode.");
 
