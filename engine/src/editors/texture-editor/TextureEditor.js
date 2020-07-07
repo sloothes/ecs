@@ -54,8 +54,7 @@
 
 	TextureEditor.prototype.fromJSON = function( json ){
 		console.warn( "TextureEditor: editor.fromJSON is deprecated, use editor.parse(json) instead." );
-
-		this.parse( json ); 
+		var editor = this; editor.parse( json ); 
 	};
 
 	TextureEditor.prototype.update = function( value ){

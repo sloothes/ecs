@@ -23,8 +23,8 @@
 			interval = setTimeout( function(){
 				try {
 
-				//	Copy texture state (undo).
-					editor.fromJSON( json ); // update.
+				//	Parse texture state (undo).
+					editor.parse( json ); // update.
 
 				} catch(err){ debugMode && console.error(err); }
 
@@ -50,8 +50,8 @@
 			interval = setTimeout( function(){
 				try {
 
-				//	Copy texture state (redo).
-					editor.fromJSON( json ); // update.
+				//	Parse texture state (redo).
+					editor.parse( json ); // update.
 
 				} catch(err){ debugMode && console.error(err); }
 
