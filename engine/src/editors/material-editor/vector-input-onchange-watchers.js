@@ -74,7 +74,7 @@
 		});
 
 	})(
-		textureEditor, // editor,
+		materialEditor, // editor,
 		keyInputControls, // keyInputControls,
 		document.querySelector("input#material-vector-x-input"), // vector_x,
 		document.querySelector("select#material-vector-droplist"), // vector_droplist,
@@ -158,7 +158,7 @@
 		});
 
 	})(
-		textureEditor, // editor,
+		materialEditor, // editor,
 		keyInputControls, // keyInputControls,
 		document.querySelector("input#material-vector-y-input"), // vector_y,
 		document.querySelector("select#material-vector-droplist"), // vector_droplist,
