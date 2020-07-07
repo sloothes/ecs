@@ -68,7 +68,7 @@
 
 			}, 500);
 
-		} // end onMouseDown.
+		}
 
 	//	add undo.
 
@@ -113,7 +113,7 @@
 
 			debugMode && console.log( "on Mouse Click:", interval );
 
-		} // end onMouseClick.
+		}
 
 	})(
 		materialEditor, // editor,
@@ -194,7 +194,7 @@
 
 			}, 500);
 
-		} // end onMouseDown.
+		}
 
 	//	add undo.
 
@@ -238,7 +238,7 @@
 
 			debugMode && console.log( "on Mouse Click:", interval );
 
-		} // end onMouseClick.
+		}
 
 	})(
 		materialEditor, // editor,
