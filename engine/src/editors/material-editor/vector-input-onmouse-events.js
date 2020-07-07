@@ -116,7 +116,7 @@
 		} // end onMouseClick.
 
 	})(
-		textureEditor, // editor,
+		materialEditor, // editor,
 		document.querySelector("input#material-vector-x-input"), // vector_x,
 		document.querySelector("li#material-vector-x-increase"), // increase_x,
 		document.querySelector("li#material-vector-x-decrease"), // decrease_x,
@@ -241,7 +241,7 @@
 		} // end onMouseClick.
 
 	})(
-		textureEditor, // editor,
+		materialEditor, // editor,
 		document.querySelector("input#material-vector-y-input"), // vector_y,
 		document.querySelector("li#material-vector-y-increase"), // increase_y,
 		document.querySelector("li#material-vector-y-decrease"), // decrease_y,
