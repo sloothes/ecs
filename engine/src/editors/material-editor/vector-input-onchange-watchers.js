@@ -4,23 +4,6 @@
 
 	(function(editor,keyInputControls,vector_x,vector_droplist,entity_droplist,undo_button,redo_button){
 
-	//	blur.
-
-		watch( vector_x, "onchange", function(){ vector_x.blur(); });
-
-	//	keyInputControls.
-
-		function enableKeyInputControls(){
-			keyInputControls.isDisabled = false;
-		}
-
-		function disableKeyInputControls(){
-			keyInputControls.isDisabled = true;
-		}
-
-		vector_x.addEventListener( "blur", enableKeyInputControls );
-		vector_x.addEventListener( "focus", disableKeyInputControls );
-
 	//	add undo.
 
 		function addtoUndo(editor,key,x,value,undo_button,redo_button){
@@ -88,23 +71,6 @@
 
 	(function(editor,keyInputControls,vector_y,vector_droplist,entity_droplist,undo_button,redo_button){
 
-	//	blur.
-
-		watch( vector_y, "onchange", function(){ vector_y.blur(); });
-
-	//	keyInputControls.
-
-		function enableKeyInputControls(){
-			keyInputControls.isDisabled = false;
-		}
-
-		function disableKeyInputControls(){
-			keyInputControls.isDisabled = true;
-		}
-
-		vector_y.addEventListener( "blur", enableKeyInputControls );
-		vector_y.addEventListener( "focus", disableKeyInputControls );
-
 	//	add undo.
 
 		function addtoUndo(editor,key,y,value,undo_button,redo_button){
@@ -166,3 +132,40 @@
 		document.querySelector("div#material-undo-button"), // undo_button,
 		document.querySelector("div#material-redo-button")  // redo_button (only needed for the debug console.log).
 	);
+
+
+
+	//	blur.
+
+	//	watch( vector_x, "onchange", function(){ vector_x.blur(); });
+
+	//	keyInputControls.
+
+	//	function enableKeyInputControls(){
+	//		keyInputControls.isDisabled = false;
+	//	}
+
+	//	function disableKeyInputControls(){
+	//		keyInputControls.isDisabled = true;
+	//	}
+
+	//	vector_x.addEventListener( "blur", enableKeyInputControls );
+	//	vector_x.addEventListener( "focus", disableKeyInputControls );
+
+
+	//	blur.
+
+	//	watch( vector_y, "onchange", function(){ vector_y.blur(); });
+
+	//	keyInputControls.
+
+	//	function enableKeyInputControls(){
+	//		keyInputControls.isDisabled = false;
+	//	}
+
+	//	function disableKeyInputControls(){
+	//		keyInputControls.isDisabled = true;
+	//	}
+
+	//	vector_y.addEventListener( "blur", enableKeyInputControls );
+	//	vector_y.addEventListener( "focus", disableKeyInputControls );

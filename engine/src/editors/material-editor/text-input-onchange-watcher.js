@@ -2,23 +2,6 @@
 
 	(function(editor,keyInputControls,text_input,value_input,key_droplist,entity_droplist,undo_button,redo_button){
 
-	//	blur.
-
-		watch( text_input, "onchange", function(){ text_input.blur(); }); // EXPERIMANTAL!
-
-	//	keyInputControls.
-
-		function enableKeyInputControls(){
-			keyInputControls.isDisabled = false;
-		}
-
-		function disableKeyInputControls(){
-			keyInputControls.isDisabled = true;
-		}
-
-		text_input.addEventListener( "blur", enableKeyInputControls );
-		text_input.addEventListener( "focus", disableKeyInputControls );
-
 	//	add undo.
 
 		function addtoUndo(editor,key,value,undo_button,redo_button){
@@ -85,3 +68,21 @@
 		document.querySelector("div#material-undo-button"), // undo_button,
 		document.querySelector("div#material-redo-button")  // redo_button (only needed for the debug console.log).
 	);
+
+
+	//	blur.
+
+	//	watch( text_input, "onchange", function(){ text_input.blur(); }); // EXPERIMANTAL!
+
+	//	keyInputControls.
+
+	//	function enableKeyInputControls(){
+	//		keyInputControls.isDisabled = false;
+	//	}
+
+	//	function disableKeyInputControls(){
+	//		keyInputControls.isDisabled = true;
+	//	}
+
+	//	text_input.addEventListener( "blur", enableKeyInputControls );
+	//	text_input.addEventListener( "focus", disableKeyInputControls );

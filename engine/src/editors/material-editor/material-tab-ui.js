@@ -28,12 +28,13 @@
 		})();
 
 	//	Add a watcher.
-		watch(select, "onchange", function(property, event, value){
-		//	debugMode && console.log({item:select,event:event,"material id":value});
-		});
+	//	watch(select, "onchange", function(property, event, value){
+	//	//	debugMode && console.log({item:select,event:event,"material id":value});
+	//	});
 
 	//	Call watchers.
 		select.addEventListener( "change", function(){
+			this.blur(); // important!
 			callWatchers(this, "onchange", "change", this.value );
 		});
 
@@ -73,12 +74,13 @@
 		});
 
 	//	Add a watcher.
-		watch(select, "onchange", function(property, event, value){
-		//	debugMode && console.log({item:select,event:event,map:value});
-		});
+	//	watch(select, "onchange", function(property, event, value){
+	//	//	debugMode && console.log({item:select,event:event,map:value});
+	//	});
 
 	//	Call watchers.
 		select.addEventListener( "change", function(){
+			this.blur(); // important!
 			callWatchers(this, "onchange", "change", this.value );
 		});
 
@@ -133,14 +135,19 @@
 		+ "margin:0px 5px;text-align:center;font-size:large;font-weigth:bold;background:none;";
 
 	//	Add a watcher.
-		watch(input, "onchange", function(property, event, value){
-		//	debugMode && console.log({item:input,event:event,value:value});
-		});
+	//	watch(input, "onchange", function(property, event, value){
+	//	//	debugMode && console.log({item:input,event:event,value:value});
+	//	});
 
 	//	Call watchers.
 		input.addEventListener( "change", function(){
+			this.blur(); // important!
 			callWatchers(this, "onchange", "change", this.value );
 		});
+
+	//	keyInputControls.
+		input.addEventListener( "blur", enableKeyInputControls );
+		input.addEventListener( "focus", disableKeyInputControls );
 
 		row.appendChild(input);
 		tab.appendChild( row );
@@ -186,12 +193,13 @@
 		});
 
 	//	Add a watcher.
-		watch(select, "onchange", function(property, event, value){
-		//	debugMode && console.log({item:select,event:event,key:value});
-		});
+	//	watch(select, "onchange", function(property, event, value){
+	//	//	debugMode && console.log({item:select,event:event,key:value});
+	//	});
 
 	//	Call watchers.
 		select.addEventListener( "change", function(){
+			this.blur(); // important!
 			callWatchers(this, "onchange", "change", this.value );
 		});
 
@@ -234,14 +242,19 @@
 		+ "margin:0px 5px;text-align:center;font-size:large;font-weigth:bold;background:none;";
 
 	//	Add a watcher.
-		watch(input, "onchange", function(property, event, value){
-		//	debugMode && console.log({item:input,event:event,value:value});
-		});
+	//	watch(input, "onchange", function(property, event, value){
+	//	//	debugMode && console.log({item:input,event:event,value:value});
+	//	});
 
 	//	Call watchers.
 		input.addEventListener( "change", function(){
+			this.blur(); // important!
 			callWatchers(this, "onchange", "change", this.value );
 		});
+
+	//	keyInputControls.
+		input.addEventListener( "blur", enableKeyInputControls );
+		input.addEventListener( "focus", disableKeyInputControls );
 
 		vect.appendChild(prev);
 		vect.appendChild(input);
@@ -279,12 +292,13 @@
 		});
 
 	//	Add a watcher.
-		watch(select, "onchange", function(property, event, value){
-		//	debugMode && console.log({item:select,event:event,vector:value});
-		});
+	//	watch(select, "onchange", function(property, event, value){
+	//	//	debugMode && console.log({item:select,event:event,vector:value});
+	//	});
 
 	//	Call watchers.
 		select.addEventListener( "change", function(){
+			this.blur(); // important!
 			callWatchers(this, "onchange", "change", this.value );
 		});
 
@@ -329,14 +343,19 @@
 		+ "margin:0px 5px;text-align:center;font-size:large;font-weigth:bold;background:none;";
 
 	//	Add a watcher.
-		watch(input, "onchange", function(property, event, value){
-		//	debugMode && console.log({item:input,event:event,x:value});
-		});
+	//	watch(input, "onchange", function(property, event, value){
+	//	//	debugMode && console.log({item:input,event:event,x:value});
+	//	});
 
 	//	Call watchers.
 		input.addEventListener( "change", function(){
+			this.blur(); // important!
 			callWatchers(this, "onchange", "change", this.value );
 		});
+
+	//	keyInputControls.
+		input.addEventListener( "blur", enableKeyInputControls );
+		input.addEventListener( "focus", disableKeyInputControls );
 
 		vect.appendChild(prev);
 		vect.appendChild(input);
@@ -382,14 +401,19 @@
 		+ "margin:0px 5px;text-align:center;font-size:large;font-weigth:bold;background:none;";
 
 	//	Add a watcher.
-		watch(input, "onchange", function(property, event, value){
-		//	debugMode && console.log({item:input,event:event,y:value});
-		});
+	//	watch(input, "onchange", function(property, event, value){
+	//	//	debugMode && console.log({item:input,event:event,y:value});
+	//	});
 
 	//	Call watchers.
 		input.addEventListener( "change", function(){
+			this.blur(); // important!
 			callWatchers(this, "onchange", "change", this.value );
 		});
+
+	//	keyInputControls.
+		input.addEventListener( "blur", enableKeyInputControls );
+		input.addEventListener( "focus", disableKeyInputControls );
 
 		vect.appendChild(prev);
 		vect.appendChild(input);
@@ -427,12 +451,13 @@
 		});
 
 	//	Add a watcher.
-		watch(select, "onchange", function(property, event, value){
-		//	debugMode && console.log({item:select,event:event,color:value});
-		});
+	//	watch(select, "onchange", function(property, event, value){
+	//	//	debugMode && console.log({item:select,event:event,color:value});
+	//	});
 
 	//	Call watchers.
 		select.addEventListener( "change", function(){
+			this.blur(); // important!
 			callWatchers(this, "onchange", "change", this.value );
 		});
 
@@ -475,14 +500,19 @@
 		+ "margin:0px 5px;text-align:center;font-size:large;font-weigth:bold;background:none;";
 
 	//	Add a watcher.
-		watch(input, "onchange", function(property, event, value){
-		//	debugMode && console.log({item:input,event:event,red:value});
-		});
+	//	watch(input, "onchange", function(property, event, value){
+	//	//	debugMode && console.log({item:input,event:event,red:value});
+	//	});
 
 	//	Call watchers.
 		input.addEventListener( "change", function(){
+			this.blur(); // important!
 			callWatchers(this, "onchange", "change", this.value );
 		});
+
+	//	keyInputControls.
+		input.addEventListener( "blur", enableKeyInputControls );
+		input.addEventListener( "focus", disableKeyInputControls );
 
 		vect.appendChild(prev);
 		vect.appendChild(input);
@@ -526,14 +556,19 @@
 		+ "margin:0px 5px;text-align:center;font-size:large;font-weigth:bold;background:none;";
 
 	//	Add a watcher.
-		watch(input, "onchange", function(property, event, value){
-		//	debugMode && console.log({item:input,event:event,green:value});
-		});
+	//	watch(input, "onchange", function(property, event, value){
+	//	//	debugMode && console.log({item:input,event:event,green:value});
+	//	});
 
 	//	Call watchers.
 		input.addEventListener( "change", function(){
+			this.blur(); // important!
 			callWatchers(this, "onchange", "change", this.value );
 		});
+
+	//	keyInputControls.
+		input.addEventListener( "blur", enableKeyInputControls );
+		input.addEventListener( "focus", disableKeyInputControls );
 
 		vect.appendChild(prev);
 		vect.appendChild(input);
@@ -577,14 +612,19 @@
 		+ "margin:0px 5px;text-align:center;font-size:large;font-weigth:bold;background:none;";
 
 	//	Add a watcher.
-		watch(input, "onchange", function(property, event, value){
-		//	debugMode && console.log({item:input,event:event,blue:value});
-		});
+	//	watch(input, "onchange", function(property, event, value){
+	//	//	debugMode && console.log({item:input,event:event,blue:value});
+	//	});
 
 	//	Call watchers.
 		input.addEventListener( "change", function(){
+			this.blur(); // important!
 			callWatchers(this, "onchange", "change", this.value );
 		});
+
+	//	keyInputControls.
+		input.addEventListener( "blur", enableKeyInputControls );
+		input.addEventListener( "focus", disableKeyInputControls );
 
 		vect.appendChild(prev);
 		vect.appendChild(input);
@@ -674,6 +714,7 @@
 
 	//	Call watchers.
 		select.addEventListener( "change", function(){
+			this.blur(); // important!
 			callWatchers(this, "onchange", "change", this.value );
 		});
 
