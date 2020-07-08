@@ -1,8 +1,6 @@
 //	TextureManager.js
 
-//	Texture Entities Manager Class.
-
-//	Texture Manager: inherits from EntityManager class.
+//	Texture Manager Class: inherits (extends) Array class.
 //	sources: https://stackoverflow.com/questions/26700164/extending-array-with-es6-classes.
 //	https://stackoverflow.com/questions/11337849/ways-to-extend-array-object-in-javascript.
 
@@ -58,25 +56,31 @@
 			this.push( textures[j] );
 		}
 
-		try {
+	//	Add options.
 
-		//	global const "texture_droplist" is defined in TextureTab.js;
-			var selector = "select#texture-entities-droplist";
-			var texture_droplist = document.querySelector(selector);
+		(function(){
 
-			if ( !texture_droplist ) return;
+			try {
 
-		//	Add options.
-			while ( textures.length ) (function( texture ){
-				var str =  "", dot = ".", col = ":";
-				var name = texture.name || "texture";
-				var option = document.createElement("option");
-				option.text = str+texture.id+dot+name+col+texture.id;
-				option.value = texture.id;
-				texture_droplist.appendChild( option );
-			})( textures.shift() );
+			//	global const "texture_droplist" is defined in TextureTab.js;
+				var selector = "select#texture-entities-droplist";
+				var texture_droplist = document.querySelector(selector);
 
-		} catch(err){ console.warn( selector, "did not found!" ); }
+				if ( !texture_droplist ) return;
+
+			//	Add options.
+				while ( textures.length ) (function( texture ){
+					var str =  "", dot = ".", col = ":";
+					var name = texture.name || "texture";
+					var option = document.createElement("option");
+					option.text = str+texture.id+dot+name+col+texture.id;
+					option.value = texture.id;
+					texture_droplist.appendChild( option );
+				})( textures.shift() );
+
+			} catch(err){ console.warn( selector, "did not found!" ); }
+
+		})();
 
 	};
 
@@ -123,22 +127,28 @@
 			}
 		}
 
-		try {
+	//	Remove options.
 
-		//	global const "texture_droplist" is defined in TextureTab.js;
-			var selector = "select#texture-entities-droplist";
-			var texture_droplist = document.querySelector(selector);
+		(function(){
 
-			if ( !texture_droplist ) return;
+			try {
 
-		//	Remove options.
-			while ( remove_ids.length ) (function( id ){
-				var selector = "option[value='" + id.toString() + "']"; // console.log( selector );
-				var option = texture_droplist.querySelector( selector ); // console.log(  option  );
-				option && option.remove();
-			})( remove_ids.shift() );
+			//	global const "texture_droplist" is defined in TextureTab.js;
+				var selector = "select#texture-entities-droplist";
+				var texture_droplist = document.querySelector(selector);
 
-		} catch(err){ console.warn( selector, "did not found!" ); }
+				if ( !texture_droplist ) return;
+
+			//	Remove options.
+				while ( remove_ids.length ) (function( id ){
+					var selector = "option[value='" + String(id) + "']"; // console.log( selector );
+					var option = texture_droplist.querySelector( selector ); // console.log(  option  );
+					option && option.remove();
+				})( remove_ids.shift() );
+
+			} catch(err){ console.warn( selector, "did not found!" ); }
+
+		})();
 
 	};
 

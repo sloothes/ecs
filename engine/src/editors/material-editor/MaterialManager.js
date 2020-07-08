@@ -1,8 +1,6 @@
 //	MaterialManager.js
 
-//	Material Entities Manager Class.
-
-//	Material Manager: inherits from EntityManager class.
+//	Material Manager Class: inherits (extends) Array class.
 //	sources: https://stackoverflow.com/questions/26700164/extending-array-with-es6-classes.
 //	https://stackoverflow.com/questions/11337849/ways-to-extend-array-object-in-javascript.
 
@@ -58,51 +56,57 @@
 			this.push( materials[j] );
 		}
 
-		try {
+	//	Add options.
 
-		//	global const "material_droplist" is defined in material-tab-ui.js;
-			var selector = "select#material-entities-droplist";
-			var material_droplist = document.querySelector(selector);
+		(function(){
 
-			if ( !material_droplist ) return;
+			try {
 
-		//	Add options.
-			while ( materials.length ) (function( material ){
-				var str =  "", dot = ".", col = ":", type = "";
-			//	TODO: better naming.
-			//	var type = "object";
-				var id = String(material.id);
-				var name = material.name || "material";
-				switch ( material.type ) {
-					case "MeshToonMaterial":
-					case "MeshBasicMaterial":
-					case "MeshPhongMaterial":
-					case "MeshDepthMaterial":
-					case "MeshNormalMaterial":
-					case "MeshLambertMaterial":
-					case "MeshStandardMaterial":
-					case "MeshPhysicalMaterial":
-						type = material.type.replace("Mesh","");
-					break;
-					case "LineBasicMaterial":
-					case "LineDashedMaterial":
-					case "RawShaderMaterial":
-						type = material.type.replace("Material","");
-					break;
-					case "PointsMaterial":
-					case "SpriteMaterial":
-					case "ShaderMaterial":
-					case "ShadowMaterial":
-						type = material.type;
-					break;
-				}
-				var option = document.createElement("option");
-				option.text = str+id+dot+type+col+name+id;
-				option.value = String(material.id);
-				material_droplist.appendChild( option );
-			})( materials.shift() );
+			//	global const "material_droplist" is defined in material-tab-ui.js;
+				var selector = "select#material-entities-droplist";
+				var material_droplist = document.querySelector(selector);
 
-		} catch(err){ console.warn( selector, "did not found!" ); }
+				if ( !material_droplist ) return;
+
+			//	Add options.
+				while ( materials.length ) (function( material ){
+					var str =  "", dot = ".", col = ":", type = "";
+				//	TODO: better naming.
+				//	var type = "object";
+					var id = String(material.id);
+					var name = material.name || "material";
+					switch ( material.type ) {
+						case "MeshToonMaterial":
+						case "MeshBasicMaterial":
+						case "MeshPhongMaterial":
+						case "MeshDepthMaterial":
+						case "MeshNormalMaterial":
+						case "MeshLambertMaterial":
+						case "MeshStandardMaterial":
+						case "MeshPhysicalMaterial":
+							type = material.type.replace("Mesh","");
+						break;
+						case "LineBasicMaterial":
+						case "LineDashedMaterial":
+						case "RawShaderMaterial":
+							type = material.type.replace("Material","");
+						break;
+						case "PointsMaterial":
+						case "SpriteMaterial":
+						case "ShaderMaterial":
+						case "ShadowMaterial":
+							type = material.type;
+						break;
+					}
+					var option = document.createElement("option");
+					option.text = str+id+dot+type+col+name+id;
+					option.value = String(material.id);
+					material_droplist.appendChild( option );
+				})( materials.shift() );
+
+			} catch(err){ console.warn( selector, "did not found!" ); }
+
+		})();
 
 	};
 
@@ -149,22 +153,28 @@
 			}
 		}
 
-		try {
+	//	Remove options.
 
-		//	global const "material_droplist" is defined in material-tab-ui.js;
-			var selector = "select#material-entities-droplist";
-			var material_droplist = document.querySelector(selector);
+		(function(){
 
-			if ( !material_droplist ) return;
+			try {
 
-		//	Remove options.
-			while ( remove_ids.length ) (function( id ){
-				var selector = "option[value='" + id.toString() + "']"; // console.log( selector );
-				var option = material_droplist.querySelector( selector ); // console.log(  option  );
-				option && option.remove();
-			})( remove_ids.shift() );
+			//	global const "material_droplist" is defined in material-tab-ui.js;
+				var selector = "select#material-entities-droplist";
+				var material_droplist = document.querySelector(selector);
 
-		} catch(err){ console.warn( selector, "did not found!" ); }
+				if ( !material_droplist ) return;
+
+			//	Remove options.
+				while ( remove_ids.length ) (function( id ){
+					var selector = "option[value='" + String(id) + "']"; // console.log( selector );
+					var option = material_droplist.querySelector( selector ); // console.log(  option  );
+					option && option.remove();
+				})( remove_ids.shift() );
+
+			} catch(err){ console.warn( selector, "did not found!" ); }
+
+		})();
 
 	};
 
