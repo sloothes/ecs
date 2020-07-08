@@ -1,6 +1,6 @@
 //	create-texture-entity.js
 
-	(function(viewer,input,droplist,entities){
+	(function(input,entities){
 
 	//	Add watcher.
 
@@ -42,8 +42,6 @@
 		});
 
 	})(
-		textureViewer, // viewer,
-		document.getElementById("texture-file-input"), // input,
-		document.getElementById("texture-entities-droplist"), // droplist,
+		document.querySelector("input#texture-file-input"), // input,
 		texture_entities // entities,
 	);

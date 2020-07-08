@@ -5,6 +5,7 @@
 	//	watcher.
 
 		watch( entity_droplist, "onchange", function( property, event, value ){
+		//	entity_droplist.value = value;
 			editor.update( parseInt(value) ); // important! id.
 			callWatchers( key_droplist, "onchange", "change", key_droplist.value );
 			callWatchers( vector_droplist, "onchange", "change", vector_droplist.value );

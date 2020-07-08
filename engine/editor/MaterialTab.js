@@ -837,7 +837,7 @@
 					//	add entity.
 					material_entities.add( material );
 					//	update entity select value (switch editor target).
-					entity_droplist.value = mesh.id.toString();
+					entity_droplist.value = material.id.toString();
 					entity_droplist.dispatchEvent(new Event("change")); // important!
 				}
 
