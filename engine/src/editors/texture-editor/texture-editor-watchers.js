@@ -266,13 +266,6 @@
 
 		watch( editor, "flipY", function( key, action, value ){
 			var texture = getTextureByEntityId(); // id, entity_droplist.value.
-
-			debugMode && console.log({
-				entity:texture,
-				key:key, value:value,
-				"editor value":editor[key],
-			});
-
 			if (texture) texture[ key ] = Boolean(editor[key]);
 			if ( key_droplist.value === key ) input.value = editor[ key ];
 			if ( viewer.material && viewer.material.map ) {
