@@ -5,7 +5,7 @@
 
 	const entity_droplist = (function( tab ){
 
-	//	Meshes droplist.
+	//	Entities droplist.
 	//	When option is selected, switches to EditMode.
 	//	var tab = TabUI.Geometry.tab;
 
