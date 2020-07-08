@@ -1,6 +1,6 @@
 //	entity-droplist-onchange-watcher.js
 
-	(function(editor,map_droplist,key_droplist,type_droplist,vector_droplist,color_droplist,entity_droplist){
+	(function(editor,map_droplist,key_droplist,vector_droplist,color_droplist,entity_droplist){
 
 	//	watcher.
 
@@ -17,7 +17,6 @@
 		materialEditor, // editor,
 		document.querySelector("select#material-map-droplist"),     // map_droplist.
 		document.querySelector("select#material-keys-droplist"),    // key_droplist.
-		document.querySelector("select#material-type-droplist"),    // type_droplist.
 		document.querySelector("select#material-vector-droplist"),  // vector_droplist.
 		document.querySelector("select#material-color-droplist"),   // vector_droplist.
 		document.querySelector("select#material-entities-droplist") // entity_droplist.
