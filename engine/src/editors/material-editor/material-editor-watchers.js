@@ -253,7 +253,7 @@
 			if ( material ) material[key] = Boolean(editor[key]);
 		//	Display value.
 			if ( key_droplist.value === key ) {
-				[ value_input.value, text_input.value ] = [ editor[key], "" ];
+				[ value_input.value, text_input.value ] = [ editor[key].toFixed(2), "" ];
 			}
 		});
 
@@ -469,7 +469,7 @@
 			if ( material ) material[key] = Number(editor[key]);
 		//	Display value.
 			if ( key_droplist.value === key ) {
-				[ value_input.value, text_input.value ] = [ editor[key], "" ];
+				[ value_input.value, text_input.value ] = [ editor[key].toFixed(2), "" ];
 			}
 		});
 
@@ -579,7 +579,7 @@
 			if ( material ) material[key] = Number(editor[key]);
 		//	Display value.
 			if ( key_droplist.value === key ) {
-				[ value_input.value, text_input.value ] = [ editor[key], "" ];
+				[ value_input.value, text_input.value ] = [ editor[key].toFixed(2), "" ];
 			}
 		});
 
@@ -589,7 +589,7 @@
 			if ( material ) material[key] = Number(editor[key]);
 		//	Display value.
 			if ( key_droplist.value === key ) {
-				[ value_input.value, text_input.value ] = [ editor[key], "" ];
+				[ value_input.value, text_input.value ] = [ editor[key].toFixed(2), "" ];
 			}
 		});
 
@@ -599,7 +599,7 @@
 			if ( material ) material[key] = Number(editor[key]);
 		//	Display value.
 			if ( key_droplist.value === key ) {
-				[ value_input.value, text_input.value ] = [ editor[key], "" ];
+				[ value_input.value, text_input.value ] = [ editor[key].toFixed(2), "" ];
 			}
 		});
 
@@ -609,7 +609,7 @@
 			if ( material ) material[key] = Number(editor[key]);
 		//	Display value.
 			if ( key_droplist.value === key ) {
-				[ value_input.value, text_input.value ] = [ editor[key], "" ];
+				[ value_input.value, text_input.value ] = [ editor[key].toFixed(2), "" ];
 			}
 		});
 
@@ -619,7 +619,7 @@
 			if ( material ) material[key] = Number(editor[key]);
 		//	Display value.
 			if ( key_droplist.value === key ) {
-				[ value_input.value, text_input.value ] = [ editor[key], "" ];
+				[ value_input.value, text_input.value ] = [ editor[key].toFixed(2), "" ];
 			}
 		});
 
@@ -629,7 +629,7 @@
 			if ( material ) material[key] = Number(editor[key]);
 		//	Display value.
 			if ( key_droplist.value === key ) {
-				[ value_input.value, text_input.value ] = [ editor[key], "" ];
+				[ value_input.value, text_input.value ] = [ editor[key].toFixed(2), "" ];
 			}
 		});
 
@@ -639,7 +639,7 @@
 			if ( material ) material[key] = Number(editor[key]);
 		//	Display value.
 			if ( key_droplist.value === key ) {
-				[ value_input.value, text_input.value ] = [ editor[key], "" ];
+				[ value_input.value, text_input.value ] = [ editor[key].toFixed(2), "" ];
 			}
 		});
 
@@ -649,7 +649,7 @@
 			if ( material ) material[key] = Number(editor[key]);
 		//	Display value.
 			if ( key_droplist.value === key ) {
-				[ value_input.value, text_input.value ] = [ editor[key], "" ];
+				[ value_input.value, text_input.value ] = [ editor[key].toFixed(2), "" ];
 			}
 		});
 
@@ -659,7 +659,7 @@
 			if ( material ) material[key] = Number(editor[key]);
 		//	Display value.
 			if ( key_droplist.value === key ) {
-				[ value_input.value, text_input.value ] = [ editor[key], "" ];
+				[ value_input.value, text_input.value ] = [ editor[key].toFixed(2), "" ];
 			}
 		});
 
@@ -669,7 +669,7 @@
 			if ( material ) material[key] = Number(editor[key]);
 		//	Display value.
 			if ( key_droplist.value === key ) {
-				[ value_input.value, text_input.value ] = [ editor[key], "" ];
+				[ value_input.value, text_input.value ] = [ editor[key].toFixed(2), "" ];
 			}
 		});
 
@@ -679,7 +679,7 @@
 			if ( material ) material[key] = Number(editor[key]);
 		//	Display value.
 			if ( key_droplist.value === key ) {
-				[ value_input.value, text_input.value ] = [ editor[key], "" ];
+				[ value_input.value, text_input.value ] = [ editor[key].toFixed(2), "" ];
 			}
 		});
 
@@ -689,7 +689,7 @@
 			if ( material ) material[key] = Number(editor[key]);
 		//	Display value.
 			if ( key_droplist.value === key ) {
-				[ value_input.value, text_input.value ] = [ editor[key], "" ];
+				[ value_input.value, text_input.value ] = [ editor[key].toFixed(2), "" ];
 			}
 		});
 
@@ -699,7 +699,7 @@
 			if ( material ) material[key] = Number(editor[key]);
 		//	Display value.
 			if ( key_droplist.value === key ) {
-				[ value_input.value, text_input.value ] = [ editor[key], "" ];
+				[ value_input.value, text_input.value ] = [ editor[key].toFixed(2), "" ];
 			}
 		});
 
@@ -709,7 +709,7 @@
 			if ( material ) material[key] = Number(editor[key]);
 		//	Display value.
 			if ( key_droplist.value === key ) {
-				[ value_input.value, text_input.value ] = [ editor[key], "" ];
+				[ value_input.value, text_input.value ] = [ editor[key].toFixed(2), "" ];
 			}
 		});
 
@@ -769,7 +769,7 @@
 			if ( material ) material[key] = Number(editor[key]);
 		//	Display value.
 			if ( key_droplist.value === key ) {
-				[ value_input.value, text_input.value ] = [ editor[key], "" ];
+				[ value_input.value, text_input.value ] = [ editor[key].toFixed(2), "" ];
 			}
 		});
 
