@@ -36,15 +36,15 @@
 				var material = new THREE[ type ]();
 				if ( material === undefined ) return;
 
-			//	Name it.
+			//	Naming.
 				material.name = "new material"+material.id;
 
 			//	Add entity.
 				entities.add( material );
 
 			//	Enter edit mode.
-				entity_droplist.value = String(material.id);
-				callWatchers( entity_droplist, "onchange", "change", String(material.id) );
+				entity_droplist.value = String(material.id); // string, important!
+				callWatchers( entity_droplist, "onchange", "change", entity_droplist.value );
 
 			}, 250);
 		});
@@ -74,7 +74,7 @@
 				if ( source && source.isMaterial ) {
 
 				//	clone.
-					var material = material.clone();
+					var material = source.clone();
 
 				//	rename, TODO: better renameing.
 					material.name = source.name.replace(/:clone/g,"") + ":clone";

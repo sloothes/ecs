@@ -68,12 +68,36 @@
 
 		//	Add options.
 			while ( materials.length ) (function( material ){
-				var str =  "", dot = ".", col = ":";
-				var type = "object";
-				var name = material.name || "mtl"+material.id;
-				if ( material.type ) type = material.type.replace("Material","");
+				var str =  "", dot = ".", col = ":", type = "";
+			//	TODO: better naming.
+			//	var type = "object";
+				var id = String(material.id);
+				var name = material.name || "material";
+				switch ( material.type ) {
+					case "MeshToonMaterial":
+					case "MeshBasicMaterial":
+					case "MeshPhongMaterial":
+					case "MeshDepthMaterial":
+					case "MeshNormalMaterial":
+					case "MeshLambertMaterial":
+					case "MeshStandardMaterial":
+					case "MeshPhysicalMaterial":
+						type = material.type.replace("Mesh","");
+					break;
+					case "LineBasicMaterial":
+					case "LineDashedMaterial":
+					case "RawShaderMaterial":
+						type = material.type.replace("Material","");
+					break;
+					case "PointsMaterial":
+					case "SpriteMaterial":
+					case "ShaderMaterial":
+					case "ShadowMaterial":
+						type = material.type;
+					break;
+				}
 				var option = document.createElement("option");
-				option.text = str+material.id+dot+type+col+name;
+				option.text = str+material.id+dot+type+col+name+id;
 				option.value = material.id;
 				material_droplist.appendChild( option );
 			})( materials.shift() );
