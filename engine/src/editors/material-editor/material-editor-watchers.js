@@ -1,4 +1,5 @@
 //	material-editor-watchers.js
+//	to be renamed to "MaterialEditorManager.js"
 
 //	Material Editor Manager.
 //	Watch each object/property individually.
@@ -32,6 +33,29 @@
 		});
 
 	})( document.querySelector("div#material-needs-update") );
+
+//	Editor (material) type. (DONT CHANGE MATERIAL TYPE).
+
+	(function( editor,text_input,value_input,key_droplist,type_droplist ){
+
+		watch( editor, "type", function( key, action, value ){
+
+		//	Update type droplist.
+			type_droplist.value = value; // dummy droplist.
+
+		//	Display value.
+			if ( key_droplist.value === key ) {
+				[ text_input.value, value_input.value ] = [ editor[key], "" ];
+			}
+		});
+
+	})( 
+		materialEditor, // editor,
+		document.querySelector("input#material-text-input"),  // text_input,
+		document.querySelector("input#material-value-input"),  // value_input,
+		document.querySelector("select#material-keys-droplist"), // key_droplist,
+		document.querySelector("select#material-type-droplist") // type_droplist,
+	);
 
 //	Vectors.
 
@@ -132,7 +156,7 @@
 
 //	Strings.
 
-	(function( editor,text_input,value_input,key_droplist ){
+	(function( editor,text_input,value_input,key_droplist,type_droplist ){
 
 	//	var material; // important!
 	//	Add a watcher to update material only when entity droplist changes.
@@ -154,16 +178,6 @@
 		});
 
 		watch( editor, "uuid", function( key, action, value ){
-			var material = getMaterialByEntityId(); if ( !material ) return;
-		//	Update material.
-			if ( material ) material[key] = String(editor[key]);
-		//	Display value.
-			if ( key_droplist.value === key ) {
-				[ text_input.value, value_input.value ] = [ editor[key], "" ];
-			}
-		});
-
-		watch( editor, "type", function( key, action, value ){
 			var material = getMaterialByEntityId(); if ( !material ) return;
 		//	Update material.
 			if ( material ) material[key] = String(editor[key]);
@@ -227,7 +241,8 @@
 		materialEditor, // editor,
 		document.querySelector("input#material-text-input"),  // text_input,
 		document.querySelector("input#material-value-input"),  // value_input,
-		document.querySelector("select#material-keys-droplist") // key_droplist,
+		document.querySelector("select#material-keys-droplist"), // key_droplist,
+		document.querySelector("select#material-type-droplist") // type_droplist,
 	);
 
 //	Boolean.

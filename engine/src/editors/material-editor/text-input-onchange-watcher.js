@@ -47,7 +47,36 @@
 				//	Until now we was adding to undo after the value has changed. (FIXED!)
 					addtoUndo( editor,key,value,undo_button,redo_button ); // add to undo.
 
+				//	Update editor.
 					setTimeout( function(){ editor[ key ] = value; });  // important!
+
+				//	Rename option.
+					setTimeout( function( type, name, id ){
+						debugMode && console.log({params:{id:id,name:name,type:type}});
+						var str="",dot=".",col=":";
+						var selector = "option[value='" + id + "']";
+						var option = entity_droplist.querySelector(selector); 
+						if ( !option ) return;
+						switch ( type ) {
+							case "MeshToonMaterial":
+							case "MeshBasicMaterial":
+							case "MeshPhongMaterial":
+							case "MeshDepthMaterial":
+							case "MeshNormalMaterial":
+							case "MeshLambertMaterial":
+							case "MeshStandardMaterial":
+							case "MeshPhysicalMaterial":
+								type = type.replace("Mesh","");
+							break;
+							case "LineBasicMaterial":
+							case "LineDashedMaterial":
+							case "RawShaderMaterial":
+								type = type.replace("Material","");
+							break;
+						}
+						var option = document.createElement("option");
+						option.text = str+id+dot+type+col+name+id;
+					}, null, editor.type, value, entity_droplist.value );
 
 				break;
 

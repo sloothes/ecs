@@ -647,10 +647,10 @@
 			select.appendChild( option );
 		});
 
-	//	Call watchers.
+	//	Dont call watchers (is dummy droplist).
 		select.addEventListener( "change", function(){
 			this.blur(); // important!
-		//	callWatchers(this, "onchange", "change", this.value );
+		//	callWatchers(this, "onchange", "change", this.value ); // dummy droplist.
 		});
 
 		select.value = "MeshStandardMaterial";

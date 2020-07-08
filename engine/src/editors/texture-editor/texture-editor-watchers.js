@@ -1,4 +1,5 @@
 //	texture-editor-watchers.js
+//	to be renamed to "TextureEditorManager.js"
 
 //	Texture Editor Manager.
 //	Watch each object/property individually.
