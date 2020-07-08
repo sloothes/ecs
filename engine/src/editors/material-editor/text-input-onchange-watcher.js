@@ -52,10 +52,10 @@
 
 				//	Rename option.
 					setTimeout( function( type, name, id ){
-						debugMode && console.log({params:{id:id,name:name,type:type}});
 						var str="",dot=".",col=":";
 						var selector = "option[value='" + id + "']";
 						var option = entity_droplist.querySelector(selector); 
+						debugMode && console.log({params:{id:id,name:name,type:type,option:option}});
 						if ( !option ) return;
 						switch ( type ) {
 							case "MeshToonMaterial":
@@ -74,7 +74,6 @@
 								type = type.replace("Material","");
 							break;
 						}
-						var option = document.createElement("option");
 						option.text = str+id+dot+type+col+name+id;
 					}, null, editor.type, value, entity_droplist.value );
 
