@@ -2,7 +2,7 @@
 <html lang="en">
 	<head>
 
-		<title>Editor Tab demo (pre-alpha 0.22)</title>
+		<title>Editor Tab demo (pre-alpha 0.23)</title>
 
 		<meta charset="utf-8">
 		<meta name="generator" content="Three.js Editor">
@@ -137,24 +137,39 @@
 
 		<script src="/ecs/engine/src/editors/UndoArray.js"></script>
 		<script src="/ecs/engine/src/editors/editor-helpers.js"></script>
-
 		<script src="/ecs/engine/editor/EditorTab.js"></script>
-		<script src="/ecs/engine/editor/MaterialTab.js"></script>
 
-	<!-- script src="/ecs/engine/editor/TextureTab.js"></script -->
+		<script src="/ecs/engine/src/editors/material-editor/material-tab-ui.js"></script>
+		<script src="/ecs/engine/src/editors/material-editor/MaterialManager.js"></script>
+		<script src="/ecs/engine/src/editors/material-editor/MaterialEditor.js"></script>
+		<script src="/ecs/engine/src/editors/material-editor/undo-redo-onmouse-events.js"></script>
+		<script src="/ecs/engine/src/editors/material-editor/map-droplist-onchange-watcher.js"></script>
+		<script src="/ecs/engine/src/editors/material-editor/key-droplist-onchange-watcher.js"></script>
+		<script src="/ecs/engine/src/editors/material-editor/vector-droplist-onchange-watcher.js"></script>
+		<script src="/ecs/engine/src/editors/material-editor/color-droplist-onchange-watcher.js"></script>
+		<script src="/ecs/engine/src/editors/material-editor/entity-droplist-onchange-watcher.js"></script>
+		<script src="/ecs/engine/src/editors/material-editor/text-input-onchange-watcher.js"></script>
+		<script src="/ecs/engine/src/editors/material-editor/value-input-onchange-watcher.js"></script>
+		<script src="/ecs/engine/src/editors/material-editor/vector-input-onchange-watchers.js"></script>
+		<script src="/ecs/engine/src/editors/material-editor/color-input-onchange-watchers.js"></script>
+		<script src="/ecs/engine/src/editors/material-editor/value-input-onmouse-events.js"></script>
+		<script src="/ecs/engine/src/editors/material-editor/vector-input-onmouse-events.js"></script>
+		<script src="/ecs/engine/src/editors/material-editor/color-input-onmouse-events.js"></script>
+		<script src="/ecs/engine/src/editors/material-editor/material-editor-watchers.js"></script>
+		<script src="/ecs/engine/src/editors/material-editor/exit-edit-onmouse-events.js"></script>
+
 		<script src="/ecs/engine/src/editors/texture-editor/texture-tab-ui.js"></script>
 		<script src="/ecs/engine/src/editors/texture-editor/TextureManager.js"></script>
 		<script src="/ecs/engine/src/editors/texture-editor/TextureViewer.js"></script>
 		<script src="/ecs/engine/src/editors/texture-editor/TextureEditor.js"></script>
-		<script src="/ecs/engine/src/editors/texture-editor/texture-editor.js"></script>
 		<script src="/ecs/engine/src/editors/texture-editor/undo-redo-onmouse-events.js"></script>
 		<script src="/ecs/engine/src/editors/texture-editor/key-droplist-onchange-watcher.js"></script>
 		<script src="/ecs/engine/src/editors/texture-editor/vector-droplist-onchange-watcher.js"></script>
 		<script src="/ecs/engine/src/editors/texture-editor/entity-droplist-onchange-watcher.js"></script>
 		<script src="/ecs/engine/src/editors/texture-editor/text-input-onchange-watcher.js"></script>
 		<script src="/ecs/engine/src/editors/texture-editor/value-input-onchange-watcher.js"></script>
-		<script src="/ecs/engine/src/editors/texture-editor/value-input-onmouse-events.js"></script>
 		<script src="/ecs/engine/src/editors/texture-editor/vector-input-onchange-watchers.js"></script>
+		<script src="/ecs/engine/src/editors/texture-editor/value-input-onmouse-events.js"></script>
 		<script src="/ecs/engine/src/editors/texture-editor/vector-input-onmouse-events.js"></script>
 		<script src="/ecs/engine/src/editors/texture-editor/texture-viewer-center.js"></script>
 		<script src="/ecs/engine/src/editors/texture-editor/texture-editor-watchers.js"></script>
