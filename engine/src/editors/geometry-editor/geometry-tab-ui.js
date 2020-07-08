@@ -5,10 +5,10 @@
 
 	const entity_droplist = (function( tab ){
 
-	//	Entities droplist.
+	//	Meshes droplist.
 	//	When option is selected, switches to EditMode.
+	//	var tab = TabUI.Geometry.tab;
 
-		var tab = TabUI.Editor.tab;
 		var row = document.createElement("h3");
 		row.textContent = "Entities:";
 		row.style.cssText = "height:30px;"
