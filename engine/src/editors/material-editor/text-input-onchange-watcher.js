@@ -74,7 +74,7 @@
 								type = type.replace("Material","");
 							break;
 						}
-						option.text = str+id+dot+type+col+name+id;
+						option.text = str+id+dot+type+col+name; // +id;
 					}, null, editor.type, value, entity_droplist.value );
 
 				break;
