@@ -128,7 +128,6 @@
 		<script src="/ecs/engine/core/joystickControls.js"></script>
 		<script src="/ecs/engine/core/keyboard.js"></script>
 
-
 		<script src="/ecs/engine/src/editors/UndoArray.js"></script>
 		<script src="/ecs/engine/src/editors/editor-helpers.js"></script>
 
@@ -144,10 +143,10 @@
 
 		<script>
 
-		//	geometry-editor.js
+		//	object3d-editor.js
 
 		//	Create an Object3D to hold editor values.
-			const geometryEditor = (function( editor ){
+			const object3dEditor = (function( editor ){
 
 			//	var k = 0;
 
@@ -1419,7 +1418,7 @@
 			TabUI.Geometry.role.classList.add("active");
 			TabUI.Geometry.tab.classList.add("in","active");
 
-			console.log( {"geometryEditor": geometryEditor} ); // debug!
+			console.log( {"object3dEditor": object3dEditor} ); // debug!
 			console.log( {"materialEditor": materialEditor} ); // debug!
 			console.log( {"textureEditor" : textureEditor } ); // debug!
 
