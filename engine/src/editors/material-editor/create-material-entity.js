@@ -60,6 +60,8 @@
 
 	(function(clone_button,entity_droplist,entities){
 
+		var interval;
+
 		clone_button.addEventListener( "click", function(){
 			clearTimeout( interval );
 			interval = setTimeout(function(){
@@ -98,6 +100,8 @@
 //	remove-material-entity.js
 
 	(function(remove_button,entity_droplist,entities){
+
+		var interval;
 
 		remove_button.addEventListener( "click", function(){
 			clearTimeout( interval );
