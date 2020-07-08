@@ -414,9 +414,12 @@
 		document.querySelector("select#material-keys-droplist") // key_droplist,
 	);
 
-//	Number.
+//	Numbers.
 
 	(function( editor,text_input,value_input,key_droplist ){
+
+		const RAD2DEG = 57.29577951308232;
+		const DEG2RAD = 0.017453292519943295;
 
 		var material; // important!
 	//	Add a watcher to update material only when entity droplist changes.
@@ -560,21 +563,235 @@
 			}
 		});
 
-		//	"displacementScale,polygonOffsetUnits,polygonOffsetFactor,,"
-		//	"alphaTest,reflectivity,refractionRatio,bumpScale,metalness,roughness,displacementBias,"
-		//	"aoMapIntensity,envMapIntensity,emissiveIntensity,lightMapIntensity,,"
-		//	"linewidth,size,scale,gapSize,dashSize,shininess,rotation,"
-		//	"normalMapType,combine,polygonOffsetUnits,polygonOffsetFactor"
+		watch( editor, "displacementScale", function( key, action, value ){
+		//	var material = getMaterialByEntityId(); if ( !material ) return;
+		//	Update material.
+			if ( material ) material[key] = Number(editor[key]);
+		//	Display value.
+			if ( key_droplist.value === key ) {
+				[ value_input.value, text_input.value ] = [ editor[key], "" ];
+			}
+		});
 
+		watch( editor, "polygonOffsetUnits", function( key, action, value ){
+		//	var material = getMaterialByEntityId(); if ( !material ) return;
+		//	Update material.
+			if ( material ) material[key] = Number(editor[key]);
+		//	Display value.
+			if ( key_droplist.value === key ) {
+				[ value_input.value, text_input.value ] = [ editor[key], "" ];
+			}
+		});
 
+		watch( editor, "polygonOffsetFactor", function( key, action, value ){
+		//	var material = getMaterialByEntityId(); if ( !material ) return;
+		//	Update material.
+			if ( material ) material[key] = Number(editor[key]);
+		//	Display value.
+			if ( key_droplist.value === key ) {
+				[ value_input.value, text_input.value ] = [ editor[key], "" ];
+			}
+		});
 
+		watch( editor, "alphaTest", function( key, action, value ){
+		//	var material = getMaterialByEntityId(); if ( !material ) return;
+		//	Update material.
+			if ( material ) material[key] = Number(editor[key]);
+		//	Display value.
+			if ( key_droplist.value === key ) {
+				[ value_input.value, text_input.value ] = [ editor[key], "" ];
+			}
+		});
 
+		watch( editor, "reflectivity", function( key, action, value ){
+		//	var material = getMaterialByEntityId(); if ( !material ) return;
+		//	Update material.
+			if ( material ) material[key] = Number(editor[key]);
+		//	Display value.
+			if ( key_droplist.value === key ) {
+				[ value_input.value, text_input.value ] = [ editor[key], "" ];
+			}
+		});
 
+		watch( editor, "refractionRatio", function( key, action, value ){
+		//	var material = getMaterialByEntityId(); if ( !material ) return;
+		//	Update material.
+			if ( material ) material[key] = Number(editor[key]);
+		//	Display value.
+			if ( key_droplist.value === key ) {
+				[ value_input.value, text_input.value ] = [ editor[key], "" ];
+			}
+		});
 
+		watch( editor, "bumpScale", function( key, action, value ){
+		//	var material = getMaterialByEntityId(); if ( !material ) return;
+		//	Update material.
+			if ( material ) material[key] = Number(editor[key]);
+		//	Display value.
+			if ( key_droplist.value === key ) {
+				[ value_input.value, text_input.value ] = [ editor[key], "" ];
+			}
+		});
 
+		watch( editor, "metalness", function( key, action, value ){
+		//	var material = getMaterialByEntityId(); if ( !material ) return;
+		//	Update material.
+			if ( material ) material[key] = Number(editor[key]);
+		//	Display value.
+			if ( key_droplist.value === key ) {
+				[ value_input.value, text_input.value ] = [ editor[key], "" ];
+			}
+		});
 
+		watch( editor, "roughness", function( key, action, value ){
+		//	var material = getMaterialByEntityId(); if ( !material ) return;
+		//	Update material.
+			if ( material ) material[key] = Number(editor[key]);
+		//	Display value.
+			if ( key_droplist.value === key ) {
+				[ value_input.value, text_input.value ] = [ editor[key], "" ];
+			}
+		});
 
+		watch( editor, "displacementBias", function( key, action, value ){
+		//	var material = getMaterialByEntityId(); if ( !material ) return;
+		//	Update material.
+			if ( material ) material[key] = Number(editor[key]);
+		//	Display value.
+			if ( key_droplist.value === key ) {
+				[ value_input.value, text_input.value ] = [ editor[key], "" ];
+			}
+		});
 
+		watch( editor, "aoMapIntensity", function( key, action, value ){
+		//	var material = getMaterialByEntityId(); if ( !material ) return;
+		//	Update material.
+			if ( material ) material[key] = Number(editor[key]);
+		//	Display value.
+			if ( key_droplist.value === key ) {
+				[ value_input.value, text_input.value ] = [ editor[key], "" ];
+			}
+		});
+
+		watch( editor, "envMapIntensity", function( key, action, value ){
+		//	var material = getMaterialByEntityId(); if ( !material ) return;
+		//	Update material.
+			if ( material ) material[key] = Number(editor[key]);
+		//	Display value.
+			if ( key_droplist.value === key ) {
+				[ value_input.value, text_input.value ] = [ editor[key], "" ];
+			}
+		});
+
+		watch( editor, "emissiveIntensity", function( key, action, value ){
+		//	var material = getMaterialByEntityId(); if ( !material ) return;
+		//	Update material.
+			if ( material ) material[key] = Number(editor[key]);
+		//	Display value.
+			if ( key_droplist.value === key ) {
+				[ value_input.value, text_input.value ] = [ editor[key], "" ];
+			}
+		});
+
+		watch( editor, "lightMapIntensity", function( key, action, value ){
+		//	var material = getMaterialByEntityId(); if ( !material ) return;
+		//	Update material.
+			if ( material ) material[key] = Number(editor[key]);
+		//	Display value.
+			if ( key_droplist.value === key ) {
+				[ value_input.value, text_input.value ] = [ editor[key], "" ];
+			}
+		});
+
+		watch( editor, "linewidth", function( key, action, value ){
+		//	var material = getMaterialByEntityId(); if ( !material ) return;
+		//	Update material.
+			if ( material ) material[key] = Number(editor[key]);
+		//	Display value.
+			if ( key_droplist.value === key ) {
+				[ value_input.value, text_input.value ] = [ editor[key], "" ];
+			}
+		});
+
+		watch( editor, "size", function( key, action, value ){
+		//	var material = getMaterialByEntityId(); if ( !material ) return;
+		//	Update material.
+			if ( material ) material[key] = Number(editor[key]);
+		//	Display value.
+			if ( key_droplist.value === key ) {
+				[ value_input.value, text_input.value ] = [ editor[key], "" ];
+			}
+		});
+
+		watch( editor, "scale", function( key, action, value ){
+		//	var material = getMaterialByEntityId(); if ( !material ) return;
+		//	Update material.
+			if ( material ) material[key] = Number(editor[key]);
+		//	Display value.
+			if ( key_droplist.value === key ) {
+				[ value_input.value, text_input.value ] = [ editor[key], "" ];
+			}
+		});
+
+		watch( editor, "gapSize", function( key, action, value ){
+		//	var material = getMaterialByEntityId(); if ( !material ) return;
+		//	Update material.
+			if ( material ) material[key] = Number(editor[key]);
+		//	Display value.
+			if ( key_droplist.value === key ) {
+				[ value_input.value, text_input.value ] = [ editor[key], "" ];
+			}
+		});
+
+		watch( editor, "dashSize", function( key, action, value ){
+		//	var material = getMaterialByEntityId(); if ( !material ) return;
+		//	Update material.
+			if ( material ) material[key] = Number(editor[key]);
+		//	Display value.
+			if ( key_droplist.value === key ) {
+				[ value_input.value, text_input.value ] = [ editor[key], "" ];
+			}
+		});
+
+		watch( editor, "shininess", function( key, action, value ){
+		//	var material = getMaterialByEntityId(); if ( !material ) return;
+		//	Update material.
+			if ( material ) material[key] = Number(editor[key]);
+		//	Display value.
+			if ( key_droplist.value === key ) {
+				[ value_input.value, text_input.value ] = [ editor[key], "" ];
+			}
+		});
+
+		watch( editor, "normalMapType", function( key, action, value ){
+		//	var material = getMaterialByEntityId(); if ( !material ) return;
+		//	Update material.
+			if ( material ) material[key] = Number(editor[key]);
+		//	Display value.
+			if ( key_droplist.value === key ) {
+				[ value_input.value, text_input.value ] = [ editor[key], "" ];
+			}
+		});
+
+		watch( editor, "combine", function( key, action, value ){
+		//	var material = getMaterialByEntityId(); if ( !material ) return;
+		//	Update material.
+			if ( material ) material[key] = Number(editor[key]);
+		//	Display value.
+			if ( key_droplist.value === key ) {
+				[ value_input.value, text_input.value ] = [ editor[key], "" ];
+			}
+		});
+
+		watch( editor, "rotation", function( key, action, value ){
+		//	var material = getMaterialByEntityId(); if ( !material ) return;
+		//	Update material.
+			if ( material ) material[key] = Number(editor[key]);
+		//	Display value.
+			if ( key_droplist.value === key ) {
+				[ value_input.value, text_input.value ] = [ (RAD2DEG*editor[key]).toFixed(1), "" ];
+			}
+		});
 
 	})( 
 		materialEditor, // editor,
