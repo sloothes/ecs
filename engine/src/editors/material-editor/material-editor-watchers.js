@@ -22,6 +22,16 @@
 		document.querySelector("select#material-entities-droplist") // entity_droplist,
 	);
 
+//	needsUpdate_button.
+
+	(function( needsUpdate_button ){
+
+		needsUpdate_button.addEventListener( "click", function(){
+			var material = getMaterialByEntityId();
+			if ( material ) material.needsUpdate = true;
+		});
+
+	})( document.querySelector("div#material-needs-update") );
 
 //	Vectors.
 
@@ -800,15 +810,4 @@
 		document.querySelector("select#material-keys-droplist"), // key_droplist,
 		document.querySelector("select#material-entities-droplist") // entity_droplist,
 	);
-
-//	needsUpdate_button.
-
-	(function( needsUpdate_button ){
-
-		needsUpdate_button.addEventListener( "click", function(){
-			var material = getMaterialByEntityId();
-			if ( material ) material.needsUpdate = true;
-		});
-
-	})( document.querySelector("div#material-needs-update") );
 
