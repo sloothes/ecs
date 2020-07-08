@@ -416,7 +416,7 @@
 
 //	Numbers.
 
-	(function( editor,text_input,value_input,key_droplist ){
+	(function( editor,text_input,value_input,key_droplist,entity_droplist ){
 
 		const RAD2DEG = 57.29577951308232;
 		const DEG2RAD = 0.017453292519943295;
@@ -797,7 +797,8 @@
 		materialEditor, // editor,
 		document.querySelector("input#material-text-input"),  // text_input,
 		document.querySelector("input#material-value-input"),  // value_input,
-		document.querySelector("select#material-keys-droplist") // key_droplist,
+		document.querySelector("select#material-keys-droplist"), // key_droplist,
+		document.querySelector("select#material-entities-droplist") // entity_droplist,
 	);
 
 //	needsUpdate_button.
