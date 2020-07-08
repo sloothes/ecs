@@ -137,10 +137,10 @@
 
 		<script>
 
-		//	object3DEditor.js
+		//	geometry-editor.js
 
 		//	Create an Object3D to hold editor values.
-			const object3DEditor = (function( editor ){
+			const geometryEditor = (function( editor ){
 
 			//	var k = 0;
 
@@ -1407,10 +1407,22 @@
 
 		<script>
 
+		//	meshworld-tab-ui.js
+
+			TabUI.add( "MeshWorld", "meshworld-tab" );
+			TabUI.append("MeshWorld");
+
+		</script>
+
+		<script>
+
 			localPlayer.controller.movementSpeed = 10;
-		//
-			TabUI.Material.role.classList.add("active");
-			TabUI.Material.tab.classList.add("in","active");
+			TabUI.Geometry.role.classList.add("active");
+			TabUI.Geometry.tab.classList.add("in","active");
+
+			console.log( {"geometryEditor": geometryEditor} ); // debug!
+			console.log( {"materialEditor": materialEditor} ); // debug!
+			console.log( {"textureEditor" : textureEditor } ); // debug!
 
 		</script>
 
@@ -1619,14 +1631,6 @@
 				})( name );
 			});
 */
-		</script>
-
-		<script>
-
-			console.log( {"object3DEditor": object3DEditor} ); // debug!
-			console.log( {"materialEditor": materialEditor} ); // debug!
-			console.log( {"textureEditor" : textureEditor } ); // debug!
-
 		</script>
 
 	</body>

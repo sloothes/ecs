@@ -1,7 +1,7 @@
-//	editor-tab-ui.js
+//	geometry-tab-ui.js
 
-	TabUI.add( "Editor", "editor-tab" );
-	TabUI.append("Editor");
+	TabUI.add( "Geometry", "geometry-tab" );
+	TabUI.append("Geometry");
 
 	const entity_droplist = (function( tab ){
 
@@ -14,7 +14,7 @@
 		row.style.cssText = "height:30px;"
 
 		var select = document.createElement("select");
-		select.id = "entities-droplist";
+		select.id = "geometry-entities-droplist";
 		select.style.cssText = "width:170px;color:#000;float:right;"
 			+ "border:1px solid;border-radius:4px;padding:2px 4px 4px 4px;"
 			+ "font-size:20px;margin-left:10px;margin-right:15px;";
@@ -25,31 +25,37 @@
 			select.appendChild( option );
 		})();
 
+	//	Call watchers.
+		select.addEventListener( "change", function(){
+			this.blur(); // important!
+			callWatchers(this, "onchange", "change", this.value );
+		});
+
 		row.appendChild( select );
 		tab.appendChild( row );
 
 		return select;
 
-	})( TabUI.Editor.tab );
+	})( TabUI.Geometry.tab );
 
 //	undo-redo-ui.js
 
 	(function( tab ){
 
 	//	Undo/Redo button.
-	//	var tab = TabUI.Editor.tab;
+	//	var tab = TabUI.Geometry.tab;
 
 		var row = document.createElement("h3");
 		row.style.cssText = "height:40px;margin-bottom:20px;"
 
 		var redo = document.createElement("div");
-		redo.id = "editor-redo-button";
+		redo.id = "geometry-redo-button";
 		redo.textContent = "Redo";
 		redo.style.cssText = "width:44%;float:left;height:40px;font-size:large;margin-right:15px;";
 		redo.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
 
 		var undo = document.createElement("div");
-		undo.id = "editor-undo-button";
+		undo.id = "geometry-undo-button";
 		undo.textContent = "Undo";
 		undo.style.cssText = "width:44%;float:right;height:40px;font-size:large;margin-right:15px;";
 		undo.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
@@ -58,7 +64,7 @@
 		row.appendChild( undo );
 		tab.appendChild( row );
 
-	})( TabUI.Editor.tab );
+	})( TabUI.Geometry.tab );
 
 //	vector-droplist-ui.js
 
@@ -66,14 +72,14 @@
 
 	//	Vector mode droplist.
 	//	When option is selected, switches to EditMode.
-	//	var tab = TabUI.Editor.tab;
+	//	var tab = TabUI.Geometry.tab;
 
 		var row = document.createElement("h3");
 		row.textContent = "select:";
 		row.style.cssText = "height:40px;"
 
 		var select = document.createElement("select");
-		select.id = "vector-mode-droplist";
+		select.id = "geometry-vector-droplist";
 		select.style.cssText = "width:170px;color:#000;float:right;"
 			+ "border:1px solid;border-radius:4px;padding:2px 4px 4px 4px;"
 			+ "font-size:20px;margin-left:10px;margin-right:15px;";
@@ -86,17 +92,23 @@
 			select.appendChild( option );
 		});
 
+	//	Call watchers.
+		select.addEventListener( "change", function(){
+			this.blur(); // important!
+			callWatchers(this, "onchange", "change", this.value );
+		});
+
 		row.appendChild( select );
 		tab.appendChild( row );
 
-	})( TabUI.Editor.tab );
+	})( TabUI.Geometry.tab );
 
 //	vector-x-ui.js
 
 	(function( tab ){
 
 	//	vector x.
-	//	var tab = TabUI.Editor.tab;
+	//	var tab = TabUI.Geometry.tab;
 
 		var row = document.createElement("h3");
 		row.textContent = "vect x:";
@@ -106,23 +118,29 @@
 		vect.style.cssText = "width:170px;height:40px;float:right;";
 
 		var prev = document.createElement("li");
-		prev.id = "vector-x-decrease";
+		prev.id = "geometry-vector-x-decrease";
 		prev.innerHTML = "&#9668;";
 		prev.style.display = "inline";
 		prev.classList.add("btn","btn-primary","get-prev-btn","pull-left");
 
 		var next = document.createElement("li");
-		next.id = "vector-x-increase";
+		next.id = "geometry-vector-x-increase";
 		next.innerHTML = "&#9658;";
 		next.style.display = "inline";
 		next.classList.add("btn","btn-primary","get-next-btn","pull-right");
 
 		var input = document.createElement("input");
-		input.id = "input-vector-x";
+		input.id = "geometry-vector-x-input";
 		input.setAttribute("placeholder", "x" );
 		input.classList.add("form-control","text-center");
 		input.style.cssText = "color:#000;border:none;display:inline;width:80px;"
 			+ "margin:0px 5px;text-align:center;font-size:large;font-weigth:bold;background:none;";
+
+	//	Call watchers.
+		input.addEventListener( "change", function(){
+			this.blur(); // important!
+			callWatchers(this, "onchange", "change", this.value );
+		});
 
 		vect.appendChild(prev);
 		vect.appendChild(input);
@@ -130,14 +148,14 @@
 		row.appendChild(vect);
 		tab.appendChild( row );
 
-	})( TabUI.Editor.tab );
+	})( TabUI.Geometry.tab );
 
 //	vector-y-ui.js
 
 	(function( tab ){
 
 	//	vector y.
-	//	var tab = TabUI.Editor.tab;
+	//	var tab = TabUI.Geometry.tab;
 
 		var row = document.createElement("h3");
 		row.textContent = "vect y:";
@@ -147,23 +165,29 @@
 		vect.style.cssText = "width:170px;height:40px;float:right;";
 
 		var prev = document.createElement("li");
-		prev.id = "vector-y-decrease";
+		prev.id = "geometry-vector-y-decrease";
 		prev.innerHTML = "&#9668;";
 		prev.style.display = "inline";
 		prev.classList.add("btn","btn-primary","get-prev-btn","pull-left");
 
 		var next = document.createElement("li");
-		next.id = "vector-y-increase";
+		next.id = "geometry-vector-y-increase";
 		next.innerHTML = "&#9658;";
 		next.style.display = "inline";
 		next.classList.add("btn","btn-primary","get-next-btn","pull-right");
 
 		var input = document.createElement("input");
-		input.id = "input-vector-y";
+		input.id = "geometry-vector-y-input";
 		input.setAttribute("placeholder", "y" );
 		input.classList.add("form-control","text-center");
 		input.style.cssText = "color:#000;border:none;display:inline;width:80px;"
 			+ "margin:0px 5px;text-align:center;font-size:large;font-weigth:bold;background:none;";
+
+	//	Call watchers.
+		input.addEventListener( "change", function(){
+			this.blur(); // important!
+			callWatchers(this, "onchange", "change", this.value );
+		});
 
 		vect.appendChild(prev);
 		vect.appendChild(input);
@@ -171,14 +195,14 @@
 		row.appendChild(vect);
 		tab.appendChild( row );
 
-	})( TabUI.Editor.tab );
+	})( TabUI.Geometry.tab );
 
-//	vector-zy-ui.js
+//	vector-z-ui.js
 
 	(function( tab ){
 
 	//	vector z.
-	//	var tab = TabUI.Editor.tab;
+	//	var tab = TabUI.Geometry.tab;
 
 		var row = document.createElement("h3");
 		row.textContent = "vect z:";
@@ -188,23 +212,29 @@
 		vect.style.cssText = "width:170px;height:40px;float:right;";
 
 		var prev = document.createElement("li");
-		prev.id = "vector-z-decrease";
+		prev.id = "geometry-vector-z-decrease";
 		prev.innerHTML = "&#9668;";
 		prev.style.display = "inline";
 		prev.classList.add("btn","btn-primary","get-prev-btn","pull-left");
 
 		var next = document.createElement("li");
-		next.id = "vector-z-increase";
+		next.id = "geometry-vector-z-increase";
 		next.innerHTML = "&#9658;";
 		next.style.display = "inline";
 		next.classList.add("btn","btn-primary","get-next-btn","pull-right");
 
 		var input = document.createElement("input");
-		input.id = "input-vector-z";
+		input.id = "geometry-vector-z-input";
 		input.setAttribute("placeholder", "z" );
 		input.classList.add("form-control","text-center");
 		input.style.cssText = "color:#000;border:none;display:inline;width:80px;"
 			+ "margin:0px 5px;text-align:center;font-size:large;font-weigth:bold;background:none;";
+
+	//	Call watchers.
+		input.addEventListener( "change", function(){
+			this.blur(); // important!
+			callWatchers(this, "onchange", "change", this.value );
+		});
 
 		vect.appendChild(prev);
 		vect.appendChild(input);
@@ -212,14 +242,14 @@
 		row.appendChild(vect);
 		tab.appendChild( row );
 
-	})( TabUI.Editor.tab );
+	})( TabUI.Geometry.tab );
 
 //	vector-w-ui.js
 
 	(function( tab ){
 
 	//	vector w.
-	//	var tab = TabUI.Editor.tab;
+	//	var tab = TabUI.Geometry.tab;
 
 		var row = document.createElement("h3");
 		row.textContent = "vect w:";
@@ -229,23 +259,29 @@
 		vect.style.cssText = "width:170px;height:40px;float:right;";
 
 		var prev = document.createElement("li");
-		prev.id = "vector-w-decrease";
+		prev.id = "geometry-vector-w-decrease";
 		prev.innerHTML = "&#9668;";
 		prev.style.display = "inline";
 		prev.classList.add("btn","btn-primary","get-prev-btn","pull-left");
 
 		var next = document.createElement("li");
-		next.id = "vector-w-increase";
+		next.id = "geometry-vector-w-increase";
 		next.innerHTML = "&#9658;";
 		next.style.display = "inline";
 		next.classList.add("btn","btn-primary","get-next-btn","pull-right");
 
 		var input = document.createElement("input");
-		input.id = "input-vector-w";
+		input.id = "geometry-vector-w-input";
 		input.setAttribute("placeholder", "w" );
 		input.classList.add("form-control","text-center");
 		input.style.cssText = "color:#000;border:none;display:inline;width:80px;"
 			+ "margin:0px 5px;text-align:center;font-size:large;font-weigth:bold;background:none;";
+
+	//	Call watchers.
+		input.addEventListener( "change", function(){
+			this.blur(); // important!
+			callWatchers(this, "onchange", "change", this.value );
+		});
 
 		vect.appendChild(prev);
 		vect.appendChild(input);
@@ -253,7 +289,7 @@
 		row.appendChild(vect);
 		tab.appendChild( row );
 
-	})( TabUI.Editor.tab );
+	})( TabUI.Geometry.tab );
 
 //	reset-vectors-ui.js
 
@@ -261,13 +297,13 @@
 
 	//	Reset vectors button.
 	//	Resets vector mode values.
-	//	var tab = TabUI.Editor.tab;
+	//	var tab = TabUI.Geometry.tab;
 
 		var row = document.createElement("h3");
 		row.style.cssText = "height:40px;margin-bottom:20px;"
 
 		var button = document.createElement("div");
-		button.id = "reset-vectors-button";
+		button.id = "geometry-reset-button";
 		button.textContent = "Reset Vectors";
 		button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
 		button.style.cssText = "width:-webkit-fill-available;float:right;height:40px;font-size:large;margin-right:15px;";
@@ -275,20 +311,20 @@
 		row.appendChild( button );
 		tab.appendChild( row );
 
-	})( TabUI.Editor.tab );
+	})( TabUI.Geometry.tab );
 
 //	exit-editor-ui.js
 
 	(function( tab ){
 
 	//	Exit edit mode button.
-	//	var tab = TabUI.Editor.tab;
+	//	var tab = TabUI.Geometry.tab;
 
 		var row = document.createElement("h3");
 		row.style.cssText = "height:40px;margin-bottom:20px;"
 
 		var button = document.createElement("div");
-		button.id = "exit-edit-mode";
+		button.id = "geometry-exit-mode";
 		button.textContent = "Exit Edit Mode";
 		button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
 		button.style.cssText = "width:-webkit-fill-available;float:right;height:40px;font-size:large;margin-right:15px;";
@@ -296,21 +332,21 @@
 		row.appendChild( button );
 		tab.appendChild( row );
 
-	})( TabUI.Editor.tab );
+	})( TabUI.Geometry.tab );
 
 //	geometry-droplist-ui.js
 
 	(function( tab ){
 
 	//	Geometries droplist.
-	//	var tab = TabUI.Editor.tab;
+	//	var tab = TabUI.Geometry.tab;
 
 		var row = document.createElement("h3");
 		row.textContent = "Geometry:";
 		row.style.cssText = "height:40px;margin-top:40px;"
 
 		var select = document.createElement("select");
-		select.id = "editor-geometry-droplist";
+		select.id = "geometry-type-droplist"; // renamed from "editor-geometry-droplist".
 		select.style.cssText = "width:150px;color:#000;float:right;"
 			+ "border:1px solid;border-radius:4px;padding:2px 4px 4px 4px;"
 			+ "font-size:20px;margin-left:10px;margin-right:15px;";
@@ -330,11 +366,17 @@
 
 		})();
 
+	//	Dont call watchers (is dummy droplist).
+		select.addEventListener( "change", function(){
+			this.blur(); // important!
+		//	callWatchers(this, "onchange", "change", this.value ); // dummy droplist.
+		});
+
 		select.value = "PlaneGeometry";
 		row.appendChild( select );
 		tab.appendChild( row );
 
-	})( TabUI.Editor.tab );
+	})( TabUI.Geometry.tab );
 
 //	create-geometry-ui.js
 
@@ -343,7 +385,7 @@
 	//	Create geometry button.
 	//	Creates a mesh geometry
 	//	and switch to EditMode.
-	//	var tab = TabUI.Editor.tab;
+	//	var tab = TabUI.Geometry.tab;
 
 		var row = document.createElement("h3");
 		row.style.cssText = "height:40px;margin-bottom:20px;"
@@ -357,7 +399,7 @@
 		row.appendChild( button );
 		tab.appendChild( row );
 
-	})( TabUI.Editor.tab );
+	})( TabUI.Geometry.tab );
 
 //	clone-geometry-ui.js
 
@@ -367,7 +409,7 @@
 	//	Clones selected mesh 
 	//	with the same geometry
 	//	and switch to EditMode.
-	//	var tab = TabUI.Editor.tab;
+	//	var tab = TabUI.Geometry.tab;
 
 		var row = document.createElement("h3");
 		row.style.cssText = "height:40px;margin-bottom:20px;"
@@ -381,14 +423,14 @@
 		row.appendChild( button );
 		tab.appendChild( row );
 
-	})( TabUI.Editor.tab );
+	})( TabUI.Geometry.tab );
 
 //	remove-geometry-ui.js
 
 	(function( tab ){
 
 	//	Remove entity button.
-	//	var tab = TabUI.Editor.tab;
+	//	var tab = TabUI.Geometry.tab;
 
 		var row = document.createElement("h3");
 		row.style.cssText = "height:40px;margin-bottom:20px;"
@@ -402,26 +444,45 @@
 		row.appendChild( button );
 		tab.appendChild( row );
 
-	})( TabUI.Editor.tab );
+	})( TabUI.Geometry.tab );
 
-//	addto-octree-ui.js
+//	octree-geometry-ui.js
 
 	(function( tab ){
 
 	//	Add to world octree button.
-	//	var tab = TabUI.Editor.tab;
+	//	var tab = TabUI.Geometry.tab;
 
 		var row = document.createElement("h3");
 		row.style.cssText = "height:40px;margin-bottom:20px;"
 
 		var button = document.createElement("div");
-		button.id = "add-world-octree";
-		button.textContent = "Add to World Octree";
+		button.id = "octree-geometry-button";
+		button.textContent = "Add to MeshWorld";
 		button.style.cssText = "width:-webkit-fill-available;float:right;height:40px;font-size:large;margin-right:15px;";
 		button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
 
 		row.appendChild( button );
 		tab.appendChild( row );
 
-	})( TabUI.Editor.tab );
+	})( TabUI.Geometry.tab );
+
+	(function( tab ){
+
+	//	Remove from world octree button.
+	//	var tab = TabUI.Geometry.tab;
+
+		var row = document.createElement("h3");
+		row.style.cssText = "display:none;height:40px;margin-bottom:20px;"
+
+		var button = document.createElement("div");
+		button.id = "remove-octree-button";
+		button.textContent = "Remove from MeshWorld";
+		button.style.cssText = "width:-webkit-fill-available;float:right;height:40px;font-size:large;margin-right:15px;";
+		button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
+
+		row.appendChild( button );
+		tab.appendChild( row );
+
+	})( TabUI.Geometry.tab );
 
