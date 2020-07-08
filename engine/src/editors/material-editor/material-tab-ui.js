@@ -1,7 +1,5 @@
 //	material-tab-ui.js
 
-//	Material Tab.
-
 	TabUI.add( "Material", "material-tab" );
 	TabUI.append("Material");
 
