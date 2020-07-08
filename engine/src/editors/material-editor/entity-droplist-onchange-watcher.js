@@ -1,6 +1,6 @@
 //	entity-droplist-onchange-watcher.js
 
-	(function(editor,map_droplist,key_droplist,vector_droplist,color_droplist,entity_droplist){
+	(function(editor,map_droplist,key_droplist,type_droplist,vector_droplist,color_droplist,entity_droplist){
 
 	//	watcher.
 
@@ -11,12 +11,14 @@
 			callWatchers( key_droplist, "onchange", "change", key_droplist.value );
 			callWatchers( vector_droplist, "onchange", "change", vector_droplist.value );
 			callWatchers( color_droplist, "onchange", "change", color_droplist.value );
+			callWatchers( type_droplist, "onchange", "change", editor.type );
 		});
 
 	})(
 		materialEditor, // editor,
 		document.querySelector("select#material-map-droplist"),     // map_droplist.
 		document.querySelector("select#material-keys-droplist"),    // key_droplist.
+		document.querySelector("select#material-type-droplist"),    // type_droplist.
 		document.querySelector("select#material-vector-droplist"),  // vector_droplist.
 		document.querySelector("select#material-color-droplist"),   // vector_droplist.
 		document.querySelector("select#material-entities-droplist") // entity_droplist.

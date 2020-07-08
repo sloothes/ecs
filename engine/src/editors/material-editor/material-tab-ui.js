@@ -650,7 +650,7 @@
 	//	Call watchers.
 		select.addEventListener( "change", function(){
 			this.blur(); // important!
-			callWatchers(this, "onchange", "change", this.value );
+		//	callWatchers(this, "onchange", "change", this.value );
 		});
 
 		select.value = "MeshStandardMaterial";

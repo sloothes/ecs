@@ -1,6 +1,6 @@
 //	texture-editor-watchers.js
 
-//	Texture Editor Watchers.
+//	Texture Editor Manager.
 //	Watch each object/property individually.
 //	Synchronize texture with texture editor (brige).
 //	KEEP IN MIND: watchers update only if the value has been changed.

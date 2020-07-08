@@ -1,6 +1,6 @@
 //	material-editor-watchers.js
 
-//	Material Editor Watchers.
+//	Material Editor Manager.
 //	Watch each object/property individually.
 //	Synchronize material with material editor (brige).
 //	KEEP IN MIND: watchers update only if the value has been changed.
@@ -144,6 +144,9 @@
 			var material = getMaterialByEntityId(); if ( !material ) return;
 		//	Update material.
 			if ( material ) material[key] = String(editor[key]);
+		//	TODO: to change text in option list.
+			//	find option element,
+			//	replace option text.
 		//	Display value.
 			if ( key_droplist.value === key ) {
 				[ text_input.value, value_input.value ] = [ editor[key], "" ];
@@ -243,7 +246,7 @@
 			if ( material ) material[key] = Boolean(editor[key]);
 		//	Display value.
 			if ( key_droplist.value === key ) {
-				[ text_input.value, value_input.value ] = [ editor[key], "" ];
+				[ value_input.value, text_input.value ] = [ editor[key], "" ];
 			}
 		});
 
@@ -457,7 +460,7 @@
 			if ( material ) material[key] = Number(editor[key]);
 		//	Display value.
 			if ( key_droplist.value === key ) {
-				[ text_input.value, value_input.value ] = [ editor[key].toFixed(0), "" ];
+				[ value_input.value, text_input.value ] = [ editor[key].toFixed(0), "" ];
 			}
 		});
 
