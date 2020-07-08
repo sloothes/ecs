@@ -16,7 +16,7 @@
 
 		(function update(){
 			requestFrameID = requestAnimationFrame( update );
-			cameraControls.update();
+			cameraControls.trackObject && cameraControls.update();
 			cameraControls.frontAngle = cameraControls.getFrontAngle();
 		})();
 
