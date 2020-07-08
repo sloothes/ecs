@@ -37,7 +37,7 @@
 				if ( material === undefined ) return;
 
 			//	Naming.
-				material.name = "new material"+material.id;
+				material.name = "new material";
 
 			//	Add entity.
 				entities.add( material );
