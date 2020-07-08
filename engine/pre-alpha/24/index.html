@@ -132,8 +132,15 @@
 		<script src="/ecs/engine/src/editors/UndoArray.js"></script>
 		<script src="/ecs/engine/src/editors/editor-helpers.js"></script>
 
+		<script> //	src="/ecs/engine/src/meshworld/meshworld-tab-ui.js">
+
+			TabUI.add( "MeshWorld", "meshworld-tab" );
+			TabUI.append("MeshWorld");
+
+		</script>
+
 	<!--                                   OBJECT3D EDITOR                                        -->
-		<script src="/ecs/engine/src/editors/object3d-editor/editor-tab-ui.js"></script>
+		<script src="/ecs/engine/src/editors/geometry-editor/geometry-tab-ui.js"></script>
 
 		<script>
 
@@ -1403,16 +1410,8 @@
 		<script src="/ecs/engine/src/editors/texture-editor/replace-texture-image.js"></script>
 
 	<!--                                    VIEWPORT TAB                                        -->
+
 		<script src="/ecs/engine/editor/ViewportTab.js"></script>
-
-		<script>
-
-		//	meshworld-tab-ui.js
-
-			TabUI.add( "MeshWorld", "meshworld-tab" );
-			TabUI.append("MeshWorld");
-
-		</script>
 
 		<script>
 
