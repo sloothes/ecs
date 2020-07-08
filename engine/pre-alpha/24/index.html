@@ -157,33 +157,33 @@
 
 				const rigidObjects = []; // cameraControls.rigidObjects;
 
-				const vect_x_input = document.getElementById("input-vector-x");
-				const vect_y_input = document.getElementById("input-vector-y");
-				const vect_z_input = document.getElementById("input-vector-z");
-				const vect_w_input = document.getElementById("input-vector-w");
+				const vect_x_input = document.querySelector("input#geometry-vector-x-input");
+				const vect_y_input = document.querySelector("input#geometry-vector-y-input");
+				const vect_z_input = document.querySelector("input#geometry-vector-z-input");
+				const vect_w_input = document.querySelector("input#geometry-vector-w-input");
 
-				const vect_x_increase = document.getElementById("vector-x-increase");
-				const vect_y_increase = document.getElementById("vector-y-increase");
-				const vect_z_increase = document.getElementById("vector-z-increase");
-				const vect_w_increase = document.getElementById("vector-w-increase");
-				const vect_x_decrease = document.getElementById("vector-x-decrease");
-				const vect_y_decrease = document.getElementById("vector-y-decrease");
-				const vect_z_decrease = document.getElementById("vector-z-decrease");
-				const vect_w_decrease = document.getElementById("vector-w-decrease");
+				const vect_x_increase = document.querySelector("li#geometry-vector-x-increase");
+				const vect_y_increase = document.querySelector("li#geometry-vector-y-increase");
+				const vect_z_increase = document.querySelector("li#geometry-vector-z-increase");
+				const vect_w_increase = document.querySelector("li#geometry-vector-w-increase");
+				const vect_x_decrease = document.querySelector("li#geometry-vector-x-decrease");
+				const vect_y_decrease = document.querySelector("li#geometry-vector-y-decrease");
+				const vect_z_decrease = document.querySelector("li#geometry-vector-z-decrease");
+				const vect_w_decrease = document.querySelector("li#geometry-vector-w-decrease");
 
-				const entity_droplist = document.getElementById("entities-droplist");
-				const vector_droplist = document.getElementById("vector-mode-droplist");
-				const geometry_droplist = document.getElementById("editor-geometry-droplist");
+				const entity_droplist = document.querySelector("select#geometry-entities-droplist");
+				const vector_droplist = document.querySelector("select#geometry-vector-droplist");
+				const geometry_droplist = document.querySelector("select#geometry-type-droplist");
 
-				const redo_button = document.getElementById("editor-redo-button");
-				const undo_button = document.getElementById("editor-undo-button");
-				const exit_edit_button = document.getElementById("exit-edit-mode");
-				const reset_vectors_button = document.getElementById("reset-vectors-button");
-			//	const box_geometry_button = document.getElementById("new-box-geometry");
-			//	const plane_geometry_button = document.getElementById("new-plane-geometry");
-				const create_geometry_button = document.getElementById("create-geometry-button");
-				const clone_geometry_button  = document.getElementById("clone-geometry-button");
-				const remove_geometry_button = document.getElementById("remove-geometry-button");
+				const redo_button = document.querySelector("div#geometry-redo-button");
+				const undo_button = document.querySelector("div#geometry-undo-button");
+				const exit_edit_button = document.querySelector("div#geometry-exit-mode");
+				const reset_vectors_button = document.querySelector("div#geometry-reset-button");
+				const create_geometry_button = document.querySelector("div#create-geometry-button");
+				const clone_geometry_button  = document.querySelector("div#clone-geometry-button");
+				const remove_geometry_button = document.querySelector("div#remove-geometry-button");
+				const octree_geometry_button = document.querySelector("div#octree-geometry-button");
+				const octree_remove_button = document.querySelector("div#octree-remove-button");
 
 				const entitySelect = { value:entity_droplist.value };   // string.
 				const vectorSelect = { value:vector_droplist.value };   // string.
