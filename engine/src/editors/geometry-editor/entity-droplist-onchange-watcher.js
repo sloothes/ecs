@@ -6,7 +6,7 @@
 //	keeps camera controls rigid objects at edit mode.
 	const rigidObjects = []; // cameraControls.rigidObjects;
 
-	(function(localPlayer,entitySelect){
+	(function(localPlayer,entity_droplist){
 
 		var interval;
 		var edgeshelper;
@@ -25,7 +25,6 @@
 			if ( !object ) return;
 			if ( !object.isMesh ) return;
 			if ( !object.geometry ) return;
-		//	if ( localPlayer.getObjectById( object.id) ) return; // child of localPlayer.
 
 			var geometry = new THREE.EdgesGeometry( object.geometry );
 			var material = new THREE.LineBasicMaterial( { color: 0x00ff00 } );
@@ -42,9 +41,7 @@
 
 	//	edgeshelper watcher.
 
-		watch(entitySelect, function( prop, action, value, oldValue ){
-
-		//	vectorSelect.value = vector_droplist.value; // important!
+		watch(entity_droplist, function( property, action, value ){
 
 		//	Remove old edges helper.
 			destroyEdgesHelper(); // remove old helper.
