@@ -14,7 +14,7 @@
 
 			switch ( key ) {
 				case "":
-					[vector_x.value, vector_y.value, vector_z.value, vector_w.value] = ["","","",""];
+					[vector_x.value, vector_y.value, vector_z.value, vector_w.value] = ["","","",""]; return;
 				break;
 				case "position":
 					[vector_x.value, vector_y.value, 
