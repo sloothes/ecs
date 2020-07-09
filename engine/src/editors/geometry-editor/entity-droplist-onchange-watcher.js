@@ -91,14 +91,14 @@
 		}
 
 	//	we need to keep track of the old value of entity droplist.
-		watch(entity_droplist, "value", function( prop, event, value, oldValue ){
+		watch(entity_droplist, "onchange", function( prop, event, value ){
 		//	debugMode && console.log( "entitySelect watch:", 
 		//	prop, action, "new value:", value, "old value:", oldValue  );
 
 			updateOctree( latestEntity.value ); // first, important!
 
 		//	Add to camera rigid objects.
-			!!latestEntity.value && addtoRigidObjects( oldValue );
+			!!latestEntity.value && addtoRigidObjects( latestEntity.value );
 
 		//	switchToEditMode( newValue ); // important!
 
@@ -156,7 +156,7 @@
 
 		function exitFromEditMode(){
 			editor.reset(); // important!
-			latestEntityValueReset();
+			latestEntityValueReset(); // !!!
 			enableCameraRigidObjects();
 			takeCameraControls( localPlayer );
 			keyInputControls.isDisabled = false;
