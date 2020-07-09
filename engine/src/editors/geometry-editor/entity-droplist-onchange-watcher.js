@@ -1,8 +1,10 @@
 //	entity-droplist-onchange-watcher.js
 
-//	keep track of last entity droplist value.
-//	latestEntity: is calling first, is updating last.
-	const latestEntity = { value:"" }; // string.
+//	keeps track of last entity droplist value.
+	const latestEntity = { value:"" }; // called first, updated last.
+
+//	keeps camera controls rigid objects at edit mode.
+	const rigidObjects = []; // cameraControls.rigidObjects;
 
 	(function(editor,octree,localPlayer,rigidObjects,cameraControls,keyInputControls,vector_droplist,entity_droplist,latestEntity){
 

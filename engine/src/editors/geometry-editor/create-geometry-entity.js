@@ -1,5 +1,5 @@
 //	camera-controls-rigid-objects.js
-
+/*
 	const rigidObjects = []; // cameraControls.rigidObjects;
 
 	function addtoRigidObjects( value ){
@@ -35,7 +35,7 @@
 			object.isMesh && rigidObjects.push( object ); // cleanup.
 		}
 	}
-
+*/
 
 //	octree-helpers.js
 

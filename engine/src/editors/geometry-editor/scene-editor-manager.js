@@ -6,7 +6,6 @@
 //	Synchronize object3d with scene editor (brige).
 //	KEEP IN MIND: watchers update only if the value has been changed.
 
-
 	(function(editor,value_input,key_droplist,entity_droplist){
 
 	//	var object; // important!
