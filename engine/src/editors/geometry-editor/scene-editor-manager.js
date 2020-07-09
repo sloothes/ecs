@@ -51,10 +51,9 @@
 		});
 
 		watch( editor, "position", function( key, action, value ){
-		//	var object = getObjectByEntityId(); if (!object) return;
-		//	Update object.
-			if ( object && object.position ) 
-				object.position[key] = Number(editor.position[key]);
+		//	var object = getObjectByEntityId();
+		//	Update object ( value === editor.position[key] ).
+			if ( object && object.position ) object.position[key] = Number(value);
 		//	Display value.
 			if ( vector_droplist.value === "position" ) {
 				if ( key === "x" ) vector_x.value = value.toFixed(2);
@@ -64,12 +63,11 @@
 		});
 
 		watch( editor, "rotation", function( key, action, value ){
-		//	var object = getObjectByEntityId(); if (!object) return;
-		//	Update object.
-			if ( object && object.rotation ) 
-				object.rotation[key] = Number(editor.rotation[key]);		
+		//	var object = getObjectByEntityId();
+		//	Update object ( value === editor.rotation[key] ).
+			if ( object && object.rotation ) object.rotation[key] = Number(value);		
 		//	Display value.
-			if ( vector_droplist.value === "position" ) {
+			if ( vector_droplist.value === "rotation" ) {
 				if ( key === "_x" ) vector_x.value = (RAD2DEG*value).toFixed(1);
 				if ( key === "_y" ) vector_y.value = (RAD2DEG*value).toFixed(1);
 				if ( key === "_z" ) vector_z.value = (RAD2DEG*value).toFixed(1);
@@ -77,9 +75,9 @@
 		});
 
 		watch( editor, "scale", function( key, action, value ){
-		//	var object = getObjectByEntityId(); if (!object) return;
-		//	Update object.
-			if ( object && object.scale ) object.scale[key] = Number(editor.scale[key]);		
+		//	var object = getObjectByEntityId();
+		//	Update object ( value === editor.scale[key] ).
+			if ( object && object.scale ) object.scale[key] = Number(value);		
 		//	Display value.
 			if ( vector_droplist.value === "scale" ) {
 				if ( key === "x" ) vector_x.value = (100*value).toFixed(1);
@@ -90,8 +88,8 @@
 		});
 
 		watch( editor, "quaternion", function( key, action, value ){
-		//	var object = getObjectByEntityId(); if (!object) return;
-		//	DO NOT MODIFY QUATERNION !!! DO NOT MODIFY QUATERNION !!!
+		//	var object = getObjectByEntityId();
+		//	DO NOT MODIFY QUATERNION (value === editor.quaternion[key]).
 		//	if ( object && object.quaternion ) 
 		//		object.quaternion[key] = Number(editor.quaternion[key]);		
 		//	Display value.
