@@ -41,7 +41,7 @@
 
 	//	edgeshelper watcher.
 
-		watch(entity_droplist, function( property, action, value ){
+		watch(entity_droplist, function( property, event, value ){
 
 		//	Remove old edges helper.
 			destroyEdgesHelper(); // remove old helper.
