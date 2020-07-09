@@ -45,10 +45,10 @@
 
 	})(
 		sceneEditor, // editor,
-		document.querySelector("select#geometry-vector-x-input"), // vector_x,
-		document.querySelector("select#geometry-vector-y-input"), // vector_y,
-		document.querySelector("select#geometry-vector-z-input"), // vector_z,
-		document.querySelector("select#geometry-vector-w-input"), // vector_w,
+		document.querySelector("input#geometry-vector-x-input"), // vector_x,
+		document.querySelector("input#geometry-vector-y-input"), // vector_y,
+		document.querySelector("input#geometry-vector-z-input"), // vector_z,
+		document.querySelector("input#geometry-vector-w-input"), // vector_w,
 		document.querySelector("select#geometry-vector-droplist") // vector_droplist.
 	);
 
