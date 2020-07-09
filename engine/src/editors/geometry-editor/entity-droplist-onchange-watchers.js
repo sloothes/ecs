@@ -177,14 +177,21 @@
 	(function(entity_droplist){
 
 		watch(entity_droplist, "onchange", function( property, event, value ){
-			var object = getObjectByEntityId( value ); if ( !object ) return;
 
-			var material = object.material; if (!material) return;
+		//	Get material entities droplist.
 			var selector = "select#material-entities-droplist";
 			var droplist = document.querySelector(selector); if (!droplist) return;
-			
-			droplist.value = String(material.id);
-			callWatchers( droplist, "onchange", "change", droplist.value );
+
+		//	Get material id.
+			var object = getObjectByEntityId( value ); if ( !object ) {
+				return callWatchers( droplist, "onchange", "change", droplist.value = "" );
+			}
+
+			var material = object.material; if (!material) {
+				return callWatchers( droplist, "onchange", "change", droplist.value = "" );
+			}
+
+			material && callWatchers( droplist, "onchange", "change", droplist.value = String(material.id) );
 
 		});
 
