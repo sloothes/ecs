@@ -1,6 +1,6 @@
 //	create-geometry-entity.js
 
-	(function(create_button,type_droplist,entity_droplist,material_entities,entities){
+	(function(create_button,type_droplist,entity_droplist,entities){
 
 		var interval;
 
@@ -49,8 +49,9 @@
 			scene.add( mesh );
 
 		//	Add entities.
-			entities.add( mesh );
-			material_entities.add( material ); // important!
+			entities && entities.add( mesh );
+			try { material_entities && material_entities.add( material ); // important!
+			} catch(err){console.error(err); }
 
 		//	Add to camera rigid objects.
 		//	addtoRigidObjects( mesh.id );
@@ -64,5 +65,5 @@
 		document.querySelector("div#create-geometry-button"), // create_button,
 		document.querySelector("select#geometry-type-droplist"), // type_droplist,
 		document.querySelector("select#geometry-entities-droplist"), // entity_droplist,
-		material_entities, entities // material_entities, entities.
+		entities // entities.
 	);
