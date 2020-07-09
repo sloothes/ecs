@@ -1,7 +1,7 @@
-//	scene-editor-manager.js
+//	scene-editor-watcher-manager.js
 
 
-//	Scene Editor Manager.
+//	Scene Editor Watcher Manager.
 //	Watch each object/property individually.
 //	Synchronize object3d with scene editor (brige).
 //	KEEP IN MIND: watchers update only if the value has been changed.
