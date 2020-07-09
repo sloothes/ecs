@@ -140,9 +140,9 @@
 									<!-- OBJECT3D EDITOR -->
 		<script src="/ecs/engine/src/editors/geometry-editor/geometry-tab-ui.js"></script>
 		<script src="/ecs/engine/src/editors/geometry-editor/SceneEditor.js"></script>
-		<script src="/ecs/engine/src/editors/geometry-editor/entity-droplist-onchange-watcher.js"></script>
+	<!-- script src="/ecs/engine/src/editors/geometry-editor/entity-droplist-onchange-watcher.js"></script>
 		<script src="/ecs/engine/src/editors/geometry-editor/scene-editor-manager.js"></script>
-		<script src="/ecs/engine/src/editors/geometry-editor/create-geometry-entity.js"></script>
+		<script src="/ecs/engine/src/editors/geometry-editor/create-geometry-entity.js"></script -->
 
 		<script>
 
@@ -1431,6 +1431,27 @@
 		</script>
 
 		<script>
+
+			(function(){
+				var w = 10, h = 5;
+				var x = 10, y = h/2, z = -4;
+				var box = new THREE.BoxGeometry(w,h,w);
+				box.translate(0, h/2, 0);
+				var material = new THREE.MeshLambertMaterial();
+				material_entities.add( material );
+				var mesh = new THREE.Mesh(box, material);
+				mesh.name = "building 1";
+				mesh.position.set(x,0,z);
+				octree.importThreeMesh( mesh );
+				var geometry = new THREE.EdgesGeometry( box );
+				var segments = new THREE.LineSegments( geometry, material );
+				segments.name = "segments 2";
+				segments.position.copy( mesh.position );
+				scene.add( mesh );
+				entities.add( mesh );
+				cameraControls.rigidObjects.push( mesh );
+			})();
+
 /*
 		//	test material textures.
 
