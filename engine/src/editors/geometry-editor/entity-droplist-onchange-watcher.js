@@ -150,7 +150,7 @@
 
 		function latestEntityValueReset(){
 			latestEntity.value = entity_droplist.value = "";
-			callWatchers( entity_droplist, "onchange", "change", "" );
+		//	callWatchers( entity_droplist, "onchange", "change", "" );
 		//	entity_droplist.dispatchEvent( new Event("change") );
 		}
 
