@@ -54,11 +54,6 @@
 
 		});
 
-
-
-
-
-
 	})(
 		localPlayer, document.querySelector("select#geometry-entities-droplist") // entity_droplist.
 	);
