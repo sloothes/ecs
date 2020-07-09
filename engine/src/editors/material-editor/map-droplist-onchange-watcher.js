@@ -17,6 +17,12 @@
 
 		});
 
+	//	Update texture entities droplist.
+		watch( map_droplist, "onchange", function( property, event, map ){
+			var entity_droplist = document.querySelector("select#texture-entities-droplist");
+			entity_droplist && editor[map] && callWatchers( entity_droplist, "onchange", "change", String(editor[map].id) );
+		});
+
 	})(
 		materialEditor, // editor,
 		document.querySelector("select#material-map-droplist"), // map_droplist.
