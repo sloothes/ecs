@@ -68,26 +68,34 @@
 
 	//	get target texture.
 		var texture = getTextureByEntityId( value );
-	//	debugMode && console.log( "target texture:", texture );
+		var isEditing = !!texture; // boolean!
 
-		if ( !texture ) {
-			editor.reset();
-			console.log("editor update:", false);
-			return false; // important!
+	//	update editor (copy).
+		if ( texture ) {
+			editor.copy( texture );
+			editor.name = texture.name;
+			editor.uuid = texture.uuid;
 		}
 
-	//	copy texture (update).
-		editor.copy( texture );
-		editor.name = texture.name;
-		editor.uuid = texture.uuid;
-
-	//	return true.
-		console.log("editor update:", true);
-		return true; // important!
+	//	return boolean.
+		console.log("editor isEditing:", isEditing);
+		return isEditing; // boolean, important!
 
 	};
 
 	const textureEditor = new TextureEditor();
+
+
+	//	if ( !texture ) {
+	//		editor.reset();
+	//		console.log("editor update:", false);
+	//		return false; // important!
+	//	}
+
+	//	copy texture (update).
+	//	editor.copy( texture );
+	//	editor.name = texture.name;
+	//	editor.uuid = texture.uuid;
 
 /*
 	TextureEditor.prototype.undo = function(){

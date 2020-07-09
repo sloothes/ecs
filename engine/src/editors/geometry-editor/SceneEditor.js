@@ -45,7 +45,7 @@
 		object && editor.copy( object );
 
 	//	return true.
-		console.log("editor update:", isEditing);
+		console.log("editor isEditing:", isEditing);
 		return isEditing; // important!
 
 	};

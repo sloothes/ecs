@@ -244,29 +244,36 @@
 		editor.reset(); // important!
 
 	//	get target material.
-		var material = material_entities.getMaterialById( value );
-	//	debugMode && console.log( "editor material:", material );
+		var material = getMaterialByEntityId( value );
+		var isEditing = !!material; // boolean!
 
-		if ( !material ) {
-			editor.reset();
-			console.log("editor update:", false);
-			return false; // important!
+	//	update editor (copy).
+		if ( material ){
+			editor.copy( material );
+			editor.type = material.type;
+			editor.uuid = material.uuid;
 		}
 
-	//	copy material (update).
-		editor.copy( material );
-		editor.type = material.type;
-		editor.uuid = material.uuid;
-
 	//	return true.
-		console.log("editor update:", true);
-		return true; // important!
+		console.log("editor isEditing:", isEditing);
+		return isEditing; // boolean, important!
 
 	};
 
 	const materialEditor = new MaterialEditor();
 
 
+
+	//	if ( !material ) {
+	//		editor.reset();
+	//		console.log("editor isEditing:", isEditing);
+	//		return isEditing; // false, important!
+	//	}
+
+	//	copy material (update).
+	//	editor.copy( material );
+	//	editor.type = material.type;
+	//	editor.uuid = material.uuid;
 
 
 /*
