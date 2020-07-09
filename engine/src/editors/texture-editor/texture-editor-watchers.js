@@ -1,5 +1,5 @@
 //	texture-editor-watchers.js
-//	to be renamed to "TextureEditorManager.js"
+//	TODO: rename to "texture-editor-manager.js"
 
 //	Texture Editor Manager.
 //	Watch each object/property individually.
@@ -7,7 +7,7 @@
 //	KEEP IN MIND: watchers update only if the value has been changed.
 
 
-	(function( editor,viewer,needsUpdate_button,entity_droplist ){
+	(function( editor,viewer,entity_droplist ){
 
 		var texture; // imporant!
 	//	You can add a watcher to get texture only when entity droplist changes.
@@ -18,11 +18,6 @@
 
 	//	.......................... add watchers here! ........................  //
 
-	//	Texture needsUpdate button.
-		needsUpdate_button.addEventListener( "click", function(){
-			if ( texture && texture.image ) texture.needsUpdate = true;
-		});
-
 	//	Image. TODO!
 	//	watch( editor.image, function( key, action, value, oldValue ){
 	//		debugMode && console.log("editor:",{"key":key,"action":action,"value":value,"devNote":"TODO"});
@@ -30,11 +25,21 @@
 	//	});
 
 	})( 
-		textureEditor, // editor,
-		textureViewer, // viewer,
-		document.querySelector("div#texture-needs-update"), // needsUpdate_button,
+		textureEditor, textureViewer, // editor, viewer,
 		document.querySelector("select#texture-entities-droplist") // entity_droplist,
 	);
+
+
+//	Texture needsUpdate button.
+
+	(function( needsUpdate_button ){
+
+		needsUpdate_button.addEventListener( "click", function(){
+			var texture = getTextureByEntityId(); if (!texture) return;
+			if ( texture && texture.image ) texture.needsUpdate = true;
+		});
+
+	})( document.querySelector("div#texture-needs-update") );
 
 
 

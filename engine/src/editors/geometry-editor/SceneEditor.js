@@ -42,6 +42,14 @@
 	//	Copy object.
 		object && editor.copy( object );
 
+	//	return true.
+		console.log("editor update:", isEditing);
+		return isEditing; // important!
+
+	};
+
+	const sceneEditor = new SceneEditor();
+
 	//	Edit mode.
 	//	editor.isEditing = !!object;
 	//	object update loop.
@@ -58,11 +66,3 @@
 	//	keep initial state.
 	//	object && editor.isEditing && addToUndo();
 	//	debugMode && console.log( "editor updated:", object );
-
-	//	return true.
-		console.log("editor update:", isEditing);
-		return isEditing; // important!
-
-	};
-
-	const sceneEditor = new SceneEditor();

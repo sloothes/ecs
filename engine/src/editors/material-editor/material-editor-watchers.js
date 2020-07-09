@@ -1,20 +1,20 @@
-//	material-editor-watchers.js
-//	to be renamed to "MaterialEditorManager.js"
+//	material-editor-watchers.js 
+//	TODO: rename to "material-editor-manager.js"
 
 //	Material Editor Manager.
 //	Watch each object/property individually.
 //	Synchronize material with material editor (brige).
 //	KEEP IN MIND: watchers update only if the value has been changed.
 
+
 	(function( editor,entity_droplist ){
 
-		var material; // important!
-
+	//	var material; // important!
 	//	You can add a watcher to update material only when entity droplist changes.
-		watch( entity_droplist, "onchange", function( property, event, value ){
-			material = getMaterialByEntityId( value ); // material id.
-			debugMode && console.log({ item:entity_droplist,entity:material,"entity id":value });
-		});
+	//	watch( entity_droplist, "onchange", function( property, event, value ){
+	//		material = getMaterialByEntityId( value ); // material id.
+	//		debugMode && console.log({ item:entity_droplist,entity:material,"entity id":value });
+	//	});
 
 	//	.......................... add watchers here! ........................  //
 
@@ -22,6 +22,7 @@
 		materialEditor, // editor,
 		document.querySelector("select#material-entities-droplist") // entity_droplist,
 	);
+
 
 //	needsUpdate_button.
 
@@ -33,6 +34,8 @@
 		});
 
 	})( document.querySelector("div#material-needs-update") );
+
+
 
 //	Editor (material) type. (DONT CHANGE MATERIAL TYPE).
 
@@ -57,11 +60,14 @@
 		document.querySelector("select#material-type-droplist") // type_droplist,
 	);
 
+
+
 //	Vectors.
 
 	(function( editor,vector_x,vector_y,vector_droplist,entity_droplist ){
 
 		var material; // important!
+
 	//	Add a watcher to update material only when entity droplist changes.
 		watch( entity_droplist, "onchange", function( property, event, value ){
 			material = getMaterialByEntityId( value );
@@ -88,6 +94,7 @@
 		document.querySelector("select#material-vector-droplist"), // vector_droplist,
 		document.querySelector("select#material-entities-droplist") // entity_droplist,
 	);
+
 
 
 //	Colors.
@@ -153,6 +160,8 @@
 		document.querySelector("select#material-color-droplist"), // color_droplist,
 		document.querySelector("select#material-entities-droplist") // entity_droplist,
 	);
+
+
 
 //	Strings.
 
@@ -244,6 +253,8 @@
 		document.querySelector("select#material-keys-droplist"), // key_droplist,
 		document.querySelector("select#material-type-droplist") // type_droplist,
 	);
+
+
 
 //	Boolean.
 
@@ -441,6 +452,8 @@
 		document.querySelector("input#material-value-input"),  // value_input,
 		document.querySelector("select#material-keys-droplist") // key_droplist,
 	);
+
+
 
 //	Numbers.
 
