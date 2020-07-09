@@ -6,7 +6,7 @@
 //	keeps camera controls rigid objects at edit mode.
 	const rigidObjects = []; // cameraControls.rigidObjects;
 
-	(function(localPlayer,entity_droplist){
+	(function(scene, entity_droplist){
 
 		var interval;
 		var edgeshelper;
@@ -55,7 +55,7 @@
 		});
 
 	})(
-		localPlayer, document.querySelector("select#geometry-entities-droplist") // entity_droplist.
+		scene, document.querySelector("select#geometry-entities-droplist") // entity_droplist.
 	);
 
 
