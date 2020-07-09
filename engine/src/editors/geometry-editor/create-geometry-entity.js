@@ -12,7 +12,7 @@
 		});
 
 		watch(create_button, "onclick", function(property, event, value){
-			debugMode && console.log({property:property,event:event,value:value});
+			debugMode && console.log({item:create_button,event:event,value:value});
 
 		//	Get type.
 			var type = type_droplist.value; // string.
@@ -51,7 +51,7 @@
 		//	Add entities.
 			entities && entities.add( mesh );
 			try { material_entities && material_entities.add( material ); // important!
-			} catch(err){console.error(err); }
+			} catch(err){ console.error(err); }
 
 		//	Add to camera rigid objects.
 		//	addtoRigidObjects( mesh.id );
@@ -67,3 +67,5 @@
 		document.querySelector("select#geometry-entities-droplist"), // entity_droplist,
 		entities // entities.
 	);
+
+//	remove-geometry-entity.js
