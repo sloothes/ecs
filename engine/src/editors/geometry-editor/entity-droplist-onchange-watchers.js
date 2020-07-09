@@ -153,7 +153,9 @@
 		});
 
 	})(
-		sceneEditor, document.querySelector("select#geometry-entities-droplist") // entity_droplist.
+		sceneEditor, // editor, 
+		rigidObjects, latestEntity, cameraControls, localPlayer, keyInputControls, 
+		document.querySelector("select#geometry-entities-droplist") // entity_droplist.
 	);
 
 //	Call vector droplist watchers.
