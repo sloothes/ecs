@@ -5,7 +5,6 @@
 	const rigidObjects = []; // cameraControls.rigidObjects;
 
 
-
 //	keeps track of last entity droplist value.
 	const latestEntity = { value:"" }; // called first, updated last.
 	watch( latestEntity, "value", function(property, action, value, oldValue ){
