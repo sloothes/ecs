@@ -8,7 +8,7 @@
 		watch(vector_droplist, "onchange", function( property, event, key ){
 			debugMode && console.log({item:vector_droplist,event:event,key:key});
 
-			if ( editor[key] === undefined ) {
+			if ( key === "" || editor[key] === undefined ) {
 				[vector_x.value, vector_y.value, vector_z.value, vector_w.value] = ["","","",""]; return;
 			}
 
