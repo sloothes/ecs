@@ -130,7 +130,7 @@
 
 		textureViewer.scene.add( textureViewer.center );
 		textureViewer.center.position.set(-125,0.1,125); // (x,y) = (0,0) important!
-		debugMode && console.log( textureViewer.center );
+	//	debugMode && console.log( textureViewer.center );
 
 	//	dispose.
 

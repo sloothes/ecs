@@ -22,17 +22,21 @@
 					if ( isNaN(value) ) value = 1; // avaid NaN value, reset to 100%.
 					else if ( !Number(value) ) value = 1; // avoid scale:0, reset.
 					else value = Number(value)/100; // internal scale value 1/100.
+					setTimeout(function(value){ editor[key].x = Number(value); }, null, value);
 				break;
 				case "rotation":
 					if ( isNaN(value) ) value = 0; // avaid NaN value, reset!
 					else value = DEG2RAD * THREE.Math.clamp(Number(value), -180, 180); // rad, important!
+					setTimeout(function(value){ editor[key].x = Number(value); }, null, value);
 				break;
 				case "position":
 					if ( isNaN(value) ) value = 0; // avaid NaN value, reset!
 					else value = Number(value); // meters, no limit.
+					setTimeout(function(value){ editor[key].x = Number(value); }, null, value);
 				break;
 				case "quaternion":
 					value = editor[key].x; //  no modification.
+					setTimeout(function(value){ editor[key].x = Number(value); }, null, value);
 				break;
 				default:
 					vector_x.value = ""; return; // escape!
@@ -44,7 +48,7 @@
 			//  else value_input.value = editor[key]; // boolean as string.
 
 		//	editor manager watcher updates input values.
-			setTimeout(function(value){ editor[key].x = Number(value); }, null, value);
+		//	setTimeout(function(value){ editor[key].x = Number(value); }, null, value);
 
 		});
 
