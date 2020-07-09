@@ -202,23 +202,6 @@
 
 
 
-//	vector-droplist-onchange-watchers.js
-
-	(function(vector_x,vector_y,vector_z,vector_w,vector_droplist,entity_droplist){
-
-		watch(vector_droplist, "onchange", function( property, event, value ){
-			debugMode && console.log({item:vector_droplist,event:event,value:value});
-		});
-
-	})(
-		document.querySelector("select#geometry-vector-x-input"), // vector_x,
-		document.querySelector("select#geometry-vector-y-input"), // vector_y,
-		document.querySelector("select#geometry-vector-z-input"), // vector_z,
-		document.querySelector("select#geometry-vector-w-input"), // vector_w,
-		document.querySelector("select#geometry-vector-droplist"), // vector_droplist.
-		document.querySelector("select#geometry-entities-droplist") // entity_droplist.
-	);
-
 
 
 
