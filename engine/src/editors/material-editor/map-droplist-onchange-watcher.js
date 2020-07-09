@@ -19,8 +19,8 @@
 
 	//	Update texture entities droplist.
 		watch( map_droplist, "onchange", function( property, event, map ){
-			var entity_droplist = document.querySelector("select#texture-entities-droplist");
-			entity_droplist && editor[map] && callWatchers( entity_droplist, "onchange", "change", String(editor[map].id) );
+			var droplist = document.querySelector("select#texture-entities-droplist");
+			droplist && editor[map] && callWatchers( droplist, "onchange", "change", String(editor[map].id) );
 		});
 
 	})(
