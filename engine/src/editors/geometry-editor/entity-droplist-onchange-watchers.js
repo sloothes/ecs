@@ -157,6 +157,7 @@
 		document.querySelector("select#geometry-entities-droplist") // entity_droplist.
 	);
 
+
 //	Call vector droplist watchers.
 
 	(function(vector_droplist,entity_droplist){
@@ -172,7 +173,30 @@
 
 
 
-//	vector-droplist-onchange-watcher.js
+//	Update material editor droplist.
+
+	(function(entity_droplist){
+
+		watch(entity_droplist, "onchange", function( property, event, value ){
+			var object = getObjectByEntityId( value ); if ( !object ) return;
+
+			var material = object.material; if (!material) return;
+			var selector = "select#material-entities-droplist";
+			var droplist = document.querySelector(selector); if (!droplist) return;
+			
+			droplist.value = String(material.id);
+			callWatchers( droplist, "onchange", "change", droplist.value );
+
+		});
+
+	})(
+		document.querySelector("select#geometry-entities-droplist") // entity_droplist.
+	);
+
+
+
+
+//	vector-droplist-onchange-watchers.js
 
 	(function(vector_x,vector_y,vector_z,vector_w,vector_droplist,entity_droplist){
 
