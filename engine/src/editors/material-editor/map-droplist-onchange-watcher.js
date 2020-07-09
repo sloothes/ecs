@@ -31,13 +31,3 @@
 		document.querySelector("select#material-vector-droplist") // vector_droplist.
 	);
 
-
-	//	if ( !map || editor[map] == null || !editor[map].isTexture ) 
-	//		return [vector_x.value, vector_y.value] = ["",""];
-	//	var key = vector_droplist.value;
-	//	if ( map === "normalMap" && key === "normalScale" 
-	//	&& editor[ key ] && editor[ key ].isVector2 ) 
-	//		[ vector_x.value, vector_y.value ] = [ 
-	//			editor[key].x.toFixed(2), editor[key].y.toFixed(2) 
-	//		];
-	//	else [vector_x.value, vector_y.value] = ["",""];

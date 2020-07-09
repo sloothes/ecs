@@ -7,12 +7,12 @@
 		create_button.addEventListener( "click", function(){
 			clearTimeout( interval );
 			interval = setTimeout(function(){
-				callWatchers( create_button, "onclick", "click" );
+				callWatchers( create_button, "onclick", "click", type_droplist.value );
 			},250);
 		});
 
-		watch(create_button, "onclick", function(property, event, value){
-			debugMode && console.log({item:create_button,event:event,value:value});
+		watch(create_button, "onclick", function(property, event, type){
+			debugMode && console.log({item:create_button,event:event,type:type});
 
 		//	Get type.
 			var type = type_droplist.value; // string.
@@ -48,17 +48,19 @@
 			mesh.name = type.replace("Geometry","") + mesh.id;
 			scene.add( mesh );
 
-		//	Add entities.
+		//	Add entity.
 			entities && entities.add( mesh );
-			try { material_entities && material_entities.add( material ); // important!
-			} catch(err){ console.error(err); }
+
+		//	Add material entity.
+			try { material_entities && material_entities.add( material ); } 
+			catch (err){ debugMode && console.error(err); } // important!
 
 		//	Add to camera rigid objects.
 		//	addtoRigidObjects( mesh.id );
 
 		//	Enter edit mode.
-			entity_droplist.value = String(mesh.id); // string, important!
-			callWatchers(entity_droplist, "onchange", "change", entity_droplist.value);
+		//	entity_droplist.value = String(mesh.id); // string, important!
+			callWatchers(entity_droplist, "onchange", "change", entity_droplist.value = String(mesh.id) );
 		});
 
 	})(
@@ -68,4 +70,142 @@
 		entities // entities.
 	);
 
+
+//	clone-geometry-entity.js
+
+	(function(clone_button,entity_droplist,entities){
+
+		var interval;
+
+		clone_button.addEventListener( "click", function(){
+			clearTimeout( interval );
+			interval = setTimeout(function(){
+				callWatchers( clone_button, "onclick", "click", entity_droplist.value );
+			},250);
+		});
+
+		watch(clone_button, "onclick", function(property, event, value){
+			debugMode && console.log({item:clone_button,event:event,value:value});
+		//	if ( value !== entity_droplist.value ) return;
+
+		//	if ( !editor.isEditing ) return; // some paranoid safety!
+		//	if ( !entitySelect.value ) return; // more paranoid safety!
+
+		//	Get source.
+		//	var id = parseInt( entitySelect.value );
+			var id = parseInt( value ); if ( isNaN(id) ) return;
+
+			var source = getObjectByEntityId( id );
+			if ( !(source && source.isMesh && source.geometry) ) return;
+
+		//	Clone source.
+			if ( source.isMesh && source.geometry ) {
+			//	clone.
+				var mesh = source.clone();
+
+			//	rename.
+				mesh.name = source.name.replace(/:clone/g,"") + ":clone"; // TODO: better renameing.
+
+			//	translate.
+				mesh.position.y += 1; // (m)
+
+			//	add to scene.
+				scene.add( mesh );
+
+			//	add to entities.
+				entities && entities.add( mesh );
+
+			//	mesh geometry/material is same as source geometry/material.
+			//	try { material_entities && material_entities.add( material );
+			//	catch (err){ debugMode && console.error(err); } // important!
+
+			//	Enter edit mode.
+			//	entity_droplist.value = String(mesh.id); // string, important!
+				callWatchers(entity_droplist, "onchange", "change", entity_droplist.value = String(mesh.id) );
+			}
+
+		});
+
+	})(
+		document.querySelector("div#clone-geometry-button"), // clone_button,
+		document.querySelector("select#geometry-entities-droplist"), // entity_droplist,
+		entities // entities.
+	);
+
+
 //	remove-geometry-entity.js
+
+	(function(remove_button,type_droplist,entity_droplist,entities){
+
+		var interval;
+
+		remove_button.addEventListener( "click", function(){
+			clearTimeout( interval );
+			interval = setTimeout(function(){
+				callWatchers( remove_button, "onclick", "click", entity_droplist.value );
+			},250);
+		});
+
+		const rigidObjects = []; // cameraControls.rigidObjects;
+
+		function removefromRigidObjects( value ){
+			var index = rigidObjects.findIndex( 
+				function( object ){
+					return object.id === parseInt( value );
+				});
+			if ( index < 0 ) return; // important!
+			rigidObjects.splice( index, 1 );
+		}
+
+		function addtoRigidObjects( value ){
+			var id = parseInt(value);
+		//	if ( !checkId( value ) ) return;
+		//	if ( localPlayer.getObjectById(id) ) return; // localPlayer child.
+			var object = getObjectByEntityId( value );
+			if ( object && rigidObjects.findIndex( function( item ){ 
+				return item.id === object.id;
+			}) > -1 ) return; // already exists in rigidObjects.
+			object && object.isMesh && rigidObjects.push( object );
+		}
+
+		watch(remove_button, "onclick", function(property, event, value){
+			debugMode && console.log({item:remove_button,event:event,value:value});
+		//	if ( value !== entity_droplist.value ) return;
+
+		//	var value = entity_droplist.value;
+		//	if ( !checkId( value ) ) return;
+		//	var id = parseInt( entity_droplist.value );
+		//	debugMode && console.log("id:", id );
+		//	if ( localPlayer.getObjectById(id) ) return; // localPlayer child.
+
+			var id = parseInt( value ); if ( isNaN(id) ) return;
+
+			var object = getObjectByEntityId( value ); // id as string.
+			if ( !(object && object.parent) ) return; // avoid to remove scene???
+
+		//	remove octree.
+			if ( object.isMesh && object.geometry ) (function(){
+				var uuid = object.geometry.uuid;
+				octreeIncludes( uuid ) && octree.removeThreeMesh( uuid );
+			})();
+
+		//	remove object.
+			object.parent.remove( object );
+
+		//	remove entity and option.
+			entities.remove( id ); // important!
+
+		//	Remove from camera rigid objects.
+			removefromRigidObjects( id );
+
+		//	Exit edit mode. // resetEntitySelectValue();
+		//	entity_droplist.value = "";
+			callWatchers(entity_droplist, "onchange", "change", entity_droplist.value = "" ); 
+		});
+
+	})(
+		document.querySelector("div#remove-geometry-button"), // remove_button,
+		document.querySelector("select#geometry-type-droplist"), // type_droplist,
+		document.querySelector("select#geometry-entities-droplist"), // entity_droplist,
+		entities // entities.
+	);
