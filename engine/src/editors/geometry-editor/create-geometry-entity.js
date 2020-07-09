@@ -1,3 +1,57 @@
+//	camera-controls-rigid-objects.js
+
+	const rigidObjects = []; // cameraControls.rigidObjects;
+
+	function removefromRigidObjects( value ){
+		var index = rigidObjects.findIndex( 
+			function( object ){
+				return object.id === parseInt( value );
+			});
+		if ( index < 0 ) return; // important!
+		rigidObjects.splice( index, 1 );
+	}
+
+	function addtoRigidObjects( value ){
+		var id = parseInt(value);
+	//	if ( !checkId( value ) ) return;
+	//	if ( localPlayer.getObjectById(id) ) return; // localPlayer child.
+		var object = getObjectByEntityId( value );
+		if ( object && rigidObjects.findIndex( function( item ){ 
+			return item.id === object.id;
+		}) > -1 ) return; // already exists in rigidObjects.
+		object && object.isMesh && rigidObjects.push( object );
+	}
+
+	function octreeIncludes( uuid ){
+		var result;
+		octree.nodes.forEach(function (nodeDepth) {
+			if ( result ) return;
+			nodeDepth.forEach(function (node) {
+				if ( result ) return;
+				node.trianglePool.forEach(function (face) {
+					if ( result ) return;
+					if (face.meshID === uuid) result = true;
+				});
+			});
+		});
+		return result;
+	}
+
+	function enableCameraRigidObjects(){
+		while (rigidObjects.length) {
+			var object = rigidObjects.shift();
+			object.isMesh && cameraControls.rigidObjects.push( object ); // cleanup.
+		}
+	}
+
+	function disableCameraRigidObjects(){
+		while (cameraControls.rigidObjects.length) {
+			var object = cameraControls.rigidObjects.shift()
+			object.isMesh && rigidObjects.push( object ); // cleanup.
+		}
+	}
+
+
 //	create-geometry-entity.js
 
 	(function(create_button,type_droplist,entity_droplist,entities){
@@ -145,28 +199,6 @@
 				callWatchers( remove_button, "onclick", "click", entity_droplist.value );
 			},250);
 		});
-
-		const rigidObjects = []; // cameraControls.rigidObjects;
-
-		function removefromRigidObjects( value ){
-			var index = rigidObjects.findIndex( 
-				function( object ){
-					return object.id === parseInt( value );
-				});
-			if ( index < 0 ) return; // important!
-			rigidObjects.splice( index, 1 );
-		}
-
-		function addtoRigidObjects( value ){
-			var id = parseInt(value);
-		//	if ( !checkId( value ) ) return;
-		//	if ( localPlayer.getObjectById(id) ) return; // localPlayer child.
-			var object = getObjectByEntityId( value );
-			if ( object && rigidObjects.findIndex( function( item ){ 
-				return item.id === object.id;
-			}) > -1 ) return; // already exists in rigidObjects.
-			object && object.isMesh && rigidObjects.push( object );
-		}
 
 		watch(remove_button, "onclick", function(property, event, value){
 			debugMode && console.log({item:remove_button,event:event,value:value});
