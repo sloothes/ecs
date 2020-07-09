@@ -172,7 +172,6 @@
 	);
 
 
-
 //	Update material editor droplist.
 
 	(function(entity_droplist){
