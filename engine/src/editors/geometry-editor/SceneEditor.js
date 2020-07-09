@@ -30,6 +30,8 @@
 	//	dependences: entities {scene},
 	//	param: a object3D id {string or number}.
 
+		var editor = this;
+
 	//	Reset editor.
 		editor.reset();
 
