@@ -1,12 +1,34 @@
-//	entity-droplist-onchange-watcher.js
+//	entity-droplist-onchange-watchers.js
 
-//	keeps track of last entity droplist value.
-	const latestEntity = { value:"" }; // called first, updated last.
-
+//	CameraControls rigid objects,
 //	keeps camera controls rigid objects at edit mode.
 	const rigidObjects = []; // cameraControls.rigidObjects;
 
-	(function(scene, entity_droplist){
+
+
+//	keeps track of last entity droplist value.
+	const latestEntity = { value:"" }; // called first, updated last.
+	watch( latestEntity, "value", function(property, action, value, oldValue ){
+		debugMode && console.log({item:latestEntity,"new value":value,"old value":oldValue})
+	});
+
+//	Update lastEntity value.
+	(function( latestEntity,entity_droplist ){
+
+	//	keeps entity droplist old values.
+		watch(entity_droplist, "onchange", function( property, event, value ){
+			latestEntity.value = value; // when call lastEntity watcher can get the old value.
+		});
+
+	})(
+		latestEntity, document.querySelector("select#geometry-entities-droplist") // entity_droplist.
+	);
+
+
+
+//	Edges helper.
+
+	(function( scene,entity_droplist ){
 
 		var interval;
 		var edgeshelper;
@@ -39,7 +61,7 @@
 			edgeshelper = helper;
 		}
 
-	//	edgeshelper watcher.
+	//	Remove/Create edges helpers.
 
 		watch(entity_droplist, "onchange", function( property, event, value ){
 
@@ -58,8 +80,113 @@
 		scene, document.querySelector("select#geometry-entities-droplist") // entity_droplist.
 	);
 
+//	Update editor.
+
+	(function(editor,rigidObjects,latestEntity,cameraControls,localPlayer,keyInputControls,entity_droplist){
+
+	//	Exit from edit mode.
+
+		function resetLatestEntityValue(){
+			latestEntity.value = entity_droplist = "";
+		}
+
+		function enableCameraRigidObjects(){
+			while (rigidObjects.length) {
+				var object = rigidObjects.shift();
+				object.isMesh && cameraControls.rigidObjects.push( object ); // cleanup.
+			}
+		}
+
+		function disableCameraRigidObjects(){
+			while (cameraControls.rigidObjects.length) {
+				var object = cameraControls.rigidObjects.shift()
+				object.isMesh && rigidObjects.push( object ); // cleanup.
+			}
+		}
+
+		function takeCameraControls( object, offset ){
+			cameraControls.trackObject = object;
+			cameraControls.offset.y = offset || 0;
+		}
+
+		function exitFromEditMode(){
+			editor.reset(); // important!
+			resetLatestEntityValue();
+			enableCameraRigidObjects();
+			takeCameraControls( localPlayer );
+			keyInputControls.isDisabled = false;
+			return;
+		}
+
+	//
+
+		watch(entity_droplist, "onchange", function( property, event, value ){
+
+			if ( editor.update( value ) ) {
+
+			//	switchToEditMode.
+				var object = getObjectByEntityId( value );
+				if ( !object ) return exitFromEditMode();
+
+			//	camera controls offset.
+				if ( object.geometry && object.geometry.boundingSphere ) {
+					var offset = object.geometry.boundingSphere.center;
+					cameraControls.offset.copy( offset );
+					cameraControls.offset.y *= 0.5;
+				}
+
+			//	Disable camera rigid objects.
+				disableCameraRigidObjects();
+
+			//	editor take camera controls.
+				cameraControls.trackObject = editor;
+
+			//	Disable key input controls.
+				keyInputControls.isDisabled = true;
+
+			} else {
+
+				exitFromEditMode();
+
+			}
+
+		});
+
+	})(
+		sceneEditor, document.querySelector("select#geometry-entities-droplist") // entity_droplist.
+	);
+
+//	Call vector droplist watchers.
+
+	(function(vector_droplist,entity_droplist){
+
+		watch(entity_droplist, "onchange", function( property, event, value ){
+			callWatchers( vector_droplist, "onchange", "change", vector_droplist.value )
+		});
+
+	})(
+		document.querySelector("select#geometry-vector-droplist"), // vector_droplist.
+		document.querySelector("select#geometry-entities-droplist") // entity_droplist.
+	);
 
 
+
+//	vector-droplist-onchange-watcher.js
+
+	(function(vector_x,vector_y,vector_z,vector_w,vector_droplist,entity_droplist){
+
+		watch(vector_droplist, "onchange", function( property, event, value ){
+			debugMode && console.log({item:vector_droplist,event:event,value:value});
+		});
+
+	})(
+		document.querySelector("select#geometry-vector-x-input"), // vector_x,
+		document.querySelector("select#geometry-vector-y-input"), // vector_y,
+		document.querySelector("select#geometry-vector-z-input"), // vector_z,
+		document.querySelector("select#geometry-vector-w-input"), // vector_w,
+		document.querySelector("select#geometry-vector-droplist"), // vector_droplist.
+		document.querySelector("select#geometry-entities-droplist") // entity_droplist.
+	);
 
 
 

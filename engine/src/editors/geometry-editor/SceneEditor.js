@@ -50,7 +50,19 @@
 
 	};
 
-	const sceneEditor = new SceneEditor();
+	const sceneEditor = new SceneEditor(); // object3D.
+	scene.add( sceneEditor ); // important!
+
+
+
+
+
+
+
+
+
+
+
 
 	//	Edit mode.
 	//	editor.isEditing = !!object;
