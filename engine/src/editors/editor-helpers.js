@@ -2,7 +2,7 @@
 
 	function getObjectByEntityId( value ){
 
-		var entity_droplist = document.querySelector("select#entities-droplist");
+		var entity_droplist = document.querySelector("select#geometry-entities-droplist");
 
 		if ( arguments.length ) 
 			var id = parseInt( value );

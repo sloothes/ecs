@@ -65,7 +65,7 @@
 		const RAD2DEG = 57.29577951308232;
 		const DEG2RAD = 0.017453292519943295;
 
-		watch( vector_x, "onchange", function(property, event, value){
+		watch( vector_y, "onchange", function(property, event, value){
 			debugMode && console.log({item:vector_y,event:event,key:vector_droplist.value,y:value});
 
 			var key = vector_droplist.value; // important!
