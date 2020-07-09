@@ -35,7 +35,6 @@
 			object.isMesh && rigidObjects.push( object ); // cleanup.
 		}
 	}
-*/
 
 //	octree-helpers.js
 
@@ -60,6 +59,7 @@
 
 		return object; // important!
 	}
+*/
 
 
 //	create-geometry-entity.js
@@ -199,7 +199,7 @@
 
 //	remove-geometry-entity.js
 
-	(function(octree,remove_button,type_droplist,entity_droplist,entities){
+	(function(octree,rigidObjects,remove_button,type_droplist,entity_droplist,entities){
 
 		var interval;
 
@@ -209,6 +209,15 @@
 				callWatchers( remove_button, "onclick", "click", entity_droplist.value );
 			},250);
 		});
+
+		function removefromRigidObjects( value ){
+			var index = rigidObjects.findIndex( 
+				function( object ){
+					return object.id === parseInt( value );
+				});
+			if ( index < 0 ) return; // important!
+			rigidObjects.splice( index, 1 );
+		}
 
 	//	renamed from "octreeIncluded" to "octreeIncludes".
 		function octreeIncludes( uuid ){
@@ -262,7 +271,7 @@
 		});
 
 	})(
-		octree, // editor, octree,
+		octree, rigidObjects, // octree, rigidObjects,
 		document.querySelector("div#remove-geometry-button"), // remove_button,
 		document.querySelector("select#geometry-type-droplist"), // type_droplist,
 		document.querySelector("select#geometry-entities-droplist"), // entity_droplist,
