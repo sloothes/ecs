@@ -39,14 +39,12 @@
 		var object = getObjectByEntityId( value ); 
 		var isEditing = !!object; // boolean!
 
-	//	if ( !object ) return false; // important!
-
-	//	Copy object.
+	//	Update editor (copy).
 		object && editor.copy( object );
 
-	//	return true.
+	//	return boolean.
 		console.log("editor isEditing:", isEditing);
-		return isEditing; // important!
+		return isEditing; // boolean, important!
 
 	};
 
