@@ -52,6 +52,7 @@
 
 		watch( editor, "position", function( key, action, value ){
 		//	var object = getObjectByEntityId();
+			debugMode && console.log( object );
 		//	Update object ( value === editor.position[key] ).
 			if ( object && object.position ) object.position[key] = Number(value);
 		//	Display value.
@@ -64,6 +65,7 @@
 
 		watch( editor, "rotation", function( key, action, value ){
 		//	var object = getObjectByEntityId();
+			debugMode && console.log( object );
 		//	Update object ( value === editor.rotation[key] ).
 			if ( object && object.rotation ) object.rotation[key] = Number(value);		
 		//	Display value.
@@ -76,6 +78,7 @@
 
 		watch( editor, "scale", function( key, action, value ){
 		//	var object = getObjectByEntityId();
+			debugMode && console.log( object );
 		//	Update object ( value === editor.scale[key] ).
 			if ( object && object.scale ) object.scale[key] = Number(value);		
 		//	Display value.
@@ -89,6 +92,7 @@
 
 		watch( editor, "quaternion", function( key, action, value ){
 		//	var object = getObjectByEntityId();
+			debugMode && console.log( object );
 		//	DO NOT MODIFY QUATERNION (value === editor.quaternion[key]).
 		//	if ( object && object.quaternion ) 
 		//		object.quaternion[key] = Number(editor.quaternion[key]);		

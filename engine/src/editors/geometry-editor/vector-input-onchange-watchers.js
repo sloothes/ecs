@@ -32,12 +32,16 @@
 					else value = Number(value); // meters, no limit.
 				break;
 				case "quaternion":
-					value = 0; // or editor[key]?, no modification.
+					value = editor[key].x; //  no modification.
 				break;
 				default:
 					vector_x.value = ""; return; // escape!
 				break;
 			}
+
+			//	editor watcher updates input only if the editor value has changed,
+			//	so in this case we must explicitly update the input value manualy.
+			//  else value_input.value = editor[key]; // boolean as string.
 
 		//	editor manager watcher updates input values.
 			setTimeout(function(value){ editor[key].x = Number(value); }, null, value);
