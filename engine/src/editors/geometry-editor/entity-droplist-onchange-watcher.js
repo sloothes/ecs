@@ -6,6 +6,84 @@
 //	keeps camera controls rigid objects at edit mode.
 	const rigidObjects = []; // cameraControls.rigidObjects;
 
+	(function(localPlayer,entitySelect){
+
+		var interval;
+		var edgeshelper;
+
+		function destroyEdgesHelper(){
+			if ( !edgeshelper ) return;
+			scene.remove( edgeshelper ); 
+		//	entities.remove( edgeshelper.id );
+			edgeshelper.geometry.dispose();
+			edgeshelper.material.dispose();
+			edgeshelper = undefined;
+		}
+
+		function createEdgesHelper( object ){
+
+			if ( !object ) return;
+			if ( !object.isMesh ) return;
+			if ( !object.geometry ) return;
+		//	if ( localPlayer.getObjectById( object.id) ) return; // child of localPlayer.
+
+			var geometry = new THREE.EdgesGeometry( object.geometry );
+			var material = new THREE.LineBasicMaterial( { color: 0x00ff00 } );
+			var helper = new THREE.LineSegments( geometry, material );
+			helper.scale.copy( object.scale );       // important!
+			helper.position.copy( object.position ); // important!
+			helper.rotation.copy( object.rotation ); // important!
+			helper.name = object.name + ":edgeshelper";
+
+			scene.add( helper );
+		//	entities.add( helper );
+			edgeshelper = helper;
+		}
+
+	//	edgeshelper watcher.
+
+		watch(entitySelect, function( prop, action, value, oldValue ){
+
+		//	vectorSelect.value = vector_droplist.value; // important!
+
+		//	Remove old edges helper.
+			destroyEdgesHelper(); // remove old helper.
+
+		//	Get object.
+			var object = getObjectByEntityId( value );
+
+		//	Create new edges helper.
+			object && createEdgesHelper( object ); // add new helper.
+
+		});
+
+
+
+
+
+
+	})(
+		localPlayer, document.querySelector("select#geometry-entities-droplist") // entity_droplist.
+	);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
 	(function(editor,octree,localPlayer,rigidObjects,cameraControls,keyInputControls,vector_droplist,entity_droplist,latestEntity){
 
 		function getObjectsByGeometry( uuid ){
@@ -257,7 +335,7 @@
 	})(
 		latestEntity, document.querySelector("select#geometry-entities-droplist") // entity_droplist.
 	);
-
+*/
 
 
 //	vector-droplist-onchange-watcher.js
