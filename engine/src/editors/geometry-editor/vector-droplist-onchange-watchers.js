@@ -1,4 +1,4 @@
-//	vector-droplist-onchange-watcher.js
+//	vector-droplist-onchange-watchers.js
 
 	(function(editor,vector_x,vector_y,vector_z,vector_w,vector_droplist){
 
