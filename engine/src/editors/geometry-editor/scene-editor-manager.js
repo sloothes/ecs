@@ -40,7 +40,7 @@
 
 	(function(editor,vector_x,vector_y,vector_z,vector_w,vector_droplist,entity_droplist){
 
-		var object;
+		var object = getObjectByEntityId();
 
 		const RAD2DEG = 57.29577951308232;
 		const DEG2RAD = 0.017453292519943295;
