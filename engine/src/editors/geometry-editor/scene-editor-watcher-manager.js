@@ -47,12 +47,14 @@
 
 	//	Add a watcher to update object only when entity droplist changes.
 		watch( entity_droplist, "onchange", function( property, event, value ){
+			debugMode && console.log({property:property,event:event,value:value});
 			object = getObjectByEntityId( value );
+			debugMode && console.log("object:", object);
 		});
 
 		watch( editor, "position", function( key, action, value ){
 		//	var object = getObjectByEntityId();
-			debugMode && console.log( object );
+			debugMode && console.log({property:"position",key:key,value:value});
 		//	Update object ( value === editor.position[key] ).
 			if ( object && object.position ) object.position[key] = Number(value);
 		//	Display value.
@@ -65,7 +67,7 @@
 
 		watch( editor, "rotation", function( key, action, value ){
 		//	var object = getObjectByEntityId();
-			debugMode && console.log( object );
+			debugMode && console.log({property:"rotation",key:key,value:value});
 		//	Update object ( value === editor.rotation[key] ).
 			if ( object && object.rotation ) object.rotation[key] = Number(value);		
 		//	Display value.
@@ -78,7 +80,7 @@
 
 		watch( editor, "scale", function( key, action, value ){
 		//	var object = getObjectByEntityId();
-			debugMode && console.log( object );
+			debugMode && console.log({property:"scale",key:key,value:value});
 		//	Update object ( value === editor.scale[key] ).
 			if ( object && object.scale ) object.scale[key] = Number(value);		
 		//	Display value.
@@ -92,7 +94,7 @@
 
 		watch( editor, "quaternion", function( key, action, value ){
 		//	var object = getObjectByEntityId();
-			debugMode && console.log( object );
+			debugMode && console.log({property:"quaternion",key:key,value:value});
 		//	DO NOT MODIFY QUATERNION (value === editor.quaternion[key]).
 		//	if ( object && object.quaternion ) 
 		//		object.quaternion[key] = Number(editor.quaternion[key]);		
@@ -112,5 +114,5 @@
 		document.querySelector("input#geometry-vector-z-input"),  // vector_z,
 		document.querySelector("input#geometry-vector-w-input"),  // vector_w,
 		document.querySelector("select#geometry-vector-droplist"), // vector_droplist,
-		document.querySelector("select#geometry-entities-droplist") // entity_droplist,
+		document.querySelector("select#geometry-entities-droplist") // entity_droplist, not used!!!
 	);

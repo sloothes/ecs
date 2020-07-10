@@ -35,7 +35,7 @@
 					setTimeout(function(value){ editor[key].x = Number(value); }, null, value);
 				break;
 				case "quaternion":
-					vector_x.value = editor[key]._x; //  no modification.
+					vector_x.value = editor[key]._x.toFixed(3); //  no modification.
 				break;
 				default:
 					vector_x.value = ""; return; // escape!
@@ -93,7 +93,7 @@
 					setTimeout(function(value){ editor[key].y = Number(value); }, null, value);
 				break;
 				case "quaternion":
-					vector_y.value = editor[key]._y; //  no modification.
+					vector_y.value = editor[key]._y.toFixed(3); //  no modification.
 				break;
 				default:
 					vector_y.value = ""; return; // escape!
