@@ -17,8 +17,8 @@
 
 		function onfirstMouseDown(){
 			state = {};
-			if ( entity_droplist.value === "" ) return; // important!
-			if ( vector_droplist.value === "quaternion" ) return; // important!
+		//	if ( entity_droplist.value === "" ) return; // important!
+		//	if ( vector_droplist.value === "quaternion" ) return; // important!
 			var key = vector_droplist.value;
 			state.key = vector_droplist.value; // key.
 			state.value = editor[key].x;   // important!
@@ -166,8 +166,8 @@
 
 		function onfirstMouseDown(){
 			state = {};
-			if ( entity_droplist.value === "" ) return; // important!
-			if ( vector_droplist.value === "quaternion" ) return; // important!
+		//	if ( entity_droplist.value === "" ) return; // important!
+		//	if ( vector_droplist.value === "quaternion" ) return; // important!
 			var key = vector_droplist.value;
 			state.key = vector_droplist.value; // key.
 			state.value = editor[key].y;   // important!
@@ -315,8 +315,8 @@
 
 		function onfirstMouseDown(){
 			state = {};
-			if ( entity_droplist.value === "" ) return; // important!
-			if ( vector_droplist.value === "quaternion" ) return; // important!
+		//	if ( entity_droplist.value === "" ) return; // important!
+		//	if ( vector_droplist.value === "quaternion" ) return; // important!
 			var key = vector_droplist.value;
 			state.key = vector_droplist.value; // key.
 			state.value = editor[key].z;   // important!
