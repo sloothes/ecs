@@ -116,7 +116,6 @@
 					if ( button === increase_x ) value += step;
 					if ( button === decrease_x ) value -= step;
 					editor[ key ].x = round(value, p); // editor watcher updates input value.
-					interval = setTimeout( update, clock.getDelta() );
 				break;
 				case "rotation":
 					var p = 1, step = (1/Math.pow(10,p)) * Math.PI/180; // 0.1 deg.
@@ -125,7 +124,6 @@
 					if ( button === increase_x ) value = THREE.Math.clamp( value+step, min, max );
 					if ( button === decrease_x ) value = THREE.Math.clamp( value-step, min, max );
 					editor[ key ]._x = round(value, p); // editor watcher updates input value.
-					interval = setTimeout( update, clock.getDelta() );
 				break;
 				case "scale":
 					var p = 3, step = 1/Math.pow(10,p); // min = -100, max = 100;
@@ -133,7 +131,6 @@
 					if ( button === increase_x ) value += step;
 					if ( button === decrease_x ) value -= step;
 					editor[ key ].x = round(value, p); // editor watcher updates input value.
-					interval = setTimeout( update, clock.getDelta() );
 				break;
 			}
 
@@ -268,7 +265,6 @@
 					if ( button === increase_y ) value += step;
 					if ( button === decrease_y ) value -= step;
 					editor[ key ].y = round(value, p); // editor watcher updates input value.
-					interval = setTimeout( update, clock.getDelta() );
 				break;
 				case "rotation":
 					var p = 1, step = (1/Math.pow(10,p)) * Math.PI/180; // 0.1 deg.
@@ -277,7 +273,6 @@
 					if ( button === increase_y ) value = THREE.Math.clamp( value+step, min, max );
 					if ( button === decrease_y ) value = THREE.Math.clamp( value-step, min, max );
 					editor[ key ]._y = round(value, p); // editor watcher updates input value.
-					interval = setTimeout( update, clock.getDelta() );
 				break;
 				case "scale":
 					var p = 3, step = 1/Math.pow(10,p); // min = -100, max = 100;
@@ -285,7 +280,6 @@
 					if ( button === increase_y ) value += step;
 					if ( button === decrease_y ) value -= step;
 					editor[ key ].y = round(value, p); // editor watcher updates input value.
-					interval = setTimeout( update, clock.getDelta() );
 				break;
 			}
 
@@ -420,7 +414,6 @@
 					if ( button === increase_z ) value += step;
 					if ( button === decrease_z ) value -= step;
 					editor[ key ].z = round(value, p); // editor watcher updates input value.
-					interval = setTimeout( update, clock.getDelta() );
 				break;
 				case "rotation":
 					var p = 1, step = (1/Math.pow(10,p)) * Math.PI/180; // 0.1 deg.
@@ -429,7 +422,6 @@
 					if ( button === increase_z ) value = THREE.Math.clamp( value+step, min, max );
 					if ( button === decrease_z ) value = THREE.Math.clamp( value-step, min, max );
 					editor[ key ]._z = round(value, p); // editor watcher updates input value.
-					interval = setTimeout( update, clock.getDelta() );
 				break;
 				case "scale":
 					var p = 3, step = 1/Math.pow(10,p); // min = -100, max = 100;
@@ -437,7 +429,6 @@
 					if ( button === increase_z ) value += step;
 					if ( button === decrease_z ) value -= step;
 					editor[ key ].z = round(value, p); // editor watcher updates input value.
-					interval = setTimeout( update, clock.getDelta() );
 				break;
 			}
 
