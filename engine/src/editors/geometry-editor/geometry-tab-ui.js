@@ -148,6 +148,10 @@
 			callWatchers(this, "onchange", "change", this.value );
 		});
 
+	//	keyInputControls.
+		input.addEventListener( "blur", enableKeyInputControls );
+		input.addEventListener( "focus", disableKeyInputControls );
+
 		vect.appendChild(prev);
 		vect.appendChild(input);
 		vect.appendChild(next);
@@ -196,6 +200,10 @@
 			this.blur(); // important!
 			callWatchers(this, "onchange", "change", this.value );
 		});
+
+	//	keyInputControls.
+		input.addEventListener( "blur", enableKeyInputControls );
+		input.addEventListener( "focus", disableKeyInputControls );
 
 		vect.appendChild(prev);
 		vect.appendChild(input);
@@ -246,6 +254,10 @@
 			callWatchers(this, "onchange", "change", this.value );
 		});
 
+	//	keyInputControls.
+		input.addEventListener( "blur", enableKeyInputControls );
+		input.addEventListener( "focus", disableKeyInputControls );
+
 		vect.appendChild(prev);
 		vect.appendChild(input);
 		vect.appendChild(next);
@@ -294,6 +306,10 @@
 			this.blur(); // important!
 			callWatchers(this, "onchange", "change", this.value );
 		});
+
+	//	keyInputControls.
+		input.addEventListener( "blur", enableKeyInputControls );
+		input.addEventListener( "focus", disableKeyInputControls );
 
 		vect.appendChild(prev);
 		vect.appendChild(input);
