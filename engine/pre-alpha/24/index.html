@@ -139,7 +139,7 @@
 
 									<!-- OBJECT3D EDITOR -->
 		<script src="/ecs/engine/src/editors/geometry-editor/geometry-tab-ui.js"></script>
-		<script src="/ecs/engine/src/editors/geometry-editor/SceneEditor.js"></script>
+		<script src="/ecs/engine/src/editors/geometry-editor/ObjectEditor.js"></script>
 		<script src="/ecs/engine/src/editors/geometry-editor/vector-droplist-onchange-watchers.js"></script>
 		<script src="/ecs/engine/src/editors/geometry-editor/entity-droplist-onchange-watchers.js"></script>
 		<script src="/ecs/engine/src/editors/geometry-editor/vector-input-onchange-watchers.js"></script>
@@ -1427,7 +1427,7 @@
 			TabUI.Geometry.role.classList.add("active");
 			TabUI.Geometry.tab.classList.add("in","active");
 
-			console.log( {"sceneEditor": sceneEditor} ); // debug!
+			console.log( {"objectEditor"  : objectEditor } );  // debug!
 			console.log( {"materialEditor": materialEditor} ); // debug!
 			console.log( {"textureEditor" : textureEditor } ); // debug!
 

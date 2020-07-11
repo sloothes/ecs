@@ -32,7 +32,7 @@
 	//	.................................. TODO ..................................  //
 
 	})(
-		sceneEditor, // editor,
+		objectEditor, // editor,
 		document.querySelector("input#geometry-value-input"),  // value_input,
 		document.querySelector("select#geometry-key-droplist"), // key_droplist,
 		document.querySelector("select#geometry-entities-droplist") // entity_droplist,
@@ -109,7 +109,7 @@
 		});
 */
 	})(
-		sceneEditor, // editor,
+		objectEditor, // editor,
 		document.querySelector("input#geometry-vector-x-input"),  // vector_x,
 		document.querySelector("input#geometry-vector-y-input"),  // vector_y,
 		document.querySelector("input#geometry-vector-z-input"),  // vector_z,

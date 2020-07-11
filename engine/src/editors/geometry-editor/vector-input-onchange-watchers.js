@@ -52,7 +52,7 @@
 		});
 
 	})(
-		sceneEditor, // editor,
+		objectEditor, // editor,
 		document.querySelector("input#geometry-vector-x-input"), // vector_x,
 		document.querySelector("select#geometry-vector-droplist"), // vector_droplist.
 		document.querySelector("select#geometry-entities-droplist") // entity_droplist, not used!!!
@@ -110,7 +110,7 @@
 		});
 
 	})(
-		sceneEditor, // editor,
+		objectEditor, // editor,
 		document.querySelector("input#geometry-vector-y-input"), // vector_y,
 		document.querySelector("select#geometry-vector-droplist"), // vector_droplist.
 		document.querySelector("select#geometry-entities-droplist") // entity_droplist, not used!!!
@@ -168,7 +168,7 @@
 		});
 
 	})(
-		sceneEditor, // editor,
+		objectEditor, // editor,
 		document.querySelector("input#geometry-vector-z-input"), // vector_z,
 		document.querySelector("select#geometry-vector-droplist"), // vector_droplist.
 		document.querySelector("select#geometry-entities-droplist") // entity_droplist, not used!!!
@@ -217,7 +217,7 @@
 		});
 
 	})(
-		sceneEditor, // editor,
+		objectEditor, // editor,
 		document.querySelector("input#geometry-vector-z-input"), // vector_z,
 		document.querySelector("select#geometry-vector-droplist"), // vector_droplist.
 		document.querySelector("select#geometry-entities-droplist") // entity_droplist, not used!!!

@@ -1,17 +1,17 @@
-//	SceneEditor.js
+//	ObjectEditor.js
 
 //	It is not really geometry editor but object3D 
-//	or mesh editor. Could be called "SceneEditor".
+//	or mesh editor. Could be called "ObjectEditor".
 
-	function SceneEditor(){
+	function ObjectEditor(){
 		var object = new THREE.Object3D();
-		Object.setPrototypeOf( object, SceneEditor.prototype );
+		Object.setPrototypeOf( object, ObjectEditor.prototype );
 		return object; // important!
 	}
 
-	SceneEditor.prototype = Object.create(THREE.Object3D.prototype); // important!
+	ObjectEditor.prototype = Object.create(THREE.Object3D.prototype); // important!
 
-	SceneEditor.prototype.reset = function(){ 
+	ObjectEditor.prototype.reset = function(){ 
 
 		var editor = this;
 
@@ -23,7 +23,7 @@
 
 	};
 
-	SceneEditor.prototype.update = function( value ){ 
+	ObjectEditor.prototype.update = function( value ){ 
 
 	//	Copies the values of the target object3D of
 	//	scene. Does not updates the target object3D.
@@ -48,8 +48,8 @@
 
 	};
 
-	const sceneEditor = new SceneEditor(); // object3D.
-//	scene.add( sceneEditor ); // important!
+	const objectEditor = new ObjectEditor(); // object3D.
+//	scene.add( ObjectEditor ); // important!
 
 
 

@@ -153,7 +153,7 @@
 		});
 
 	})(
-		sceneEditor, // editor, 
+		objectEditor, // editor, 
 		rigidObjects, latestEntity, cameraControls, localPlayer, keyInputControls, 
 		document.querySelector("select#geometry-entities-droplist") // entity_droplist.
 	);
@@ -322,7 +322,7 @@
 		});
 
 	})(
-		sceneEditor, octree, localPlayer, // editor, octree, localPlayer,
+		objectEditor, octree, localPlayer, // editor, octree, localPlayer,
 		rigidObjects, cameraControls, keyInputControls,
 		document.querySelector("select#geometry-vector-droplist"),  // vector_droplist.
 		document.querySelector("select#geometry-entities-droplist"), // entity_droplist.
@@ -407,7 +407,7 @@
 		});
 
 	})(
-		sceneEditor, latestEntity, // editor, latestEntity,
+		objectEditor, latestEntity, // editor, latestEntity,
 		octree, localPlayer, rigidObjects, cameraControls, keyInputControls,
 		document.querySelector("select#geometry-entities-droplist") // entity_droplist.
 	);
@@ -450,7 +450,7 @@
 		});
 
 	})(
-		sceneEditor, // editor, 
+		objectEditor, // editor, 
 		document.querySelector("select#geometry-vector-droplist"),  // vector_droplist.
 		document.querySelector("select#geometry-entities-droplist") // entity_droplist.
 	);
@@ -521,7 +521,7 @@
 		});
 
 	})(
-		sceneEditor, octree, localPlayer, // editor, octree, localPlayer,
+		objectEditor, octree, localPlayer, // editor, octree, localPlayer,
 		document.querySelector("select#geometry-vector-droplist"),  // vector_droplist.
 		document.querySelector("select#geometry-entities-droplist") // entity_droplist.
 	);
