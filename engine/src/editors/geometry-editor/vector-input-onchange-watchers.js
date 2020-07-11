@@ -31,9 +31,9 @@
 					setTimeout(function(value){ editor[key]._x = Number(value); }, null, value);
 				break;
 				case "scale":
-					if ( isNaN( value ) ) { value = 1; vector_x.value = "100.0"; } // avoid NaN.
-					if ( !Number(value) ) { value = 1; vector_x.value = "100.0"; } // avoid scale:0.
-					else value = Number(value)/100; // internal scale value 1/100.
+					if ( isNaN( value ) ) { value = 100; vector_x.value = "100.0"; } // avoid NaN.
+					if ( !Number(value) ) { value = 100; vector_x.value = "100.0"; } // avoid scale:0.
+					value = Number(value)/100; // internal scale value 1/100.
 					setTimeout(function(value){ editor[key].x = Number(value); }, null, value);
 				break;
 				case "quaternion":
@@ -87,9 +87,9 @@
 					setTimeout(function(value){ editor[key]._y = Number(value); }, null, value);
 				break;
 				case "scale":
-					if ( isNaN( value ) ) { value = 1; vector_y.value = "100.0"; } // avoid NaN.
-					if ( !Number(value) ) { value = 1; vector_y.value = "100.0"; } // avoid scale:0.
-					else value = Number(value)/100; // internal scale value 1/100.
+					if ( isNaN( value ) ) { value = 100; vector_y.value = "100.0"; } // avoid NaN.
+					if ( !Number(value) ) { value = 100; vector_y.value = "100.0"; } // avoid scale:0.
+					value = Number(value)/100; // internal scale value 1/100.
 					setTimeout(function(value){ editor[key].y = Number(value); }, null, value);
 				break;
 				case "quaternion":
@@ -143,9 +143,9 @@
 					setTimeout(function(value){ editor[key]._z = Number(value); }, null, value);
 				break;
 				case "scale":
-					if ( isNaN( value ) ) { value = 1; vector_z.value = "100.0"; } // avoid NaN.
-					if ( !Number(value) ) { value = 1; vector_z.value = "100.0"; } // avoid scale:0.
-					else value = Number(value)/100; // internal scale value 1/100.
+					if ( isNaN( value ) ) { value = 100; vector_z.value = "100.0"; } // avoid NaN.
+					if ( !Number(value) ) { value = 100; vector_z.value = "100.0"; } // avoid scale:0.
+					value = Number(value)/100; // internal scale value 1/100.
 					setTimeout(function(value){ editor[key].z = Number(value); }, null, value);
 				break;
 				case "quaternion":
@@ -186,9 +186,9 @@
 
 			switch (key) {
 				case "scale":
-					if ( isNaN( value ) ) { value = 1; vector_w.value = "100.0"; } // avoid NaN.
-					if ( !Number(value) ) { value = 1; vector_w.value = "100.0"; } // avoid scale:0.
-					else value = Number(value)/100; // internal scale value 1/100.
+					if ( isNaN( value ) ) { value = 100; vector_w.value = "100.0"; } // avoid NaN.
+					if ( !Number(value) ) { value = 100; vector_w.value = "100.0"; } // avoid scale:0.
+					value = Number(value)/100; // internal scale value 1/100.
 					setTimeout(function(key, value){ 
 						editor[key].x = Number(value); 
 						editor[key].y = Number(value); 
