@@ -485,8 +485,8 @@
 
 	//	keep first mousedown event, ignore next events.
 
-		increase_z.addEventListener( "mousedown", onfirstMouseDown );
-		decrease_z.addEventListener( "mousedown", onfirstMouseDown );
+		increase_w.addEventListener( "mousedown", onfirstMouseDown );
+		decrease_w.addEventListener( "mousedown", onfirstMouseDown );
 		var meta = {geometries:{},materials:{},textures:{},images:{},shapes:{}};
 
 		function onfirstMouseDown(){
