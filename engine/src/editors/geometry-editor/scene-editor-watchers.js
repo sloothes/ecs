@@ -1,4 +1,5 @@
-//	scene-editor-watcher-manager.js
+//	scene-editor-watchers.js
+//	TODO: rename to "scene-editor-manager.js"
 
 
 //	Scene Editor Watcher Manager.
