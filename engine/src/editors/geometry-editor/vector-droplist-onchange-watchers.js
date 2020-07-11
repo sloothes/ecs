@@ -8,14 +8,7 @@
 		watch(vector_droplist, "onchange", function( property, event, key ){
 			debugMode && console.log({item:vector_droplist,event:event,key:key});
 
-			if ( key === "" || editor[key] === undefined ) {
-				[vector_x.value, vector_y.value, vector_z.value, vector_w.value] = ["","","",""]; return;
-			}
-
 			switch ( key ) {
-				case "":
-					[vector_x.value, vector_y.value, vector_z.value, vector_w.value] = ["","","",""]; return;
-				break;
 				case "position":
 					[vector_x.value, vector_y.value, 
 					vector_z.value, vector_w.value] = [
@@ -33,15 +26,21 @@
 				case "scale":
 					[vector_x.value, vector_y.value, vector_z.value, vector_w.value] = [
 						(100*editor[key].x).toFixed(1), 
-						(100*editor[key].y).toFixed(1), (100*editor[key].z).toFixed(1), 
+						(100*editor[key].y).toFixed(1), 
+						(100*editor[key].z).toFixed(1), 
 						(100*(editor[key].x+editor[key].y+editor[key].z)/3).toFixed(1) 
 					];
 				break;
 				case "quaternion":
 					[vector_x.value, vector_y.value, vector_z.value, vector_w.value] = [
-						editor[key]._x.toFixed(3), editor[key]._y.toFixed(3), 
-						editor[key]._z.toFixed(3), editor[key]._w.toFixed(3) 
+						editor[key]._x.toFixed(3), 
+						editor[key]._y.toFixed(3), 
+						editor[key]._z.toFixed(3), 
+						editor[key]._w.toFixed(3) 
 					];
+				break;
+				default:
+					[vector_x.value, vector_y.value, vector_z.value, vector_w.value] = ["","","",""];
 				break;
 			}
 
