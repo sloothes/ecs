@@ -16,35 +16,33 @@
 		//	We dont "escape", will use editor values on create geometry.
 		//	if ( entity_droplist.value === "" ) return vector_x.value = "";
 		//	if ( vector_droplist.value === "" ) return vector_x.value = "";
+		//	editor watcher updates input only if the editor value has changed,
+		//	so in this case we must explicitly update the input value manualy.
 
 			switch (key) {
 				case "position":
-					if ( isNaN(value) ) value = 0; // avaid NaN value, reset!
+					if ( isNaN(value) ) { value = 0; vector_x.value = "0.00"; } // avoid NaN.
 					else value = Number(value); // meters, no limit.
 					setTimeout(function(value){ editor[key].x = Number(value); }, null, value);
 				break;
 				case "rotation":
-					if ( isNaN(value) ) value = 0; // avaid NaN value, reset!
-					else value = DEG2RAD * THREE.Math.clamp(Number(value), -180, 180); // rad, important!
+					if ( isNaN(value) ) { value = 0; vector_x.value = "0.0"; } // avoid NaN.
+					else value = DEG2RAD * THREE.Math.clamp(Number(value), -180, 180); // rad!
 					setTimeout(function(value){ editor[key]._x = Number(value); }, null, value);
 				break;
 				case "scale":
-					if ( isNaN(value) ) value = 1; // avaid NaN value, reset to 100%.
-					else if ( !Number(value) ) value = 1; // avoid scale:0, reset.
+					if ( isNaN( value ) ) { value = 1; vector_x.value = "100.0"; } // avoid NaN.
+					if ( !Number(value) ) { value = 1; vector_x.value = "100.0"; } // avoid scale:0.
 					else value = Number(value)/100; // internal scale value 1/100.
 					setTimeout(function(value){ editor[key].x = Number(value); }, null, value);
 				break;
 				case "quaternion":
-					vector_x.value = editor[key]._x.toFixed(3); //  no modification.
+					vector_x.value = editor[key].x.toFixed(3);
 				break;
 				default:
 					vector_x.value = ""; return; // escape!
 				break;
 			}
-
-			//	editor watcher updates input only if the editor value has changed,
-			//	so in this case we must explicitly update the input value manualy.
-			//  else value_input.value = editor[key]; // boolean as string.
 
 		//	editor manager watcher updates input values.
 		//	setTimeout(function(value){ editor[key].x = Number(value); }, null, value);
@@ -74,35 +72,33 @@
 		//	We dont "escape", will use editor values on create geometry.
 		//	if ( entity_droplist.value === "" ) return vector_x.value = "";
 		//	if ( vector_droplist.value === "" ) return vector_x.value = "";
+		//	editor watcher updates input only if the editor value has changed,
+		//	so in this case we must explicitly update the input value manualy.
 
 			switch (key) {
 				case "position":
-					if ( isNaN(value) ) value = 0; // avaid NaN value, reset!
+					if ( isNaN(value) ) { value = 0; vector_y.value = "0.00"; } // avoid NaN.
 					else value = Number(value); // meters, no limit.
 					setTimeout(function(value){ editor[key].y = Number(value); }, null, value);
 				break;
 				case "rotation":
-					if ( isNaN(value) ) value = 0; // avaid NaN value, reset!
-					else value = DEG2RAD * THREE.Math.clamp(Number(value), -180, 180); // rad, important!
+					if ( isNaN(value) ) { value = 0; vector_y.value = "0.0"; } // avoid NaN.
+					else value = DEG2RAD * THREE.Math.clamp(Number(value), -180, 180); // rad!
 					setTimeout(function(value){ editor[key]._y = Number(value); }, null, value);
 				break;
 				case "scale":
-					if ( isNaN(value) ) value = 1; // avaid NaN value, reset to 100%.
-					else if ( !Number(value) ) value = 1; // avoid scale:0, reset.
+					if ( isNaN( value ) ) { value = 1; vector_y.value = "100.0"; } // avoid NaN.
+					if ( !Number(value) ) { value = 1; vector_y.value = "100.0"; } // avoid scale:0.
 					else value = Number(value)/100; // internal scale value 1/100.
 					setTimeout(function(value){ editor[key].y = Number(value); }, null, value);
 				break;
 				case "quaternion":
-					vector_y.value = editor[key]._y.toFixed(3); //  no modification.
+					vector_y.value = editor[key].y.toFixed(3);
 				break;
 				default:
-					vector_y.value = ""; return; // escape!
+					vector_y.value = ""; return;
 				break;
 			}
-
-			//	editor watcher updates input only if the editor value has changed,
-			//	so in this case we must explicitly update the input value manualy.
-			//  else value_input.value = editor[key]; // boolean as string.
 
 		//	editor manager watcher updates input values.
 		//	setTimeout(function(value){ editor[key].y = Number(value); }, null, value);
@@ -132,35 +128,33 @@
 		//	We dont "escape", will use editor values on create geometry.
 		//	if ( entity_droplist.value === "" ) return vector_x.value = "";
 		//	if ( vector_droplist.value === "" ) return vector_x.value = "";
+		//	editor watcher updates input only if the editor value has changed,
+		//	so in this case we must explicitly update the input value manualy.
 
 			switch (key) {
 				case "position":
-					if ( isNaN(value) ) value = 0; // avaid NaN value, reset!
+					if ( isNaN(value) ) { value = 0; vector_z.value = "0.00" } // avoid NaN.
 					else value = Number(value); // meters, no limit.
 					setTimeout(function(value){ editor[key].z= Number(value); }, null, value);
 				break;
 				case "rotation":
-					if ( isNaN(value) ) value = 0; // avaid NaN value, reset!
-					else value = DEG2RAD * THREE.Math.clamp(Number(value), -180, 180); // rad, important!
+					if ( isNaN(value) ) { value = 0; vector_z.value = "0.0" } // avoid NaN.
+					else value = DEG2RAD * THREE.Math.clamp(Number(value), -180, 180); // rad!
 					setTimeout(function(value){ editor[key]._z = Number(value); }, null, value);
 				break;
 				case "scale":
-					if ( isNaN(value) ) value = 1; // avaid NaN value, reset to 100%.
-					else if ( !Number(value) ) value = 1; // avoid scale:0, reset.
+					if ( isNaN( value ) ) { value = 1; vector_z.value = "100.0"; } // avoid NaN.
+					if ( !Number(value) ) { value = 1; vector_z.value = "100.0"; } // avoid scale:0.
 					else value = Number(value)/100; // internal scale value 1/100.
 					setTimeout(function(value){ editor[key].z = Number(value); }, null, value);
 				break;
 				case "quaternion":
-					vector_z.value = editor[key]._z.toFixed(3); //  no modification.
+					vector_z.value = editor[key].z.toFixed(3);
 				break;
 				default:
-					vector_z.value = ""; return; // escape!
+					vector_z.value = ""; return;
 				break;
 			}
-
-			//	editor watcher updates input only if the editor value has changed,
-			//	so in this case we must explicitly update the input value manualy.
-			//  else value_input.value = editor[key]; // boolean as string.
 
 		//	editor manager watcher updates input values.
 		//	setTimeout(function(value){ editor[key].z = Number(value); }, null, value);
@@ -187,11 +181,13 @@
 		//	We dont "escape", will use editor values on create geometry.
 		//	if ( entity_droplist.value === "" ) return vector_x.value = "";
 		//	if ( vector_droplist.value === "" ) return vector_x.value = "";
+		//	editor watcher updates input only if the editor value has changed,
+		//	so in this case we must explicitly update the input value manualy.
 
 			switch (key) {
 				case "scale":
-					if ( isNaN(value) ) value = 1; // avaid NaN value, reset to 100%.
-					else if ( !Number(value) ) value = 1; // avoid scale:0, reset.
+					if ( isNaN( value ) ) { value = 1; vector_w.value = "100.0"; } // avoid NaN.
+					if ( !Number(value) ) { value = 1; vector_w.value = "100.0"; } // avoid scale:0.
 					else value = Number(value)/100; // internal scale value 1/100.
 					setTimeout(function(key, value){ 
 						editor[key].x = Number(value); 
@@ -200,16 +196,12 @@
 					}, null, key, value);
 				break;
 				case "quaternion":
-					vector_w.value = editor[key]._w.toFixed(3); //  no modification.
+					vector_w.value = editor[key].w.toFixed(3);
 				break;
 				default:
-					vector_w.value = ""; return; // escape!
+					vector_w.value = ""; return;
 				break;
 			}
-
-			//	editor watcher updates input only if the editor value has changed,
-			//	so in this case we must explicitly update the input value manualy.
-			//  else value_input.value = editor[key]; // boolean as string.
 
 		//	editor manager watcher updates input values.
 		//	setTimeout(function(value){ editor[key].w = Number(value); }, null, value);
