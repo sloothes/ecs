@@ -47,13 +47,13 @@
 		const DEG2RAD = 0.017453292519943295;
 
 	//	Add a watcher to update object only when entity droplist changes.
-		watch( entity_droplist, "onchange", function( property, event, value ){
-			debugMode && console.log({property:property,event:event,value:value});
-			object = getObjectByEntityId( value );
-			debugMode && console.log("object:", object);
-		});
+	//	watch( entity_droplist, "onchange", function( property, event, value ){
+	//		debugMode && console.log({property:property,event:event,value:value});
+	//		object = getObjectByEntityId( value );
+	//		debugMode && console.log("object:", object);
+	//	});
 
-		watch( editor, "position", function( key, action, value ){
+		watch( editor.position, ["x","y","z"], function( key, action, value ){
 			var object = getObjectByEntityId(); debugMode && console.log(object);
 			debugMode && console.log({property:"position",key:key,value:value});
 		//	Update object ( value === editor.position[key] ).
@@ -66,7 +66,7 @@
 			}
 		});
 
-		watch( editor, "rotation", function( key, action, value ){
+		watch( editor.rotation, ["_x","_y","_z"], function( key, action, value ){
 			var object = getObjectByEntityId(); debugMode && console.log(object);
 			debugMode && console.log({property:"rotation",key:key,value:value});
 		//	Update object ( value === editor.rotation[key] ).
@@ -79,7 +79,7 @@
 			}
 		});
 
-		watch( editor, "scale", function( key, action, value ){
+		watch( editor.scale, ["x","y","z"], function( key, action, value ){
 			var object = getObjectByEntityId(); debugMode && console.log(object);
 			debugMode && console.log({property:"scale",key:key,value:value});
 		//	Update object ( value === editor.scale[key] ).
@@ -93,7 +93,7 @@
 			}
 		});
 /*
-		watch( editor, "quaternion", function( key, action, value ){
+		watch( editor.quaternion, ["_x","_y","_z","_w"], function( key, action, value ){
 		//	var object = getObjectByEntityId();
 			debugMode && console.log({property:"quaternion",key:key,value:value});
 		//	DO NOT MODIFY QUATERNION (value === editor.quaternion[key]).

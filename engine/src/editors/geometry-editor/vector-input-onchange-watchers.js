@@ -151,10 +151,10 @@
 					setTimeout(function(value){ editor[key].z = Number(value); }, null, value);
 				break;
 				case "quaternion":
-					vector_x.value = editor[key]._x.toFixed(3); //  no modification.
+					vector_z.value = editor[key]._z.toFixed(3); //  no modification.
 				break;
 				default:
-					vector_x.value = ""; return; // escape!
+					vector_z.value = ""; return; // escape!
 				break;
 			}
 
