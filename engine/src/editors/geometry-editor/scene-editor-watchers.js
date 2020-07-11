@@ -6,7 +6,7 @@
 //	Watch each object/property individually.
 //	Synchronize object3d with scene editor (brige).
 //	KEEP IN MIND: watchers update only if the value has been changed.
-
+/*
 	(function(editor,value_input,key_droplist,entity_droplist){
 
 	//	var object; // important!
@@ -37,7 +37,7 @@
 		document.querySelector("select#geometry-key-droplist"), // key_droplist,
 		document.querySelector("select#geometry-entities-droplist") // entity_droplist,
 	);
-
+*/
 
 	(function(editor,vector_x,vector_y,vector_z,vector_w,vector_droplist,entity_droplist){
 
