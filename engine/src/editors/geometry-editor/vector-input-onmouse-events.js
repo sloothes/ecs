@@ -20,6 +20,7 @@
 			state = {};
 		//	if ( entity_droplist.value === "" ) return; // important!
 		//	if ( vector_droplist.value === "quaternion" ) return; // important!
+			if ( vector_droplist.value === "translation" ) return; // important!
 			var key = vector_droplist.value;
 			state.key = vector_droplist.value; // key.
 			state.value = editor[key].x;   // important!
@@ -44,6 +45,7 @@
 		//	We dont "escape", will use editor values on create geometry.
 		//	if ( entity_droplist.value === "" ) return; // important!
 		//	if ( vector_droplist.value === "quaternion" ) return;
+			if ( vector_droplist.value === "translation" ) return; // important!
 
 			var button = this;
 		//	var clock = new THREE.Clock();
@@ -103,6 +105,7 @@
 		//	We dont "escape", will use editor values on create geometry.
 		//	if ( entity_droplist.value === "" ) return; // important!
 		//	if ( vector_droplist.value === "quaternion" ) return;
+			if ( vector_droplist.value === "translation" ) return; // important!
 
 			var button = this;
 
@@ -177,6 +180,7 @@
 			state = {};
 		//	if ( entity_droplist.value === "" ) return; // important!
 		//	if ( vector_droplist.value === "quaternion" ) return; // important!
+			if ( vector_droplist.value === "translation" ) return; // important!
 			var key = vector_droplist.value;
 			state.key = vector_droplist.value; // key.
 			state.value = editor[key].y;   // important!
@@ -201,6 +205,7 @@
 		//	We dont "escape", will use editor values on create geometry.
 		//	if ( entity_droplist.value === "" ) return; // important!
 		//	if ( vector_droplist.value === "quaternion" ) return;
+			if ( vector_droplist.value === "translation" ) return; // important!
 
 			var button = this;
 		//	var clock = new THREE.Clock();
@@ -260,6 +265,7 @@
 		//	We dont "escape", will use editor values on create geometry.
 		//	if ( entity_droplist.value === "" ) return; // important!
 		//	if ( vector_droplist.value === "quaternion" ) return;
+			if ( vector_droplist.value === "translation" ) return; // important!
 
 			var button = this;
 
@@ -334,6 +340,7 @@
 			state = {};
 		//	if ( entity_droplist.value === "" ) return; // important!
 		//	if ( vector_droplist.value === "quaternion" ) return; // important!
+			if ( vector_droplist.value === "translation" ) return; // important!
 			var key = vector_droplist.value;
 			state.key = vector_droplist.value; // key.
 			state.value = editor[key].z;   // important!
@@ -358,6 +365,7 @@
 		//	We dont "escape", will use editor values on create geometry.
 		//	if ( entity_droplist.value === "" ) return; // important!
 		//	if ( vector_droplist.value === "quaternion" ) return;
+			if ( vector_droplist.value === "translation" ) return; // important!
 
 			var button = this;
 		//	var clock = new THREE.Clock();
@@ -417,6 +425,7 @@
 		//	We dont "escape", will use editor values on create geometry.
 		//	if ( entity_droplist.value === "" ) return; // important!
 		//	if ( vector_droplist.value === "quaternion" ) return;
+			if ( vector_droplist.value === "translation" ) return; // important!
 
 			var button = this;
 
@@ -491,6 +500,7 @@
 			state = {};
 		//	if ( entity_droplist.value === "" ) return; // important!
 		//	if ( vector_droplist.value === "quaternion" ) return; // important!
+			if ( vector_droplist.value === "translation" ) return; // important!
 			var key = vector_droplist.value;
 			state.key = vector_droplist.value; // key.
 			state.value = editor[key].w;   // important!
@@ -515,6 +525,7 @@
 		//	We dont "escape", will use editor values on create geometry.
 		//	if ( entity_droplist.value === "" ) return; // important!
 		//	if ( vector_droplist.value === "quaternion" ) return;
+			if ( vector_droplist.value === "translation" ) return; // important!
 
 			var button = this;
 		//	var clock = new THREE.Clock();
@@ -564,6 +575,7 @@
 		//	We dont "escape", will use editor values on create geometry.
 		//	if ( entity_droplist.value === "" ) return; // important!
 		//	if ( vector_droplist.value === "quaternion" ) return;
+			if ( vector_droplist.value === "translation" ) return; // important!
 
 			var button = this;
 
