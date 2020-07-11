@@ -70,7 +70,9 @@
 			var object = getObjectByEntityId(); debugMode && console.log(object);
 			debugMode && console.log({property:"rotation",key:key,value:value});
 		//	Update object ( value === editor.rotation[key] ).
-			if ( object && object.rotation ) object.rotation[key] = Number(value);		
+			if ( object && object.rotation && key === "_x" ) object.rotation.x = Number(value);		
+			if ( object && object.rotation && key === "_y" ) object.rotation.y = Number(value);		
+			if ( object && object.rotation && key === "_z" ) object.rotation.z = Number(value);		
 		//	Display value.
 			if ( vector_droplist.value === "rotation" ) {
 				if ( key === "_x" ) vector_x.value = (RAD2DEG*value).toFixed(1);
