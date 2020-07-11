@@ -49,8 +49,7 @@
 	//	Add a watcher to update object only when entity droplist changes.
 		watch( entity_droplist, "onchange", function( property, event, value ){
 			debugMode && console.log({item:entity_droplist,event:event,value:value});
-			object = getObjectByEntityId( value ); 
-		//	debugMode && console.log("object:", object);
+			object = getObjectByEntityId( value ); debugMode && console.log(object);
 		});
 
 		watch( editor.position, ["x","y","z"], function( key, action, value ){
