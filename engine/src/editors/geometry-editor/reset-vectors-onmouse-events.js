@@ -41,5 +41,70 @@
 		document.querySelector("input#geometry-vector-y-input"), // vector_y,
 		document.querySelector("input#geometry-vector-z-input"), // vector_z,
 		document.querySelector("input#geometry-vector-w-input"), // vector_w,
-		document.querySelector("select#geometry-vector-droplist"), // vector_droplist.
+		document.querySelector("select#geometry-vector-droplist") // vector_droplist.
 	);
+
+
+//	exit-edit-onmouse-events.js
+
+	(function(editor,rigidObjects,latestEntity,cameraControls,localPlayer,keyInputControls,exit_button){
+
+		var interval;
+
+		exit_button.addEventListener( "click", function(){
+			clearTimeout(interval);
+			interval = setTimeout(function(){
+				callWatchers( exit_button, "onclick", "click" );
+			}, 250);
+		});
+
+	//	Exit from edit mode.
+
+		function resetLatestEntityValue(){
+			latestEntity.value = entity_droplist.value = "";
+		}
+
+		function enableCameraRigidObjects(){
+			while (rigidObjects.length) {
+				var object = rigidObjects.shift();
+				object.isMesh && cameraControls.rigidObjects.push( object ); // cleanup.
+			}
+		}
+
+		function disableCameraRigidObjects(){
+			while (cameraControls.rigidObjects.length) {
+				var object = cameraControls.rigidObjects.shift()
+				object.isMesh && rigidObjects.push( object ); // cleanup.
+			}
+		}
+
+		function takeCameraControls( object, offset ){
+			cameraControls.trackObject = object;
+			cameraControls.offset.y = offset || 0;
+		}
+
+		watch( exit_button, "onclick", function exitFromEditMode( prop, event ){
+			debugMode && console.log({item:exit_button,property:prop,event:event});
+
+			editor.reset(); // important!
+			resetLatestEntityValue();
+			enableCameraRigidObjects();
+			takeCameraControls( localPlayer );
+			keyInputControls.isDisabled = false;
+
+		});
+
+	})(
+		objectEditor, // editor, 
+		rigidObjects, latestEntity, cameraControls, localPlayer, keyInputControls, 
+		document.querySelector("div#geometry-exit-mode") // exit_button,
+	);
+
+
+	//	objectEditor, // editor,
+	//	document.querySelector("input#geometry-vector-x-input"), // vector_x,
+	//	document.querySelector("input#geometry-vector-y-input"), // vector_y,
+	//	document.querySelector("input#geometry-vector-z-input"), // vector_z,
+	//	document.querySelector("input#geometry-vector-w-input"), // vector_w,
+	//	document.querySelector("select#geometry-vector-droplist"), // vector_droplist,
+	//	document.querySelector("select#geometry-entities-droplist") // entity_droplist.
