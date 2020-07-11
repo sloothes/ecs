@@ -218,7 +218,7 @@
 
 	})(
 		objectEditor, // editor,
-		document.querySelector("input#geometry-vector-z-input"), // vector_z,
+		document.querySelector("input#geometry-vector-w-input"), // vector_z,
 		document.querySelector("select#geometry-vector-droplist"), // vector_droplist.
 		document.querySelector("select#geometry-entities-droplist") // entity_droplist, not used!!!
 	);
