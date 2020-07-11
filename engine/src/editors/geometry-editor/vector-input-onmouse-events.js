@@ -8,11 +8,13 @@
 		var state;
 		var interval;
 
+		const RAD2DEG = 57.29577951308232;
+		const DEG2RAD = 0.017453292519943295;
+
 	//	keep first mousedown event, ignore next events.
 
 		increase_x.addEventListener( "mousedown", onfirstMouseDown );
 		decrease_x.addEventListener( "mousedown", onfirstMouseDown );
-
 		var meta = {geometries:{},materials:{},textures:{},images:{},shapes:{}};
 
 		function onfirstMouseDown(){
@@ -62,12 +64,11 @@
 						interval = setTimeout( update, clock.getDelta() );
 					break;
 					case "rotation":
-						var p = 1, step = (1/Math.pow(10,p)) * Math.PI/180; // 0.1 deg.
-						var max = Math.PI, min = -max;
-						var value = Number(editor[ key ].x); // get value from editor.
+						var p = 1, step = 1/Math.pow(10,p), min = -180, max = 180;
+						var value = RAD2DEG * Number(editor[ key ].x); // get value from editor.
 						if ( button === increase_x ) value = THREE.Math.clamp( value+step, min, max );
 						if ( button === decrease_x ) value = THREE.Math.clamp( value-step, min, max );
-						editor[ key ]._x = round(value, p); // editor watcher updates input value.
+						editor[ key ]._x = DEG2RAD * round(value, p); // editor watcher updates input value.
 						interval = setTimeout( update, clock.getDelta() );
 					break;
 					case "scale":
@@ -122,16 +123,15 @@
 					editor[ key ].x = round(value, p); // editor watcher updates input value.
 				break;
 				case "rotation":
-					var p = 1, step = (1/Math.pow(10,p)) * Math.PI/180; // 0.1 deg.
-					var max = Math.PI, min = -max;
-					var value = Number(editor[ key ].x); // get value from editor.
+					var p = 1, step = 1/Math.pow(10,p), min = -180, max = 180;
+					var value = RAD2DEG * Number(editor[ key ].x); // get value from editor.
 					if ( button === increase_x ) value = THREE.Math.clamp( value+step, min, max );
 					if ( button === decrease_x ) value = THREE.Math.clamp( value-step, min, max );
 					interval = setTimeout( function(){ 
 						button.addEventListener( "mousedown", onfirstMouseDown ); // important!
 					//	addtoUndo(state,key,value,undo_button,redo_button); // add to undo.
 					}, 250);
-					editor[ key ]._x = round(value, p); // editor watcher updates input value.
+					editor[ key ]._x = DEG2RAD * round(value, p); // editor watcher updates input value.
 				break;
 				case "scale":
 					var p = 3, step = 1/Math.pow(10,p); // min = -100, max = 100;
@@ -169,11 +169,13 @@
 		var state;
 		var interval;
 
+		const RAD2DEG = 57.29577951308232;
+		const DEG2RAD = 0.017453292519943295;
+
 	//	keep first mousedown event, ignore next events.
 
 		increase_y.addEventListener( "mousedown", onfirstMouseDown );
 		decrease_y.addEventListener( "mousedown", onfirstMouseDown );
-
 		var meta = {geometries:{},materials:{},textures:{},images:{},shapes:{}};
 
 		function onfirstMouseDown(){
@@ -223,12 +225,11 @@
 						interval = setTimeout( update, clock.getDelta() );
 					break;
 					case "rotation":
-						var p = 1, step = (1/Math.pow(10,p)) * Math.PI/180; // 0.1 deg.
-						var max = Math.PI, min = -max;
-						var value = Number(editor[ key ].y); // get value from editor.
+						var p = 1, step = 1/Math.pow(10,p), min = -180, max = 180;
+						var value = RAD2DEG * Number(editor[ key ].y); // get value from editor.
 						if ( button === increase_y ) value = THREE.Math.clamp( value+step, min, max );
 						if ( button === decrease_y ) value = THREE.Math.clamp( value-step, min, max );
-						editor[ key ]._y = round(value, p); // editor watcher updates input value.
+						editor[ key ]._y = DEG2RAD * round(value, p); // editor watcher updates input value.
 						interval = setTimeout( update, clock.getDelta() );
 					break;
 					case "scale":
@@ -283,16 +284,15 @@
 					editor[ key ].y = round(value, p); // editor watcher updates input value.
 				break;
 				case "rotation":
-					var p = 1, step = (1/Math.pow(10,p)) * Math.PI/180; // 0.1 deg.
-					var max = Math.PI, min = -max;
-					var value = Number(editor[ key ].y); // get value from editor.
+					var p = 1, step = 1/Math.pow(10,p), min = -180, max = 180;
+					var value = RAD2DEG * Number(editor[ key ].y); // get value from editor.
 					if ( button === increase_y ) value = THREE.Math.clamp( value+step, min, max );
 					if ( button === decrease_y ) value = THREE.Math.clamp( value-step, min, max );
 					interval = setTimeout( function(){ 
 						button.addEventListener( "mousedown", onfirstMouseDown ); // important!
 					//	addtoUndo(state,key,value,undo_button,redo_button); // add to undo.
 					}, 250);
-					editor[ key ]._y = round(value, p); // editor watcher updates input value.
+					editor[ key ]._y = DEG2RAD * round(value, p); // editor watcher updates input value.
 				break;
 				case "scale":
 					var p = 3, step = 1/Math.pow(10,p); // min = -100, max = 100;
@@ -327,14 +327,15 @@
 
 	(function( editor,vector_z,increase_z,decrease_z,vector_droplist,entity_droplist,undo_button,redo_button ){
 
-		var state;
-		var interval;
+		var state, interval;
+
+		const RAD2DEG = 57.29577951308232;
+		const DEG2RAD = 0.017453292519943295;
 
 	//	keep first mousedown event, ignore next events.
 
 		increase_z.addEventListener( "mousedown", onfirstMouseDown );
 		decrease_z.addEventListener( "mousedown", onfirstMouseDown );
-
 		var meta = {geometries:{},materials:{},textures:{},images:{},shapes:{}};
 
 		function onfirstMouseDown(){
@@ -384,12 +385,11 @@
 						interval = setTimeout( update, clock.getDelta() );
 					break;
 					case "rotation":
-						var p = 1, step = (1/Math.pow(10,p)) * Math.PI/180; // 0.1 deg.
-						var max = Math.PI, min = -max;
-						var value = Number(editor[ key ].z); // get value from editor.
+						var p = 1, step = 1/Math.pow(10,p), min = -180, max = 180;
+						var value = RAD2DEG * Number(editor[ key ].z); // get value from editor.
 						if ( button === increase_z ) value = THREE.Math.clamp( value+step, min, max );
 						if ( button === decrease_z ) value = THREE.Math.clamp( value-step, min, max );
-						editor[ key ]._z = round(value, p); // editor watcher updates input value.
+						editor[ key ]._z = DEG2RAD * round(value, p); // editor watcher updates input value.
 						interval = setTimeout( update, clock.getDelta() );
 					break;
 					case "scale":
@@ -444,16 +444,15 @@
 					editor[ key ].z = round(value, p); // editor watcher updates input value.
 				break;
 				case "rotation":
-					var p = 1, step = (1/Math.pow(10,p)) * Math.PI/180; // 0.1 deg.
-					var max = Math.PI, min = -max;
-					var value = Number(editor[ key ].z); // get value from editor.
+					var p = 1, step = 1/Math.pow(10,p), min = -180, max = 180;
+					var value = RAD2DEG * Number(editor[ key ].z); // get value from editor.
 					if ( button === increase_z ) value = THREE.Math.clamp( value+step, min, max );
 					if ( button === decrease_z ) value = THREE.Math.clamp( value-step, min, max );
 					interval = setTimeout( function(){ 
 						button.addEventListener( "mousedown", onfirstMouseDown ); // important!
 					//	addtoUndo(state,key,value,undo_button,redo_button); // add to undo.
 					}, 250);
-					editor[ key ]._z = round(value, p); // editor watcher updates input value.
+					editor[ key ]._z = DEG2RAD * round(value, p); // editor watcher updates input value.
 				break;
 				case "scale":
 					var p = 3, step = 1/Math.pow(10,p); // min = -100, max = 100;
