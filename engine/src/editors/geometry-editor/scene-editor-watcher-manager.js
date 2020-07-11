@@ -53,7 +53,7 @@
 		});
 
 		watch( editor, "position", function( key, action, value ){
-		//	var object = getObjectByEntityId();
+			var object = getObjectByEntityId(); debugMode && console.log(object);
 			debugMode && console.log({property:"position",key:key,value:value});
 		//	Update object ( value === editor.position[key] ).
 			if ( object && object.position ) object.position[key] = Number(value);
@@ -66,7 +66,7 @@
 		});
 
 		watch( editor, "rotation", function( key, action, value ){
-		//	var object = getObjectByEntityId();
+			var object = getObjectByEntityId(); debugMode && console.log(object);
 			debugMode && console.log({property:"rotation",key:key,value:value});
 		//	Update object ( value === editor.rotation[key] ).
 			if ( object && object.rotation ) object.rotation[key] = Number(value);		
@@ -79,7 +79,7 @@
 		});
 
 		watch( editor, "scale", function( key, action, value ){
-		//	var object = getObjectByEntityId();
+			var object = getObjectByEntityId(); debugMode && console.log(object);
 			debugMode && console.log({property:"scale",key:key,value:value});
 		//	Update object ( value === editor.scale[key] ).
 			if ( object && object.scale ) object.scale[key] = Number(value);		
