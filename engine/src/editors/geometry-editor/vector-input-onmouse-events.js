@@ -115,6 +115,10 @@
 					var value = Number(editor[ key ].x); // get value from editor.
 					if ( button === increase_x ) value += step;
 					if ( button === decrease_x ) value -= step;
+					interval = setTimeout( function(){ 
+						button.addEventListener( "mousedown", onfirstMouseDown ); // important!
+					//	addtoUndo(state,key,value,undo_button,redo_button); // add to undo.
+					}, 250);
 					editor[ key ].x = round(value, p); // editor watcher updates input value.
 				break;
 				case "rotation":
@@ -123,6 +127,10 @@
 					var value = Number(editor[ key ].x); // get value from editor.
 					if ( button === increase_x ) value = THREE.Math.clamp( value+step, min, max );
 					if ( button === decrease_x ) value = THREE.Math.clamp( value-step, min, max );
+					interval = setTimeout( function(){ 
+						button.addEventListener( "mousedown", onfirstMouseDown ); // important!
+					//	addtoUndo(state,key,value,undo_button,redo_button); // add to undo.
+					}, 250);
 					editor[ key ]._x = round(value, p); // editor watcher updates input value.
 				break;
 				case "scale":
@@ -130,6 +138,10 @@
 					var value = Number(editor[ key ].x); // get value from editor.
 					if ( button === increase_x ) value += step;
 					if ( button === decrease_x ) value -= step;
+					interval = setTimeout( function(){ 
+						button.addEventListener( "mousedown", onfirstMouseDown ); // important!
+					//	addtoUndo(state,key,value,undo_button,redo_button); // add to undo.
+					}, 250);
 					editor[ key ].x = round(value, p); // editor watcher updates input value.
 				break;
 			}
@@ -264,6 +276,10 @@
 					var value = Number(editor[ key ].y); // get value from editor.
 					if ( button === increase_y ) value += step;
 					if ( button === decrease_y ) value -= step;
+					interval = setTimeout( function(){ 
+						button.addEventListener( "mousedown", onfirstMouseDown ); // important!
+					//	addtoUndo(state,key,value,undo_button,redo_button); // add to undo.
+					}, 250);
 					editor[ key ].y = round(value, p); // editor watcher updates input value.
 				break;
 				case "rotation":
@@ -272,6 +288,10 @@
 					var value = Number(editor[ key ].y); // get value from editor.
 					if ( button === increase_y ) value = THREE.Math.clamp( value+step, min, max );
 					if ( button === decrease_y ) value = THREE.Math.clamp( value-step, min, max );
+					interval = setTimeout( function(){ 
+						button.addEventListener( "mousedown", onfirstMouseDown ); // important!
+					//	addtoUndo(state,key,value,undo_button,redo_button); // add to undo.
+					}, 250);
 					editor[ key ]._y = round(value, p); // editor watcher updates input value.
 				break;
 				case "scale":
@@ -279,6 +299,10 @@
 					var value = Number(editor[ key ].y); // get value from editor.
 					if ( button === increase_y ) value += step;
 					if ( button === decrease_y ) value -= step;
+					interval = setTimeout( function(){ 
+						button.addEventListener( "mousedown", onfirstMouseDown ); // important!
+					//	addtoUndo(state,key,value,undo_button,redo_button); // add to undo.
+					}, 250);
 					editor[ key ].y = round(value, p); // editor watcher updates input value.
 				break;
 			}
@@ -413,6 +437,10 @@
 					var value = Number(editor[ key ].z); // get value from editor.
 					if ( button === increase_z ) value += step;
 					if ( button === decrease_z ) value -= step;
+					interval = setTimeout( function(){ 
+						button.addEventListener( "mousedown", onfirstMouseDown ); // important!
+					//	addtoUndo(state,key,value,undo_button,redo_button); // add to undo.
+					}, 250);
 					editor[ key ].z = round(value, p); // editor watcher updates input value.
 				break;
 				case "rotation":
@@ -421,6 +449,10 @@
 					var value = Number(editor[ key ].z); // get value from editor.
 					if ( button === increase_z ) value = THREE.Math.clamp( value+step, min, max );
 					if ( button === decrease_z ) value = THREE.Math.clamp( value-step, min, max );
+					interval = setTimeout( function(){ 
+						button.addEventListener( "mousedown", onfirstMouseDown ); // important!
+					//	addtoUndo(state,key,value,undo_button,redo_button); // add to undo.
+					}, 250);
 					editor[ key ]._z = round(value, p); // editor watcher updates input value.
 				break;
 				case "scale":
@@ -428,6 +460,10 @@
 					var value = Number(editor[ key ].z); // get value from editor.
 					if ( button === increase_z ) value += step;
 					if ( button === decrease_z ) value -= step;
+					interval = setTimeout( function(){ 
+						button.addEventListener( "mousedown", onfirstMouseDown ); // important!
+					//	addtoUndo(state,key,value,undo_button,redo_button); // add to undo.
+					}, 250);
 					editor[ key ].z = round(value, p); // editor watcher updates input value.
 				break;
 			}
