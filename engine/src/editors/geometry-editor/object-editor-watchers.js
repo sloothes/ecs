@@ -87,9 +87,9 @@
 			if ( object && object.scale ) object.scale[key] = Number(value);		
 		//	Display value.
 			if ( vector_droplist.value === "scale" ) {
-				if ( key === "x" ) vector_x.value = (100*value).toFixed(1);
-				if ( key === "y" ) vector_y.value = (100*value).toFixed(1);
-				if ( key === "z" ) vector_z.value = (100*value).toFixed(1);
+				if ( key === "x" ) vector_x.value = (100*value).toFixed(1); // todo: avoid x:0.
+				if ( key === "y" ) vector_y.value = (100*value).toFixed(1); // todo: avoid y:0.
+				if ( key === "z" ) vector_z.value = (100*value).toFixed(1); // todo: avoid z:0.
 				vector_w.value = (100*((editor.scale.x+editor.scale.y+editor.scale.z)/3)).toFixed(2);
 			}
 		});
