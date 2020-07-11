@@ -77,7 +77,7 @@
 						if ( button === increase_x ) value += step;
 						if ( button === decrease_x ) value -= step;
 						editor[ key ].x = round(value, p); // editor watcher updates input value.
-						interval = setTimeout( update, 100 );
+						interval = setTimeout( update, 50 );
 					break;
 				}
 
@@ -235,7 +235,7 @@
 						if ( button === increase_y ) value += step;
 						if ( button === decrease_y ) value -= step;
 						editor[ key ].y = round(value, p); // editor watcher updates input value.
-						interval = setTimeout( update, 100 );
+						interval = setTimeout( update, 50 );
 					break;
 				}
 
@@ -392,7 +392,7 @@
 						if ( button === increase_z ) value += step;
 						if ( button === decrease_z ) value -= step;
 						editor[ key ].z = round(value, p); // editor watcher updates input value.
-						interval = setTimeout( update, 100 );
+						interval = setTimeout( update, 50 );
 					break;
 				}
 
@@ -539,7 +539,7 @@
 							editor[ key ].y -= step; // editor watcher updates input value.
 							editor[ key ].z -= step; // editor watcher updates input value.
 						}
-						interval = setTimeout( update, 100 );
+						interval = setTimeout( update, 50 );
 					break;
 				}
 
