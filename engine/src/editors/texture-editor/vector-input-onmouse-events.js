@@ -31,11 +31,9 @@
 
 		increase_x.addEventListener( "mousedown", onMouseDown );
 		decrease_x.addEventListener( "mousedown", onMouseDown );
-
 		window.addEventListener( "mouseup", function (){
 			clearTimeout( interval ); // important!
 		});
-
 		increase_x.addEventListener( "click", onMouseClick );
 		decrease_x.addEventListener( "click", onMouseClick );
 
