@@ -14,7 +14,7 @@
 //	Update lastEntity value.
 	(function( latestEntity,entity_droplist ){
 
-	//	keeps entity droplist old values.
+	//	keeps entity's droplist last value.
 		watch(entity_droplist, "onchange", function( property, event, value ){
 			latestEntity.value = value; // when call lastEntity watcher can get the old value.
 		});
