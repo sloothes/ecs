@@ -91,7 +91,7 @@
 				vector_w.value = (100*((editor.scale.x+editor.scale.y+editor.scale.z)/3)).toFixed(2);
 			}
 		});
-
+/*
 		watch( editor, "quaternion", function( key, action, value ){
 		//	var object = getObjectByEntityId();
 			debugMode && console.log({property:"quaternion",key:key,value:value});
@@ -106,7 +106,7 @@
 				if ( key === "_w" ) vector_w.value = value.toFixed(3);
 			}
 		});
-
+*/
 	})(
 		sceneEditor, // editor,
 		document.querySelector("input#geometry-vector-x-input"),  // vector_x,
