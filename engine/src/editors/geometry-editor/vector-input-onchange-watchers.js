@@ -173,3 +173,52 @@
 		document.querySelector("select#geometry-vector-droplist"), // vector_droplist.
 		document.querySelector("select#geometry-entities-droplist") // entity_droplist, not used!!!
 	);
+
+//	vector-w input.
+
+	(function(editor,vector_w,vector_droplist,entity_droplist){
+
+		watch( vector_w, "onchange", function(property, event, value){
+			debugMode && console.log({item:vector_w,event:event,key:vector_droplist.value,w:value});
+
+			var key = vector_droplist.value; // important!
+		//	value is vector_w.value, always as typeof "string", (ecxept NaN, undefined?)
+
+		//	We dont "escape", will use editor values on create geometry.
+		//	if ( entity_droplist.value === "" ) return vector_x.value = "";
+		//	if ( vector_droplist.value === "" ) return vector_x.value = "";
+
+			switch (key) {
+				case "scale":
+					if ( isNaN(value) ) value = 1; // avaid NaN value, reset to 100%.
+					else if ( !Number(value) ) value = 1; // avoid scale:0, reset.
+					else value = Number(value)/100; // internal scale value 1/100.
+					setTimeout(function(key, value){ 
+						editor[key].x = Number(value); 
+						editor[key].y = Number(value); 
+						editor[key].z = Number(value); 
+					}, null, key, value);
+				break;
+				case "quaternion":
+					vector_w.value = editor[key]._w.toFixed(3); //  no modification.
+				break;
+				default:
+					vector_w.value = ""; return; // escape!
+				break;
+			}
+
+			//	editor watcher updates input only if the editor value has changed,
+			//	so in this case we must explicitly update the input value manualy.
+			//  else value_input.value = editor[key]; // boolean as string.
+
+		//	editor manager watcher updates input values.
+		//	setTimeout(function(value){ editor[key].w = Number(value); }, null, value);
+
+		});
+
+	})(
+		sceneEditor, // editor,
+		document.querySelector("input#geometry-vector-z-input"), // vector_z,
+		document.querySelector("select#geometry-vector-droplist"), // vector_droplist.
+		document.querySelector("select#geometry-entities-droplist") // entity_droplist, not used!!!
+	);
