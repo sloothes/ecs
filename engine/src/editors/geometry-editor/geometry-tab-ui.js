@@ -29,8 +29,7 @@
 
 	//	Call watchers.
 		select.addEventListener( "change", function(){
-			this.blur(); // important!
-			callWatchers(this, "onchange", "change", this.value );
+			this.blur(); callWatchers(this, "onchange", "change", this.value ); // important!
 		});
 
 		row.appendChild( select );
@@ -98,8 +97,7 @@
 
 	//	Call watchers.
 		select.addEventListener( "change", function(){
-			this.blur(); // important!
-			callWatchers(this, "onchange", "change", this.value );
+			this.blur(); callWatchers(this, "onchange", "change", this.value ); // important!
 		});
 
 		row.appendChild( select );
@@ -144,8 +142,7 @@
 
 	//	Call watchers.
 		input.addEventListener( "change", function(){
-			this.blur(); // important!
-			callWatchers(this, "onchange", "change", this.value );
+			this.blur(); callWatchers(this, "onchange", "change", this.value ); // important!
 		});
 
 	//	keyInputControls.
@@ -197,8 +194,7 @@
 
 	//	Call watchers.
 		input.addEventListener( "change", function(){
-			this.blur(); // important!
-			callWatchers(this, "onchange", "change", this.value );
+			this.blur(); callWatchers(this, "onchange", "change", this.value ); // important!
 		});
 
 	//	keyInputControls.
@@ -250,8 +246,7 @@
 
 	//	Call watchers.
 		input.addEventListener( "change", function(){
-			this.blur(); // important!
-			callWatchers(this, "onchange", "change", this.value );
+			this.blur(); callWatchers(this, "onchange", "change", this.value ); // important!
 		});
 
 	//	keyInputControls.
@@ -303,8 +298,7 @@
 
 	//	Call watchers.
 		input.addEventListener( "change", function(){
-			this.blur(); // important!
-			callWatchers(this, "onchange", "change", this.value );
+			this.blur(); callWatchers(this, "onchange", "change", this.value ); // important!
 		});
 
 	//	keyInputControls.
@@ -394,11 +388,8 @@
 
 		})();
 
-	//	Dont call watchers (is dummy droplist).
-		select.addEventListener( "change", function(){
-			this.blur(); // important!
-		//	callWatchers(this, "onchange", "change", this.value ); // dummy droplist.
-		});
+	//	Dont call watchers (dummy droplist).
+		select.addEventListener( "change", function(){ this.blur(); }); // important!
 
 		select.value = "PlaneGeometry";
 		row.appendChild( select );
