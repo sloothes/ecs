@@ -1,8 +1,8 @@
-//	scene-editor-watchers.js
-//	TODO: rename to "scene-editor-manager.js"
+//	object-editor-watchers.js
+//	TODO: rename to "object-editor-manager.js"
 
 
-//	Scene Editor Watcher Manager.
+//	Object Editor Watcher Manager.
 //	Watch each object/property individually.
 //	Synchronize object3d with scene editor (brige).
 //	KEEP IN MIND: watchers update only if the value has been changed.
@@ -47,14 +47,14 @@
 		const DEG2RAD = 0.017453292519943295;
 
 	//	Add a watcher to update object only when entity droplist changes.
-	//	watch( entity_droplist, "onchange", function( property, event, value ){
-	//		debugMode && console.log({property:property,event:event,value:value});
-	//		object = getObjectByEntityId( value );
-	//		debugMode && console.log("object:", object);
-	//	});
+		watch( entity_droplist, "onchange", function( property, event, value ){
+			debugMode && console.log({item:entity_droplist,event:event,value:value});
+			object = getObjectByEntityId( value ); 
+		//	debugMode && console.log("object:", object);
+		});
 
 		watch( editor.position, ["x","y","z"], function( key, action, value ){
-			var object = getObjectByEntityId(); debugMode && console.log(object);
+		//	var object = getObjectByEntityId(); debugMode && console.log(object);
 			debugMode && console.log({property:"position",key:key,value:value});
 		//	Update object ( value === editor.position[key] ).
 			if ( object && object.position ) object.position[key] = Number(value);
@@ -67,7 +67,7 @@
 		});
 
 		watch( editor.rotation, ["_x","_y","_z"], function( key, action, value ){
-			var object = getObjectByEntityId(); debugMode && console.log(object);
+		//	var object = getObjectByEntityId(); debugMode && console.log(object);
 			debugMode && console.log({property:"rotation",key:key,value:value});
 		//	Update object ( value === editor.rotation[key] ).
 			if ( object && object.rotation && key === "_x" ) object.rotation.x = Number(value);		
@@ -82,7 +82,7 @@
 		});
 
 		watch( editor.scale, ["x","y","z"], function( key, action, value ){
-			var object = getObjectByEntityId(); debugMode && console.log(object);
+		//	var object = getObjectByEntityId(); debugMode && console.log(object);
 			debugMode && console.log({property:"scale",key:key,value:value});
 		//	Update object ( value === editor.scale[key] ).
 			if ( object && object.scale ) object.scale[key] = Number(value);		
@@ -99,8 +99,10 @@
 		//	var object = getObjectByEntityId();
 			debugMode && console.log({property:"quaternion",key:key,value:value});
 		//	DO NOT MODIFY QUATERNION (value === editor.quaternion[key]).
-		//	if ( object && object.quaternion ) 
-		//		object.quaternion[key] = Number(editor.quaternion[key]);		
+		//	if ( object && object.quaternion && key === "_x" ) object.quaternion.x = Number(editor.quaternion[key]);		
+		//	if ( object && object.quaternion && key === "_y" ) object.quaternion.y = Number(editor.quaternion[key]);		
+		//	if ( object && object.quaternion && key === "_z" ) object.quaternion.z = Number(editor.quaternion[key]);		
+		//	if ( object && object.quaternion && key === "_w" ) object.quaternion.w = Number(editor.quaternion[key]);		
 		//	Display value.
 			if ( vector_droplist.value === "quaternion" ) {
 				if ( key === "_x" ) vector_x.value = value.toFixed(3);
