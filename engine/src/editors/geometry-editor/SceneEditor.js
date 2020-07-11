@@ -49,7 +49,7 @@
 	};
 
 	const sceneEditor = new SceneEditor(); // object3D.
-	scene.add( sceneEditor ); // important!
+//	scene.add( sceneEditor ); // important!
 
 
 
