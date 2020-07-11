@@ -85,7 +85,7 @@
 			+ "border:1px solid;border-radius:4px;padding:2px 4px 4px 4px;"
 			+ "font-size:20px;margin-left:10px;margin-right:15px;";
 
-		var modes = "position,rotation,scale,quaternion";
+		var modes = "position,rotation,scale,quaternion,translation";
 		modes.split(",").forEach(function( name ){
 			var option = document.createElement("option");
 			option.text = name;
