@@ -3,6 +3,7 @@
 	TabUI.add( "Geometry", "geometry-tab" );
 	TabUI.append("Geometry");
 
+/*
 	const entity_droplist = (function( tab ){
 
 	//	Entities droplist.
@@ -355,6 +356,7 @@
 		tab.appendChild( row );
 
 	})( TabUI.Geometry.tab );
+*/
 
 //	geometry-droplist-ui.js
 
@@ -465,6 +467,7 @@
 
 	})( TabUI.Geometry.tab );
 
+/*
 //	octree-geometry-ui.js
 
 	(function( tab ){
@@ -504,4 +507,4 @@
 		tab.appendChild( row );
 
 	})( TabUI.Geometry.tab );
-
+*/
