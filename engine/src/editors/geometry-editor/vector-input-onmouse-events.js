@@ -5,8 +5,7 @@
 
 	(function( editor,vector_x,increase_x,decrease_x,vector_droplist,entity_droplist,undo_button,redo_button ){
 
-		var state;
-		var interval;
+		var state, interval, dt = 20;
 
 		const RAD2DEG = 57.29577951308232;
 		const DEG2RAD = 0.017453292519943295;
@@ -61,7 +60,7 @@
 						if ( button === increase_x ) value += step;
 						if ( button === decrease_x ) value -= step;
 						editor[ key ].x = round(value, p); // editor watcher updates input value.
-						interval = setTimeout( update, clock.getDelta() );
+						interval = setTimeout( update, dt );
 					break;
 					case "rotation":
 						var p = 1, step = 1/Math.pow(10,p), min = -180, max = 180;
@@ -69,7 +68,7 @@
 						if ( button === increase_x ) value = THREE.Math.clamp( value+step, min, max );
 						if ( button === decrease_x ) value = THREE.Math.clamp( value-step, min, max );
 						editor[ key ]._x = DEG2RAD * round(value, p); // editor watcher updates input value.
-						interval = setTimeout( update, clock.getDelta() );
+						interval = setTimeout( update, dt );
 					break;
 					case "scale":
 						var p = 3, step = 1/Math.pow(10,p); // min = -100, max = 100;
@@ -77,7 +76,7 @@
 						if ( button === increase_x ) value += step;
 						if ( button === decrease_x ) value -= step;
 						editor[ key ].x = round(value, p); // editor watcher updates input value.
-						interval = setTimeout( update, 50 );
+						interval = setTimeout( update, dt );
 					break;
 				}
 
@@ -163,8 +162,7 @@
 
 	(function( editor,vector_y,increase_y,decrease_y,vector_droplist,entity_droplist,undo_button,redo_button ){
 
-		var state;
-		var interval;
+		var state, interval, dt = 20;
 
 		const RAD2DEG = 57.29577951308232;
 		const DEG2RAD = 0.017453292519943295;
@@ -219,7 +217,7 @@
 						if ( button === increase_y ) value += step;
 						if ( button === decrease_y ) value -= step;
 						editor[ key ].y = round(value, p); // editor watcher updates input value.
-						interval = setTimeout( update, clock.getDelta() );
+						interval = setTimeout( update, dt );
 					break;
 					case "rotation":
 						var p = 1, step = 1/Math.pow(10,p), min = -180, max = 180;
@@ -227,7 +225,7 @@
 						if ( button === increase_y ) value = THREE.Math.clamp( value+step, min, max );
 						if ( button === decrease_y ) value = THREE.Math.clamp( value-step, min, max );
 						editor[ key ]._y = DEG2RAD * round(value, p); // editor watcher updates input value.
-						interval = setTimeout( update, clock.getDelta() );
+						interval = setTimeout( update, dt );
 					break;
 					case "scale":
 						var p = 3, step = 1/Math.pow(10,p); // min = -100, max = 100;
@@ -235,7 +233,7 @@
 						if ( button === increase_y ) value += step;
 						if ( button === decrease_y ) value -= step;
 						editor[ key ].y = round(value, p); // editor watcher updates input value.
-						interval = setTimeout( update, 50 );
+						interval = setTimeout( update, dt );
 					break;
 				}
 
@@ -321,7 +319,7 @@
 
 	(function( editor,vector_z,increase_z,decrease_z,vector_droplist,entity_droplist,undo_button,redo_button ){
 
-		var state, interval;
+		var state, interval, dt = 20;
 
 		const RAD2DEG = 57.29577951308232;
 		const DEG2RAD = 0.017453292519943295;
@@ -376,7 +374,7 @@
 						if ( button === increase_z ) value += step;
 						if ( button === decrease_z ) value -= step;
 						editor[ key ].z = round(value, p); // editor watcher updates input value.
-						interval = setTimeout( update, clock.getDelta() );
+						interval = setTimeout( update, dt );
 					break;
 					case "rotation":
 						var p = 1, step = 1/Math.pow(10,p), min = -180, max = 180;
@@ -384,7 +382,7 @@
 						if ( button === increase_z ) value = THREE.Math.clamp( value+step, min, max );
 						if ( button === decrease_z ) value = THREE.Math.clamp( value-step, min, max );
 						editor[ key ]._z = DEG2RAD * round(value, p); // editor watcher updates input value.
-						interval = setTimeout( update, clock.getDelta() );
+						interval = setTimeout( update, dt );
 					break;
 					case "scale":
 						var p = 3, step = 1/Math.pow(10,p); // min = -100, max = 100;
@@ -392,7 +390,7 @@
 						if ( button === increase_z ) value += step;
 						if ( button === decrease_z ) value -= step;
 						editor[ key ].z = round(value, p); // editor watcher updates input value.
-						interval = setTimeout( update, 50 );
+						interval = setTimeout( update, dt );
 					break;
 				}
 
@@ -478,7 +476,7 @@
 
 	(function( editor,vector_w,increase_w,decrease_w,vector_droplist,entity_droplist,undo_button,redo_button ){
 
-		var state, interval;
+		var state, interval, dt = 20;
 
 		const RAD2DEG = 57.29577951308232;
 		const DEG2RAD = 0.017453292519943295;
@@ -539,7 +537,7 @@
 							editor[ key ].y -= step; // editor watcher updates input value.
 							editor[ key ].z -= step; // editor watcher updates input value.
 						}
-						interval = setTimeout( update, 50 );
+						interval = setTimeout( update, dt );
 					break;
 				}
 
