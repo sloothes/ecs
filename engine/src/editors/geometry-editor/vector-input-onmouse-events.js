@@ -47,7 +47,7 @@
 		//	if ( vector_droplist.value === "quaternion" ) return;
 
 			var button = this;
-			var clock = new THREE.Clock();
+		//	var clock = new THREE.Clock();
 
 			interval = setTimeout( function update() {
 
@@ -77,7 +77,7 @@
 						if ( button === increase_x ) value += step;
 						if ( button === decrease_x ) value -= step;
 						editor[ key ].x = round(value, p); // editor watcher updates input value.
-						interval = setTimeout( update, clock.getDelta() );
+						interval = setTimeout( update, 100 );
 					break;
 				}
 
@@ -205,7 +205,7 @@
 		//	if ( vector_droplist.value === "quaternion" ) return;
 
 			var button = this;
-			var clock = new THREE.Clock();
+		//	var clock = new THREE.Clock();
 
 			interval = setTimeout( function update() {
 
@@ -235,7 +235,7 @@
 						if ( button === increase_y ) value += step;
 						if ( button === decrease_y ) value -= step;
 						editor[ key ].y = round(value, p); // editor watcher updates input value.
-						interval = setTimeout( update, clock.getDelta() );
+						interval = setTimeout( update, 100 );
 					break;
 				}
 
@@ -362,7 +362,7 @@
 		//	if ( vector_droplist.value === "quaternion" ) return;
 
 			var button = this;
-			var clock = new THREE.Clock();
+		//	var clock = new THREE.Clock();
 
 			interval = setTimeout( function update() {
 
@@ -392,7 +392,7 @@
 						if ( button === increase_z ) value += step;
 						if ( button === decrease_z ) value -= step;
 						editor[ key ].z = round(value, p); // editor watcher updates input value.
-						interval = setTimeout( update, clock.getDelta() );
+						interval = setTimeout( update, 100 );
 					break;
 				}
 
@@ -519,7 +519,7 @@
 		//	if ( vector_droplist.value === "quaternion" ) return;
 
 			var button = this;
-			var clock = new THREE.Clock();
+		//	var clock = new THREE.Clock();
 
 			interval = setTimeout( function update() {
 
@@ -539,7 +539,7 @@
 							editor[ key ].y -= step; // editor watcher updates input value.
 							editor[ key ].z -= step; // editor watcher updates input value.
 						}
-						interval = setTimeout( update, clock.getDelta() );
+						interval = setTimeout( update, 100 );
 					break;
 				}
 
