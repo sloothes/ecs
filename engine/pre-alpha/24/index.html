@@ -137,15 +137,301 @@
 
 		</script>
 
-									<!-- OBJECT3D EDITOR -->
+									<!-- OBJECT EDITOR -->
 		<script src="/ecs/engine/src/editors/geometry-editor/geometry-tab-ui.js"></script>
 		<script src="/ecs/engine/src/editors/geometry-editor/ObjectEditor.js"></script>
 		<script src="/ecs/engine/src/editors/geometry-editor/vector-droplist-onchange-watchers.js"></script>
 		<script src="/ecs/engine/src/editors/geometry-editor/entity-droplist-onchange-watchers.js"></script>
 		<script src="/ecs/engine/src/editors/geometry-editor/vector-input-onchange-watchers.js"></script>
 		<script src="/ecs/engine/src/editors/geometry-editor/object-editor-watchers.js"></script>
+	<!-- script src="/ecs/engine/src/editors/geometry-editor/create-geometry-entity.js"></script -->
 
-		<!-- script src="/ecs/engine/src/editors/geometry-editor/create-geometry-entity.js"></script -->
+									<!-- MATERIAL EDITOR -->
+		<script src="/ecs/engine/src/editors/material-editor/material-tab-ui.js"></script>
+		<script src="/ecs/engine/src/editors/material-editor/MaterialManager.js"></script>
+		<script src="/ecs/engine/src/editors/material-editor/MaterialEditor.js"></script>
+		<script src="/ecs/engine/src/editors/material-editor/undo-redo-onmouse-events.js"></script>
+		<script src="/ecs/engine/src/editors/material-editor/map-droplist-onchange-watcher.js"></script>
+		<script src="/ecs/engine/src/editors/material-editor/key-droplist-onchange-watcher.js"></script>
+		<script src="/ecs/engine/src/editors/material-editor/vector-droplist-onchange-watcher.js"></script>
+		<script src="/ecs/engine/src/editors/material-editor/color-droplist-onchange-watcher.js"></script>
+		<script src="/ecs/engine/src/editors/material-editor/entity-droplist-onchange-watcher.js"></script>
+		<script src="/ecs/engine/src/editors/material-editor/text-input-onchange-watcher.js"></script>
+		<script src="/ecs/engine/src/editors/material-editor/value-input-onchange-watcher.js"></script>
+		<script src="/ecs/engine/src/editors/material-editor/vector-input-onchange-watchers.js"></script>
+		<script src="/ecs/engine/src/editors/material-editor/color-input-onchange-watchers.js"></script>
+		<script src="/ecs/engine/src/editors/material-editor/value-input-onmouse-events.js"></script>
+		<script src="/ecs/engine/src/editors/material-editor/vector-input-onmouse-events.js"></script>
+		<script src="/ecs/engine/src/editors/material-editor/color-input-onmouse-events.js"></script>
+		<script src="/ecs/engine/src/editors/material-editor/material-editor-watchers.js"></script>
+		<script src="/ecs/engine/src/editors/material-editor/exit-edit-onmouse-events.js"></script>
+		<script src="/ecs/engine/src/editors/material-editor/create-material-entity.js"></script>
+		<script src="/ecs/engine/src/editors/material-editor/clone-material-entity.js"></script>
+		<script src="/ecs/engine/src/editors/material-editor/remove-material-entity.js"></script>
+									<!-- TEXTURE EDITOR -->
+		<script src="/ecs/engine/src/editors/texture-editor/texture-tab-ui.js"></script>
+		<script src="/ecs/engine/src/editors/texture-editor/TextureManager.js"></script>
+		<script src="/ecs/engine/src/editors/texture-editor/TextureViewer.js"></script>
+		<script src="/ecs/engine/src/editors/texture-editor/TextureEditor.js"></script>
+		<script src="/ecs/engine/src/editors/texture-editor/undo-redo-onmouse-events.js"></script>
+		<script src="/ecs/engine/src/editors/texture-editor/key-droplist-onchange-watcher.js"></script>
+		<script src="/ecs/engine/src/editors/texture-editor/vector-droplist-onchange-watcher.js"></script>
+		<script src="/ecs/engine/src/editors/texture-editor/entity-droplist-onchange-watcher.js"></script>
+		<script src="/ecs/engine/src/editors/texture-editor/text-input-onchange-watcher.js"></script>
+		<script src="/ecs/engine/src/editors/texture-editor/value-input-onchange-watcher.js"></script>
+		<script src="/ecs/engine/src/editors/texture-editor/vector-input-onchange-watchers.js"></script>
+		<script src="/ecs/engine/src/editors/texture-editor/value-input-onmouse-events.js"></script>
+		<script src="/ecs/engine/src/editors/texture-editor/vector-input-onmouse-events.js"></script>
+		<script src="/ecs/engine/src/editors/texture-editor/texture-viewer-center.js"></script>
+		<script src="/ecs/engine/src/editors/texture-editor/texture-editor-watchers.js"></script>
+		<script src="/ecs/engine/src/editors/texture-editor/exit-edit-onmouse-events.js"></script>
+		<script src="/ecs/engine/src/editors/texture-editor/create-texture-entity.js"></script>
+		<script src="/ecs/engine/src/editors/texture-editor/replace-texture-image.js"></script>
+
+		<script src="/ecs/engine/editor/ViewportTab.js"></script>
+
+		<script>
+
+			localPlayer.controller.movementSpeed = 10;
+			TabUI.Geometry.role.classList.add("active");
+			TabUI.Geometry.tab.classList.add("in","active");
+
+			console.log( {"objectEditor"  : objectEditor } );  // debug!
+			console.log( {"materialEditor": materialEditor} ); // debug!
+			console.log( {"textureEditor" : textureEditor } ); // debug!
+
+		</script>
+
+		<script>
+
+			(function(){
+				var w = 10, h = 5;
+				var x = 0, y = h/2, z = 0;
+				var box = new THREE.BoxGeometry(w,h,w);
+				box.translate(0, h/2, 0);
+				var material = new THREE.MeshLambertMaterial();
+				material_entities.add( material );
+				var mesh = new THREE.Mesh(box, material);
+				mesh.name = "building 1";
+				mesh.position.set(x,0,z);
+				octree.importThreeMesh( mesh );
+				var geometry = new THREE.EdgesGeometry( box );
+				var segments = new THREE.LineSegments( geometry, material );
+				segments.name = "segments 2";
+				segments.position.copy( mesh.position );
+				scene.add( mesh );
+				entities.add( mesh );
+				cameraControls.rigidObjects.push( mesh );
+			})();
+
+		</script>
+
+		<script>
+/*
+		//	test material textures.
+
+			debugMode && (function(){
+
+				var material = new THREE.MeshStandardMaterial({name:"mtl00"});
+				var maps = "map,aoMap,envMap,lightMap,bumpMap,alphaMap,normalMap,specularMap,";
+				    maps +="gradientMap,emissiveMap,metalnessMap,roughnessMap,displacementMap";
+				maps.split(",").forEach( function( key ){
+					if ( key === "envMap" ) 
+						material[ key ] = new THREE.CubeTexture();
+					else
+						material[ key ] = new THREE.Texture();
+				}); debugMode && console.log( material );
+
+			//	Add texture entities.
+				for ( var key in material ) {
+					material[key] && material[key].isTexture
+					&& texture_entities.add( material[key] );
+				}
+
+			//	material_entities.add( material );
+
+			})();
+
+		//	Entities.
+
+		//	debugMode && (function(){
+		//		var r = 1;
+		//		var geometry = new THREE.BoxGeometry(r,r,r);
+		//		var material = new THREE.MeshLambertMaterial();
+		//		var cube = new THREE.Mesh(geometry, material);
+		//		cube.name = "local player cube";
+		//		var geometry = new THREE.SphereGeometry(0.7,8,12);
+		//		var material = new THREE.MeshLambertMaterial();
+		//		var sphere = new THREE.Mesh(geometry, material);
+		//		sphere.name = "local player sphere";
+		//	//	cube.add( sphere );
+		//		localPlayer.add( cube );
+		//	})();
+
+		//	box coluctions.
+
+			debugMode && (function(){
+
+				(function(){
+					var w = 10; var h = 5;
+					var box = new THREE.BoxGeometry(w,h,w);
+					box.translate(0, h/2, 0);
+					octree.importThreeMesh( new THREE.Mesh(box) );
+					var geometry = new THREE.EdgesGeometry( box );
+					var material = new THREE.LineBasicMaterial( { color: 0x00ff00 } );
+					var segments = new THREE.LineSegments( geometry, material );
+					segments.name = "segments 1";
+					scene.add( segments );
+				})();
+
+				(function(){
+					var w = 10, h = 20;
+					var x = 10, y = h/2, z = -4;
+					var box = new THREE.BoxGeometry(w,h,w);
+					box.translate(0, h/2, 0);
+					var material = new THREE.MeshLambertMaterial();
+					var mesh = new THREE.Mesh(box, material);
+					mesh.name = "building 1";
+					mesh.position.set(x,0,z);
+					octree.importThreeMesh( mesh );
+					var geometry = new THREE.EdgesGeometry( box );
+					var segments = new THREE.LineSegments( geometry, material );
+					segments.name = "segments 2";
+					segments.position.copy( mesh.position );
+					scene.add( mesh );
+					cameraControls.rigidObjects.push( mesh );
+				})();
+
+				(function(){
+					var w = 12, h = 10;
+					var x = 15, y = h/2, z = -11;
+					var box = new THREE.BoxGeometry(w,h,w);
+					box.translate(0, h/2, 0);
+					var material = new THREE.MeshLambertMaterial();
+					var mesh = new THREE.Mesh(box, material);
+					mesh.name = "building 2";
+					mesh.position.set(x,0,z);
+					octree.importThreeMesh( mesh );
+					var geometry = new THREE.EdgesGeometry( box );
+					var segments = new THREE.LineSegments( geometry, material );
+					segments.name = "segments 3";
+					segments.position.copy( mesh.position );
+					scene.add( mesh );
+					cameraControls.rigidObjects.push( mesh );
+				})();
+
+				(function(){
+					var w = 8, h = 10;
+					var x = -9, y = h/2, z = 5;
+					var box = new THREE.BoxGeometry(w,h,w);
+					box.translate(0, h/2, 0);
+					var material = new THREE.MeshLambertMaterial();
+					var mesh = new THREE.Mesh(box, material);
+					mesh.name = "building 3";
+					mesh.position.set(x,0,z);
+					octree.importThreeMesh( mesh );
+					var geometry = new THREE.EdgesGeometry( box );
+					var segments = new THREE.LineSegments( geometry, material );
+					segments.name = "segments 4";
+					segments.position.copy( mesh.position );
+					scene.add( mesh );
+					cameraControls.rigidObjects.push( mesh );
+				})();
+
+				(function(){
+					var w = 12, h = 20, d = 2;
+					var x = -14, y = h/2, z = 10;
+					var box = new THREE.BoxGeometry(w,h,d);
+					box.translate(0, h/2, 0);
+					var material = new THREE.MeshLambertMaterial();
+					var mesh = new THREE.Mesh(box, material);
+					mesh.name = "building 4";
+					mesh.position.set(x,0,z);
+					octree.importThreeMesh( mesh );
+					var geometry = new THREE.EdgesGeometry( box );
+					var segments = new THREE.LineSegments( geometry, material );
+					segments.name = "segments 5";
+					segments.position.copy( mesh.position );
+					scene.add( mesh );
+					cameraControls.rigidObjects.push( mesh );
+				})();
+
+				(function(){
+					var w = 4, h = 20, d = 20;
+					var x = -17, y = h/2, z = 12;
+					var box = new THREE.BoxGeometry(w,h,d);
+					box.translate(0, h/2, 0);
+					var material = new THREE.MeshLambertMaterial();
+					var mesh = new THREE.Mesh(box, material);
+					mesh.name = "building 5";
+					mesh.position.set(x,0,z);
+					octree.importThreeMesh( mesh );
+					var geometry = new THREE.EdgesGeometry( box );
+					var segments = new THREE.LineSegments( geometry, material );
+					segments.name = "segments 6";
+					segments.position.copy( mesh.position );
+					scene.add( mesh );
+					cameraControls.rigidObjects.push( mesh );
+				})();
+
+			//	var groupA = new THREE.Object3D();
+			//	var groupB = new THREE.Object3D();
+
+			//	groupA.add( scene.getObjectByName("building 1").clone() );
+			//	groupA.add( scene.getObjectByName("building 2").clone() );
+			//	groupB.add( scene.getObjectByName("building 3").clone() );
+			//	groupB.add( scene.getObjectByName("building 4").clone() );
+			//	groupB.add( scene.getObjectByName("building 5").clone() );
+
+			})();
+
+		//	Add entities.
+
+		//	Add Object3D entities.
+			scene.traverse(function( object ){
+				entities.add( object );
+			});
+
+		//	Add Material entities.
+			entities.forEach( function( entity ){
+
+			//	It looks in "entities" manager only.
+			//	It looks the root Object3D, but not children.
+
+				var object = scene.getObjectById( entity.id );
+				if ( !object || !object.material ) return; // important!
+
+				if ( Array.isArray( object.material ) )
+					object.material.forEach( addtoManager );
+				else 
+					addtoManager( object.material );
+
+				function addtoManager( material ){
+					rename( material );
+					addEntity( material );
+				}
+
+				function rename( material ){
+					if ( material.name ) return;
+					material.name = "mtl"+material.id;
+				}
+
+				function addEntity( material ){
+					var included = material_entities.includes( material );
+					debugMode && console.log( "included:", included );
+					if ( !included ) material_entities.add( material );
+				}
+			});
+
+		//	Add Texture entities.
+			material_entities.forEach( function( material ){
+				for ( var name in material ) (function( key ){
+					material[key] && material[key].isTexture 
+					&& texture_entities.add( material[ key ] );
+				})( name );
+			});
+*/
+		</script>
 
 		<script>
 
@@ -1374,290 +1660,6 @@
 				return editor;
 
 			})( new THREE.Object3D() );
-*/
-		</script>
-
-									<!-- MATERIAL EDITOR -->
-		<script src="/ecs/engine/src/editors/material-editor/material-tab-ui.js"></script>
-		<script src="/ecs/engine/src/editors/material-editor/MaterialManager.js"></script>
-		<script src="/ecs/engine/src/editors/material-editor/MaterialEditor.js"></script>
-		<script src="/ecs/engine/src/editors/material-editor/undo-redo-onmouse-events.js"></script>
-		<script src="/ecs/engine/src/editors/material-editor/map-droplist-onchange-watcher.js"></script>
-		<script src="/ecs/engine/src/editors/material-editor/key-droplist-onchange-watcher.js"></script>
-		<script src="/ecs/engine/src/editors/material-editor/vector-droplist-onchange-watcher.js"></script>
-		<script src="/ecs/engine/src/editors/material-editor/color-droplist-onchange-watcher.js"></script>
-		<script src="/ecs/engine/src/editors/material-editor/entity-droplist-onchange-watcher.js"></script>
-		<script src="/ecs/engine/src/editors/material-editor/text-input-onchange-watcher.js"></script>
-		<script src="/ecs/engine/src/editors/material-editor/value-input-onchange-watcher.js"></script>
-		<script src="/ecs/engine/src/editors/material-editor/vector-input-onchange-watchers.js"></script>
-		<script src="/ecs/engine/src/editors/material-editor/color-input-onchange-watchers.js"></script>
-		<script src="/ecs/engine/src/editors/material-editor/value-input-onmouse-events.js"></script>
-		<script src="/ecs/engine/src/editors/material-editor/vector-input-onmouse-events.js"></script>
-		<script src="/ecs/engine/src/editors/material-editor/color-input-onmouse-events.js"></script>
-		<script src="/ecs/engine/src/editors/material-editor/material-editor-watchers.js"></script>
-		<script src="/ecs/engine/src/editors/material-editor/exit-edit-onmouse-events.js"></script>
-		<script src="/ecs/engine/src/editors/material-editor/create-material-entity.js"></script>
-		<script src="/ecs/engine/src/editors/material-editor/clone-material-entity.js"></script>
-		<script src="/ecs/engine/src/editors/material-editor/remove-material-entity.js"></script>
-									<!-- TEXTURE EDITOR -->
-		<script src="/ecs/engine/src/editors/texture-editor/texture-tab-ui.js"></script>
-		<script src="/ecs/engine/src/editors/texture-editor/TextureManager.js"></script>
-		<script src="/ecs/engine/src/editors/texture-editor/TextureViewer.js"></script>
-		<script src="/ecs/engine/src/editors/texture-editor/TextureEditor.js"></script>
-		<script src="/ecs/engine/src/editors/texture-editor/undo-redo-onmouse-events.js"></script>
-		<script src="/ecs/engine/src/editors/texture-editor/key-droplist-onchange-watcher.js"></script>
-		<script src="/ecs/engine/src/editors/texture-editor/vector-droplist-onchange-watcher.js"></script>
-		<script src="/ecs/engine/src/editors/texture-editor/entity-droplist-onchange-watcher.js"></script>
-		<script src="/ecs/engine/src/editors/texture-editor/text-input-onchange-watcher.js"></script>
-		<script src="/ecs/engine/src/editors/texture-editor/value-input-onchange-watcher.js"></script>
-		<script src="/ecs/engine/src/editors/texture-editor/vector-input-onchange-watchers.js"></script>
-		<script src="/ecs/engine/src/editors/texture-editor/value-input-onmouse-events.js"></script>
-		<script src="/ecs/engine/src/editors/texture-editor/vector-input-onmouse-events.js"></script>
-		<script src="/ecs/engine/src/editors/texture-editor/texture-viewer-center.js"></script>
-		<script src="/ecs/engine/src/editors/texture-editor/texture-editor-watchers.js"></script>
-		<script src="/ecs/engine/src/editors/texture-editor/exit-edit-onmouse-events.js"></script>
-		<script src="/ecs/engine/src/editors/texture-editor/create-texture-entity.js"></script>
-		<script src="/ecs/engine/src/editors/texture-editor/replace-texture-image.js"></script>
-
-		<script src="/ecs/engine/editor/ViewportTab.js"></script>
-
-		<script>
-
-			localPlayer.controller.movementSpeed = 10;
-			TabUI.Geometry.role.classList.add("active");
-			TabUI.Geometry.tab.classList.add("in","active");
-
-			console.log( {"objectEditor"  : objectEditor } );  // debug!
-			console.log( {"materialEditor": materialEditor} ); // debug!
-			console.log( {"textureEditor" : textureEditor } ); // debug!
-
-		</script>
-
-		<script>
-
-			(function(){
-				var w = 10, h = 5;
-				var x = 0, y = h/2, z = 0;
-				var box = new THREE.BoxGeometry(w,h,w);
-				box.translate(0, h/2, 0);
-				var material = new THREE.MeshLambertMaterial();
-				material_entities.add( material );
-				var mesh = new THREE.Mesh(box, material);
-				mesh.name = "building 1";
-				mesh.position.set(x,0,z);
-				octree.importThreeMesh( mesh );
-				var geometry = new THREE.EdgesGeometry( box );
-				var segments = new THREE.LineSegments( geometry, material );
-				segments.name = "segments 2";
-				segments.position.copy( mesh.position );
-				scene.add( mesh );
-				entities.add( mesh );
-				cameraControls.rigidObjects.push( mesh );
-			})();
-
-/*
-		//	test material textures.
-
-			debugMode && (function(){
-
-				var material = new THREE.MeshStandardMaterial({name:"mtl00"});
-				var maps = "map,aoMap,envMap,lightMap,bumpMap,alphaMap,normalMap,specularMap,";
-				    maps +="gradientMap,emissiveMap,metalnessMap,roughnessMap,displacementMap";
-				maps.split(",").forEach( function( key ){
-					if ( key === "envMap" ) 
-						material[ key ] = new THREE.CubeTexture();
-					else
-						material[ key ] = new THREE.Texture();
-				}); debugMode && console.log( material );
-
-			//	Add texture entities.
-				for ( var key in material ) {
-					material[key] && material[key].isTexture
-					&& texture_entities.add( material[key] );
-				}
-
-			//	material_entities.add( material );
-
-			})();
-
-		//	Entities.
-
-		//	debugMode && (function(){
-		//		var r = 1;
-		//		var geometry = new THREE.BoxGeometry(r,r,r);
-		//		var material = new THREE.MeshLambertMaterial();
-		//		var cube = new THREE.Mesh(geometry, material);
-		//		cube.name = "local player cube";
-		//		var geometry = new THREE.SphereGeometry(0.7,8,12);
-		//		var material = new THREE.MeshLambertMaterial();
-		//		var sphere = new THREE.Mesh(geometry, material);
-		//		sphere.name = "local player sphere";
-		//	//	cube.add( sphere );
-		//		localPlayer.add( cube );
-		//	})();
-
-		//	box coluctions.
-
-			debugMode && (function(){
-
-				(function(){
-					var w = 10; var h = 5;
-					var box = new THREE.BoxGeometry(w,h,w);
-					box.translate(0, h/2, 0);
-					octree.importThreeMesh( new THREE.Mesh(box) );
-					var geometry = new THREE.EdgesGeometry( box );
-					var material = new THREE.LineBasicMaterial( { color: 0x00ff00 } );
-					var segments = new THREE.LineSegments( geometry, material );
-					segments.name = "segments 1";
-					scene.add( segments );
-				})();
-
-				(function(){
-					var w = 10, h = 20;
-					var x = 10, y = h/2, z = -4;
-					var box = new THREE.BoxGeometry(w,h,w);
-					box.translate(0, h/2, 0);
-					var material = new THREE.MeshLambertMaterial();
-					var mesh = new THREE.Mesh(box, material);
-					mesh.name = "building 1";
-					mesh.position.set(x,0,z);
-					octree.importThreeMesh( mesh );
-					var geometry = new THREE.EdgesGeometry( box );
-					var segments = new THREE.LineSegments( geometry, material );
-					segments.name = "segments 2";
-					segments.position.copy( mesh.position );
-					scene.add( mesh );
-					cameraControls.rigidObjects.push( mesh );
-				})();
-
-				(function(){
-					var w = 12, h = 10;
-					var x = 15, y = h/2, z = -11;
-					var box = new THREE.BoxGeometry(w,h,w);
-					box.translate(0, h/2, 0);
-					var material = new THREE.MeshLambertMaterial();
-					var mesh = new THREE.Mesh(box, material);
-					mesh.name = "building 2";
-					mesh.position.set(x,0,z);
-					octree.importThreeMesh( mesh );
-					var geometry = new THREE.EdgesGeometry( box );
-					var segments = new THREE.LineSegments( geometry, material );
-					segments.name = "segments 3";
-					segments.position.copy( mesh.position );
-					scene.add( mesh );
-					cameraControls.rigidObjects.push( mesh );
-				})();
-
-				(function(){
-					var w = 8, h = 10;
-					var x = -9, y = h/2, z = 5;
-					var box = new THREE.BoxGeometry(w,h,w);
-					box.translate(0, h/2, 0);
-					var material = new THREE.MeshLambertMaterial();
-					var mesh = new THREE.Mesh(box, material);
-					mesh.name = "building 3";
-					mesh.position.set(x,0,z);
-					octree.importThreeMesh( mesh );
-					var geometry = new THREE.EdgesGeometry( box );
-					var segments = new THREE.LineSegments( geometry, material );
-					segments.name = "segments 4";
-					segments.position.copy( mesh.position );
-					scene.add( mesh );
-					cameraControls.rigidObjects.push( mesh );
-				})();
-
-				(function(){
-					var w = 12, h = 20, d = 2;
-					var x = -14, y = h/2, z = 10;
-					var box = new THREE.BoxGeometry(w,h,d);
-					box.translate(0, h/2, 0);
-					var material = new THREE.MeshLambertMaterial();
-					var mesh = new THREE.Mesh(box, material);
-					mesh.name = "building 4";
-					mesh.position.set(x,0,z);
-					octree.importThreeMesh( mesh );
-					var geometry = new THREE.EdgesGeometry( box );
-					var segments = new THREE.LineSegments( geometry, material );
-					segments.name = "segments 5";
-					segments.position.copy( mesh.position );
-					scene.add( mesh );
-					cameraControls.rigidObjects.push( mesh );
-				})();
-
-				(function(){
-					var w = 4, h = 20, d = 20;
-					var x = -17, y = h/2, z = 12;
-					var box = new THREE.BoxGeometry(w,h,d);
-					box.translate(0, h/2, 0);
-					var material = new THREE.MeshLambertMaterial();
-					var mesh = new THREE.Mesh(box, material);
-					mesh.name = "building 5";
-					mesh.position.set(x,0,z);
-					octree.importThreeMesh( mesh );
-					var geometry = new THREE.EdgesGeometry( box );
-					var segments = new THREE.LineSegments( geometry, material );
-					segments.name = "segments 6";
-					segments.position.copy( mesh.position );
-					scene.add( mesh );
-					cameraControls.rigidObjects.push( mesh );
-				})();
-
-			//	var groupA = new THREE.Object3D();
-			//	var groupB = new THREE.Object3D();
-
-			//	groupA.add( scene.getObjectByName("building 1").clone() );
-			//	groupA.add( scene.getObjectByName("building 2").clone() );
-			//	groupB.add( scene.getObjectByName("building 3").clone() );
-			//	groupB.add( scene.getObjectByName("building 4").clone() );
-			//	groupB.add( scene.getObjectByName("building 5").clone() );
-
-			})();
-
-		//	Add entities.
-
-		//	Add Object3D entities.
-			scene.traverse(function( object ){
-				entities.add( object );
-			});
-
-		//	Add Material entities.
-			entities.forEach( function( entity ){
-
-			//	It looks in "entities" manager only.
-			//	It looks the root Object3D, but not children.
-
-				var object = scene.getObjectById( entity.id );
-				if ( !object || !object.material ) return; // important!
-
-				if ( Array.isArray( object.material ) )
-					object.material.forEach( addtoManager );
-				else 
-					addtoManager( object.material );
-
-				function addtoManager( material ){
-					rename( material );
-					addEntity( material );
-				}
-
-				function rename( material ){
-					if ( material.name ) return;
-					material.name = "mtl"+material.id;
-				}
-
-				function addEntity( material ){
-					var included = material_entities.includes( material );
-					debugMode && console.log( "included:", included );
-					if ( !included ) material_entities.add( material );
-				}
-			});
-
-		//	Add Texture entities.
-			material_entities.forEach( function( material ){
-				for ( var name in material ) (function( key ){
-					material[key] && material[key].isTexture 
-					&& texture_entities.add( material[ key ] );
-				})( name );
-			});
 */
 		</script>
 
