@@ -25,7 +25,7 @@
 			select.appendChild( option );
 		})();
 
-	//	watch(select, "onchange", function(property,event,value){;}); // debug!
+		watch(select, "onchange", function(property,event,value){;}); // debug!
 
 	//	Call watchers.
 		select.addEventListener( "change", function(){
