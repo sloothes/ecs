@@ -163,13 +163,13 @@
 			//  else value_input.value = editor[key]; // boolean as string.
 
 		//	editor manager watcher updates input values.
-		//	setTimeout(function(value){ editor[key].x = Number(value); }, null, value);
+		//	setTimeout(function(value){ editor[key].z = Number(value); }, null, value);
 
 		});
 
 	})(
 		sceneEditor, // editor,
-		document.querySelector("input#geometry-vector-x-input"), // vector_x,
+		document.querySelector("input#geometry-vector-z-input"), // vector_z,
 		document.querySelector("select#geometry-vector-droplist"), // vector_droplist.
 		document.querySelector("select#geometry-entities-droplist") // entity_droplist, not used!!!
 	);
