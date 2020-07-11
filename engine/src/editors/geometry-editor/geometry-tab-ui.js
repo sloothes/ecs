@@ -287,12 +287,12 @@
 		input.style.cssText = "color:#000;border:none;display:inline;width:80px;"
 			+ "margin:0px 5px;text-align:center;font-size:large;font-weigth:bold;background:none;";
 
-		watch(input, "onchange", function(property,event,value){;}); // debug!
+	//	watch(input, "onchange", function(property,event,value){;}); // debug!
 
 	//	Call watchers.
 		input.addEventListener( "change", function(){
 			this.blur(); // important!
-			callWatchers(this, "onchange", "change", this.value );
+	//		callWatchers(this, "onchange", "change", this.value );
 		});
 
 		vect.appendChild(prev);

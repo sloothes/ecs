@@ -86,7 +86,7 @@
 	//	Exit from edit mode.
 
 		function resetLatestEntityValue(){
-			latestEntity.value = entity_droplist = "";
+			latestEntity.value = entity_droplist.value = "";
 		}
 
 		function enableCameraRigidObjects(){
@@ -124,6 +124,7 @@
 			if ( editor.update( value ) ) {
 
 			//	switchToEditMode.
+
 				var object = getObjectByEntityId( value );
 				if ( !object ) return exitFromEditMode();
 
