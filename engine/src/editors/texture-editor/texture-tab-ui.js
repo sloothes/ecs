@@ -46,7 +46,7 @@
 	//	var tab = TabUI.Texture.tab;
 
 		var row = document.createElement("h3");
-		row.style.cssText = "height:260px;border:none;text-align:center;";
+		row.style.cssText = "display:none;height:260px;border:none;text-align:center;";
 
 		var canvas = document.createElement("canvas");
 		canvas.width = 256; canvas.height = 256;
