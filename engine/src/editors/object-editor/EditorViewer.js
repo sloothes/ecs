@@ -64,7 +64,7 @@
 		viewer.renderer.gammaOutput = true;
 		viewer.renderer.shadowMap.enabled = true;
 		viewer.renderer.setClearAlpha( 0 ); // for transparent rendering set clear alpha: 0.
-		viewer.renderer.setClearColor( 0x000000, 0 ); // for transparent rendering set clear alpha: 0.
+		viewer.renderer.setClearColor( 0x000000, 1 ); // for transparent rendering set clear alpha: 0.
 		viewer.renderer.setPixelRatio( window.devicePixelRatio );
 		viewer.renderer.setSize( viewer.canvas.width, viewer.canvas.height );
 		viewer.renderer.domElement.style.background = "none";  // transparent rendering. important!
