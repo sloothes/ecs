@@ -1,12 +1,98 @@
+//	TextureEditor.js
+
+	function TextureEditor(){
+		var texture = new THREE.Texture();
+		Object.setPrototypeOf( texture, TextureEditor.prototype );
+		return texture; // important!
+	}
+
+	TextureEditor.prototype = Object.create(THREE.Texture.prototype); // important!
+
+	TextureEditor.prototype.copy = function( source ){ 
+		THREE.Texture.prototype.copy.call( this, source ); // important!
+		return this;
+	};
+
+	TextureEditor.prototype.reset = function(){ 
+		this.copy( new THREE.Texture() ); 
+		this.name = "texture editor";
+		this.uuid = THREE.Math.generateUUID();
+	};
+
+	TextureEditor.prototype.parse = function( json ){
+	//	param: a texture json {object}
+	//	the missing TextureLoader.parse;
+
+		var editor = this;
+
+		for ( var key in json ) {
+			switch ( key ){
+
+				case "image":
+					console.warn("case:",key,"TODO!"); // TODO!
+				break;
+
+				case "center":
+				case "offset":
+				case "repeat":
+					editor[ key ].x = json[ key ][0];
+					editor[ key ].y = json[ key ][1];
+				break;
+
+				case "wrap":
+					editor.wrapS = json[ key ][0];
+					editor.wrapT = json[ key ][1];
+				break;
+
+				default:
+					editor[ key ] = json[ key ];
+				break;
+			}
+		}
+
+	};
+
+	TextureEditor.prototype.update = function( value ){
+
+	//	Copies the values of the target texture of textures
+	//	entity manager. Does not updates the target texture.
+	//	dependences: texture_entities {texture manager},
+	//	param: a texture id {string or number},
+
+		var editor = this;
+
+	//	get target texture.
+		var texture = getTextureByEntityId( value );
+		var isEditing = !!texture; // boolean!
+
+	//	update editor (copy).
+		if ( texture ) {
+			editor.copy( texture );
+			editor.name = texture.name;
+			editor.uuid = texture.uuid;
+		}
+
+	//	return boolean.
+		console.log("editor isEditing:", isEditing);
+		return isEditing; // boolean, important!
+
+	};
+
+	const textureEditor = new TextureEditor();
+
+
+//	==================================================================================================  //
+
+
 //	MaterialEditor.js
 
 	function MaterialEditor(){
-		var material = new THREE.Material();
+		var material = new THREE.MeshStandardMaterial();
 		Object.setPrototypeOf( material, MaterialEditor.prototype );
 		return material; // important!
 	}
 
-	MaterialEditor.prototype = Object.create(THREE.Material.prototype); // important!
+	MaterialEditor.prototype = Object.create(THREE.MeshStandardMaterial.prototype); // important!
 
 	MaterialEditor.prototype.copy = function( source ){ 
 		THREE[ source.type ].prototype.copy.call( this, source ); // important!
@@ -263,86 +349,71 @@
 	const materialEditor = new MaterialEditor();
 
 
-
-/*
-
-	//	if ( !material ) {
-	//		editor.reset();
-	//		console.log("editor isEditing:", isEditing);
-	//		return isEditing; // false, important!
-	//	}
-
-	//	copy material (update).
-	//	editor.copy( material );
-	//	editor.type = material.type;
-	//	editor.uuid = material.uuid;
+//	==================================================================================================  //
 
 
-	MaterialEditor.prototype.fromJSON = function( json ){
-	//	param: a texture json {object}
+//	MeshEditor.js
 
-		var editor = this;
+	function MeshEditor(){
+		var material = materialEditor;
+		material.map = textureEditor;
+		var geometry = new THREE.PlaneGeometry( 252, 252, 1, 1 ); // .rotateX(-Math.PI/2); // geometryEditor??
+		var editor = new THREE.Mesh( geometry, material );
+		Object.setPrototypeOf( object, MeshEditor.prototype );
+		return editor; // important!
+	}
 
-		var loader = new THREE.MaterialLoader();
-		var material = loader.parse( json );
-		debugMode && console.log( material );
+	MeshEditor.prototype = Object.create(THREE.Mesh.prototype); // important!
 
-		editor.reset(); // important!
-
-		editor.copy( material );
-		editor.type = material.type;
-		editor.uuid = material.uuid;
-
-	};
-
-	MaterialEditor.prototype.undo = function(){
+	MeshEditor.prototype.reset = function(){ 
 
 		var editor = this;
 
-		if ( !undo.length ) return;
+	//	TextureEditor.
+		textureEditor.reset();
 
-	//	Get undo json.
-		var json = undo.shift();
+	//	MaterialEditor.
+		materialEditor.reset();
+		materialEditor.map = textureEditor;
 
-		if ( !json ) return;
+	//	textureEditor.needsUpdate = true; // important!
+	//	materialEditor.needsUpdate = true; // important!
 
-	//	Move json to redo.
-		redo.unshift( json );
-
-		clearTimeout( interval );
-		interval = setTimeout( function(){
-
-		//	Copy material state (undo).
-			editor.fromJSON( json ); // update.
-
-			debugMode && console.log( "undo:", undo.length, "redo:", redo.length );
-
-		}, 250);
+		editor.scale.set(1,1,1);
+		editor.position.set(0,0,0);
+		editor.rotation.set(0,0,0);
+		editor.quaternion.set(0,0,0,1);
+		editor.material = materialEditor;
+		editor.material.needsUpdate = true; // important!
+		editor.material.map.needsUpdate = true; // important!
+		editor.name = "mesh editor";
 
 	};
 
-	MaterialEditor.prototype.redo = function(){
+	MeshEditor.prototype.update = function( value ){ 
+
+	//	Copies the values of the target mesh of
+	//	scene. Does not updates the target mesh.
+	//	dependences: entities {scene},
+	//	param: a object3D id {string or number}.
 
 		var editor = this;
 
-		if ( !redo.length ) return;
+	//	Reset editor.
+		editor.reset();
 
-	//	Get redo json.
-		var json = redo.shift();
+	//	Get new object.
+		var object = getObjectByEntityId( value ); 
+		var isEditing = !!object; // boolean!
 
-		if ( !json ) return;
+	//	Update editor (copy).
+		object && editor.copy( object );
+		debugMode && console.log( editor );
 
-	//	Move json to undo.
-		undo.unshift( json );
+	//	return boolean.
+		console.log("editor isEditing:", isEditing);
+		return isEditing; // boolean, important!
 
-		clearTimeout( interval );
-		interval = setTimeout( function(){
-
-		//	Copy texture state (redo).
-			editor.fromJSON( json ); // update.
-
-			debugMode && console.log( "undo:", undo.length, "redo:", redo.length );
-
-		}, 250);
 	};
-*/
+
+	const meshEditor = new MeshEditor(); // THREE.Mesh.
