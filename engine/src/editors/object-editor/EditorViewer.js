@@ -22,7 +22,7 @@
 
 		viewer.camera = (function(){
 			var aspect = (viewer.canvas.width / viewer.canvas.height);
-			return new THREE.PerspectiveCamera( 50, aspect, 1, 10000 );
+			return new THREE.PerspectiveCamera( 35, aspect, 1, 10000 );
 		})();
 
 	//	Viewer controls.
@@ -44,7 +44,7 @@
 	//	Viewer grid.
 
 		viewer.grid = (function(){
-			var helper = new THREE.GridHelper( 250, 10, 0x444444, 0x444444 );
+			var helper = new THREE.GridHelper( 10, 10, 0x444444, 0x444444 );
 			helper.name = "viewer grid";
 			helper.position.y = 0.01;
 			viewer.scene.add( helper );
@@ -73,5 +73,7 @@
 			requestAnimationFrame( render );
 			viewer.renderer.render( viewer.scene, viewer.camera );
 		})();
+
+		viewer.controls.focus(viewer.grid, true);
 
 	})( editorViewer );
