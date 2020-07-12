@@ -48,5 +48,5 @@
 		});
 
 	})(
-		scene, document.querySelector("select#geometry-entities-droplist") // entity_droplist.
+		scene, document.querySelector("select#editor-entities-droplist") // entity_droplist.
 	);
