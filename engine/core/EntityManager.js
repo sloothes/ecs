@@ -80,10 +80,10 @@
 			try {
 
 			//	global const "entity_droplist" is defined in geometry-tab-ui.js;
-				var selector = "select#geometry-entities-droplist";
+				var selector = "select#editor-entities-droplist";
 				var entity_droplist = document.querySelector(selector);
 
-				if ( !entity_droplist ) return;
+				if ( !entity_droplist ) throw selector+" not found!";
 
 			//	Add options.
 				while ( added_objs.length ) (function(object){
@@ -97,7 +97,7 @@
 					entity_droplist.appendChild( option );
 				})( added_objs.shift() );
 
-			} catch(err){ console.warn( selector, "did not found!" ); }
+			} catch(err){ console.error( err ); }
 
 		})();
 
@@ -154,10 +154,10 @@
 			try {
 
 			//	global const "entity_droplist" is defined in geometry-tab-ui.js;
-				var selector = "select#geometry-entities-droplist";
+				var selector = "select#editor-entities-droplist";
 				var entity_droplist = document.querySelector(selector);
 
-				if ( !entity_droplist ) return;
+				if ( !entity_droplist ) throw selector+" not found!";
 
 			//	Remove options.
 				while ( remove_ids.length ) (function(id){
@@ -166,7 +166,7 @@
 					option && option.remove();
 				})( remove_ids.shift() );
 
-			} catch(err){ console.warn( selector, "did not found!" ); }
+			} catch(err){ console.error( err ); }
 
 		})();
 
