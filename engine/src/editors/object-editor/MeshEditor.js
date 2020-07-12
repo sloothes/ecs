@@ -408,7 +408,28 @@
 
 	//	Update editor (copy).
 		object && editor.copy( object );
+		object.material && editor.material.update(material.id)
 		debugMode && console.log( editor );
+
+	//	update material editor.
+		if ( object && object.material ) {
+			(function( material ){
+				var id = String(material.id);
+				materialEditor.update( id );
+				var selector = "select#material-entities-droplist";
+				try {document.querySelector(selector).value = id;} catch(err){;}
+			})( object.material );
+		}
+
+	//	update texture editor.
+		if ( object && object.material && object.material.map ) {
+			(function( texture ){
+				var id = String(texture.id);
+				textureEditor.update( id );
+				var selector = "select#texture-entities-droplist";
+				try {document.querySelector(selector).value = id;} catch(err){;}
+			})( object.material.map );
+		}
 
 	//	return boolean.
 		console.log("editor isEditing:", isEditing);
@@ -417,3 +438,4 @@
 	};
 
 	const meshEditor = new MeshEditor(); // THREE.Mesh.
+	debugMode && console.log( "editor:", meshEditor );
