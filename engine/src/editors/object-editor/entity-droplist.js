@@ -115,7 +115,7 @@
 	);
 
 
-//	Update material editor droplist.
+//	Call material entity droplist.
 
 	(function(entity_droplist){
 

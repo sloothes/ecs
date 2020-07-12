@@ -144,15 +144,6 @@
 		input.style.cssText = "color:#000;border:none;display:inline;width:80px;"
 		+ "margin:0px 5px;text-align:center;font-size:large;font-weigth:bold;background:none;";
 
-	//	watch(input, "onchange", function(property,event,value){}); // debug!
-	//	input.addEventListener( "change", function(){
-	//		this.blur(); callWatchers(this, "onchange", "change", this.value ); // important!
-	//	});
-
-	//	keyInputControls.
-		input.addEventListener( "blur", enableKeyInputControls );
-		input.addEventListener( "focus", disableKeyInputControls );
-
 		vect.appendChild(prev);
 		vect.appendChild(input);
 		vect.appendChild(next);
@@ -193,15 +184,6 @@
 		input.classList.add("form-control","text-center");
 		input.style.cssText = "color:#000;border:none;display:inline;width:80px;"
 		+ "margin:0px 5px;text-align:center;font-size:large;font-weigth:bold;background:none;";
-
-	//	watch(input, "onchange", function(property,event,value){}); // debug!
-	//	input.addEventListener( "change", function(){
-	//		this.blur(); callWatchers(this, "onchange", "change", this.value ); // important!
-	//	});
-
-	//	keyInputControls.
-		input.addEventListener( "blur", enableKeyInputControls );
-		input.addEventListener( "focus", disableKeyInputControls );
 
 		vect.appendChild(prev);
 		vect.appendChild(input);
@@ -244,15 +226,6 @@
 		input.style.cssText = "color:#000;border:none;display:inline;width:80px;"
 		+ "margin:0px 5px;text-align:center;font-size:large;font-weigth:bold;background:none;";
 
-	//	watch(input, "onchange", function(property,event,value){}); // debug!
-	//	input.addEventListener( "change", function(){
-	//		this.blur(); callWatchers(this, "onchange", "change", this.value ); // important!
-	//	});
-
-	//	keyInputControls.
-		input.addEventListener( "blur", enableKeyInputControls );
-		input.addEventListener( "focus", disableKeyInputControls );
-
 		vect.appendChild(prev);
 		vect.appendChild(input);
 		vect.appendChild(next);
@@ -293,15 +266,6 @@
 		input.classList.add("form-control","text-center");
 		input.style.cssText = "color:#000;border:none;display:inline;width:80px;"
 		+ "margin:0px 5px;text-align:center;font-size:large;font-weigth:bold;background:none;";
-
-	//	watch(input, "onchange", function(property,event,value){}); // debug!
-	//	input.addEventListener( "change", function(){
-	//		this.blur(); callWatchers(this, "onchange", "change", this.value ); // important!
-	//	});
-
-	//	keyInputControls.
-		input.addEventListener( "blur", enableKeyInputControls );
-		input.addEventListener( "focus", disableKeyInputControls );
 
 		vect.appendChild(prev);
 		vect.appendChild(input);
