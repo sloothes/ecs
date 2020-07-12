@@ -1,14 +1,5 @@
 //	vector-droplist.js
 
-//	Call Watchers.
-
-	(function( vector_droplist ){
-		vector_droplist.addEventListener( "change", function(){
-			this.blur(); callWatchers(this, "onchange", "change", this.value ); // important!
-		});
-	})( document.querySelector("select#editor-vector-droplist") ); // vector_droplist.
-
-
 //	Update vector input values.
 
 	(function(editor,vector_x,vector_y,vector_z,vector_w,vector_droplist){
@@ -65,4 +56,13 @@
 		document.querySelector("input#editor-vector-w-input"),  // vector_w,
 		document.querySelector("select#editor-vector-droplist") // vector_droplist.
 	);
+
+
+//	Call Watchers.
+
+	(function( vector_droplist ){
+		vector_droplist.addEventListener( "change", function(){
+			this.blur(); callWatchers(this, "onchange", "change", this.value ); // important!
+		});
+	})( document.querySelector("select#editor-vector-droplist") ); // vector_droplist.
 
