@@ -96,10 +96,11 @@
 		//	choose new object.
 			object = getObjectByEntityId( value ); if ( !object ) return;
 
-		//	change object parent (here is the trick).
+		//	change object parent (here is the trick; this will draw a copy(?) of
+		//	the object in viewer scene without remove the object from main scene).
 			object.parent = viewer.scene; // important!
 
-		//	Add object to viewer (will draw a copy(?) of the object in viewer scene).
+		//	Add object to viewer scene.
 			viewer.scene.add( object );
 
 		//	view setup.
