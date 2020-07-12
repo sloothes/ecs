@@ -1,18 +1,5 @@
 //	entity-droplist.js
 
-//	Call Watchers.
-
-	(function( entity_droplist ){
-		entity_droplist.addEventListener( "change", function(){
-			this.blur(); callWatchers(this, "onchange", "change", this.value ); // important!
-		});
-	})( document.querySelector("select#editor-entities-droplist") ); // entity_droplist.
-
-
-//	CameraControls rigid objects,
-//	keeps camera controls rigid objects at edit mode.
-	const rigidObjects = []; // cameraControls.rigidObjects;
-
 //	Last editor entity droplist value.
 //	keeps track of last entity droplist value.
 	const latestEntityId = { value:"" }; // called first, updated last.
@@ -33,7 +20,11 @@
 
 //	Update object editor.
 
-	(function(editor,rigidObjects,latestEntity,cameraControls,localPlayer,keyInputControls,entity_droplist){
+	(function(editor,latestEntity,cameraControls,localPlayer,keyInputControls,entity_droplist){
+
+	//	CameraControls rigid objects,
+	//	keeps camera controls rigid objects at edit mode.
+		const rigidObjects = []; // cameraControls.rigidObjects;
 
 	//	Exit from edit mode.
 
@@ -105,8 +96,7 @@
 		});
 
 	})(
-		objectEditor, // editor, 
-		rigidObjects, latestEntityId, cameraControls, localPlayer, keyInputControls, 
+		objectEditor, latestEntityId, cameraControls, localPlayer, keyInputControls, 
 		document.querySelector("select#geometry-entities-droplist") // entity_droplist.
 	);
 
@@ -151,4 +141,10 @@
 	})( document.querySelector("select#geometry-entities-droplist") ); // entity_droplist.
 
 
+//	Call Watchers.
 
+	(function( entity_droplist ){
+		entity_droplist.addEventListener( "change", function(){
+			this.blur(); callWatchers(this, "onchange", "change", this.value ); // important!
+		});
+	})( document.querySelector("select#editor-entities-droplist") ); // entity_droplist.

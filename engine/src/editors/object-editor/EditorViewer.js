@@ -91,7 +91,7 @@
 		watch(entity_droplist, "onchange", function( property, event, value ){
 
 		//	remove old object.
-			if ( object && value === "" ) viewer.scene.remove( object );
+			if ( object ) viewer.scene.remove( object );
 
 		//	choose new object.
 			object = getObjectByEntityId( value ); if ( !object ) return;
