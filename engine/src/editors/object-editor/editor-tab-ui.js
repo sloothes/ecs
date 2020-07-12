@@ -25,12 +25,10 @@
 			select.appendChild( option );
 		})();
 
-		watch(select, "onchange", function(property,event,value){;}); // debug!
-
-	//	Call watchers.
-		select.addEventListener( "change", function(){
-			this.blur(); callWatchers(this, "onchange", "change", this.value ); // important!
-		});
+	///	watch(select, "onchange", function(property,event,value){;}); // debug!
+	//	select.addEventListener( "change", function(){
+	//		this.blur(); callWatchers(this, "onchange", "change", this.value ); // important!
+	//	});
 
 		row.appendChild( select );
 		tab.appendChild( row );
@@ -114,11 +112,9 @@
 		});
 
 	//	watch(select, "onchange", function(property,event,value){;}); // debug!
-
-	//	Call watchers.
-		select.addEventListener( "change", function(){
-			this.blur(); callWatchers(this, "onchange", "change", this.value ); // important!
-		});
+	//	select.addEventListener( "change", function(){
+	//		this.blur(); callWatchers(this, "onchange", "change", this.value ); // important!
+	//	});
 
 		row.appendChild( select );
 		tab.appendChild( row );
@@ -158,12 +154,10 @@
 		input.style.cssText = "color:#000;border:none;display:inline;width:80px;"
 		+ "margin:0px 5px;text-align:center;font-size:large;font-weigth:bold;background:none;";
 
-		watch(input, "onchange", function(property,event,value){}); // debug!
-
-	//	Call watchers.
-		input.addEventListener( "change", function(){
-			this.blur(); callWatchers(this, "onchange", "change", this.value ); // important!
-		});
+	//	watch(input, "onchange", function(property,event,value){}); // debug!
+	//	input.addEventListener( "change", function(){
+	//		this.blur(); callWatchers(this, "onchange", "change", this.value ); // important!
+	//	});
 
 	//	keyInputControls.
 		input.addEventListener( "blur", enableKeyInputControls );
@@ -210,12 +204,10 @@
 		input.style.cssText = "color:#000;border:none;display:inline;width:80px;"
 		+ "margin:0px 5px;text-align:center;font-size:large;font-weigth:bold;background:none;";
 
-		watch(input, "onchange", function(property,event,value){}); // debug!
-
-	//	Call watchers.
-		input.addEventListener( "change", function(){
-			this.blur(); callWatchers(this, "onchange", "change", this.value ); // important!
-		});
+	//	watch(input, "onchange", function(property,event,value){}); // debug!
+	//	input.addEventListener( "change", function(){
+	//		this.blur(); callWatchers(this, "onchange", "change", this.value ); // important!
+	//	});
 
 	//	keyInputControls.
 		input.addEventListener( "blur", enableKeyInputControls );
@@ -262,12 +254,10 @@
 		input.style.cssText = "color:#000;border:none;display:inline;width:80px;"
 		+ "margin:0px 5px;text-align:center;font-size:large;font-weigth:bold;background:none;";
 
-		watch(input, "onchange", function(property,event,value){}); // debug!
-
-	//	Call watchers.
-		input.addEventListener( "change", function(){
-			this.blur(); callWatchers(this, "onchange", "change", this.value ); // important!
-		});
+	//	watch(input, "onchange", function(property,event,value){}); // debug!
+	//	input.addEventListener( "change", function(){
+	//		this.blur(); callWatchers(this, "onchange", "change", this.value ); // important!
+	//	});
 
 	//	keyInputControls.
 		input.addEventListener( "blur", enableKeyInputControls );
@@ -314,12 +304,10 @@
 		input.style.cssText = "color:#000;border:none;display:inline;width:80px;"
 		+ "margin:0px 5px;text-align:center;font-size:large;font-weigth:bold;background:none;";
 
-		watch(input, "onchange", function(property,event,value){}); // debug!
-
-	//	Call watchers.
-		input.addEventListener( "change", function(){
-			this.blur(); callWatchers(this, "onchange", "change", this.value ); // important!
-		});
+	//	watch(input, "onchange", function(property,event,value){}); // debug!
+	//	input.addEventListener( "change", function(){
+	//		this.blur(); callWatchers(this, "onchange", "change", this.value ); // important!
+	//	});
 
 	//	keyInputControls.
 		input.addEventListener( "blur", enableKeyInputControls );
