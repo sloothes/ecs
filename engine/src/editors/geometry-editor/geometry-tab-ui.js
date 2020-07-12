@@ -393,7 +393,7 @@
 	//	Dont call watchers (dummy droplist).
 		select.addEventListener( "change", function(){ this.blur(); }); // important!
 
-		select.value = "PlaneGeometry";
+		select.value = "BoxGeometry";
 		row.appendChild( select );
 		tab.appendChild( row );
 
