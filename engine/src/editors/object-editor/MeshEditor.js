@@ -358,9 +358,9 @@
 		var material = materialEditor;
 		material.map = textureEditor;
 		var geometry = new THREE.PlaneGeometry( 252, 252, 1, 1 ); // .rotateX(-Math.PI/2); // geometryEditor??
-		var editor = new THREE.Mesh( geometry, material );
-		Object.setPrototypeOf( object, MeshEditor.prototype );
-		return editor; // important!
+		var mesh = new THREE.Mesh( geometry, material );
+		Object.setPrototypeOf( mesh, MeshEditor.prototype );
+		return mesh; // important!
 	}
 
 	MeshEditor.prototype = Object.create(THREE.Mesh.prototype); // important!
