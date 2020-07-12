@@ -149,11 +149,11 @@
 				var box = new THREE.BoxGeometry(w,h,w);
 				box.translate(0, h/2, 0);
 				var material = new THREE.MeshLambertMaterial();
-				material_entities.add( material );
+				try{material_entities.add( material );}catch(err){;}
 				var mesh = new THREE.Mesh(box, material);
 				mesh.name = "building 1";
 				mesh.position.set(x,0,z);
-				octree.importThreeMesh( mesh );
+				try{octree.importThreeMesh( mesh );}catch(err){;}
 				var geometry = new THREE.EdgesGeometry( box );
 				var segments = new THREE.LineSegments( geometry, material );
 				segments.name = "segments 2";

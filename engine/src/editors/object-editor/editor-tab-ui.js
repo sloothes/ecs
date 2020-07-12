@@ -39,6 +39,26 @@
 
 	})( TabUI.Editor.tab );
 
+//	editor-viewer-ui.js
+
+	(function( tab ){
+
+	//	Editor viewer.
+	//	var tab = TabUI.Editor.tab;
+
+		var row = document.createElement("h3");
+		row.style.cssText = "height:260px;border:none;text-align:center;";
+
+		var canvas = document.createElement("canvas");
+		canvas.width = 256; canvas.height = 256;
+		canvas.id = "editor-viewer";
+		canvas.style.cssText = "width:256px;height:256px;margin:auto;";
+
+		row.appendChild( canvas );
+		tab.appendChild( row );
+
+	})( TabUI.Editor.tab );
+
 //	undo-redo-ui.js
 
 	(function( tab ){
