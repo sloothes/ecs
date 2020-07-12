@@ -83,7 +83,7 @@
 				var selector = "select#editor-entities-droplist";
 				var entity_droplist = document.querySelector(selector);
 
-				if ( !entity_droplist ) throw selector+" not found!";
+				if ( !entity_droplist ) throw selector+" droplist not found!";
 
 			//	Add options.
 				while ( added_objs.length ) (function(object){
@@ -157,7 +157,7 @@
 				var selector = "select#editor-entities-droplist";
 				var entity_droplist = document.querySelector(selector);
 
-				if ( !entity_droplist ) throw selector+" not found!";
+				if ( !entity_droplist ) throw selector+" droplist not found!";
 
 			//	Remove options.
 				while ( remove_ids.length ) (function(id){

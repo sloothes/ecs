@@ -66,7 +66,7 @@
 				var selector = "select#texture-entities-droplist";
 				var texture_droplist = document.querySelector(selector);
 
-				if ( !texture_droplist ) return;
+				if ( !texture_droplist ) throw selector+" droplist not found!";
 
 			//	Add options.
 				while ( textures.length ) (function( texture ){
@@ -78,7 +78,7 @@
 					texture_droplist.appendChild( option );
 				})( textures.shift() );
 
-			} catch(err){ console.warn( selector, "did not found!" ); }
+			} catch(err){ console.error( err ); }
 
 		})();
 
@@ -137,7 +137,7 @@
 				var selector = "select#texture-entities-droplist";
 				var texture_droplist = document.querySelector(selector);
 
-				if ( !texture_droplist ) return;
+				if ( !texture_droplist ) throw selector+" droplist not found!";
 
 			//	Remove options.
 				while ( remove_ids.length ) (function( id ){
@@ -146,7 +146,7 @@
 					option && option.remove();
 				})( remove_ids.shift() );
 
-			} catch(err){ console.warn( selector, "did not found!" ); }
+			} catch(err){ console.error( err ); }
 
 		})();
 

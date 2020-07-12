@@ -1,8 +1,5 @@
 //	ObjectEditor.js
 
-//	It is not really geometry editor but object3D 
-//	or mesh editor. Could be called "ObjectEditor".
-
 	function ObjectEditor(){
 		var object = new THREE.Object3D();
 		Object.setPrototypeOf( object, ObjectEditor.prototype );
@@ -14,12 +11,8 @@
 	ObjectEditor.prototype.reset = function(){ 
 
 		var editor = this;
-
 		editor.copy( new THREE.Object3D() );
-		editor.name = "scene editor";
-	//	editor.isEditing = false; // edit mode off.
-	//	undo.length = 0; redo.length = 0; // clear undo/redo.
-	//	cancelAnimationFrame( editor.requestFrameID ); // cancel object update loop, important!
+		editor.name = "object editor";
 
 	};
 
