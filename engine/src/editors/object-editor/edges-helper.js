@@ -40,6 +40,7 @@
 
 		//	Get object.
 			var object = getObjectByEntityId( value );
+			debugMode && console.log( "object:", object )
 
 		//	Create new edges helper.
 			object && createEdgesHelper( object ); // add new helper.
