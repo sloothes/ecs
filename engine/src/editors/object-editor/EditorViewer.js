@@ -74,8 +74,9 @@
 			viewer.renderer.render( viewer.scene, viewer.camera );
 		})();
 
-		viewer.camera.position.y = 16.71;
+		viewer.camera.position.set(0,10,0);
 		viewer.camera.lookAt(0,0,0);
 		viewer.controls.focus(viewer.grid);
+		viewer.camera.position.y = 16.5;
 
 	})( editorViewer );
