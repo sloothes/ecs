@@ -439,3 +439,9 @@
 
 	const meshEditor = new MeshEditor(); // THREE.Mesh.
 	debugMode && console.log( "editor:", meshEditor );
+
+
+//	==================================================================================================  //
+
+
+//	EditorViewer.js
