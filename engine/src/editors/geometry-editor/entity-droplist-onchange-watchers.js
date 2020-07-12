@@ -7,8 +7,8 @@
 
 //	keeps track of last entity droplist value.
 	const latestEntity = { value:"" }; // called first, updated last.
-	watch( latestEntity, "value", function(property, action, value, oldValue ){
-		debugMode && console.log({item:latestEntity,"new value":value,"old value":oldValue})
+	watch( latestEntity, "value", function(property, action, newValue, oldValue ){
+		debugMode && console.log({item:latestEntity,"new value":newValue,"old value":oldValue})
 	});
 
 //	Update lastEntity value.
