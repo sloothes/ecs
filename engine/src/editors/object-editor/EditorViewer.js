@@ -75,8 +75,38 @@
 		})();
 
 		viewer.camera.position.set(0,10,0);
-		viewer.camera.lookAt(0,0,0);
 		viewer.controls.focus(viewer.grid);
+		viewer.camera.lookAt(viewer.controls.center);
 		viewer.camera.position.y = 16.5;
 
 	})( editorViewer );
+
+
+//	Add/Copy an object to editor viewer (EXPERIMENTAL).
+
+	(function(viewer,entity_droplist){
+
+		var object; // keeps track of select object.
+
+		watch(entity_droplist, "onchange", function( property, event, value ){
+
+		//	remove old object.
+			if ( object && value === "" ) viewer.scene.remove( object );
+
+		//	choose new object.
+			object = getObjectByEntityId( value ); if ( !object ) return;
+
+		//	change object parent (here is the trick).
+			object.parent = viewer.scene; // important!
+
+		//	Add object to viewer (will draw a copy(?) of the object in viewer scene).
+			viewer.scene.add( object );
+
+		//	view setup.
+			viewer.camera.position.z = -20;
+			viewer.controls.focus( object, true );
+			viewer.camera.lookAt( viewer.controls.center );
+
+		});
+
+	})( editorViewer, document.querySelector("select#editor-entities-droplist") ); // viewer, entity_droplist
