@@ -97,7 +97,7 @@
 
 	})(
 		objectEditor, latestEntityId, cameraControls, localPlayer, keyInputControls, 
-		document.querySelector("select#geometry-entities-droplist") // entity_droplist.
+		document.querySelector("select#editor-entities-droplist") // entity_droplist.
 	);
 
 
@@ -110,8 +110,8 @@
 		});
 
 	})(
-		document.querySelector("select#geometry-vector-droplist"), // vector_droplist.
-		document.querySelector("select#geometry-entities-droplist") // entity_droplist.
+		document.querySelector("select#editor-vector-droplist"), // vector_droplist.
+		document.querySelector("select#editor-entities-droplist") // entity_droplist.
 	);
 
 
@@ -138,7 +138,7 @@
 
 		});
 
-	})( document.querySelector("select#geometry-entities-droplist") ); // entity_droplist.
+	})( document.querySelector("select#editor-entities-droplist") ); // entity_droplist.
 
 
 //	Call Watchers.

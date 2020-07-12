@@ -4,3 +4,4 @@ misc/*
 engine/editor/MaterialEditorClass.js
 engine/editor/EntityManagerClass.js
 engine/pre-alpha/releases/*
+snapshots/*
