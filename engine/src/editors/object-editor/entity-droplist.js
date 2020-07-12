@@ -121,21 +121,24 @@
 
 		watch(entity_droplist, "onchange", function( property, event, value ){
 
-		//	Get material entities droplist.
-			var selector = "select#material-entities-droplist";
-			var material_droplist = document.querySelector(selector); if (!material_droplist) return;
+			try {
 
-		//	Get material id.
-			var object = getObjectByEntityId( value ); if ( !object ) {
-				return callWatchers( material_droplist, "onchange", "change", material_droplist.value = "" );
-			}
+			//	Get material entities droplist.
+				var selector = "select#material-entities-droplist";
+				var material_droplist = document.querySelector(selector); if (!material_droplist) return;
 
-			var material = object.material; if (!object.material) {
-				return callWatchers( material_droplist, "onchange", "change", material_droplist.value = "" );
-			}
+			//	Get material id.
+				var object = getObjectByEntityId( value ); if ( !object ) {
+					return callWatchers( material_droplist, "onchange", "change", material_droplist.value = "" );
+				}
 
-			material && callWatchers( material_droplist, "onchange", "change", material_droplist.value = String(material.id) );
+				var material = object.material; if (!object.material) {
+					return callWatchers( material_droplist, "onchange", "change", material_droplist.value = "" );
+				}
 
+				material && callWatchers( material_droplist, "onchange", "change", material_droplist.value = String(material.id) );
+
+			} catch(err){ console.error(err); }
 		});
 
 	})( document.querySelector("select#editor-entities-droplist") ); // entity_droplist.
