@@ -16,8 +16,8 @@
 		var select = document.createElement("select");
 		select.id = "editor-entities-droplist";
 		select.style.cssText = "width:170px;color:#000;float:right;"
-			+ "border:1px solid;border-radius:4px;padding:2px 4px 4px 4px;"
-			+ "font-size:20px;margin-left:10px;margin-right:15px;";
+		+ "border:1px solid;border-radius:4px;padding:2px 4px 4px 4px;"
+		+ "font-size:20px;margin-left:10px;margin-right:15px;";
 
 		(function(){
 			var option = document.createElement("option");
@@ -102,8 +102,8 @@
 		var select = document.createElement("select");
 		select.id = "editor-vector-droplist";
 		select.style.cssText = "width:170px;color:#000;float:right;"
-			+ "border:1px solid;border-radius:4px;padding:2px 4px 4px 4px;"
-			+ "font-size:20px;margin-left:10px;margin-right:15px;";
+		+ "border:1px solid;border-radius:4px;padding:2px 4px 4px 4px;"
+		+ "font-size:20px;margin-left:10px;margin-right:15px;";
 
 		var modes = "position,rotation,scale,quaternion";
 		modes.split(",").forEach(function( name ){
@@ -312,7 +312,7 @@
 		input.setAttribute("placeholder", "w" );
 		input.classList.add("form-control","text-center");
 		input.style.cssText = "color:#000;border:none;display:inline;width:80px;"
-			+ "margin:0px 5px;text-align:center;font-size:large;font-weigth:bold;background:none;";
+		+ "margin:0px 5px;text-align:center;font-size:large;font-weigth:bold;background:none;";
 
 		watch(input, "onchange", function(property,event,value){}); // debug!
 

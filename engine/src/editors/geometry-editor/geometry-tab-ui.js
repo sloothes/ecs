@@ -367,13 +367,13 @@
 
 		var row = document.createElement("h3");
 		row.textContent = "Geometry:";
-		row.style.cssText = "height:30px;margin-top:40px;"
+		row.style.cssText = "height:30px;"
 
 		var select = document.createElement("select");
 		select.id = "geometry-type-droplist"; // renamed from "editor-geometry-droplist".
 		select.style.cssText = "width:150px;color:#000;float:right;"
-			+ "border:1px solid;border-radius:4px;padding:2px 4px 4px 4px;"
-			+ "font-size:20px;margin-left:10px;margin-right:15px;";
+		+ "border:1px solid;border-radius:4px;padding:2px 4px 4px 4px;"
+		+ "font-size:20px;margin-left:10px;margin-right:15px;";
 
 		(function(){
 
