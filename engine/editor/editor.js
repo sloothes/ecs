@@ -38,6 +38,11 @@
 
 	}
 
+
+// 	DEPRECATED !!!  DEPRECATED !!!  DEPRECATED !!!  DEPRECATED !!!  DEPRECATED !!!  DEPRECATED !!! 
+// 	DEPRECATED !!!  DEPRECATED !!!  DEPRECATED !!!  DEPRECATED !!!  DEPRECATED !!!  DEPRECATED !!! 
+// 	DEPRECATED !!!  DEPRECATED !!!  DEPRECATED !!!  DEPRECATED !!!  DEPRECATED !!!  DEPRECATED !!! 
+
 //	editor.js
 //	Create an Object3D to hold editor values.
 	const object3DEditor = (function( editor ){
@@ -1174,6 +1179,11 @@
 
 	})( new THREE.Object3D() );
 
+
+// 	DEPRECATED !!!  DEPRECATED !!!  DEPRECATED !!!  DEPRECATED !!!  DEPRECATED !!!  DEPRECATED !!! 
+// 	DEPRECATED !!!  DEPRECATED !!!  DEPRECATED !!!  DEPRECATED !!!  DEPRECATED !!!  DEPRECATED !!! 
+// 	DEPRECATED !!!  DEPRECATED !!!  DEPRECATED !!!  DEPRECATED !!!  DEPRECATED !!!  DEPRECATED !!! 
+
 /*
 //	Move on axis Y (up/down).
 
@@ -1229,6 +1239,7 @@
 //	!!! DEMO !!! IMPORTANT! !!! DEMO !!! IMPORTANT! !!! DEMO !!!
 */
 
+// 	DEPRECATED !!!  DEPRECATED !!!  DEPRECATED !!!  DEPRECATED !!!  DEPRECATED !!!  DEPRECATED !!! 
 
 
 

@@ -25,11 +25,6 @@
 			select.appendChild( option );
 		})();
 
-	///	watch(select, "onchange", function(property,event,value){;}); // debug!
-	//	select.addEventListener( "change", function(){
-	//		this.blur(); callWatchers(this, "onchange", "change", this.value ); // important!
-	//	});
-
 		row.appendChild( select );
 		tab.appendChild( row );
 
