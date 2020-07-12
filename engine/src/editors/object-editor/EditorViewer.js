@@ -21,7 +21,7 @@
 	//	Viewer camera.
 
 		viewer.camera = (function(){
-		var aspect = (viewer.canvas.width / viewer.canvas.innerHeight);
+			var aspect = (viewer.canvas.width / viewer.canvas.height);
 			return new THREE.PerspectiveCamera( 50, aspect, 1, 10000 );
 		})();
 
@@ -36,7 +36,7 @@
 		viewer.light = (function(){
 			var light = new THREE.DirectionalLight( 0xffffff, 0.75 );
 			light.name = "viewer light";
-			camera.position.set( 0,10,0 );
+			light.position.set( 0,100,0 );
 			viewer.scene.add( light );
 			return light;
 		})();
