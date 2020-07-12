@@ -75,7 +75,7 @@
 		})();
 
 		viewer.camera.position.y = 20;
-		viewer.camera.lookAt(0,0,0);
-		viewer.controls.focus(viewer.grid, true);
+		viewer.camera.lookAt(0,16.71,0);
+		viewer.controls.focus(viewer.grid);
 
 	})( editorViewer );
