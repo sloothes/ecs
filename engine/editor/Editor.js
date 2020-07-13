@@ -23,17 +23,9 @@
 
 	};
 
-	ObjectEditor.prototype.update = function( value ){ 
-
-	//	Copies the values of the target object3D of
-	//	scene. Does not updates the target object3D.
-	//	dependences: entities {scene},
-	//	param: a object3D id {string or number}.
+	ObjectEditor.prototype.update = function(){ 
 
 		var editor = this;
-
-	//	Reset editor.
-		editor.reset();
 
 	//	Update editor (copy).
 		editor.copy( objectEditor );
@@ -43,7 +35,12 @@
 
 	};
 
-	const editor = new Editor().reset();
+	const editor = new Editor();
+
 //	Note: Editor is not been added in scene so doesn't 
 //	update matrix for json. You must explicity copy the 
 //	objectEditor matrix. DO NOT ADD THIS EDITOR TO SCENE.
+
+	editor.reset();
+	editor.material = materialEditor;
+	editor.material.map = textureEditor;
