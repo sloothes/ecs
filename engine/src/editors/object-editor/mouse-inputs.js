@@ -279,11 +279,11 @@
 		decrease_w.addEventListener( "click", onMouseClick );
 
 	})(
-		objectEditor,                                                // editor,
-		document.querySelector("input#geometry-vector-w-input"),     // vector_w,
-		document.querySelector("li#geometry-vector-w-increase"),     // increase_w,
-		document.querySelector("li#geometry-vector-w-decrease"),     // decrease_w,
-		document.querySelector("select#geometry-vector-droplist"),   // vector_droplist,
-		document.querySelector("select#geometry-entities-droplist"), // entity_droplist,
-		document.querySelector("div#geometry-undo-button")           // undo_button.
+		objectEditor,                                              // editor,
+		document.querySelector("input#editor-vector-w-input"),     // vector_w,
+		document.querySelector("li#editor-vector-w-increase"),     // increase_w,
+		document.querySelector("li#editor-vector-w-decrease"),     // decrease_w,
+		document.querySelector("select#editor-vector-droplist"),   // vector_droplist,
+		document.querySelector("select#editor-entities-droplist"), // entity_droplist,
+		document.querySelector("div#editor-undo-button")           // undo_button.
 	);
