@@ -66,7 +66,7 @@
 						var value = RAD2DEG * Number(editor[ key ].x); // get value from editor.
 						if ( button === increase_x ) value = THREE.Math.clamp( value+step, min, max );
 						if ( button === decrease_x ) value = THREE.Math.clamp( value-step, min, max );
-						editor[ key ]._x = DEG2RAD * round(value, p); // editor manager updates input value.
+						editor[ key ].x = DEG2RAD * round(value, p); // editor manager updates input value.
 						interval = setTimeout( update, dt );
 					break;
 					case "scale":
