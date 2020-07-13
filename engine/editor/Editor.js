@@ -44,3 +44,7 @@
 	editor.reset();
 	editor.material = materialEditor;
 	editor.material.map = textureEditor;
+
+	(function( editor,entity_droplist ){
+		watch(entity_droplist, "onchange", function(){ editor.update(); });  // important!
+	})( editor, document.querySelector("select#editor-entities-droplist") ); // entity_droplist.

@@ -17,14 +17,11 @@
 		var meta = {geometries:{},materials:{},textures:{},images:{},shapes:{}};
 
 		function onfirstMouseDown(){
-			state = {};
+			state = {}; // reset.
 			if ( entity_droplist.value === "" ) return; // important!
-		//	if ( vector_droplist.value === "quaternion" ) return; // important!
-		//	if ( vector_droplist.value === "translation" ) return; // important!
-			var key = vector_droplist.value;
-			state.key = vector_droplist.value; // key.
-			state.value = editor[key].x;   // important!
-			state.json = editor.toJSON( meta ); // editor json.
+			var key = state.key = vector_droplist.value;
+			state.value = editor[key].x;
+			state.json = editor.toJSON( meta );
 			debugMode && console.log( {state:state,meta:meta} ); // debug!
 		//	Remove on firstMouseDown event listener. // important!
 			this.removeEventListener( "mousedown", onfirstMouseDown );
@@ -41,16 +38,13 @@
 
 			clearTimeout( interval ); // important!
 
-			if ( entity_droplist.value === "" ) return; // important!
-		//	if ( vector_droplist.value === "quaternion" ) return;
-		//	if ( vector_droplist.value === "translation" ) return; // important!
+			if ( entity_droplist.value === "" ) return;
 
 			var button = this;
 
 			interval = setTimeout( function update() {
 
 				var key = vector_droplist.value;
-			//	if ( key === "quaternion" ) return;
 
 				switch ( key ) {
 					case "position":
@@ -83,31 +77,21 @@
 
 		} // end onMouseDown.
 
-	//	TODO: add undo.
-	//	function addtoUndo(state,key,value,undo_button){
-	//		if ( state.key !== key ) return;
-	//		if ( state.value === value ) return;
-	//		state.json && undo_button.undo.unshift( state.json );
-	//		try { debugMode && console.log( 
-	//			"undo:", undo_button.undo.length, 
-	//			"redo:", undo_button.redo.length 
-	//		); } catch(err){;}
-	//		return;
-	//	}
+	//	add undo.
+		function addtoUndo(state,key,value,undo_button){
+			if ( state.key !== key ) return; if ( state.value === value ) return;
+			if ( state.json ) { var json = JSON.parse(JSON.stringify(state.json)); undo_button.undo.unshift(json); }
+			debugMode && console.log( "undo:", undo_button.undo.length, "redo:", undo_button.redo.length ); return;
+		}
 
 		function onMouseClick(){
 
 			clearTimeout( interval ); // important!
 
 			if ( entity_droplist.value === "" ) return; // important!
-		//	if ( vector_droplist.value === "quaternion" ) return; // important!
-		//	if ( vector_droplist.value === "translation" ) return; // important!
 
 			var button = this;
-
 			var key = vector_droplist.value;
-		//	if ( key === "quaternion" ) return;
-		//	if ( key === "translation" ) return;
 
 			switch ( key ) {
 				case "position":
@@ -115,30 +99,30 @@
 					var value = Number(editor[ key ].x); // get value from editor.
 					if ( button === increase_x ) value += step;
 					if ( button === decrease_x ) value -= step;
+					editor[ key ].x = value; addtoUndo( state,key,value,undo_button );
 					interval = setTimeout( function(){ 
 						button.addEventListener( "mousedown", onfirstMouseDown ); // important!
 					}, 250);
-					editor[ key ].x = round(value, p); // editor watcher updates input value.
 				break;
 				case "rotation":
 					var p = 1, step = 1/Math.pow(10,p), min = -180, max = 180;
 					var value = RAD2DEG * Number(editor[ key ].x); // get value from editor.
 					if ( button === increase_x ) value = THREE.Math.clamp( value+step, min, max );
 					if ( button === decrease_x ) value = THREE.Math.clamp( value-step, min, max );
+					editor[ key ].x = DEG2RAD*value; addtoUndo( state,key,value,undo_button );
 					interval = setTimeout( function(){ 
 						button.addEventListener( "mousedown", onfirstMouseDown ); // important!
 					}, 250);
-					editor[ key ]._x = DEG2RAD * round(value, p); // editor watcher updates input value.
 				break;
 				case "scale":
 					var p = 3, step = 1/Math.pow(10,p); // min = -100, max = 100;
 					var value = Number(editor[ key ].x); // get value from editor.
 					if ( button === increase_x ) value += step;
 					if ( button === decrease_x ) value -= step;
+					editor[ key ].x = value; addtoUndo( state,key,value,undo_button );
 					interval = setTimeout( function(){ 
 						button.addEventListener( "mousedown", onfirstMouseDown ); // important!
 					}, 250);
-					editor[ key ].x = round(value, p); // editor watcher updates input value.
 				break;
 			}
 
