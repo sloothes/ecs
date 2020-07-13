@@ -56,7 +56,7 @@
 
 		function EditorTranslationSystem( dt ){
 
-			var UPDOWN = keyCodes[E] || keyCodes[Q];
+			var UPDOWN = keyCodes[E]  || keyCodes[Q];
 			var ARROWS = keyCodes[37] || keyCodes[38] || keyCodes[39] || keyCodes[40];
 
 		//	Move up/down.
@@ -98,10 +98,10 @@
 
 		document.addEventListener("keypress", function(){
 
-			var dt = clock.getDelta();
-			debugMode && console.log( "dt:", dt );
+			var dt = Math.min(clock.getDelta(),0.02); 
+			debugMode && console.log( "dt:", round(dt,6) );
 
-			if (  modifierIsDown() ) return;
+			if ( modifierIsDown() ) return;
 			if ( !entity_droplist.value ) return;
 
 			var SCALE  = keyCodes[H] || keyCodes[G];
