@@ -21,10 +21,13 @@
 
 			clearTimeout( interval );
 			interval = setTimeout( function(){
+
 				var loader = new THREE.ObjectLoader();
 				var object = loader.parse( json ); // update.
 				editor.copy( objectEditor.copy(object) );
+
 				debugMode && console.log( "undo:", undo_button.undo.length, "redo:", undo_button.redo.length );
+
 			}, 250);
 
 		}

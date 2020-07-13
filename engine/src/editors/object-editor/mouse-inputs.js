@@ -52,7 +52,7 @@
 						var value = Number(editor[ key ].x); // get value from editor.
 						if ( button === increase_x ) value += step;
 						if ( button === decrease_x ) value -= step;
-						editor[ key ].x = round(value, p); // editor manager updates input value.
+						editor[ key ].x = round(value,6);
 						interval = setTimeout( update, dt );
 					break;
 					case "rotation":
@@ -60,7 +60,7 @@
 						var value = RAD2DEG * Number(editor[ key ].x); // get value from editor.
 						if ( button === increase_x ) value = THREE.Math.clamp( value+step, min, max );
 						if ( button === decrease_x ) value = THREE.Math.clamp( value-step, min, max );
-						editor[ key ].x = DEG2RAD * round(value, p); // editor manager updates input value.
+						editor[ key ].x = round(DEG2RAD*value,6);
 						interval = setTimeout( update, dt );
 					break;
 					case "scale":
@@ -68,7 +68,7 @@
 						var value = Number(editor[ key ].x); // get value from editor.
 						if ( button === increase_x ) value += step;
 						if ( button === decrease_x ) value -= step;
-						editor[ key ].x = round(value, p); // editor manager updates input value.
+						editor[ key ].x = round(value,6); // editor manager updates input value.
 						interval = setTimeout( update, dt );
 					break;
 				}
@@ -78,7 +78,7 @@
 		} // end onMouseDown.
 
 	//	add undo.
-		function addtoUndo(state,key,value,undo_button){
+		function addtoUndo( state,key,value ){
 			if ( state.key !== key ) return; if ( state.value === value ) return;
 			if ( state.json ) { var json = JSON.parse(JSON.stringify(state.json)); undo_button.undo.unshift(json); }
 			debugMode && console.log( "undo:", undo_button.undo.length, "redo:", undo_button.redo.length ); return;
@@ -99,9 +99,9 @@
 					var value = Number(editor[ key ].x); // get value from editor.
 					if ( button === increase_x ) value += step;
 					if ( button === decrease_x ) value -= step;
-					editor[ key ].x = round(value,6); addtoUndo( state,key,value,undo_button );
+					editor[ key ].x = round(value,6); addtoUndo( state,key,value );
 					interval = setTimeout( function(){ 
-						button.addEventListener( "mousedown", onfirstMouseDown ); // important!
+						button.addEventListener( "mousedown", onfirstMouseDown );
 					}, 250);
 				break;
 				case "rotation":
@@ -109,9 +109,9 @@
 					var value = RAD2DEG * Number(editor[ key ].x); // get value from editor.
 					if ( button === increase_x ) value = THREE.Math.clamp( value+step, min, max );
 					if ( button === decrease_x ) value = THREE.Math.clamp( value-step, min, max );
-					editor[ key ].x = round(DEG2RAD*value,6); addtoUndo( state,key,value,undo_button );
+					editor[ key ].x = round(DEG2RAD*value,6); addtoUndo( state,key,value );
 					interval = setTimeout( function(){ 
-						button.addEventListener( "mousedown", onfirstMouseDown ); // important!
+						button.addEventListener( "mousedown", onfirstMouseDown );
 					}, 250);
 				break;
 				case "scale":
@@ -119,9 +119,9 @@
 					var value = Number(editor[ key ].x); // get value from editor.
 					if ( button === increase_x ) value += step;
 					if ( button === decrease_x ) value -= step;
-					editor[ key ].x = round(value,6); addtoUndo( state,key,value,undo_button );
+					editor[ key ].x = round(value,6); addtoUndo( state,key,value );
 					interval = setTimeout( function(){ 
-						button.addEventListener( "mousedown", onfirstMouseDown ); // important!
+						button.addEventListener( "mousedown", onfirstMouseDown );
 					}, 250);
 				break;
 			}
