@@ -259,9 +259,10 @@
 						editor[ key ].y -= step; // editor manager updates input value.
 						editor[ key ].z -= step; // editor manager updates input value.
 					}
-					interval = setTimeout( function(){ 
-						button.addEventListener( "mousedown", onfirstMouseDown ); // important!
-					}, 250);
+					interval = setTimeout( function( state,key,value ){ 
+						try{ addtoUndo( state,key,value ); } catch(err){;}
+						button.addEventListener( "mousedown", onfirstMouseDown );
+					}, 250, state,key,value);
 				break;
 			}
 
