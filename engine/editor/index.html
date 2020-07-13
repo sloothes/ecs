@@ -2,7 +2,7 @@
 <html lang="en">
 	<head>
 
-		<title>Editor Tab demo (pre-alpha 0.23)</title>
+		<title>Editor Tab demo (alpha)</title>
 
 		<meta charset="utf-8">
 		<meta name="generator" content="Three.js Editor">
@@ -86,7 +86,8 @@
 	<body ontouchstart="">
 
 		<script>
-
+			const debugMode = false;
+			const Signal = signals.Signal;
 		</script>
 
 		<script src="/ecs/js/three.js"></script>
@@ -107,41 +108,53 @@
 
 		<script>
 
-			debugMode = true;
-			const Signal = signals.Signal;
-
 		//	TabUI.
-
 			(function(){
-
 				var sidePanel = createSidePanel();
 				document.body.appendChild( sidePanel );
-
-			//	TabUI.append( "Editor", "Material", "Texture", "Viewport" );
-			//	TabUI.Editor.role.classList.add("active");
-			//	TabUI.Editor.tab.classList.add("in","active");
-
 			})();
 
 		</script>
 
-		<script src="/ecs/engine/core/enviroment.js"></script>
-		<script src="/ecs/engine/core/entity.js"></script>
 		<script src="/ecs/engine/core/helpers.js"></script>
+		<script src="/ecs/engine/core/keyboard.js"></script>
+		<script src="/ecs/engine/core/enviroment.js"></script>
 		<script src="/ecs/engine/core/localPlayer.js"></script>
 		<script src="/ecs/engine/core/cameraControls.js"></script>
 		<script src="/ecs/engine/core/keyboardState.js"></script>
 		<script src="/ecs/engine/core/keyInputControls.js"></script>
 		<script src="/ecs/engine/core/joystickControls.js"></script>
-		<script src="/ecs/engine/core/keyboard.js"></script>
+		<script src="/ecs/engine/core/EntityManager.js"></script>
 
+		<script src="/ecs/engine/editor/helpers.js"></script>
 		<script src="/ecs/engine/editor/UndoArray.js"></script>
-		<script src="/ecs/engine/editor/editor-helpers.js"></script>
-		<script src="/ecs/engine/editor/EditorTab.js"></script>
+	<!-- script src="/ecs/engine/editor/EditorTab.js"></script -->
 
-		<script src="/ecs/engine/src/editors/material-editor/material-tab-ui.js"></script>
-		<script src="/ecs/engine/src/editors/material-editor/MaterialManager.js"></script>
-		<script src="/ecs/engine/src/editors/material-editor/MaterialEditor.js"></script>
+		<script	src="/ecs/engine/src/editors/texture-editor/TextureManager.js"></script>
+		<script	src="/ecs/engine/src/editors/material-editor/MaterialManager.js"></script>
+		<script	src="/ecs/engine/src/editors/object-editor/editor-tab-ui.js"></script>
+		<script	src="/ecs/engine/src/editors/geometry-editor/geometry-tab-ui.js"></script>
+		<script	src="/ecs/engine/src/editors/material-editor/material-tab-ui.js"></script>
+		<script	src="/ecs/engine/src/editors/texture-editor/texture-tab-ui.js"></script>
+		<script	src="/ecs/engine/src/meshworld/octree/meshworld-tab-ui.js"></script>
+		<script	src="/ecs/engine/src/editors/object-editor/ObjectEditor.js"></script>
+		<script	src="/ecs/engine/src/editors/texture-editor/TextureEditor.js"></script>
+		<script	src="/ecs/engine/src/editors/material-editor/MaterialEditor.js"></script>
+
+		<script src="/ecs/engine/editor/Editor.js"></script>
+
+		<script	src="/ecs/engine/src/editors/object-editor/undo-button.js"></script>
+		<script	src="/ecs/engine/src/editors/object-editor/EditorViewer.js"></script>
+		<script	src="/ecs/engine/src/editors/object-editor/edges-helper.js"></script>
+		<script	src="/ecs/engine/src/editors/object-editor/vector-droplist.js"></script>
+		<script	src="/ecs/engine/src/editors/object-editor/entity-droplist.js"></script>
+		<script	src="/ecs/engine/src/editors/object-editor/key-inputs.js"></script>
+		<script	src="/ecs/engine/src/editors/object-editor/mouse-inputs.js"></script>
+		<script	src="/ecs/engine/src/editors/object-editor/vector-inputs.js"></script>
+		<script	src="/ecs/engine/src/editors/object-editor/editor-manager.js"></script>
+		<script	src="/ecs/engine/src/editors/object-editor/reset-vectors.js"></script>
+		<script	src="/ecs/engine/src/editors/object-editor/exit-edit-mode.js"></script>
+
 		<script src="/ecs/engine/src/editors/material-editor/undo-redo-onmouse-events.js"></script>
 		<script src="/ecs/engine/src/editors/material-editor/map-droplist-onchange-watcher.js"></script>
 		<script src="/ecs/engine/src/editors/material-editor/key-droplist-onchange-watcher.js"></script>
@@ -161,11 +174,8 @@
 		<script src="/ecs/engine/src/editors/material-editor/clone-material-entity.js"></script>
 		<script src="/ecs/engine/src/editors/material-editor/remove-material-entity.js"></script>
 
-		<script src="/ecs/engine/src/editors/texture-editor/texture-tab-ui.js"></script>
-		<script src="/ecs/engine/src/editors/texture-editor/TextureManager.js"></script>
-		<script src="/ecs/engine/src/editors/texture-editor/TextureViewer.js"></script>
-		<script src="/ecs/engine/src/editors/texture-editor/TextureEditor.js"></script>
 		<script src="/ecs/engine/src/editors/texture-editor/undo-redo-onmouse-events.js"></script>
+		<script src="/ecs/engine/src/editors/texture-editor/TextureViewer.js"></script>
 		<script src="/ecs/engine/src/editors/texture-editor/key-droplist-onchange-watcher.js"></script>
 		<script src="/ecs/engine/src/editors/texture-editor/vector-droplist-onchange-watcher.js"></script>
 		<script src="/ecs/engine/src/editors/texture-editor/entity-droplist-onchange-watcher.js"></script>
