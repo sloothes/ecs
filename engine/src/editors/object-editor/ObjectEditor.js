@@ -42,5 +42,7 @@
 	};
 
 	const objectEditor = new ObjectEditor();
+//	Note: When editor is not added in scene
+//	doesn't update matrix/matrixWorld json.
+//	When is added in scene updates matrixes.
 	scene.add( objectEditor ); // important!
-
