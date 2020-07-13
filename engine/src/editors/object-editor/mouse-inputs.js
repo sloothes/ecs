@@ -92,9 +92,10 @@
 					if ( button === increase ) value += step;
 					if ( button === decrease ) value -= step;
 					editor[ key ][v] = round(value,6); addtoUndo( state,key,value );
-					interval = setTimeout( function(){ 
+					interval = setTimeout( function( state,key,value ){ 
+						try{ addtoUndo( state,key,value ); } catch(err){;}
 						button.addEventListener( "mousedown", onfirstMouseDown );
-					}, 250);
+					}, 250, state,key,value);
 				break;
 				case "rotation":
 					var p = 1, step = 1/Math.pow(10,p), min = -180, max = 180;
@@ -102,19 +103,21 @@
 					if ( button === increase ) value = THREE.Math.clamp( value+step, min, max );
 					if ( button === decrease ) value = THREE.Math.clamp( value-step, min, max );
 					editor[ key ][v] = round(DEG2RAD*value,6); addtoUndo( state,key,value );
-					interval = setTimeout( function(){ 
+					interval = setTimeout( function( state,key,value ){ 
+						try{ addtoUndo( state,key,value ); } catch(err){;}
 						button.addEventListener( "mousedown", onfirstMouseDown );
-					}, 250);
+					}, 250, state,key,value);
 				break;
 				case "scale":
 					var p = 3, step = 1/Math.pow(10,p); // min = -100, max = 100;
 					var value = Number(editor[ key ][v]); // get value from editor.
 					if ( button === increase ) value += step;
 					if ( button === decrease ) value -= step;
-					editor[ key ][v] = round(value,6); addtoUndo( state,key,value );
-					interval = setTimeout( function(){ 
+					editor[ key ][v] = round(value,6);
+					interval = setTimeout( function( state,key,value ){ 
+						try{ addtoUndo( state,key,value ); } catch(err){;}
 						button.addEventListener( "mousedown", onfirstMouseDown );
-					}, 250);
+					}, 250, state,key,value);
 				break;
 			}
 
