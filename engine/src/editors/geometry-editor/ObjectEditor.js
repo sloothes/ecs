@@ -49,5 +49,5 @@
 	};
 
 	const objectEditor = new ObjectEditor(); // object3D.
-//	scene.add( ObjectEditor ); // important!
+	scene.add( objectEditor ); // very important!
 

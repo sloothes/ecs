@@ -54,11 +54,11 @@
 
 				switch ( key ) {
 					case "position":
-						var p = 3, step = 1/Math.pow(10,p); // min = -100, max = 100;
+						var p = 2, step = 1/Math.pow(10,p); // min = -100, max = 100;
 						var value = Number(editor[ key ].x); // get value from editor.
 						if ( button === increase_x ) value += step;
 						if ( button === decrease_x ) value -= step;
-						editor[ key ].x = round(value, p); // editor watcher updates input value.
+						editor[ key ].x = round(value, p); // editor manager updates input value.
 						interval = setTimeout( update, dt );
 					break;
 					case "rotation":
@@ -66,7 +66,7 @@
 						var value = RAD2DEG * Number(editor[ key ].x); // get value from editor.
 						if ( button === increase_x ) value = THREE.Math.clamp( value+step, min, max );
 						if ( button === decrease_x ) value = THREE.Math.clamp( value-step, min, max );
-						editor[ key ]._x = DEG2RAD * round(value, p); // editor watcher updates input value.
+						editor[ key ]._x = DEG2RAD * round(value, p); // editor manager updates input value.
 						interval = setTimeout( update, dt );
 					break;
 					case "scale":
@@ -74,7 +74,7 @@
 						var value = Number(editor[ key ].x); // get value from editor.
 						if ( button === increase_x ) value += step;
 						if ( button === decrease_x ) value -= step;
-						editor[ key ].x = round(value, p); // editor watcher updates input value.
+						editor[ key ].x = round(value, p); // editor manager updates input value.
 						interval = setTimeout( update, dt );
 					break;
 				}
