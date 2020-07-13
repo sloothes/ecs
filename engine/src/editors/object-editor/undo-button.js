@@ -1,6 +1,6 @@
 //	undo-button.js
 
-	(function(editor,objectEditor,undo_button,entity_droplist){
+	(function(editor,objectEditor,undo_button,redo_button,entity_droplist){
 
 		var interval;
 
@@ -60,14 +60,6 @@
 			undo_button.redo.clear();
 		});
 
-	})(
-		editor, objectEditor, // editors,
-		document.querySelector("div#editor-undo-button"), // undo_button,
-		document.querySelector("select#editor-entities-droplist") // entity_droplist
-	);
-
-
-	(function(undo_button,redo_button,entity_droplist){
 
 		undo_button.addEventListener( "click", function(){
 		//	debugMode && console.log("undo:",undo_button.undo.length,"redo:",undo_button.redo.length);
@@ -88,6 +80,7 @@
 		});
 
 	})(
+		editor, objectEditor, // editors,
 		document.querySelector("div#editor-undo-button"), // undo_button,
 		document.querySelector("div#editor-redo-button"), // redo_button.
 		document.querySelector("select#editor-entities-droplist") // entity_droplist
