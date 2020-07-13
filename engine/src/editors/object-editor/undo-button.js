@@ -1,6 +1,6 @@
 //	undo-button.js
 
-	(function(editor,undo_button,redo_button,entity_droplist){
+	(function(editor,objectEditor,undo_button,entity_droplist){
 
 		var interval;
 
@@ -21,15 +21,10 @@
 
 			clearTimeout( interval );
 			interval = setTimeout( function(){
-				try {
-
-				//	Parse editor state (undo).
-					editor.parse( json ); // update.
-
-				} catch(err){ debugMode && console.error(err); }
-
+				var loader = new THREE.ObjectLoader();
+				var object = loader.parse( json ); // update.
+				editor.copy( objectEditor.copy(object) );
 				debugMode && console.log( "undo:", undo_button.undo.length, "redo:", undo_button.redo.length );
-
 			}, 250);
 
 		}
@@ -48,12 +43,10 @@
 
 			clearTimeout( interval );
 			interval = setTimeout( function(){
-				try {
 
-				//	Parse editor state (redo).
-					editor.parse( json ); // update.
-
-				} catch(err){ debugMode && console.error(err); }
+				var loader = new THREE.ObjectLoader();
+				var object = loader.parse( json ); // update.
+				editor.copy( objectEditor.copy(object) );
 
 				debugMode && console.log( "undo:", undo_button.undo.length, "redo:", undo_button.redo.length );
 
@@ -66,6 +59,15 @@
 			undo_button.undo.clear();
 			undo_button.redo.clear();
 		});
+
+	})(
+		editor, objectEditor, // editors,
+		document.querySelector("div#editor-undo-button"), // undo_button,
+		document.querySelector("select#editor-entities-droplist") // entity_droplist
+	);
+
+
+	(function(undo_button,redo_button){
 
 		undo_button.addEventListener( "click", function(){
 		//	debugMode && console.log("undo:",undo_button.undo.length,"redo:",undo_button.redo.length);
@@ -86,8 +88,6 @@
 		});
 
 	})(
-		objectEditor, // editor,
 		document.querySelector("div#editor-undo-button"), // undo_button,
-		document.querySelector("div#editor-redo-button"), // redo_button,
-		document.querySelector("select#editor-entities-droplist") // entity_droplist
+		document.querySelector("div#editor-redo-button")  // redo_button.
 	);
