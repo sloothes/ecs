@@ -1239,8 +1239,6 @@
 //	!!! DEMO !!! IMPORTANT! !!! DEMO !!! IMPORTANT! !!! DEMO !!!
 */
 
-// 	DEPRECATED !!!  DEPRECATED !!!  DEPRECATED !!!  DEPRECATED !!!  DEPRECATED !!!  DEPRECATED !!! 
-
 
 
 
