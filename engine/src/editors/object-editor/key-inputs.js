@@ -7,7 +7,7 @@
 		const clock = new THREE.Clock();
 		const keyCodes = keyboard.keyCodes;
 		const modifiers = keyboard.modifiers;
-		const UP=38, DOWN=40, LEFT=37, RIGHT=39;
+		const LEFT=37, UP=38, RIGHT=39, DOWN=40;
 		const A=65, D=68, E=69, F=70, G=71, H=72, 
 			  Q=81, R=82, S=83, T=84, W=87;
 
@@ -56,8 +56,8 @@
 
 		function EditorTranslationSystem( dt ){
 
-			var UPDOWN = keyCodes[E]  || keyCodes[Q];
-			var ARROWS = keyCodes[37] || keyCodes[38] || keyCodes[39] || keyCodes[40];
+			var UPDOWN = keyCodes[E] || keyCodes[Q];
+			var ARROWS = keyCodes[LEFT] || keyCodes[UP] || keyCodes[RIGHT] || keyCodes[DOWN];
 
 		//	Move up/down.
 
@@ -98,7 +98,7 @@
 
 		document.addEventListener("keypress", function(){
 
-			var dt = Math.min(clock.getDelta(),0.02); 
+			var dt = Math.min(clock.getDelta(),0.01); 
 			debugMode && console.log( "dt:", round(dt,6) );
 
 			if ( modifierIsDown() ) return;
@@ -106,7 +106,7 @@
 
 			var SCALE  = keyCodes[H] || keyCodes[G];
 			var ROTATE = keyCodes[W] || keyCodes[A] || keyCodes[S]  || keyCodes[D]  || keyCodes[R]  || keyCodes[F];
-			var MOVING = keyCodes[E] || keyCodes[Q] || keyCodes[37] || keyCodes[38] || keyCodes[39] || keyCodes[40];
+			var MOVING = keyCodes[E] || keyCodes[Q] || keyCodes[LEFT] || keyCodes[UP] || keyCodes[RIGHT] || keyCodes[DOWN];
 
 			SCALE  && EditorScalingSystem( dt );
 			ROTATE && EditorRotationSystem( dt );

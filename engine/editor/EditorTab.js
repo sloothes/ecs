@@ -1600,7 +1600,7 @@
 				if (  modifierIsDown() ) return;
 
 				var UPDOWN = keyCodes[E] || keyCodes[Q];
-				var ARROWS = keyCodes[37] || keyCodes[38] || keyCodes[39] || keyCodes[40];
+				var ARROWS = keyCodes[LEFT] || keyCodes[UP] || keyCodes[RIGHT] || keyCodes[DOWN];
 
 			//	Move up/down.
 
@@ -1650,7 +1650,7 @@
 
 				var SCALE = keyCodes[H] || keyCodes[G];
 				var ROTATE = keyCodes[W] || keyCodes[A] || keyCodes[S] || keyCodes[D] || keyCodes[R] || keyCodes[F];
-				var MOVE = keyCodes[E] || keyCodes[Q] || keyCodes[37] || keyCodes[38] || keyCodes[39] || keyCodes[40];
+				var MOVE = keyCodes[E] || keyCodes[Q] || keyCodes[LEFT] || keyCodes[UP] || keyCodes[RIGHT] || keyCodes[DOWN];
 
 				SCALE && EditorScalingSystem( dt );
 				ROTATE && EditorRotationSystem( dt );
