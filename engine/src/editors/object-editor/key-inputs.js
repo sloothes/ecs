@@ -3,6 +3,8 @@
 	(function(editor,keyboard,entity_droplist){
 
 		var interval;
+		const RAD2DEG = 57.29577951308232;
+		const DEG2RAD = 0.017453292519943295;
 
 		const clock = new THREE.Clock();
 		const keyCodes = keyboard.keyCodes;
@@ -38,7 +40,7 @@
 
 		function EditorRotationSystem( dt ){
 
-			var rad = Math.max(dt, 0.02);
+			var rad = Math.max(dt, DEG2RAD);
 
 		//	Rotation (local coordinates).
 			keyCodes[W] && editor.rotateOnAxis( axisX,  rad );
@@ -96,9 +98,36 @@
 
 		}
 
+	//	Editor keyInput loop.
+
+		(function update(){
+
+			var dt = clock.getDelta();
+			requestFrameID = requestAnimationFrame( update );
+
+			if ( modifierIsDown() ) return;
+			if ( !entity_droplist.value ) return;
+
+			var SCALE  = keyCodes[H] || keyCodes[G];
+			var ROTATE = keyCodes[W] || keyCodes[A] || keyCodes[S] || keyCodes[D] || keyCodes[R] || keyCodes[F];
+			var MOVING = keyCodes[E] || keyCodes[Q] || keyCodes[LEFT] || keyCodes[UP] || keyCodes[RIGHT] || keyCodes[DOWN];
+
+			SCALE && EditorScalingSystem( dt );
+			ROTATE && EditorRotationSystem( dt );
+			MOVING && EditorTranslationSystem( dt );
+
+		})();
+
+	})( 
+		objectEditor, keyboard, // editor, keyboard,
+		document.querySelector("select#editor-entities-droplist") // entity_droplist.
+	);
+
+
+/*
 		window.addEventListener("keypress", function(){
 
-			var dt = Math.min(clock.getDelta(),0.01); 
+			var dt = Math.min(clock.getDelta(),0.02); 
 			debugMode && console.log( "dt:", round(dt,6) );
 
 			if ( modifierIsDown() ) return;
@@ -113,10 +142,4 @@
 			MOVING && EditorTranslationSystem( dt );
 
 		});
-
-	})( 
-		objectEditor, keyboard, // editor, keyboard,
-		document.querySelector("select#editor-entities-droplist") // entity_droplist.
-	);
-
-
+*/
