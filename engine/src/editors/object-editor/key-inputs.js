@@ -32,7 +32,7 @@
 	(function(document,keyboard,entity_droplist){
 		document.addEventListener("keypress", function(e){
 			if ( !entity_droplist.value ) return;
-			debugMode && console.log("keyCodes:", keyboard.keyCodes);
+			debugMode && console.log( keyboard.keyCodes );
 		});
 	})( 
 		document, keyboard, // document, keyboard,
