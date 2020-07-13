@@ -99,7 +99,7 @@
 					var value = Number(editor[ key ].x); // get value from editor.
 					if ( button === increase_x ) value += step;
 					if ( button === decrease_x ) value -= step;
-					editor[ key ].x = value; addtoUndo( state,key,value,undo_button );
+					editor[ key ].x = round(value,6); addtoUndo( state,key,value,undo_button );
 					interval = setTimeout( function(){ 
 						button.addEventListener( "mousedown", onfirstMouseDown ); // important!
 					}, 250);
@@ -109,7 +109,7 @@
 					var value = RAD2DEG * Number(editor[ key ].x); // get value from editor.
 					if ( button === increase_x ) value = THREE.Math.clamp( value+step, min, max );
 					if ( button === decrease_x ) value = THREE.Math.clamp( value-step, min, max );
-					editor[ key ].x = DEG2RAD*value; addtoUndo( state,key,value,undo_button );
+					editor[ key ].x = round(DEG2RAD*value,6); addtoUndo( state,key,value,undo_button );
 					interval = setTimeout( function(){ 
 						button.addEventListener( "mousedown", onfirstMouseDown ); // important!
 					}, 250);
@@ -119,7 +119,7 @@
 					var value = Number(editor[ key ].x); // get value from editor.
 					if ( button === increase_x ) value += step;
 					if ( button === decrease_x ) value -= step;
-					editor[ key ].x = value; addtoUndo( state,key,value,undo_button );
+					editor[ key ].x = round(value,6); addtoUndo( state,key,value,undo_button );
 					interval = setTimeout( function(){ 
 						button.addEventListener( "mousedown", onfirstMouseDown ); // important!
 					}, 250);
