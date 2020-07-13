@@ -11,6 +11,7 @@
 		const DEG2RAD = 0.017453292519943295;
 
 	//	keep first mousedown event, ignore next events.
+
 		increase_x.addEventListener( "mousedown", onfirstMouseDown );
 		decrease_x.addEventListener( "mousedown", onfirstMouseDown );
 		var meta = {geometries:{},materials:{},textures:{},images:{},shapes:{}};
@@ -28,7 +29,6 @@
 		//	Remove on firstMouseDown event listener. // important!
 			this.removeEventListener( "mousedown", onfirstMouseDown );
 		};
-
 	//
 		increase_x.addEventListener( "mousedown", onMouseDown );
 		decrease_x.addEventListener( "mousedown", onMouseDown );
