@@ -19,6 +19,7 @@
 		var editor = this;
 		editor.copy( objectEditor );
 		editor.name = "editor";
+		return editor;
 
 	};
 
@@ -42,7 +43,7 @@
 
 	};
 
-	const editor = new Editor();
-//	Note: Editor is not been added in scene
-//	so doesn't update matrix for json. You
-//	must 
+	const editor = new Editor().reset();
+//	Note: Editor is not been added in scene so doesn't 
+//	update matrix for json. You must explicity copy the 
+//	objectEditor matrix. DO NOT ADD THIS EDITOR TO SCENE.
