@@ -180,36 +180,32 @@
 //	Call watchers.
 
 	(function( input ){
-	//	keyInputControls.
-		input.addEventListener( "blur", enableKeyInputControls );
-		input.addEventListener( "focus", disableKeyInputControls );
+	//	input.addEventListener( "blur", enableKeyInputControls );
+	//	input.addEventListener( "focus", disableKeyInputControls );
 		input.addEventListener( "change", function(){
 			this.blur(); callWatchers(this, "onchange", "change", this.value );
 		});
 	})( document.querySelector("input#editor-vector-x-input") ); // vector_x.
 
 	(function( input ){
-	//	keyInputControls.
-		input.addEventListener( "blur", enableKeyInputControls );
-		input.addEventListener( "focus", disableKeyInputControls );
+	//	input.addEventListener( "blur", enableKeyInputControls );
+	//	input.addEventListener( "focus", disableKeyInputControls );
 		input.addEventListener( "change", function(){
 			this.blur(); callWatchers(this, "onchange", "change", this.value );
 		});
 	})( document.querySelector("input#editor-vector-y-input") ); // vector_y.
 
 	(function( input ){
-	//	keyInputControls.
-		input.addEventListener( "blur", enableKeyInputControls );
-		input.addEventListener( "focus", disableKeyInputControls );
+	//	input.addEventListener( "blur", enableKeyInputControls );
+	//	input.addEventListener( "focus", disableKeyInputControls );
 		input.addEventListener( "change", function(){
 			this.blur(); callWatchers(this, "onchange", "change", this.value );
 		});
 	})( document.querySelector("input#editor-vector-z-input") ); // vector_z.
 
 	(function( input ){
-	//	keyInputControls.
-		input.addEventListener( "blur", enableKeyInputControls );
-		input.addEventListener( "focus", disableKeyInputControls );
+	//	input.addEventListener( "blur", enableKeyInputControls );
+	//	input.addEventListener( "focus", disableKeyInputControls );
 		input.addEventListener( "change", function(){
 			this.blur(); callWatchers(this, "onchange", "change", this.value );
 		});

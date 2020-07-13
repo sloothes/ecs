@@ -54,9 +54,9 @@
 		function exitFromEditMode(){
 			editor.reset(); // important!
 			resetLatestEntityValue();
+			enableKeyInputControls();
 			enableCameraRigidObjects();
 			takeCameraControls( localPlayer );
-			keyInputControls.isDisabled = false;
 			return;
 		}
 
@@ -68,6 +68,7 @@
 
 			//	switchToEditMode.
 
+				disableKeyInputControls(); // important!
 				var object = getObjectByEntityId( value );
 				if ( !object ) return exitFromEditMode();
 
