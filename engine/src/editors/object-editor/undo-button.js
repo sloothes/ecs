@@ -84,7 +84,8 @@
 
 	})(
 		editor, objectEditor, // editors,
-		document.querySelector("div#editor-undo-button"), // undo_button,
-		document.querySelector("div#editor-redo-button"), // redo_button.
+		document.querySelector("div#editor-undo-button"),         // undo_button,
+		document.querySelector("div#editor-redo-button"),         // redo_button.
 		document.querySelector("select#editor-entities-droplist") // entity_droplist
 	);
+

@@ -23,7 +23,7 @@
 				case "rotation":
 					if ( isNaN(value) ) { value = 0; vector_x.value = "0.0"; } // avoid NaN.
 					else value = DEG2RAD * THREE.Math.clamp(Number(value), -180, 180); // rad!
-					setTimeout(function(value){ editor[key]._x = Number(value); }, null, value);
+					setTimeout(function(value){ editor[key].x = Number(value); }, null, value);
 				break;
 				case "scale":
 					if ( isNaN( value ) ) { value = 100; vector_x.value = "100.0"; } // avoid NaN.
@@ -69,7 +69,7 @@
 				case "rotation":
 					if ( isNaN(value) ) { value = 0; vector_y.value = "0.0"; } // avoid NaN.
 					else value = DEG2RAD * THREE.Math.clamp(Number(value), -180, 180); // rad!
-					setTimeout(function(value){ editor[key]._y = Number(value); }, null, value);
+					setTimeout(function(value){ editor[key].y = Number(value); }, null, value);
 				break;
 				case "scale":
 					if ( isNaN( value ) ) { value = 100; vector_y.value = "100.0"; } // avoid NaN.
@@ -115,7 +115,7 @@
 				case "rotation":
 					if ( isNaN(value) ) { value = 0; vector_z.value = "0.0" } // avoid NaN.
 					else value = DEG2RAD * THREE.Math.clamp(Number(value), -180, 180); // rad!
-					setTimeout(function(value){ editor[key]._z = Number(value); }, null, value);
+					setTimeout(function(value){ editor[key].z = Number(value); }, null, value);
 				break;
 				case "scale":
 					if ( isNaN( value ) ) { value = 100; vector_z.value = "100.0"; } // avoid NaN.
