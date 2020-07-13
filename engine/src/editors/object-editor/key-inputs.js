@@ -29,8 +29,12 @@
 	})(objectEditor);
 
 
-	(function(document,keyCodes,modifiers){
+	(function(document,keyboard,entity_droplist){
 		document.addEventListener("keypress", function(e){
-			debugMode && console.log("keyCodes:", keyCodes);
+			if ( !entity_droplist.value ) return;
+			debugMode && console.log("keyCodes:", keyboard.keyCodes);
 		});
-	})(document,keyboard.keyCodes,keyboard.modifiers);
+	})( 
+		document, keyboard, // document, keyboard,
+		document.querySelector("select#editor-entities-droplist") // entity_droplist.
+	);
