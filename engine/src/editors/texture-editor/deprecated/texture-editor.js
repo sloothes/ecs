@@ -1,4 +1,4 @@
-//	texture-editor.js
+//	texture-editor.js (DEPRECATED)
 
 //	const textureEditor = new TextureEditor();
 
