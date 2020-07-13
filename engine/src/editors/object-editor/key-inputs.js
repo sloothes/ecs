@@ -96,7 +96,7 @@
 
 		}
 
-		document.addEventListener("keypress", function(){
+		window.addEventListener("keypress", function(){
 
 			var dt = Math.min(clock.getDelta(),0.01); 
 			debugMode && console.log( "dt:", round(dt,6) );
