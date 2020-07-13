@@ -1,6 +1,5 @@
 //	key-inputs.js
 
-
 	(function(editor,keyboard,entity_droplist){
 
 		var interval;
@@ -100,7 +99,7 @@
 		document.addEventListener("keypress", function(){
 
 			var dt = clock.getDelta();
-			debuMode && console.log( "dt:", dt );
+			debugMode && console.log( "dt:", dt );
 
 			if (  modifierIsDown() ) return;
 			if ( !entity_droplist.value ) return;
