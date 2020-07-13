@@ -13,7 +13,7 @@
 
 		function onfirstMouseDown(){
 			state = {}; // reset.
-			if ( entity_droplist.value === "" ) return; // important!
+			if ( entity_droplist.value === "" ) return;
 			var key = state.key = vector_droplist.value;
 			state.value = editor[key][v];
 			state.json = editor.toJSON( meta );
@@ -80,7 +80,7 @@
 
 			clearTimeout( interval ); // important!
 
-			if ( entity_droplist.value === "" ) return; // important!
+			if ( entity_droplist.value === "" ) return;
 
 			var button = this;
 			var key = vector_droplist.value;
@@ -122,7 +122,6 @@
 			}
 
 			debugMode && console.log( "on Mouse Click:", interval );
-
 		}
 
 		increase.addEventListener( "mousedown", onfirstMouseDown );
@@ -135,7 +134,6 @@
 		decrease.addEventListener( "click", onMouseClick );
 
 	}
-
 
 //	vector-x mouse input.
 
@@ -170,3 +168,122 @@
 		document.querySelector("div#editor-undo-button")           // undo_button.
 	);
 
+//	vector-w mouse input.
+
+	(function( editor,vector_w,increase_w,decrease_w,vector_droplist,entity_droplist,undo_button ){
+
+		var state, interval, dt = 20;
+		var meta = {geometries:{},materials:{},textures:{},images:{},shapes:{}};
+
+		const RAD2DEG = 57.29577951308232;
+		const DEG2RAD = 0.017453292519943295;
+
+	//	keep first mousedown event, ignore next events.
+
+		function onfirstMouseDown(){
+			state = {}; // reset.
+			if ( entity_droplist.value === "" ) return;
+			var key = state.key = vector_droplist.value;
+			state.value = editor[key].w;
+			state.json = editor.toJSON( meta );
+			this.removeEventListener( "mousedown", onfirstMouseDown );
+			debugMode && console.log( {state:state,meta:meta} ); // debug!
+		};
+
+	//	on mouse down.
+
+		function onMouseDown(){ 
+
+			clearTimeout( interval ); // important!
+
+			if ( entity_droplist.value === "" ) return;
+
+			var button = this;
+
+			interval = setTimeout( function update() {
+
+				var key = vector_droplist.value;
+
+				switch ( key ) {
+					case "scale":
+						var p = 3, step = 1/Math.pow(10,p); // min = -100, max = 100;
+						if ( button === increase_w ) {
+							editor[ key ].x += step; // editor manager updates input value.
+							editor[ key ].y += step; // editor manager updates input value.
+							editor[ key ].z += step; // editor manager updates input value.
+						}
+						if ( button === decrease_w ) {
+							editor[ key ].x -= step; // editor manager updates input value.
+							editor[ key ].y -= step; // editor manager updates input value.
+							editor[ key ].z -= step; // editor manager updates input value.
+						}
+						interval = setTimeout( update, dt );
+					break;
+				}
+
+			}, 500);
+
+		}
+
+	//	add undo.
+
+		function addtoUndo( state,key,value ){
+			if ( state.key !== key ) return; if ( state.value === value ) return;
+			if ( state.json ) { var json = JSON.parse(JSON.stringify(state.json)); undo_button.undo.unshift(json); }
+			debugMode && console.log( "undo:", undo_button.undo.length, "redo:", undo_button.redo.length ); return;
+		}
+
+	//	on mouse click.
+
+		function onMouseClick(){
+
+			clearTimeout( interval ); // important!
+
+			if ( entity_droplist.value === "" ) return;
+
+			var button = this;
+
+			var key = vector_droplist.value;
+
+			switch ( key ) {
+				case "scale":
+					var p = 3, step = 1/Math.pow(10,p); // min = -100, max = 100;
+					var value = Number(editor[ key ].z); // get value from editor.
+					if ( button === increase_w ) {
+						editor[ key ].x += step; // editor manager updates input value.
+						editor[ key ].y += step; // editor manager updates input value.
+						editor[ key ].z += step; // editor manager updates input value.
+					}
+					if ( button === decrease_w ) {
+						editor[ key ].x -= step; // editor manager updates input value.
+						editor[ key ].y -= step; // editor manager updates input value.
+						editor[ key ].z -= step; // editor manager updates input value.
+					}
+					interval = setTimeout( function(){ 
+						button.addEventListener( "mousedown", onfirstMouseDown ); // important!
+					}, 250);
+				break;
+			}
+
+			debugMode && console.log( "on Mouse Click:", interval );
+		}
+
+		increase_w.addEventListener( "mousedown", onfirstMouseDown );
+		decrease_w.addEventListener( "mousedown", onfirstMouseDown );
+		increase_w.addEventListener( "mousedown", onMouseDown );
+		decrease_w.addEventListener( "mousedown", onMouseDown );
+		window.addEventListener( "mouseup", function (){
+			clearTimeout( interval ); // important!
+		});
+		increase_w.addEventListener( "click", onMouseClick );
+		decrease_w.addEventListener( "click", onMouseClick );
+
+	})(
+		objectEditor,                                                // editor,
+		document.querySelector("input#geometry-vector-w-input"),     // vector_w,
+		document.querySelector("li#geometry-vector-w-increase"),     // increase_w,
+		document.querySelector("li#geometry-vector-w-decrease"),     // decrease_w,
+		document.querySelector("select#geometry-vector-droplist"),   // vector_droplist,
+		document.querySelector("select#geometry-entities-droplist"), // entity_droplist,
+		document.querySelector("div#geometry-undo-button")           // undo_button.
+	);
