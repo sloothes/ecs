@@ -23,7 +23,7 @@
 
 	};
 
-	ObjectEditor.prototype.update = function(){ 
+	Editor.prototype.update = function(){ 
 
 		var editor = this;
 
