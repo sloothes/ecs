@@ -40,7 +40,7 @@
 	//	var tab = TabUI.Editor.tab;
 
 		var row = document.createElement("h3");
-		row.style.cssText = "height:260px;border:none;text-align:center;";
+		row.style.cssText = "display:none;height:260px;border:none;text-align:center;";
 
 		var canvas = document.createElement("canvas");
 		canvas.width = 256; canvas.height = 256;
@@ -76,6 +76,128 @@
 
 		row.appendChild( redo );
 		row.appendChild( undo );
+		tab.appendChild( row );
+
+	})( TabUI.Editor.tab );
+
+//	text-input-ui.js
+
+	(function( tab ){
+
+	//	Text input.
+	//	var tab = TabUI.Editor.tab;
+
+		var row = document.createElement("h3");
+		row.style.cssText = "margin-right:20px;height:30px;";
+
+		var input = document.createElement("input");
+		input.type = "text";
+		input.id = "editor-text-input";
+		input.setAttribute("placeholder", "text input" );
+		input.classList.add("form-control","text-center");
+		input.style.cssText = "width:-webkit-fill-available;color:#000;display:inline;"
+		+ "margin:0px 5px;text-align:center;font-size:large;font-weigth:bold;background:none;";
+
+	//	Call watchers.
+		input.addEventListener( "change", function(){
+			this.blur(); // important!
+			callWatchers(this, "onchange", "change", this.value );
+		});
+
+	//	keyInputControls.
+		input.addEventListener( "blur", enableKeyInputControls );
+		input.addEventListener( "focus", disableKeyInputControls );
+
+		row.appendChild(input);
+		tab.appendChild( row );
+
+	})( TabUI.Editor.tab );
+
+//	key-droplist-ui.js
+
+	(function( tab ){
+
+	//	Key droplist.
+	//	var tab = TabUI.Editor.tab;
+
+		var row = document.createElement("h3");
+		row.textContent = "key:";
+		row.style.cssText = "height:40px;"
+
+		var select = document.createElement("select");
+		select.id = "editor-key-droplist";
+		select.style.cssText = "width:170px;color:#000;float:right;"
+		+ "border:1px solid;border-radius:4px;padding:2px 4px 4px 4px;"
+		+ "font-size:20px;margin-left:10px;margin-right:15px;";
+
+		var keys = "";
+		keys += "uuid,name,flipY,format,rotation,mapping,minFilter,magFilter,anisotropy,wrapS,wrapT";
+
+		keys.split(",").forEach(function( name ){
+			var option = document.createElement("option");
+			option.text = name;
+			option.value = name;
+			select.appendChild( option );
+		});
+
+	//	Call watchers.
+		select.addEventListener( "change", function(){
+			this.blur(); // important!
+			callWatchers(this, "onchange", "change", this.value );
+		});
+
+		row.appendChild( select );
+		tab.appendChild( row );
+
+	})( TabUI.Editor.tab );
+
+//	value-input-ui.js
+
+	(function( tab ){
+
+	//	Value input.
+	//	var tab = TabUI.Editor.tab;
+
+		var row = document.createElement("h3");
+		row.textContent = "value:";
+		row.style.cssText = "margin:10px 15px;height:30px;";
+
+		var vect = document.createElement("div");
+		vect.style.cssText = "width:170px;height:40px;float:right;";
+
+		var prev = document.createElement("li");
+		prev.id = "editor-value-decrease";
+		prev.innerHTML = "&#9668;";
+		prev.style.display = "inline";
+		prev.classList.add("btn","btn-primary","get-prev-btn","pull-left");
+
+		var next = document.createElement("li");
+		next.id = "editor-value-increase";
+		next.innerHTML = "&#9658;";
+		next.style.display = "inline";
+		next.classList.add("btn","btn-primary","get-next-btn","pull-right");
+
+		var input = document.createElement("input");
+		input.id = "editor-value-input";
+		input.setAttribute("placeholder", "value" );
+		input.classList.add("form-control","text-center");
+		input.style.cssText = "color:#000;border:none;display:inline;width:80px;"
+		+ "margin:0px 5px;text-align:center;font-size:large;font-weigth:bold;background:none;";
+
+	//	Call watchers.
+		input.addEventListener( "change", function(){
+			this.blur(); // important!
+			callWatchers(this, "onchange", "change", this.value );
+		});
+
+	//	keyInputControls.
+		input.addEventListener( "blur", enableKeyInputControls );
+		input.addEventListener( "focus", disableKeyInputControls );
+
+		vect.appendChild(prev);
+		vect.appendChild(input);
+		vect.appendChild(next);
+		row.appendChild(vect);
 		tab.appendChild( row );
 
 	})( TabUI.Editor.tab );
@@ -119,7 +241,7 @@
 	//	var tab = TabUI.Editor.tab;
 
 		var row = document.createElement("h3");
-		row.textContent = "vect x:";
+		row.textContent = "axis x:";
 		row.style.cssText = "margin:10px 15px;height:40px;";
 
 		var vect = document.createElement("div");
@@ -160,7 +282,7 @@
 	//	var tab = TabUI.Editor.tab;
 
 		var row = document.createElement("h3");
-		row.textContent = "vect y:";
+		row.textContent = "axis y:";
 		row.style.cssText = "margin:10px 15px;height:40px;";
 
 		var vect = document.createElement("div");
@@ -201,7 +323,7 @@
 	//	var tab = TabUI.Editor.tab;
 
 		var row = document.createElement("h3");
-		row.textContent = "vect z:";
+		row.textContent = "axis z:";
 		row.style.cssText = "margin:10px 15px;height:40px;";
 
 		var vect = document.createElement("div");

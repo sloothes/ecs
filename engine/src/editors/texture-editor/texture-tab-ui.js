@@ -255,7 +255,7 @@
 	//	var tab = TabUI.Texture.tab;
 
 		var row = document.createElement("h3");
-		row.textContent = "vect x:";
+		row.textContent = "axis x:";
 		row.style.cssText = "margin:10px 15px;height:40px;";
 
 		var vect = document.createElement("div");
@@ -306,7 +306,7 @@
 	//	var tab = TabUI.Texture.tab;
 
 		var row = document.createElement("h3");
-		row.textContent = "vect y:";
+		row.textContent = "axis y:";
 		row.style.cssText = "margin:10px 15px;height:40px;";
 
 		var vect = document.createElement("div");
