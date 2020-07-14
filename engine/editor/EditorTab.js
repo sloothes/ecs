@@ -15,7 +15,7 @@
 		row.style.cssText = "height:30px;"
 
 		var select = document.createElement("select");
-		select.id = "entities-droplist";
+		select.id = "editor-entities-droplist";
 		select.style.cssText = "width:170px;color:#000;float:right;"
 			+ "border:1px solid;border-radius:4px;padding:2px 4px 4px 4px;"
 			+ "font-size:20px;margin-left:10px;margin-right:15px;";
@@ -477,7 +477,7 @@
 		const vect_z_decrease = document.getElementById("vector-z-decrease");
 		const vect_w_decrease = document.getElementById("vector-w-decrease");
 
-		const entity_droplist = document.getElementById("entities-droplist");
+		const entity_droplist = document.getElementById("editor-entities-droplist");
 		const vector_droplist = document.getElementById("vector-mode-droplist");
 		const geometry_droplist = document.getElementById("editor-geometry-droplist");
 
