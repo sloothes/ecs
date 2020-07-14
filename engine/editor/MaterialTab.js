@@ -1305,7 +1305,7 @@
 
 		function getObjectByEntityId( value ){
 
-			var entities_droplist = document.getElementById("entities-droplist"); // important!
+			var entities_droplist = document.getElementById("editor-entities-droplist"); // important!
 
 			if ( arguments.length ) 
 				var id = parseInt( value );
@@ -1412,7 +1412,7 @@
 			entity_droplist.addEventListener( "change", entity_droplist.blur );
 			texture_droplist.addEventListener( "change", texture_droplist.blur );
 
-			document.getElementById("entities-droplist").addEventListener( "change", function(){
+			document.getElementById("editor-entities-droplist").addEventListener( "change", function(){
 
 				var object = scene.getObjectById( Number(this.value) );
 
