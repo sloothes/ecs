@@ -131,7 +131,7 @@
 		+ "font-size:20px;margin-left:10px;margin-right:15px;";
 
 		var keys = "";
-		keys += "uuid,name,flipY,format,rotation,mapping,minFilter,magFilter,anisotropy,wrapS,wrapT";
+		keys += "uuid,name,visible,castShadow,renderOrder,receiveShadow,frustumCulled,matrixAutoUpdate";
 
 		keys.split(",").forEach(function( name ){
 			var option = document.createElement("option");
@@ -411,6 +411,27 @@
 		var button = document.createElement("div");
 		button.id = "editor-reset-button";
 		button.textContent = "Reset Vectors";
+		button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
+		button.style.cssText = "width:-webkit-fill-available;float:right;height:40px;font-size:large;margin-right:15px;";
+
+		row.appendChild( button );
+		tab.appendChild( row );
+
+	})( TabUI.Editor.tab );
+
+//	needs-update-ui.js
+
+	(function( tab ){
+
+	//	Matrix World Needs Update button.
+	//	var tab = TabUI.Editor.tab;
+
+		var row = document.createElement("h3");
+		row.style.cssText = "height:40px;margin-bottom:20px;"
+
+		var button = document.createElement("div");
+		button.id = "matrix-needs-update";
+		button.textContent = "MatrixWorld needs Update";
 		button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
 		button.style.cssText = "width:-webkit-fill-available;float:right;height:40px;font-size:large;margin-right:15px;";
 

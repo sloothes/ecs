@@ -351,7 +351,7 @@
 
 //	needs-update-ui.js
 
-	(function( tab,getTextureByEntityId ){
+	(function( tab ){
 
 	//	NeedsUpdate texture button.
 	//	var tab = TabUI.Texture.tab;
@@ -368,7 +368,7 @@
 		row.appendChild( button );
 		tab.appendChild( row );
 
-	})( TabUI.Texture.tab, getTextureByEntityId );
+	})( TabUI.Texture.tab );
 
 //	exit-editor-ui.js
 
