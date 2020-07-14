@@ -2,7 +2,7 @@
 
 	TabUI.add( "MeshWorld", "meshworld-tab" );
 	TabUI.append("MeshWorld");
-
+/*
 //	octree-geometry-ui.js
 
 	(function( tab ){
@@ -42,4 +42,4 @@
 		tab.appendChild( row );
 
 	})( TabUI.MeshWorld.tab );
-
+*/
