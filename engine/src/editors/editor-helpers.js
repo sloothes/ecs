@@ -1,4 +1,4 @@
-//	entity helpers.
+//	entity-manager-helpers.js
 
 	function getObjectByEntityId( value ){
 
@@ -44,4 +44,14 @@
 		return texture_entities.find( function( texture ){
 			return texture.id === id;
 		});
+	}
+
+	function getObjectsByGeometry( uuid ){
+
+		return scene.children.filter(function(child){
+			return child.geometry && child.geometry.uuid === uuid; // same geometry.
+		}).filter(function( object ){
+			return !localPlayer.getObjectById(object.id); // not localPlayer child.
+		});
+
 	}
