@@ -255,7 +255,7 @@
 		}
 
 	//	return true.
-		console.log("editor isEditing:", isEditing);
+	//	console.log("editor isEditing:", isEditing);
 		return isEditing; // boolean, important!
 
 	};

@@ -471,7 +471,7 @@
 		button.appendChild( input );
 
 		button.addEventListener( "click", function(){
-			input.files.length = 0; input.click();
+			input.value = ""; input.click();
 		});
 
 	//	Call watchers.
