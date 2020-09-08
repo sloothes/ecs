@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+
+		<title>Entities (boilerplate)</title>
+
+		<meta charset="utf-8">
+		<meta name="generator" content="Three.js Editor">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+		<link rel="stylesheet" href="/css/joystick.css">
+		<link rel="stylesheet" href="/css/bootstrap.min.css">
+		<link rel="stylesheet" href="/css/bootbox-dialoges.css">
+		<link rel="stylesheet" href="/css/jcrop.css">
+
+		<script src="/js/watch.js"></script>
+		<script src="/js/Objectid.js"></script>
+		<script src="/js/jquery.min.js"></script> 
+		<script src="/js/system.min.js"></script>
+		<script src="/js/signals.min.js"></script>
+		<script src="/js/inflate.min.js"></script>
+		<script src="/js/zangodb.min.js"></script>
+		<script src="/js/bootstrap.min.js"></script>
+		<script src="/js/validator.min.js"></script>
+		<script src="/js/hold-event.min.js"></script>
+		<script src="/js/state-machine.js"></script>
+		<script src="/js/jcrop.js"></script>
+
+		<style>
+
+			body {
+				margin: 0px;
+				font-size: 13px;
+				font-family: sans-serif;
+				background-repeat: repeat;
+				background-image: url("https://i.imgur.com/rnZZU0i.png") !important;
+				overflow: hidden;
+			}
+
+			#loading-bar {
+				width:100%;
+				height:100%;
+				top:0; left:0;
+				position:fixed;
+				display:flex;
+				align-items:center;
+				justify-content:center;
+			}
+
+			.middle > * {
+				top:0; 
+				left:0;
+				right:0;
+				bottom:0;
+				margin:auto;
+				position:absolute;
+			}
+
+			#joystick1 {
+				right: calc(40px + 370px);
+			}
+			
+			#jumpButton {
+				right: calc(105px + 370px);
+			}
+
+			.btn-matcap,
+			.btn-terrain {
+				padding:0;
+				float:left;
+				width:55px;
+				height:55px;
+				border:1px solid;
+				border-radius:4px;
+				margin-right:4px;
+				margin-bottom:4px;
+				display:inline-block;
+			}
+
+			.btn-matcap + .btn-matcap,
+			.btn-terrain + .btn-terrain {
+				margin-right:4px;
+			}
+
+		</style>
+	</head>
+
+	<body ontouchstart="">
+
+		<script src="/editor/js/TabUI.js"></script>
+
+		<script>
+			const debugMode = true;
+			const Signal = signals.Signal;
+			const RAD2DEG = 57.29577951308232;
+			const DEG2RAD = 0.017453292519943295;
+			document.body.appendChild( createSidePanel() );
+		</script>
+
+	<!-- THREE.js -->
+
+		<script src="/editor/js/three.js"></script>
+		<script src="/editor/js/MeshWalk.js"></script>
+		<script src="/editor/js/UVsDebug.js"></script>
+		<script src="/editor/js/FBXLoader.js"></script>
+		<script src="/editor/js/VirtualInput.js"></script>
+		<script src="/editor/js/KeyboardState.js"></script>
+		<script src="/editor/js/EditorControls.js"></script>
+		<script src="/editor/js/camera-controls.js"></script>
+		<script src="/editor/js/SubdivisionModifier.js"></script>
+		<script src="/editor/js/three-pathfinding.umd.js"></script>
+
+		<script src="/threejs/r96/examples/js/loaders/MTLLoader.js"></script>
+		<script src="/threejs/r96/examples/js/loaders/OBJLoader.js"></script>
+		<script src="/threejs/r96/examples/js/loaders/GLTFLoader.js"></script>
+		<script src="/threejs/r96/examples/js/loaders/TGALoader.js"></script>
+		<script src="/threejs/r96/examples/js/loaders/DDSLoader.js"></script>
+
+		<script>
+
+		//	THREE.Loader.Handlers.add( /.tga/, new THREE.TGALoader() );
+		//	THREE.Loader.Handlers.add( /.dds/, new THREE.DDSLoader() );
+
+		</script>
+
+		<script src="/threejs/r96/examples/js/exporters/GLTFExporter.js"></script>
+		<script src="/threejs/r96/examples/js/exporters/STLExporter.js"></script>
+		<script src="/threejs/r96/examples/js/exporters/OBJExporter.js"></script>
+		<script src="/threejs/r96/examples/js/exporters/ColladaExporter.js"></script>
+
+	<!-- Water.js -->
+
+		<script src="/editor/js/Ocean_fft.js"></script>
+		<script src="/editor/js/MirrorRenderer.js"></script>
+		<script src="/editor/js/WaterMaterial.js"></script>
+
+	<!-- Engine.js -->
+
+		<script src="/core/helpers.js"></script>
+		<script src="/core/keyboard.js"></script>
+		<script src="/core/enviroment.js"></script>
+		<script src="/core/localPlayer.js"></script>
+		<script src="/core/cameraControls.js"></script>
+		<script src="/core/keyboardState.js"></script>
+		<script src="/core/keyInputControls.js"></script>
+		<script src="/core/joystickControls.js"></script>
+		<script src="/core/ThreeSteeringBehaviours.js"></script>
+
+	<!-- Entities.js -->
+
+		<script>
+
+			const entities = [];
+			
+			(function( entities ){
+
+				var clock = new THREE.Clock();
+
+				(function update(){
+
+					requestAnimationFrame( update );
+					var delta = clock.getDelta();
+					var length = entities.length;
+					for ( var i = 0; i < length; i++ ){
+						entities[i].update( delta );
+					}
+
+				})();
+
+			})( entities );
+
+		</script>
+
+	</body>
+</html>
